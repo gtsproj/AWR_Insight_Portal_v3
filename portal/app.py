@@ -151,9 +151,10 @@ def _auto_patch_grafana_dashboards():
             logger.debug("auto_patch_dashboards: Both URLs are localhost — skipping patch")
             return
 
-        # Find dashboard directories — read from settings, no Grafana path dependency
-        cfg_grafana    = cfg.get("grafana", {})
-        dashboard_dir  = cfg_grafana.get("dashboard_dir", "dashboard")
+        # Find dashboard directories — read from settings.yaml (not portal_config DB)
+        yaml_cfg      = load_config()
+        grafana_cfg   = yaml_cfg.get("grafana", {})
+        dashboard_dir = grafana_cfg.get("dashboard_dir", "dashboard")
         # Resolve relative paths from project root
         if not os.path.isabs(dashboard_dir):
             dashboard_dir = os.path.join(_PROJECT_ROOT, dashboard_dir)
@@ -270,11 +271,75 @@ def _reimport_dashboards_to_grafana(grafana_url: str, cfg: dict) -> None:
     try:
         import urllib.request, urllib.error, base64, glob
 
-        # Grafana admin credentials from settings
-        grafana_cfg   = cfg.get("grafana", {})
+        # Read Grafana credentials from settings.yaml (not portal_config DB)
+        # because admin_user/admin_password are YAML settings, not DB config keys
+        yaml_cfg      = load_config()
+        grafana_cfg   = yaml_cfg.get("grafana", {})
         admin_user    = grafana_cfg.get("admin_user",     "admin")
         admin_pass    = grafana_cfg.get("admin_password", "admin")
         dashboard_dir = grafana_cfg.get("dashboard_dir",  "dashboard")
+
+        if not os.path.isabs(dashboard_dir):
+            dashboard_dir = os.path.join(_PROJECT_ROOT, dashboard_dir)
+
+        if not os.path.isdir(dashboard_dir):
+            logger.debug(f"reimport: dashboard_dir not found: {dashboard_dir}")
+            return
+
+        cred    = base64.b64encode(f"{admin_user}:{admin_pass}".encode()).decode()
+        auth    = f"Basic {cred}"
+        headers = {
+            "Content-Type":  "application/json",
+            "Authorization": auth,
+            "Accept":        "application/json",
+        }
+
+        # Verify Grafana is reachable before attempting imports
+        try:
+            req  = urllib.request.Request(f"{grafana_url}/api/health",
+                                          headers=headers)
+            urllib.request.urlopen(req, timeout=5)
+        except Exception as e:
+            logger.warning(f"reimport: Grafana not reachable at {grafana_url}: {e}")
+            return
+
+        json_files = glob.glob(os.path.join(dashboard_dir, "*.json"))
+        imported = 0
+        errors   = 0
+
+        for fpath in json_files:
+            try:
+                with open(fpath, encoding="utf-8") as f:
+                    data = json.load(f)
+
+                # Remove id so Grafana matches by UID (overwrite existing)
+                dash = {k: v for k, v in data.items() if k != "id"}
+                payload = json.dumps({
+                    "dashboard": dash,
+                    "overwrite": True,
+                    "folderId":  0,
+                }).encode()
+
+                req  = urllib.request.Request(
+                    f"{grafana_url}/api/dashboards/import",
+                    data=payload, method="POST", headers=headers
+                )
+                urllib.request.urlopen(req, timeout=15)
+                imported += 1
+
+            except Exception as e:
+                fname = os.path.basename(fpath)
+                logger.debug(f"reimport: skip {fname}: {e}")
+                errors += 1
+
+        logger.info(
+            f"reimport: {imported} dashboard(s) re-imported into Grafana "
+            f"({errors} skipped). portal_url and grafana_url variables "
+            f"are now updated in Grafana's internal database."
+        )
+
+    except Exception as e:
+        logger.warning(f"reimport_dashboards_to_grafana failed (non-fatal): {e}")
 
         if not os.path.isabs(dashboard_dir):
             dashboard_dir = os.path.join(_PROJECT_ROOT, dashboard_dir)
