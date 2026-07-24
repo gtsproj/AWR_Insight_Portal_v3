@@ -1,0 +1,105 @@
+[
+  {
+    "filepath": "C:\\AWR_Insight_Portal_v2\\awr_reports\\COLDBPRD\\awr_COLDBPRD_1_221212_0030_0130.html",
+    "status": "DONE",
+    "queued_at": "2022-12-12T00:30:00",
+    "retry_count": 0,
+    "error": null,
+    "processing_at": "2026-07-20T12:52:21.854331",
+    "processed_at": "2026-07-20T12:53:43.968845"
+  },
+  {
+    "filepath": "C:\\AWR_Insight_Portal_v2\\awr_reports\\COLDBPRD\\awr_COLDBPRD_1_221212_0130_0230.html",
+    "status": "DONE",
+    "queued_at": "2022-12-12T01:30:00",
+    "retry_count": 0,
+    "error": null,
+    "processing_at": "2026-07-20T12:53:43.975845",
+    "processed_at": "2026-07-20T12:55:02.397349"
+  },
+  {
+    "filepath": "C:\\AWR_Insight_Portal_v2\\awr_reports\\COLDBPRD\\awr_COLDBPRD_1_221212_0230_0330.html",
+    "status": "DONE",
+    "queued_at": "2022-12-12T02:30:00",
+    "retry_count": 0,
+    "error": null,
+    "processing_at": "2026-07-20T12:55:02.403769",
+    "processed_at": "2026-07-20T12:56:15.154334"
+  },
+  {
+    "filepath": "C:\\AWR_Insight_Portal_v2\\awr_reports\\COLDBPRD\\awr_COLDBPRD_1_221212_0330_0430.html",
+    "status": "DONE",
+    "queued_at": "2022-12-12T03:30:00",
+    "retry_count": 0,
+    "error": null,
+    "processing_at": "2026-07-20T12:56:15.159671",
+    "processed_at": "2026-07-20T12:57:37.342902"
+  },
+  {
+    "filepath": "C:\\AWR_Insight_Portal_v2\\awr_reports\\COLDBPRD\\awr_COLDBPRD_1_221212_0430_0530.html",
+    "status": "DONE",
+    "queued_at": "2022-12-12T04:30:00",
+    "retry_count": 0,
+    "error": null,
+    "processing_at": "2026-07-20T12:57:37.349784",
+    "processed_at": "2026-07-20T12:58:53.112590"
+  },
+  {
+    "filepath": "C:\\AWR_Insight_Portal_v2\\awr_reports\\coldbprd\\awr_COLDBPRD_1_221212_0530_0630.html",
+    "db_name": "COLDBPRD",
+    "file_hash": "a71835251841f575c76a2f9072597dc9",
+    "status": "DONE",
+    "added_at": "2026-07-20T08:33:11.579841+00:00",
+    "processed_at": "2026-07-20T14:04:37.954020",
+    "error": null,
+    "retry_count": 0,
+    "processing_at": "2026-07-20T14:03:14.140880"
+  },
+  {
+    "filepath": "C:\\AWR_Insight_Portal_v2\\awr_reports\\COLDBPRD\\awr_COLDBPRD_1_221212_0530_0630.html",
+    "status": "FAILED",
+    "queued_at": "2022-12-12T05:30:00",
+    "retry_count": 3,
+    "error": "[2026-07-20 15:56:42] ERROR    | master_parser | \\u274c File not found: C:\\AWR_Insight_Portal_v2\\awr_reports\\COLDBPRD\\awr_COLDBPRD_1_221212_0530_0630.html\n",
+    "processing_at": "2026-07-20T15:56:41.441782"
+  },
+  {
+    "filepath": "C:\\AWR_Insight_Portal_v2\\awr_reports\\coldbprd\\awr_COLDBPRD_1_221212_0630_0730.html",
+    "db_name": "COLDBPRD",
+    "file_hash": "b22c989b1a1079739a447a6235cd5cb9",
+    "status": "DONE",
+    "added_at": "2026-07-20T10:09:58.552757+00:00",
+    "processed_at": "2026-07-20T15:40:04.251836",
+    "error": null,
+    "retry_count": 0,
+    "processing_at": "2026-07-20T15:40:02.557156"
+  },
+  {
+    "filepath": "C:\\AWR_Insight_Portal_v2\\awr_reports\\COLDBPRD\\awr_COLDBPRD_1_221212_0630_0730.html",
+    "status": "DONE",
+    "queued_at": "2022-12-12T06:30:00",
+    "retry_count": 0,
+    "error": null,
+    "processing_at": "2026-07-20T15:56:42.781772",
+    "processed_at": "2026-07-20T15:57:58.965375"
+  },
+  {
+    "filepath": "C:\\AWR_Insight_Portal_v2\\awr_reports\\coldbprd\\awr_COLDBPRD_1_221212_0730_0830.html",
+    "db_name": "COLDBPRD",
+    "file_hash": "02cdf80ac41423f5805c230b7ceb81fc",
+    "status": "DONE",
+    "added_at": "2026-07-20T10:23:03.998237+00:00",
+    "processed_at": "2026-07-20T15:54:30.021513",
+    "error": null,
+    "retry_count": 0,
+    "processing_at": "2026-07-20T15:53:08.317797"
+  },
+  {
+    "filepath": "C:\\AWR_Insight_Portal_v2\\awr_reports\\COLDBPRD\\awr_COLDBPRD_1_221212_0730_0830.html",
+    "status": "FAILED",
+    "queued_at": "2022-12-12T07:30:00",
+    "retry_count": 3,
+    "error": "[2026-07-20 15:58:03] ERROR    | master_parser | \\u274c File not found: C:\\AWR_Insight_Portal_v2\\awr_reports\\COLDBPRD\\awr_COLDBPRD_1_221212_0730_0830.html\n",
+    "processing_at": "2026-07-20T15:58:01.855180"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "filepath": "C:\\AWR_Insight_Portal_v2\\awr_reports\\dmsdb\\awr_DMSDB_1_240116_0000_0030.html",
+    "db_name": "DMSDB",
+    "file_hash": "f838d82f1d1a06eb60a3daf484e23cc2",
+    "status": "PENDING",
+    "added_at": "2026-07-20T08:22:21.946303+00:00",
+    "processed_at": null,
+    "error": null,
+    "retry_count": 0
+  },
+  {
+    "filepath": "C:\\AWR_Insight_Portal_v2\\awr_reports\\DMSDB\\awr_DMSDB_1_240116_0000_0030.html",
+    "status": "FAILED",
+    "queued_at": "2024-01-16T00:00:00",
+    "retry_count": 0,
+    "error": "DB 'DMSDB' is not registered in the licensed database list. Go to Settings \u2192 License \u2192 Licensed Databases to register it.",
+    "processing_at": "2026-07-24T15:07:36.518555"
+  }
+]
