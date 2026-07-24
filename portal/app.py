@@ -242,13 +242,102 @@ def _auto_patch_grafana_dashboards():
             logger.info(
                 f"auto_patch_dashboards: {patched_total} dashboard(s) updated "
                 f"with portal_url={portal_url}, grafana_url={grafana_url}. "
-                f"Re-import dashboards in Grafana to apply."
+                f"Re-importing into Grafana..."
             )
+            # ── Re-import patched dashboards into Grafana via API ──────────
+            # Writing files to disk is not enough — Grafana stores dashboards
+            # in its own internal SQLite/PostgreSQL DB. We must re-import
+            # via API so the portal_url variable default is updated in Grafana.
+            _reimport_dashboards_to_grafana(grafana_url, cfg)
         else:
             logger.debug("auto_patch_dashboards: all dashboards already up to date")
 
     except Exception as e:
         logger.warning(f"auto_patch_dashboards failed (non-fatal): {e}")
+
+def _reimport_dashboards_to_grafana(grafana_url: str, cfg: dict) -> None:
+    """
+    Re-import all patched dashboard JSON files into Grafana via its HTTP API.
+
+    This is necessary because Grafana stores dashboards in its own internal
+    database (SQLite or PostgreSQL). Writing patched JSON files to disk only
+    updates the source files — Grafana won't pick up changes until they are
+    re-imported via the API.
+
+    Called automatically after _auto_patch_grafana_dashboards() patches files.
+    Runs silently — never raises, logs warnings on failure.
+    """
+    try:
+        import urllib.request, urllib.error, base64, glob
+
+        # Grafana admin credentials from settings
+        grafana_cfg   = cfg.get("grafana", {})
+        admin_user    = grafana_cfg.get("admin_user",     "admin")
+        admin_pass    = grafana_cfg.get("admin_password", "admin")
+        dashboard_dir = grafana_cfg.get("dashboard_dir",  "dashboard")
+
+        if not os.path.isabs(dashboard_dir):
+            dashboard_dir = os.path.join(_PROJECT_ROOT, dashboard_dir)
+
+        if not os.path.isdir(dashboard_dir):
+            logger.debug(f"reimport: dashboard_dir not found: {dashboard_dir}")
+            return
+
+        cred    = base64.b64encode(f"{admin_user}:{admin_pass}".encode()).decode()
+        auth    = f"Basic {cred}"
+        headers = {
+            "Content-Type":  "application/json",
+            "Authorization": auth,
+            "Accept":        "application/json",
+        }
+
+        # Verify Grafana is reachable before attempting imports
+        try:
+            req  = urllib.request.Request(f"{grafana_url}/api/health",
+                                          headers=headers)
+            urllib.request.urlopen(req, timeout=5)
+        except Exception as e:
+            logger.warning(f"reimport: Grafana not reachable at {grafana_url}: {e}")
+            return
+
+        json_files = glob.glob(os.path.join(dashboard_dir, "*.json"))
+        imported = 0
+        errors   = 0
+
+        for fpath in json_files:
+            try:
+                with open(fpath, encoding="utf-8") as f:
+                    data = json.load(f)
+
+                # Remove id so Grafana matches by UID (overwrite existing)
+                dash = {k: v for k, v in data.items() if k != "id"}
+                payload = json.dumps({
+                    "dashboard": dash,
+                    "overwrite": True,
+                    "folderId":  0,
+                }).encode()
+
+                req  = urllib.request.Request(
+                    f"{grafana_url}/api/dashboards/import",
+                    data=payload, method="POST", headers=headers
+                )
+                urllib.request.urlopen(req, timeout=15)
+                imported += 1
+
+            except Exception as e:
+                fname = os.path.basename(fpath)
+                logger.debug(f"reimport: skip {fname}: {e}")
+                errors += 1
+
+        logger.info(
+            f"reimport: {imported} dashboard(s) re-imported into Grafana "
+            f"({errors} skipped). portal_url and grafana_url variables "
+            f"are now updated in Grafana's internal database."
+        )
+
+    except Exception as e:
+        logger.warning(f"reimport_dashboards_to_grafana failed (non-fatal): {e}")
+
 
 # Public routes — never require login
 _PUBLIC_PATHS = {"/login", "/logout", "/forgot-password", "/reset-password"}
