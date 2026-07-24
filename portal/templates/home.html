@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+{% block title %} — Home{% endblock %}
+{% block content %}
+<style>
+.dl{display:block;padding:8px 10px;background:var(--bg);border:1px solid var(--border);
+    border-radius:var(--radius);color:var(--text);text-decoration:none;font-size:.84rem;
+    font-weight:600;line-height:1.3;transition:.15s;margin-top:5px}
+.dl:first-of-type{margin-top:0}
+.dl:hover{border-color:var(--accent);color:var(--accent)}
+.dl small{display:block;font-size:.71rem;font-weight:400;color:var(--text2);margin-top:2px}
+.sc{background:var(--surface2);border-radius:var(--radius);padding:10px 12px;text-align:center}
+.sc .sv{font-size:1.4rem;font-weight:700;line-height:1}
+.sc .sl{font-size:.68rem;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+.sc.ok .sv{color:#10b981}
+.sc.warn .sv{color:#f59e0b}
+.sc.err .sv{color:#ef4444}
+.sc.info .sv{color:var(--accent)}
+</style>
+
+{# ── Page header ── #}
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+  <h1 style="font-size:1.3rem;color:var(--accent);margin:0">AWR Insight Portal</h1>
+  <div style="display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--text2)">
+    <span id="live-dot" style="width:7px;height:7px;border-radius:50%;background:#22c55e;display:inline-block"></span>
+    <span id="refresh-status">Live</span>
+  </div>
+</div>
+
+{# ── Active parsing banner ── #}
+<div id="active-banner" style="display:none;margin-bottom:10px;padding:8px 14px;
+     background:#1a2a1a;border:1px solid var(--accent2);border-radius:var(--radius);
+     font-size:.85rem;color:var(--accent2)">
+  ⚙️ <strong>Parsing in progress:</strong>
+  <span id="active-db-name" style="font-family:monospace;margin-left:6px"></span>
+  <span id="active-count" style="color:var(--text2);margin-left:8px"></span>
+</div>
+
+{# ── Compact stats bar ── #}
+<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-bottom:14px" id="stats-bar">
+
+  {# AWR group header + stats #}
+  <div style="grid-column:span 5;display:contents">
+    <div class="sc" id="stat-pending">
+      <div class="sv" id="val-pending">{{ stats.pending }}</div>
+      <div class="sl">AWR Pending</div>
+    </div>
+    <div class="sc" id="stat-processing">
+      <div class="sv" id="val-processing">{{ stats.processing }}</div>
+      <div class="sl">AWR Processing</div>
+    </div>
+    <div class="sc ok" id="stat-done">
+      <div class="sv ok" id="val-done">{{ stats.done }}</div>
+      <div class="sl">AWR Done</div>
+    </div>
+    <div class="sc err" id="stat-failed">
+      <div class="sv" id="val-failed">{{ stats.failed }}</div>
+      <div class="sl">AWR Failed</div>
+    </div>
+    <div class="sc info" id="stat-dbs">
+      <div class="sv" id="val-dbs">{{ stats.db_count }}</div>
+      <div class="sl">Databases</div>
+    </div>
+  </div>
+
+  {# SAR group #}
+  <div class="sc" id="sar-stat-pending">
+    <div class="sv" id="sar-val-pending">{{ stats.sar_pending }}</div>
+    <div class="sl">SAR Pending</div>
+  </div>
+  <div class="sc" id="sar-stat-processing">
+    <div class="sv" id="sar-val-processing">{{ stats.sar_processing }}</div>
+    <div class="sl">SAR Processing</div>
+  </div>
+  <div class="sc ok" id="sar-stat-done">
+    <div class="sv" id="sar-val-done">{{ stats.sar_done }}</div>
+    <div class="sl">SAR Done</div>
+  </div>
+  <div class="sc err" id="sar-stat-failed">
+    <div class="sv" id="sar-val-failed">{{ stats.sar_failed }}</div>
+    <div class="sl">SAR Failed</div>
+  </div>
+  <div class="sc info" id="sar-stat-hosts">
+    <div class="sv" id="sar-val-hosts">{{ stats.sar_host_count }}</div>
+    <div class="sl">Servers</div>
+  </div>
+
+</div>
+
+{# ── Metadata refresh alert ── #}
+<div id="metadata-alert-banner" style="display:none;margin-bottom:14px">
+  <div style="background:#f59e0b12;border:1px solid #f59e0b40;border-radius:var(--radius);
+              padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span style="font-size:1rem;flex-shrink:0">⚠️</span>
+    <div style="flex:1;min-width:200px">
+      <span style="font-size:.84rem;font-weight:600;color:#d97706">Metadata refresh due</span>
+      <span id="meta-freq-label" style="font-size:.75rem;color:var(--text2);margin-left:8px"></span>
+      <div id="meta-alert-list" style="font-size:.8rem;color:var(--text);margin-top:3px;line-height:1.7"></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+      <a href="/metadata" style="font-size:.8rem;padding:4px 12px;background:var(--accent);
+         color:#000;border-radius:var(--radius);text-decoration:none;font-weight:600">
+         📚 Upload →</a>
+      <button onclick="dismissMetaAlert()"
+              style="font-size:.75rem;padding:4px 10px;background:transparent;
+                     color:var(--text2);border:1px solid var(--border);
+                     border-radius:var(--radius);cursor:pointer">Dismiss</button>
+    </div>
+  </div>
+</div>
+
+{# ── Main dashboard grid ── #}
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+
+  {# AWR Analysis #}
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+    <div style="font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;
+                margin-bottom:10px;font-weight:600;border-bottom:1px solid var(--border);padding-bottom:6px">
+      📊 AWR Analysis
+    </div>
+    {% if ai_mode in ('local_ai','cloud_ai') %}
+    <a href="{{ grafana_url }}/d/awr-intelligence-ai" target="_blank" class="dl">
+      🧠 AWR Intelligence
+      <small>Wait · SQL · Segment · Correlation</small></a>
+    {% else %}
+    <a href="{{ grafana_url }}/d/awr-unified-intelligence" target="_blank" class="dl">
+      🧠 AWR Intelligence
+      <small>Wait · SQL · Segment · Correlation &amp; Recommendations</small></a>
+    {% endif %}
+    {% if ai_mode in ('local_ai','cloud_ai') %}
+    <a href="{{ grafana_url }}/d/awr-memory-advisory-ai" target="_blank" class="dl">
+      💾 Memory Advisory
+      <small>SGA · PGA · Instance Efficiency</small></a>
+    {% else %}
+    <a href="{{ grafana_url }}/d/awr-memory-advisory" target="_blank" class="dl">
+      💾 Memory Advisory
+      <small>SGA · PGA · Instance Efficiency</small></a>
+    {% endif %}	  
+    {% if ai_mode in ('local_ai','cloud_ai') %}
+    <a href="{{ grafana_url }}/d/awr-anomalies-ai" target="_blank" class="dl">
+      🚨 AWR Anomaly Detection
+      <small>Trend analysis · Baseline deviation</small></a>
+    {% else %}	
+    <a href="{{ grafana_url }}/d/awr-anomalies" target="_blank" class="dl">
+      🚨 AWR Anomaly Detection
+      <small>Trend analysis · Baseline deviation</small></a>
+    {% endif %}
+	</div>
+
+  {# SAR & Correlation #}
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+    <div style="font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;
+                margin-bottom:10px;font-weight:600;border-bottom:1px solid var(--border);padding-bottom:6px">
+      🖥️ SAR &amp; Correlation
+    </div>
+    {% if ai_mode in ('local_ai','cloud_ai') %}	
+    <a href="{{ grafana_url }}/d/sar-overview-ai" target="_blank" class="dl">
+      🖥️ SAR System Overview
+      <small>CPU · Memory · Disk · Network</small></a>
+    {% else %}
+    <a href="{{ grafana_url }}/d/sar-overview" target="_blank" class="dl">
+      🖥️ SAR System Overview
+      <small>CPU · Memory · Disk · Network</small></a>
+    {% endif %}
+    {% if ai_mode in ('local_ai','cloud_ai') %}	
+    <a href="{{ grafana_url }}/d/sar-anomalies-ai" target="_blank" class="dl">
+      🚨 SAR Anomaly Detection
+      <small>OS resource anomalies</small></a>
+    {% else %}
+    <a href="{{ grafana_url }}/d/sar-anomalies" target="_blank" class="dl">
+      🚨 SAR Anomaly Detection
+      <small>OS resource anomalies</small></a>
+    {% endif %}
+    {% if ai_mode in ('local_ai','cloud_ai') %}	
+    <a href="{{ grafana_url }}/d/sar-awr-correlation-ai" target="_blank" class="dl">
+      🔗 AWR+SAR Correlation
+      <small>Oracle vs OS resource comparison</small></a>
+    {% else %}
+    <a href="{{ grafana_url }}/d/sar-awr-correlation" target="_blank" class="dl">
+      🔗 AWR+SAR Correlation
+      <small>Oracle vs OS resource comparison</small></a>
+    {% endif %}	  
+  </div>
+
+  {# Portal Tools #}
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+    <div style="font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;
+                margin-bottom:10px;font-weight:600;border-bottom:1px solid var(--border);padding-bottom:6px">
+      🛠️ Portal Tools
+    </div>
+    <a href="/ai-recommendations" class="dl">
+      🤖 AI Recommendations
+      <small>Generate · Review · Accept · Reject</small></a>
+    <a href="/comparison" class="dl">
+      🔄 AWR Before/After Comparison
+      <small>Compare pre/post tuning snapshots</small></a>
+    <a href="/exec-plan" class="dl">
+      📋 Execution Plan Compare
+      <small>Side-by-side plan diff</small></a>
+    <a href="/awr-trends" class="dl">
+      📊 AWR Trends Navigator
+      <small>All AWR section dashboards — snap-aware</small></a>
+  </div>
+
+</div>
+
+
+
+{# ── Service Status Strip (compact — full control on Services page) ── #}
+<div class="card" style="margin-top:4px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <h2 style="margin:0">Service Status</h2>
+    <a href="/service-control" class="btn btn-sm"
+       style="background:var(--surface2);color:var(--text);font-size:.78rem">
+      🖥️ Service Control →
+    </a>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    {% for key, label in [('portal','🌐 Portal'),('watcher','📂 AWR Watcher'),
+                           ('sar','📊 SAR Watcher'),('queue','⚙️ Queue'),
+                           ('grafana','📈 Grafana')] %}
+    <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;
+                background:var(--surface2);border-radius:var(--radius);font-size:.82rem">
+      <span>{{ label }}</span>
+      <span id="svc-{{ key }}" class="badge" style="background:#333;font-size:.72rem">…</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+(function () {
+  const INTERVAL_MS = 15000;
+
+  function setSc(id, cls) {
+    const el = document.getElementById(id);
+    if (el) el.className = 'sc' + (cls ? ' ' + cls : '');
+  }
+
+  // ── Queue stats refresh ───────────────────────────────────────────
+  async function refreshStats() {
+    try {
+      const r = await fetch('/api/queue-stats');
+      if (!r.ok) return;
+      const d = await r.json();
+
+      const setText = (id, val) => { const e=document.getElementById(id); if(e) e.textContent=val; };
+      setText('val-pending',    d.pending    ?? 0);
+      setText('val-processing', d.processing ?? 0);
+      setText('val-done',       d.done       ?? 0);
+      setText('val-failed',     d.failed     ?? 0);
+      setText('val-dbs',        d.db_count   ?? 0);
+      setSc('stat-pending',    (d.pending??0) > 10 ? 'err' : (d.pending??0) === 0 ? 'ok' : '');
+      setSc('stat-processing', (d.processing??0) > 0 ? 'warn' : '');
+      setSc('stat-done',       'ok');
+      setSc('stat-failed',     (d.failed??0) > 0 ? 'err' : '');
+      setSc('stat-dbs',        'info');
+
+      setText('sar-val-pending',    d.sar_pending    ?? 0);
+      setText('sar-val-processing', d.sar_processing ?? 0);
+      setText('sar-val-done',       d.sar_done       ?? 0);
+      setText('sar-val-failed',     d.sar_failed     ?? 0);
+      setText('sar-val-hosts',      d.sar_host_count ?? 0);
+      setSc('sar-stat-pending',    (d.sar_pending??0) > 10 ? 'err' : (d.sar_pending??0) === 0 ? 'ok' : '');
+      setSc('sar-stat-processing', (d.sar_processing??0) > 0 ? 'warn' : '');
+      setSc('sar-stat-done',       'ok');
+      setSc('sar-stat-failed',     (d.sar_failed??0) > 0 ? 'err' : '');
+      setSc('sar-stat-hosts',      'info');
+
+      // Active parsing banner
+      const banner = document.getElementById('active-banner');
+      if (banner) {
+        if ((d.processing??0) > 0) {
+          document.getElementById('active-db-name').textContent = d.active_db || '';
+          document.getElementById('active-count').textContent   = `${d.processing} file(s) parsing`;
+          banner.style.display = 'block';
+        } else {
+          banner.style.display = 'none';
+        }
+      }
+    } catch(_) {}
+  }
+
+  // ── Service status strip ──────────────────────────────────────────
+  async function refreshServices() {
+    try {
+      const res = await fetch('/api/services/status');
+      if (!res.ok) return;
+      const d = await res.json();
+      const colours = {
+        'Running': '#10b981', 'Starting': '#f59e0b', 'Stopped': '#ef4444',
+        'Stopping': '#f97316', 'Not installed': '#64748b', 'Unknown': '#334155',
+      };
+      Object.entries(d).forEach(([key, status]) => {
+        const el = document.getElementById('svc-' + key);
+        if (!el) return;
+        el.textContent      = status;
+        el.style.background = colours[status] || '#334155';
+      });
+    } catch(_) {}
+  }
+
+  // ── Metadata refresh alert ────────────────────────────────────────
+  (async function checkMetadataRefresh() {
+    const dismissKey = 'meta_alert_dismissed';
+    const dismissed  = localStorage.getItem(dismissKey);
+    const today      = new Date().toDateString();
+    if (dismissed === today) return;
+    try {
+      const r = await fetch('/api/metadata/refresh-status');
+      const d = await r.json();
+      if (!d.overdue_count) return;
+      const banner = document.getElementById('metadata-alert-banner');
+      const listEl = document.getElementById('meta-alert-list');
+      const freqEl = document.getElementById('meta-freq-label');
+      if (!banner || !listEl) return;
+      if (freqEl) freqEl.textContent = `Refresh frequency: ${d.freq_label}`;
+      const overdue = d.alerts.filter(a => a.status !== 'ok');
+      listEl.innerHTML = overdue.map(a => {
+        const icon = a.status === 'missing' ? '🔴' : '🟡';
+        const age  = a.days_old != null ? `${a.days_old} days old` : 'never uploaded';
+        const count = a.object_count ? ` · ${a.object_count.toLocaleString()} objects` : '';
+        return `${icon} <strong>${a.dbname}</strong> — ${age}${count}`;
+      }).join('<br>');
+      banner.style.display = 'block';
+    } catch(_) {}
+  })();
+
+  window.dismissMetaAlert = function() {
+    localStorage.setItem('meta_alert_dismissed', new Date().toDateString());
+    const banner = document.getElementById('metadata-alert-banner');
+    if (banner) banner.style.display = 'none';
+  };
+
+  // ── Boot ─────────────────────────────────────────────────────────
+  setInterval(refreshStats,    INTERVAL_MS);
+  setInterval(refreshServices, INTERVAL_MS * 2);
+  refreshStats();
+  refreshServices();
+})();
+</script>
+{% endblock %}
