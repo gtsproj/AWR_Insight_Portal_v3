@@ -1,0 +1,14 @@
+[
+  {
+    "filepath": "C:\\AWR_Insight_Portal_v2\\sar_archive\\LTPOL3VLMSDBO02\\LTPOL3VLMSDBO02_sa27.txt",
+    "original_file": "C:\\AWR_Insight_Portal_v2\\sar_drop\\LTPOL3VLMSDBO02\\LTPOL3VLMSDBO02_sa27.txt",
+    "hostname": "LTPOL3VLMSDBO02",
+    "file_type": "text",
+    "status": "DONE",
+    "retry_count": 0,
+    "queued_at": "2026-07-02T19:15:11.946534",
+    "error": null,
+    "processing_at": "2026-07-20T13:54:18.645954",
+    "processed_at": "2026-07-20T13:54:23.832725"
+  }
+]
