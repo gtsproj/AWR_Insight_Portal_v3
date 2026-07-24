@@ -151,10 +151,16 @@ def _auto_patch_grafana_dashboards():
             logger.debug("auto_patch_dashboards: Both URLs are localhost — skipping patch")
             return
 
-        # Find dashboard directories
+        # Find dashboard directories — read from settings, no Grafana path dependency
+        cfg_grafana    = cfg.get("grafana", {})
+        dashboard_dir  = cfg_grafana.get("dashboard_dir", "dashboard")
+        # Resolve relative paths from project root
+        if not os.path.isabs(dashboard_dir):
+            dashboard_dir = os.path.join(_PROJECT_ROOT, dashboard_dir)
+
         dashboard_dirs = [
-            os.path.join(_PROJECT_ROOT, "grafana-v12.0.2", "public", "dashboard"),
-            os.path.join(_PROJECT_ROOT, "portal", "static"),
+            dashboard_dir,                                     # primary: project dashboard/ folder
+            os.path.join(_PROJECT_ROOT, "portal", "static"),  # secondary: portal/static/ (patch_grafana_urls.py target)
         ]
 
         patched_total = 0

@@ -6,15 +6,18 @@ Bulk import all Grafana dashboard JSON files into Grafana.
 
 Usage:
   py bulk_import.py
-  py bulk_import.py --dir grafana-v12.0.2/public/dashboard
-  py bulk_import.py --dir portal/static --url http://localhost:3000 --user admin --password admin
+  py bulk_import.py --dir dashboard
+  py bulk_import.py --dir dashboard --url http://192.168.1.10:3000 --user admin --password admin
 
 Defaults:
-  --dir      : grafana-v12.0.2/public/dashboard (relative to script location)
-  --url      : http://localhost:3000
+  --dir      : dashboard_dir from config/settings.yaml (default: dashboard/)
+  --url      : grafana.base_url from config/settings.yaml (default: http://localhost:3000)
   --user     : admin
   --password : admin
   --folder   : General (folder ID 0)
+
+Note: Grafana can be installed anywhere — this script imports via the
+      Grafana HTTP API, not by writing to the Grafana installation folder.
 """
 
 import json
@@ -26,6 +29,27 @@ import urllib.request
 import urllib.error
 import base64
 import time
+
+_PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+def _load_settings() -> dict:
+    """Load config/settings.yaml, return empty dict on failure."""
+    try:
+        import yaml
+        cfg_path = os.path.join(_PROJECT_ROOT, "config", "settings.yaml")
+        with open(cfg_path, encoding="utf-8") as f:
+            return yaml.safe_load(f) or {}
+    except Exception:
+        return {}
+
+def _default_dashboard_dir() -> str:
+    cfg = _load_settings()
+    rel = cfg.get("grafana", {}).get("dashboard_dir", "dashboard")
+    return os.path.join(_PROJECT_ROOT, rel)
+
+def _default_grafana_url() -> str:
+    cfg = _load_settings()
+    return cfg.get("grafana", {}).get("base_url", "http://localhost:3000").rstrip("/")
 
 
 def get_auth_header(user: str, password: str) -> str:
@@ -101,14 +125,11 @@ def main():
     )
     parser.add_argument(
         "--dir",
-        default=os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "grafana-v12.0.2", "public", "dashboard"
-        ),
-        help="Directory containing dashboard JSON files"
+        default=_default_dashboard_dir(),
+        help="Directory containing dashboard JSON files (default: dashboard_dir from settings.yaml)"
     )
-    parser.add_argument("--url",      default="http://localhost:3000",
-                        help="Grafana URL (default: http://localhost:3000)")
+    parser.add_argument("--url",      default=_default_grafana_url(),
+                        help="Grafana URL (default: grafana.base_url from settings.yaml)")
     parser.add_argument("--user",     default="admin",
                         help="Grafana admin username (default: admin)")
     parser.add_argument("--password", default="admin",

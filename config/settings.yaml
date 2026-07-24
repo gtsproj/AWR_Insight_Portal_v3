@@ -85,10 +85,16 @@ ai:
 
 # ── Grafana ───────────────────────────────────────────────────────────
 grafana:
-  base_url:    "http://localhost:3000"
-  api_key:     ""
-  org_id:      1
-  datasource:  "AWR_Parser_PG"
+  base_url:      "http://localhost:3000"
+  api_key:       ""
+  org_id:        1
+  datasource:    "AWR_Parser_PG"
+  # Path to the folder containing dashboard JSON files.
+  # This is the project's dashboard/ folder — NOT the Grafana
+  # installation path. Grafana can be installed anywhere.
+  # bulk_import.py reads from here; patch_grafana_urls.py patches here.
+  # Use forward slashes on Windows too (Python handles them correctly).
+  dashboard_dir: "dashboard"
 
 # ── Alerting ──────────────────────────────────────────────────────────
 alerting:

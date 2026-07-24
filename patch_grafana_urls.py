@@ -128,8 +128,8 @@ def main():
     parser = argparse.ArgumentParser(
         description="Patch Grafana dashboard JSON files for intranet access"
     )
-    parser.add_argument("--dir",          default=".",
-                        help="Directory containing dashboard JSON files (default: current dir)")
+    parser.add_argument("--dir",          default="dashboard",
+                        help="Directory containing dashboard JSON files (default: dashboard/)")
     parser.add_argument("--portal-port",  default="8000",
                         help="Portal port number (default: 8000)")
     parser.add_argument("--grafana-port", default="3000",
