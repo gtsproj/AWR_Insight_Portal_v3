@@ -128,7 +128,10 @@ def _auto_patch_grafana_dashboards():
     """
     Automatically patch Grafana dashboard JSON files on portal startup.
     Reads portal_url and grafana_url from portal_config (source of truth).
-    Updates the variable defaults in all dashboard JSON files.
+    Updates:
+      1. Variable defaults (portal_url, grafana_url textbox variables)
+      2. Hardcoded IP addresses in panel HTML content (href attributes,
+         text panel content) — covers navigation link IP changes
     Runs silently — never blocks startup if it fails.
 
     Triggered by:
@@ -159,7 +162,7 @@ def _auto_patch_grafana_dashboards():
             if not os.path.isdir(dash_dir):
                 continue
 
-            import glob
+            import glob, re
             json_files = glob.glob(os.path.join(dash_dir, "*.json"))
             patched = 0
 
@@ -172,6 +175,8 @@ def _auto_patch_grafana_dashboards():
                         data["templating"] = {"list": []}
 
                     modified = False
+
+                    # ── 1. Update variable defaults ─────────────────────────
                     for v in data["templating"].get("list", []):
                         if v.get("name") == "portal_url":
                             if v.get("query") != portal_url:
@@ -191,6 +196,29 @@ def _auto_patch_grafana_dashboards():
                                     v["options"][0]["text"]  = grafana_url
                                     v["options"][0]["value"] = grafana_url
                                 modified = True
+
+                    # ── 2. Replace hardcoded IPs in full JSON text ──────────
+                    # This fixes nav link hrefs when server IP changes.
+                    # Pattern: any http://x.x.x.x:8000 or http://x.x.x.x:3000
+                    text = json.dumps(data)
+                    original_text = text
+
+                    # Replace any http://IP:port patterns with current URLs
+                    text = re.sub(
+                        r'http://\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:8000',
+                        portal_url, text
+                    )
+                    text = re.sub(
+                        r'http://\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:3000',
+                        grafana_url, text
+                    )
+                    # Also replace localhost references
+                    text = text.replace("http://localhost:8000", portal_url)
+                    text = text.replace("http://localhost:3000", grafana_url)
+
+                    if text != original_text:
+                        data = json.loads(text)
+                        modified = True
 
                     if modified:
                         with open(fpath, "w", encoding="utf-8") as f:
