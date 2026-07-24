@@ -1,0 +1,36 @@
+[2026-07-20 12:53:14] INFO     | file_io_stats_parser | Found 68 rows in File IO Stats section
+[2026-07-20 12:53:14] INFO     | file_io_stats_parser | ✅ Parsed 68 File IO Stats records
+[2026-07-20 12:53:14] INFO     | file_io_stats_parser | ✅ Inserted 68 rows into awr_file_io_stats
+[2026-07-20 12:54:14] INFO     | file_io_stats_parser | Found 605 rows in File IO Stats section
+[2026-07-20 12:54:14] INFO     | file_io_stats_parser | ✅ Parsed 605 File IO Stats records
+[2026-07-20 12:54:14] INFO     | file_io_stats_parser | ✅ Inserted 605 rows into awr_file_io_stats
+[2026-07-20 12:54:33] INFO     | file_io_stats_parser | Found 67 rows in File IO Stats section
+[2026-07-20 12:54:33] INFO     | file_io_stats_parser | ✅ Parsed 67 File IO Stats records
+[2026-07-20 12:54:33] INFO     | file_io_stats_parser | ✅ Inserted 67 rows into awr_file_io_stats
+[2026-07-20 12:55:48] INFO     | file_io_stats_parser | Found 62 rows in File IO Stats section
+[2026-07-20 12:55:48] INFO     | file_io_stats_parser | ✅ Parsed 62 File IO Stats records
+[2026-07-20 12:55:48] INFO     | file_io_stats_parser | ✅ Inserted 62 rows into awr_file_io_stats
+[2026-07-20 12:56:54] INFO     | file_io_stats_parser | Found 605 rows in File IO Stats section
+[2026-07-20 12:56:54] INFO     | file_io_stats_parser | ✅ Parsed 605 File IO Stats records
+[2026-07-20 12:56:54] INFO     | file_io_stats_parser | ✅ Inserted 605 rows into awr_file_io_stats
+[2026-07-20 12:57:06] INFO     | file_io_stats_parser | Found 67 rows in File IO Stats section
+[2026-07-20 12:57:06] INFO     | file_io_stats_parser | ✅ Parsed 67 File IO Stats records
+[2026-07-20 12:57:06] INFO     | file_io_stats_parser | ✅ Inserted 67 rows into awr_file_io_stats
+[2026-07-20 12:58:25] INFO     | file_io_stats_parser | Found 67 rows in File IO Stats section
+[2026-07-20 12:58:25] INFO     | file_io_stats_parser | ✅ Parsed 67 File IO Stats records
+[2026-07-20 12:58:25] INFO     | file_io_stats_parser | ✅ Inserted 67 rows into awr_file_io_stats
+[2026-07-20 13:20:38] INFO     | file_io_stats_parser | Found 605 rows in File IO Stats section
+[2026-07-20 13:20:38] INFO     | file_io_stats_parser | ✅ Parsed 605 File IO Stats records
+[2026-07-20 13:20:39] INFO     | file_io_stats_parser | ✅ Inserted 605 rows into awr_file_io_stats
+[2026-07-20 13:44:39] INFO     | file_io_stats_parser | Found 605 rows in File IO Stats section
+[2026-07-20 13:44:39] INFO     | file_io_stats_parser | ✅ Parsed 605 File IO Stats records
+[2026-07-20 13:44:39] INFO     | file_io_stats_parser | ✅ Inserted 605 rows into awr_file_io_stats
+[2026-07-20 14:04:06] INFO     | file_io_stats_parser | Found 68 rows in File IO Stats section
+[2026-07-20 14:04:06] INFO     | file_io_stats_parser | ✅ Parsed 68 File IO Stats records
+[2026-07-20 14:04:06] INFO     | file_io_stats_parser | ✅ Inserted 68 rows into awr_file_io_stats
+[2026-07-20 15:53:58] INFO     | file_io_stats_parser | Found 68 rows in File IO Stats section
+[2026-07-20 15:53:58] INFO     | file_io_stats_parser | ✅ Parsed 68 File IO Stats records
+[2026-07-20 15:53:58] INFO     | file_io_stats_parser | ✅ Inserted 68 rows into awr_file_io_stats
+[2026-07-20 15:57:30] INFO     | file_io_stats_parser | Found 68 rows in File IO Stats section
+[2026-07-20 15:57:30] INFO     | file_io_stats_parser | ✅ Parsed 68 File IO Stats records
+[2026-07-20 15:57:30] INFO     | file_io_stats_parser | ✅ Inserted 68 rows into awr_file_io_stats

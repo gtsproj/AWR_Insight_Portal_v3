@@ -1,0 +1,36 @@
+[2026-07-20 12:53:35] INFO     | sql_reads_parser | Found 15 rows in SQL Reads section
+[2026-07-20 12:53:35] INFO     | sql_reads_parser | ✅ Parsed 15 SQL Reads records
+[2026-07-20 12:53:35] INFO     | sql_reads_parser | ✅ Inserted 15 rows into awr_sql_reads
+[2026-07-20 12:54:54] INFO     | sql_reads_parser | Found 10 rows in SQL Reads section
+[2026-07-20 12:54:54] INFO     | sql_reads_parser | ✅ Parsed 10 SQL Reads records
+[2026-07-20 12:54:54] INFO     | sql_reads_parser | ✅ Inserted 10 rows into awr_sql_reads
+[2026-07-20 12:54:59] INFO     | sql_reads_parser | Found 10 rows in SQL Reads section
+[2026-07-20 12:54:59] INFO     | sql_reads_parser | ✅ Parsed 10 SQL Reads records
+[2026-07-20 12:54:59] INFO     | sql_reads_parser | ✅ Inserted 10 rows into awr_sql_reads
+[2026-07-20 12:56:07] INFO     | sql_reads_parser | Found 10 rows in SQL Reads section
+[2026-07-20 12:56:07] INFO     | sql_reads_parser | ✅ Parsed 10 SQL Reads records
+[2026-07-20 12:56:07] INFO     | sql_reads_parser | ✅ Inserted 10 rows into awr_sql_reads
+[2026-07-20 12:57:29] INFO     | sql_reads_parser | Found 12 rows in SQL Reads section
+[2026-07-20 12:57:29] INFO     | sql_reads_parser | ✅ Parsed 12 SQL Reads records
+[2026-07-20 12:57:29] INFO     | sql_reads_parser | ✅ Inserted 12 rows into awr_sql_reads
+[2026-07-20 12:57:38] INFO     | sql_reads_parser | Found 10 rows in SQL Reads section
+[2026-07-20 12:57:38] INFO     | sql_reads_parser | ✅ Parsed 10 SQL Reads records
+[2026-07-20 12:57:38] INFO     | sql_reads_parser | ✅ Inserted 10 rows into awr_sql_reads
+[2026-07-20 12:58:45] INFO     | sql_reads_parser | Found 10 rows in SQL Reads section
+[2026-07-20 12:58:45] INFO     | sql_reads_parser | ✅ Parsed 10 SQL Reads records
+[2026-07-20 12:58:45] INFO     | sql_reads_parser | ✅ Inserted 10 rows into awr_sql_reads
+[2026-07-20 13:42:47] INFO     | sql_reads_parser | Found 10 rows in SQL Reads section
+[2026-07-20 13:42:47] INFO     | sql_reads_parser | ✅ Parsed 10 SQL Reads records
+[2026-07-20 13:42:47] INFO     | sql_reads_parser | ✅ Inserted 10 rows into awr_sql_reads
+[2026-07-20 13:45:20] INFO     | sql_reads_parser | Found 10 rows in SQL Reads section
+[2026-07-20 13:45:20] INFO     | sql_reads_parser | ✅ Parsed 10 SQL Reads records
+[2026-07-20 13:45:20] INFO     | sql_reads_parser | ✅ Inserted 10 rows into awr_sql_reads
+[2026-07-20 14:04:29] INFO     | sql_reads_parser | Found 13 rows in SQL Reads section
+[2026-07-20 14:04:29] INFO     | sql_reads_parser | ✅ Parsed 13 SQL Reads records
+[2026-07-20 14:04:29] INFO     | sql_reads_parser | ✅ Inserted 13 rows into awr_sql_reads
+[2026-07-20 15:54:21] INFO     | sql_reads_parser | Found 15 rows in SQL Reads section
+[2026-07-20 15:54:21] INFO     | sql_reads_parser | ✅ Parsed 15 SQL Reads records
+[2026-07-20 15:54:22] INFO     | sql_reads_parser | ✅ Inserted 15 rows into awr_sql_reads
+[2026-07-20 15:57:52] INFO     | sql_reads_parser | Found 15 rows in SQL Reads section
+[2026-07-20 15:57:52] INFO     | sql_reads_parser | ✅ Parsed 15 SQL Reads records
+[2026-07-20 15:57:52] INFO     | sql_reads_parser | ✅ Inserted 15 rows into awr_sql_reads

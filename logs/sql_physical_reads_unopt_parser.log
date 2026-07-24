@@ -1,0 +1,36 @@
+[2026-07-20 12:53:34] INFO     | sql_physical_reads_unopt_parser | Found 15 rows in SQL Physical Reads (UnOptimized)
+[2026-07-20 12:53:34] INFO     | sql_physical_reads_unopt_parser | ✅ Parsed 15 SQL Physical Reads (UnOptimized) records
+[2026-07-20 12:53:34] INFO     | sql_physical_reads_unopt_parser | ✅ Inserted 15 rows into awr_sql_phy_reads_unopt
+[2026-07-20 12:54:53] INFO     | sql_physical_reads_unopt_parser | Found 10 rows in SQL Physical Reads (UnOptimized)
+[2026-07-20 12:54:53] INFO     | sql_physical_reads_unopt_parser | ✅ Parsed 10 SQL Physical Reads (UnOptimized) records
+[2026-07-20 12:54:53] INFO     | sql_physical_reads_unopt_parser | ✅ Inserted 10 rows into awr_sql_phy_reads_unopt
+[2026-07-20 12:54:55] INFO     | sql_physical_reads_unopt_parser | Found 10 rows in SQL Physical Reads (UnOptimized)
+[2026-07-20 12:54:55] INFO     | sql_physical_reads_unopt_parser | ✅ Parsed 10 SQL Physical Reads (UnOptimized) records
+[2026-07-20 12:54:55] INFO     | sql_physical_reads_unopt_parser | ✅ Inserted 10 rows into awr_sql_phy_reads_unopt
+[2026-07-20 12:56:06] INFO     | sql_physical_reads_unopt_parser | Found 11 rows in SQL Physical Reads (UnOptimized)
+[2026-07-20 12:56:06] INFO     | sql_physical_reads_unopt_parser | ✅ Parsed 11 SQL Physical Reads (UnOptimized) records
+[2026-07-20 12:56:06] INFO     | sql_physical_reads_unopt_parser | ✅ Inserted 11 rows into awr_sql_phy_reads_unopt
+[2026-07-20 12:57:27] INFO     | sql_physical_reads_unopt_parser | Found 10 rows in SQL Physical Reads (UnOptimized)
+[2026-07-20 12:57:27] INFO     | sql_physical_reads_unopt_parser | ✅ Parsed 10 SQL Physical Reads (UnOptimized) records
+[2026-07-20 12:57:27] INFO     | sql_physical_reads_unopt_parser | ✅ Inserted 10 rows into awr_sql_phy_reads_unopt
+[2026-07-20 12:57:35] INFO     | sql_physical_reads_unopt_parser | Found 10 rows in SQL Physical Reads (UnOptimized)
+[2026-07-20 12:57:35] INFO     | sql_physical_reads_unopt_parser | ✅ Parsed 10 SQL Physical Reads (UnOptimized) records
+[2026-07-20 12:57:35] INFO     | sql_physical_reads_unopt_parser | ✅ Inserted 10 rows into awr_sql_phy_reads_unopt
+[2026-07-20 12:58:44] INFO     | sql_physical_reads_unopt_parser | Found 10 rows in SQL Physical Reads (UnOptimized)
+[2026-07-20 12:58:44] INFO     | sql_physical_reads_unopt_parser | ✅ Parsed 10 SQL Physical Reads (UnOptimized) records
+[2026-07-20 12:58:44] INFO     | sql_physical_reads_unopt_parser | ✅ Inserted 10 rows into awr_sql_phy_reads_unopt
+[2026-07-20 13:42:44] INFO     | sql_physical_reads_unopt_parser | Found 10 rows in SQL Physical Reads (UnOptimized)
+[2026-07-20 13:42:44] INFO     | sql_physical_reads_unopt_parser | ✅ Parsed 10 SQL Physical Reads (UnOptimized) records
+[2026-07-20 13:42:44] INFO     | sql_physical_reads_unopt_parser | ✅ Inserted 10 rows into awr_sql_phy_reads_unopt
+[2026-07-20 13:45:16] INFO     | sql_physical_reads_unopt_parser | Found 10 rows in SQL Physical Reads (UnOptimized)
+[2026-07-20 13:45:16] INFO     | sql_physical_reads_unopt_parser | ✅ Parsed 10 SQL Physical Reads (UnOptimized) records
+[2026-07-20 13:45:16] INFO     | sql_physical_reads_unopt_parser | ✅ Inserted 10 rows into awr_sql_phy_reads_unopt
+[2026-07-20 14:04:27] INFO     | sql_physical_reads_unopt_parser | Found 10 rows in SQL Physical Reads (UnOptimized)
+[2026-07-20 14:04:27] INFO     | sql_physical_reads_unopt_parser | ✅ Parsed 10 SQL Physical Reads (UnOptimized) records
+[2026-07-20 14:04:28] INFO     | sql_physical_reads_unopt_parser | ✅ Inserted 10 rows into awr_sql_phy_reads_unopt
+[2026-07-20 15:54:20] INFO     | sql_physical_reads_unopt_parser | Found 10 rows in SQL Physical Reads (UnOptimized)
+[2026-07-20 15:54:20] INFO     | sql_physical_reads_unopt_parser | ✅ Parsed 10 SQL Physical Reads (UnOptimized) records
+[2026-07-20 15:54:20] INFO     | sql_physical_reads_unopt_parser | ✅ Inserted 10 rows into awr_sql_phy_reads_unopt
+[2026-07-20 15:57:50] INFO     | sql_physical_reads_unopt_parser | Found 10 rows in SQL Physical Reads (UnOptimized)
+[2026-07-20 15:57:50] INFO     | sql_physical_reads_unopt_parser | ✅ Parsed 10 SQL Physical Reads (UnOptimized) records
+[2026-07-20 15:57:50] INFO     | sql_physical_reads_unopt_parser | ✅ Inserted 10 rows into awr_sql_phy_reads_unopt

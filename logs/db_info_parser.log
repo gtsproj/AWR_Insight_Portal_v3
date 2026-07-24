@@ -1,0 +1,36 @@
+[2026-07-20 12:52:55] INFO     | db_info_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0030_0130.html
+[2026-07-20 12:52:56] INFO     | db_info_parser | Parsed record: {'db_name': 'COLDBPRD', 'edition': '05-Sep-22 18:09', 'release': '12.1.0.2.0', 'rac': 'NO', 'instance': 'TCFSLCOLLXPROD-DB', 'host_name': 'TCFSLCOLLXPROD-DB', 'platform': 'Linux x86 64-bit', 'cpu': 36, 'cores': 36, 'sockets': 3, 'memory': 58.81}
+[2026-07-20 12:52:56] INFO     | db_info_parser | ✅ Inserted DB Info for COLDBPRD / TCFSLCOLLXPROD-DB
+[2026-07-20 12:53:39] INFO     | db_info_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\ONE_LMS\10_1.html
+[2026-07-20 12:53:41] INFO     | db_info_parser | Parsed record: {'db_name': 'ONE_LMS', 'edition': 'EE', 'release': '19.31.0.0.0', 'rac': 'NO', 'instance': 'ONELMS', 'host_name': 'ltpol3vlmsdbo02', 'platform': 'Linux x86 64-bit', 'cpu': 12, 'cores': 12, 'sockets': 1, 'memory': 235.64}
+[2026-07-20 12:53:41] INFO     | db_info_parser | ✅ Inserted DB Info for ONE_LMS / ONELMS
+[2026-07-20 12:54:15] INFO     | db_info_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0130_0230.html
+[2026-07-20 12:54:16] INFO     | db_info_parser | Parsed record: {'db_name': 'COLDBPRD', 'edition': '05-Sep-22 18:09', 'release': '12.1.0.2.0', 'rac': 'NO', 'instance': 'TCFSLCOLLXPROD-DB', 'host_name': 'TCFSLCOLLXPROD-DB', 'platform': 'Linux x86 64-bit', 'cpu': 36, 'cores': 36, 'sockets': 3, 'memory': 58.81}
+[2026-07-20 12:54:16] WARNING  | db_info_parser | ⚠️ Skipped duplicate DB Info for COLDBPRD / TCFSLCOLLXPROD-DB
+[2026-07-20 12:55:31] INFO     | db_info_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0230_0330.html
+[2026-07-20 12:55:32] INFO     | db_info_parser | Parsed record: {'db_name': 'COLDBPRD', 'edition': '05-Sep-22 18:09', 'release': '12.1.0.2.0', 'rac': 'NO', 'instance': 'TCFSLCOLLXPROD-DB', 'host_name': 'TCFSLCOLLXPROD-DB', 'platform': 'Linux x86 64-bit', 'cpu': 36, 'cores': 36, 'sockets': 3, 'memory': 58.81}
+[2026-07-20 12:55:33] WARNING  | db_info_parser | ⚠️ Skipped duplicate DB Info for COLDBPRD / TCFSLCOLLXPROD-DB
+[2026-07-20 12:56:18] INFO     | db_info_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\ONE_LMS\11_1.html
+[2026-07-20 12:56:21] INFO     | db_info_parser | Parsed record: {'db_name': 'ONE_LMS', 'edition': 'EE', 'release': '19.31.0.0.0', 'rac': 'NO', 'instance': 'ONELMS', 'host_name': 'ltpol3vlmsdbo02', 'platform': 'Linux x86 64-bit', 'cpu': 12, 'cores': 12, 'sockets': 1, 'memory': 235.64}
+[2026-07-20 12:56:21] WARNING  | db_info_parser | ⚠️ Skipped duplicate DB Info for ONE_LMS / ONELMS
+[2026-07-20 12:56:48] INFO     | db_info_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0330_0430.html
+[2026-07-20 12:56:49] INFO     | db_info_parser | Parsed record: {'db_name': 'COLDBPRD', 'edition': '05-Sep-22 18:09', 'release': '12.1.0.2.0', 'rac': 'NO', 'instance': 'TCFSLCOLLXPROD-DB', 'host_name': 'TCFSLCOLLXPROD-DB', 'platform': 'Linux x86 64-bit', 'cpu': 36, 'cores': 36, 'sockets': 3, 'memory': 58.81}
+[2026-07-20 12:56:49] WARNING  | db_info_parser | ⚠️ Skipped duplicate DB Info for COLDBPRD / TCFSLCOLLXPROD-DB
+[2026-07-20 12:58:08] INFO     | db_info_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0430_0530.html
+[2026-07-20 12:58:09] INFO     | db_info_parser | Parsed record: {'db_name': 'COLDBPRD', 'edition': '05-Sep-22 18:09', 'release': '12.1.0.2.0', 'rac': 'NO', 'instance': 'TCFSLCOLLXPROD-DB', 'host_name': 'TCFSLCOLLXPROD-DB', 'platform': 'Linux x86 64-bit', 'cpu': 36, 'cores': 36, 'sockets': 3, 'memory': 58.81}
+[2026-07-20 12:58:09] WARNING  | db_info_parser | ⚠️ Skipped duplicate DB Info for COLDBPRD / TCFSLCOLLXPROD-DB
+[2026-07-20 12:58:58] INFO     | db_info_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\ONE_LMS\12_1.html
+[2026-07-20 13:01:21] INFO     | db_info_parser | Parsed record: {'db_name': 'ONE_LMS', 'edition': 'EE', 'release': '19.31.0.0.0', 'rac': 'NO', 'instance': 'ONELMS', 'host_name': 'ltpol3vlmsdbo02', 'platform': 'Linux x86 64-bit', 'cpu': 12, 'cores': 12, 'sockets': 1, 'memory': 235.64}
+[2026-07-20 13:01:21] WARNING  | db_info_parser | ⚠️ Skipped duplicate DB Info for ONE_LMS / ONELMS
+[2026-07-20 13:44:05] INFO     | db_info_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\ONE_LMS\9_1.html
+[2026-07-20 13:44:07] INFO     | db_info_parser | Parsed record: {'db_name': 'ONE_LMS', 'edition': 'EE', 'release': '19.31.0.0.0', 'rac': 'NO', 'instance': 'ONELMS', 'host_name': 'ltpol3vlmsdbo02', 'platform': 'Linux x86 64-bit', 'cpu': 12, 'cores': 12, 'sockets': 1, 'memory': 235.64}
+[2026-07-20 13:44:07] WARNING  | db_info_parser | ⚠️ Skipped duplicate DB Info for ONE_LMS / ONELMS
+[2026-07-20 14:03:47] INFO     | db_info_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\coldbprd\awr_COLDBPRD_1_221212_0530_0630.html
+[2026-07-20 14:03:48] INFO     | db_info_parser | Parsed record: {'db_name': 'COLDBPRD', 'edition': '05-Sep-22 18:09', 'release': '12.1.0.2.0', 'rac': 'NO', 'instance': 'TCFSLCOLLXPROD-DB', 'host_name': 'TCFSLCOLLXPROD-DB', 'platform': 'Linux x86 64-bit', 'cpu': 36, 'cores': 36, 'sockets': 3, 'memory': 58.81}
+[2026-07-20 14:03:48] WARNING  | db_info_parser | ⚠️ Skipped duplicate DB Info for COLDBPRD / TCFSLCOLLXPROD-DB
+[2026-07-20 15:53:40] INFO     | db_info_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\coldbprd\awr_COLDBPRD_1_221212_0730_0830.html
+[2026-07-20 15:53:41] INFO     | db_info_parser | Parsed record: {'db_name': 'COLDBPRD', 'edition': '05-Sep-22 18:09', 'release': '12.1.0.2.0', 'rac': 'NO', 'instance': 'TCFSLCOLLXPROD-DB', 'host_name': 'TCFSLCOLLXPROD-DB', 'platform': 'Linux x86 64-bit', 'cpu': 36, 'cores': 36, 'sockets': 3, 'memory': 58.81}
+[2026-07-20 15:53:41] WARNING  | db_info_parser | ⚠️ Skipped duplicate DB Info for COLDBPRD / TCFSLCOLLXPROD-DB
+[2026-07-20 15:57:12] INFO     | db_info_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0630_0730.html
+[2026-07-20 15:57:13] INFO     | db_info_parser | Parsed record: {'db_name': 'COLDBPRD', 'edition': '05-Sep-22 18:09', 'release': '12.1.0.2.0', 'rac': 'NO', 'instance': 'TCFSLCOLLXPROD-DB', 'host_name': 'TCFSLCOLLXPROD-DB', 'platform': 'Linux x86 64-bit', 'cpu': 36, 'cores': 36, 'sockets': 3, 'memory': 58.81}
+[2026-07-20 15:57:13] WARNING  | db_info_parser | ⚠️ Skipped duplicate DB Info for COLDBPRD / TCFSLCOLLXPROD-DB

@@ -1,0 +1,36 @@
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser | CPU parser -- first 20 lines of input for LTPOL3VLMSDBO02 / 06/27/2026:
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [00] 'Linux 4.18.0-553.126.1.el8_10.x86_64 (LTPOL3VLMSDBO02) \t2026-06-27 \t_x86_64_\t(12 CPU)'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [01] '05:30:00        CPU      %usr     %nice      %sys   %iowait    %steal      %irq     %soft    %guest    %gnice     %idle'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [02] '05:40:00        all     51.81      0.00      0.71      0.30      0.00      0.19      0.06      0.00      0.00     46.94'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [03] '05:40:00          0      3.67      0.00      1.10      0.39      0.00      0.14      0.15      0.00      0.00     94.55'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [04] '05:40:00          1     99.27      0.00      0.20      0.10      0.00      0.19      0.01      0.00      0.00      0.23'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [05] '05:40:00          2      3.82      0.00      1.31      0.86      0.00      0.17      0.23      0.00      0.00     93.61'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [06] '05:40:00          3     99.74      0.00      0.03      0.00      0.00      0.21      0.01      0.00      0.00      0.02'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [07] '05:40:00          4      3.54      0.00      1.12      0.68      0.00      0.14      0.06      0.00      0.00     94.46'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [08] '05:40:00          5     25.26      0.00      1.08      0.25      0.00      0.17      0.05      0.00      0.00     73.19'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [09] '05:40:00          6     99.75      0.00      0.02      0.01      0.00      0.19      0.01      0.00      0.00      0.01'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [10] '05:40:00          7     99.66      0.00      0.09      0.00      0.00      0.24      0.01      0.00      0.00      0.00'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [11] '05:40:00          8     78.57      0.00      0.65      0.38      0.00      0.31      0.02      0.00      0.00     20.07'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [12] '05:40:00          9     71.93      0.00      0.35      0.08      0.00      0.17      0.02      0.00      0.00     27.46'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [13] '05:40:00         10      3.57      0.00      1.30      0.41      0.00      0.13      0.06      0.00      0.00     94.52'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [14] '05:40:00         11     31.64      0.00      1.27      0.47      0.00      0.18      0.04      0.00      0.00     66.40'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [15] '05:50:00        all     52.13      0.00      0.54      0.37      0.00      0.18      0.05      0.00      0.00     46.72'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [16] '05:50:00          0      2.38      0.00      0.91      0.82      0.00      0.13      0.15      0.00      0.00     95.61'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [17] '05:50:00          1     99.80      0.00      0.00      0.00      0.00      0.19      0.01      0.00      0.00      0.00'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [18] '05:50:00          2     11.08      0.00      1.13      1.06      0.00      0.21      0.19      0.00      0.00     86.33'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   [19] '05:50:00          3     99.73      0.00      0.03      0.00      0.00      0.23      0.01      0.00      0.00      0.00'
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   CPU header detected: ['CPU', '%usr', '%nice', '%sys', '%iowait', '%steal', '%irq', '%soft', '%guest', '%gnice', '%idle']
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   CPU header detected: ['CPU', '%usr', '%nice', '%sys', '%iowait', '%steal', '%irq', '%soft', '%guest', '%gnice', '%idle']
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   CPU header detected: ['CPU', '%usr', '%nice', '%sys', '%iowait', '%steal', '%irq', '%soft', '%guest', '%gnice', '%idle']
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   CPU header detected: ['CPU', '%usr', '%nice', '%sys', '%iowait', '%steal', '%irq', '%soft', '%guest', '%gnice', '%idle']
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   CPU header detected: ['CPU', '%usr', '%nice', '%sys', '%iowait', '%steal', '%irq', '%soft', '%guest', '%gnice', '%idle']
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   CPU header detected: ['CPU', '%usr', '%nice', '%sys', '%iowait', '%steal', '%irq', '%soft', '%guest', '%gnice', '%idle']
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   CPU header detected: ['CPU', '%usr', '%nice', '%sys', '%iowait', '%steal', '%irq', '%soft', '%guest', '%gnice', '%idle']
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   CPU header detected: ['CPU', '%usr', '%nice', '%sys', '%iowait', '%steal', '%irq', '%soft', '%guest', '%gnice', '%idle']
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   CPU header detected: ['CPU', '%usr', '%nice', '%sys', '%iowait', '%steal', '%irq', '%soft', '%guest', '%gnice', '%idle']
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   CPU header detected: ['CPU', '%usr', '%nice', '%sys', '%iowait', '%steal', '%irq', '%soft', '%guest', '%gnice', '%idle']
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   CPU header detected: ['CPU', '%usr', '%nice', '%sys', '%iowait', '%steal', '%irq', '%soft', '%guest', '%gnice', '%idle']
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   CPU header detected: ['CPU', '%usr', '%nice', '%sys', '%iowait', '%steal', '%irq', '%soft', '%guest', '%gnice', '%idle']
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser |   CPU header detected: ['CPU', '%usr', '%nice', '%sys', '%iowait', '%steal', '%irq', '%soft', '%guest', '%gnice', '%idle']
+[2026-07-20 13:54:19] INFO     | sar_cpu_parser | Parsed 1859 CPU rows for LTPOL3VLMSDBO02
+[2026-07-20 13:54:20] INFO     | sar_cpu_parser | Inserted 1859 CPU rows

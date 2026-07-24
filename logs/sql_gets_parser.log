@@ -1,0 +1,36 @@
+[2026-07-20 12:53:30] INFO     | sql_gets_parser | Found 16 rows in SQL Gets section
+[2026-07-20 12:53:30] INFO     | sql_gets_parser | ✅ Parsed 16 SQL Gets records
+[2026-07-20 12:53:30] INFO     | sql_gets_parser | ✅ Inserted 16 rows into awr_sql_gets
+[2026-07-20 12:54:49] INFO     | sql_gets_parser | Found 10 rows in SQL Gets section
+[2026-07-20 12:54:49] INFO     | sql_gets_parser | ✅ Parsed 10 SQL Gets records
+[2026-07-20 12:54:49] INFO     | sql_gets_parser | ✅ Inserted 10 rows into awr_sql_gets
+[2026-07-20 12:54:49] INFO     | sql_gets_parser | Found 10 rows in SQL Gets section
+[2026-07-20 12:54:49] INFO     | sql_gets_parser | ✅ Parsed 10 SQL Gets records
+[2026-07-20 12:54:49] INFO     | sql_gets_parser | ✅ Inserted 10 rows into awr_sql_gets
+[2026-07-20 12:56:03] INFO     | sql_gets_parser | Found 10 rows in SQL Gets section
+[2026-07-20 12:56:03] INFO     | sql_gets_parser | ✅ Parsed 10 SQL Gets records
+[2026-07-20 12:56:03] INFO     | sql_gets_parser | ✅ Inserted 10 rows into awr_sql_gets
+[2026-07-20 12:57:24] INFO     | sql_gets_parser | Found 14 rows in SQL Gets section
+[2026-07-20 12:57:24] INFO     | sql_gets_parser | ✅ Parsed 14 SQL Gets records
+[2026-07-20 12:57:24] INFO     | sql_gets_parser | ✅ Inserted 14 rows into awr_sql_gets
+[2026-07-20 12:57:28] INFO     | sql_gets_parser | Found 10 rows in SQL Gets section
+[2026-07-20 12:57:28] INFO     | sql_gets_parser | ✅ Parsed 10 SQL Gets records
+[2026-07-20 12:57:28] INFO     | sql_gets_parser | ✅ Inserted 10 rows into awr_sql_gets
+[2026-07-20 12:58:40] INFO     | sql_gets_parser | Found 16 rows in SQL Gets section
+[2026-07-20 12:58:40] INFO     | sql_gets_parser | ✅ Parsed 16 SQL Gets records
+[2026-07-20 12:58:40] INFO     | sql_gets_parser | ✅ Inserted 16 rows into awr_sql_gets
+[2026-07-20 13:42:38] INFO     | sql_gets_parser | Found 10 rows in SQL Gets section
+[2026-07-20 13:42:38] INFO     | sql_gets_parser | ✅ Parsed 10 SQL Gets records
+[2026-07-20 13:42:38] INFO     | sql_gets_parser | ✅ Inserted 10 rows into awr_sql_gets
+[2026-07-20 13:45:10] INFO     | sql_gets_parser | Found 10 rows in SQL Gets section
+[2026-07-20 13:45:10] INFO     | sql_gets_parser | ✅ Parsed 10 SQL Gets records
+[2026-07-20 13:45:10] INFO     | sql_gets_parser | ✅ Inserted 10 rows into awr_sql_gets
+[2026-07-20 14:04:24] INFO     | sql_gets_parser | Found 17 rows in SQL Gets section
+[2026-07-20 14:04:24] INFO     | sql_gets_parser | ✅ Parsed 17 SQL Gets records
+[2026-07-20 14:04:24] INFO     | sql_gets_parser | ✅ Inserted 17 rows into awr_sql_gets
+[2026-07-20 15:54:17] INFO     | sql_gets_parser | Found 20 rows in SQL Gets section
+[2026-07-20 15:54:17] INFO     | sql_gets_parser | ✅ Parsed 20 SQL Gets records
+[2026-07-20 15:54:17] INFO     | sql_gets_parser | ✅ Inserted 20 rows into awr_sql_gets
+[2026-07-20 15:57:47] INFO     | sql_gets_parser | Found 22 rows in SQL Gets section
+[2026-07-20 15:57:47] INFO     | sql_gets_parser | ✅ Parsed 22 SQL Gets records
+[2026-07-20 15:57:48] INFO     | sql_gets_parser | ✅ Inserted 22 rows into awr_sql_gets

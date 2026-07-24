@@ -1,0 +1,2 @@
+[2026-07-20 13:54:22] INFO     | sar_loadavg_parser | Parsed 143 load average rows for LTPOL3VLMSDBO02
+[2026-07-20 13:54:22] INFO     | sar_loadavg_parser | Inserted 143 load average rows

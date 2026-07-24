@@ -1,0 +1,36 @@
+[2026-07-20 12:53:39] INFO     | sql_user_io_wait_parser | Found 16 rows in SQL User I/O Wait Time section
+[2026-07-20 12:53:39] INFO     | sql_user_io_wait_parser | ✅ Parsed 16 SQL User I/O Wait Time records
+[2026-07-20 12:53:39] INFO     | sql_user_io_wait_parser | ✅ Inserted 16 rows into awr_sql_user_io_time
+[2026-07-20 12:54:58] INFO     | sql_user_io_wait_parser | Found 10 rows in SQL User I/O Wait Time section
+[2026-07-20 12:54:58] INFO     | sql_user_io_wait_parser | ✅ Parsed 10 SQL User I/O Wait Time records
+[2026-07-20 12:54:58] INFO     | sql_user_io_wait_parser | ✅ Inserted 10 rows into awr_sql_user_io_time
+[2026-07-20 12:55:05] INFO     | sql_user_io_wait_parser | Found 10 rows in SQL User I/O Wait Time section
+[2026-07-20 12:55:05] INFO     | sql_user_io_wait_parser | ✅ Parsed 10 SQL User I/O Wait Time records
+[2026-07-20 12:55:05] INFO     | sql_user_io_wait_parser | ✅ Inserted 10 rows into awr_sql_user_io_time
+[2026-07-20 12:56:11] INFO     | sql_user_io_wait_parser | Found 13 rows in SQL User I/O Wait Time section
+[2026-07-20 12:56:11] INFO     | sql_user_io_wait_parser | ✅ Parsed 13 SQL User I/O Wait Time records
+[2026-07-20 12:56:11] INFO     | sql_user_io_wait_parser | ✅ Inserted 13 rows into awr_sql_user_io_time
+[2026-07-20 12:57:33] INFO     | sql_user_io_wait_parser | Found 17 rows in SQL User I/O Wait Time section
+[2026-07-20 12:57:33] INFO     | sql_user_io_wait_parser | ✅ Parsed 17 SQL User I/O Wait Time records
+[2026-07-20 12:57:33] INFO     | sql_user_io_wait_parser | ✅ Inserted 17 rows into awr_sql_user_io_time
+[2026-07-20 12:57:45] INFO     | sql_user_io_wait_parser | Found 10 rows in SQL User I/O Wait Time section
+[2026-07-20 12:57:45] INFO     | sql_user_io_wait_parser | ✅ Parsed 10 SQL User I/O Wait Time records
+[2026-07-20 12:57:45] INFO     | sql_user_io_wait_parser | ✅ Inserted 10 rows into awr_sql_user_io_time
+[2026-07-20 12:58:48] INFO     | sql_user_io_wait_parser | Found 10 rows in SQL User I/O Wait Time section
+[2026-07-20 12:58:48] INFO     | sql_user_io_wait_parser | ✅ Parsed 10 SQL User I/O Wait Time records
+[2026-07-20 12:58:48] INFO     | sql_user_io_wait_parser | ✅ Inserted 10 rows into awr_sql_user_io_time
+[2026-07-20 13:42:53] INFO     | sql_user_io_wait_parser | Found 10 rows in SQL User I/O Wait Time section
+[2026-07-20 13:42:53] INFO     | sql_user_io_wait_parser | ✅ Parsed 10 SQL User I/O Wait Time records
+[2026-07-20 13:42:53] INFO     | sql_user_io_wait_parser | ✅ Inserted 10 rows into awr_sql_user_io_time
+[2026-07-20 13:45:26] INFO     | sql_user_io_wait_parser | Found 11 rows in SQL User I/O Wait Time section
+[2026-07-20 13:45:26] INFO     | sql_user_io_wait_parser | ✅ Parsed 11 SQL User I/O Wait Time records
+[2026-07-20 13:45:26] INFO     | sql_user_io_wait_parser | ✅ Inserted 11 rows into awr_sql_user_io_time
+[2026-07-20 14:04:33] INFO     | sql_user_io_wait_parser | Found 10 rows in SQL User I/O Wait Time section
+[2026-07-20 14:04:33] INFO     | sql_user_io_wait_parser | ✅ Parsed 10 SQL User I/O Wait Time records
+[2026-07-20 14:04:33] INFO     | sql_user_io_wait_parser | ✅ Inserted 10 rows into awr_sql_user_io_time
+[2026-07-20 15:54:25] INFO     | sql_user_io_wait_parser | Found 10 rows in SQL User I/O Wait Time section
+[2026-07-20 15:54:25] INFO     | sql_user_io_wait_parser | ✅ Parsed 10 SQL User I/O Wait Time records
+[2026-07-20 15:54:25] INFO     | sql_user_io_wait_parser | ✅ Inserted 10 rows into awr_sql_user_io_time
+[2026-07-20 15:57:55] INFO     | sql_user_io_wait_parser | Found 13 rows in SQL User I/O Wait Time section
+[2026-07-20 15:57:55] INFO     | sql_user_io_wait_parser | ✅ Parsed 13 SQL User I/O Wait Time records
+[2026-07-20 15:57:55] INFO     | sql_user_io_wait_parser | ✅ Inserted 13 rows into awr_sql_user_io_time

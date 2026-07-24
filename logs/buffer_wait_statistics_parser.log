@@ -1,0 +1,36 @@
+[2026-07-20 12:52:55] INFO     | buffer_wait_statistics_parser | Found 5 rows in Buffer Wait Statistics section
+[2026-07-20 12:52:55] INFO     | buffer_wait_statistics_parser | ✅ Parsed 5 Buffer Wait Statistics records
+[2026-07-20 12:52:55] INFO     | buffer_wait_statistics_parser | ✅ Inserted 5 rows into awr_buffer_wait_statistics
+[2026-07-20 12:53:39] INFO     | buffer_wait_statistics_parser | Found 4 rows in Buffer Wait Statistics section
+[2026-07-20 12:53:39] INFO     | buffer_wait_statistics_parser | ✅ Parsed 4 Buffer Wait Statistics records
+[2026-07-20 12:53:39] INFO     | buffer_wait_statistics_parser | ✅ Inserted 4 rows into awr_buffer_wait_statistics
+[2026-07-20 12:54:15] INFO     | buffer_wait_statistics_parser | Found 1 rows in Buffer Wait Statistics section
+[2026-07-20 12:54:15] INFO     | buffer_wait_statistics_parser | ✅ Parsed 1 Buffer Wait Statistics records
+[2026-07-20 12:54:15] INFO     | buffer_wait_statistics_parser | ✅ Inserted 1 rows into awr_buffer_wait_statistics
+[2026-07-20 12:55:31] INFO     | buffer_wait_statistics_parser | Found 2 rows in Buffer Wait Statistics section
+[2026-07-20 12:55:31] INFO     | buffer_wait_statistics_parser | ✅ Parsed 2 Buffer Wait Statistics records
+[2026-07-20 12:55:31] INFO     | buffer_wait_statistics_parser | ✅ Inserted 2 rows into awr_buffer_wait_statistics
+[2026-07-20 12:56:18] INFO     | buffer_wait_statistics_parser | Found 3 rows in Buffer Wait Statistics section
+[2026-07-20 12:56:18] INFO     | buffer_wait_statistics_parser | ✅ Parsed 3 Buffer Wait Statistics records
+[2026-07-20 12:56:18] INFO     | buffer_wait_statistics_parser | ✅ Inserted 3 rows into awr_buffer_wait_statistics
+[2026-07-20 12:56:48] INFO     | buffer_wait_statistics_parser | Found 1 rows in Buffer Wait Statistics section
+[2026-07-20 12:56:48] INFO     | buffer_wait_statistics_parser | ✅ Parsed 1 Buffer Wait Statistics records
+[2026-07-20 12:56:48] INFO     | buffer_wait_statistics_parser | ✅ Inserted 1 rows into awr_buffer_wait_statistics
+[2026-07-20 12:58:08] INFO     | buffer_wait_statistics_parser | Found 2 rows in Buffer Wait Statistics section
+[2026-07-20 12:58:08] INFO     | buffer_wait_statistics_parser | ✅ Parsed 2 Buffer Wait Statistics records
+[2026-07-20 12:58:08] INFO     | buffer_wait_statistics_parser | ✅ Inserted 2 rows into awr_buffer_wait_statistics
+[2026-07-20 12:58:58] INFO     | buffer_wait_statistics_parser | Found 3 rows in Buffer Wait Statistics section
+[2026-07-20 12:58:58] INFO     | buffer_wait_statistics_parser | ✅ Parsed 3 Buffer Wait Statistics records
+[2026-07-20 12:58:58] INFO     | buffer_wait_statistics_parser | ✅ Inserted 3 rows into awr_buffer_wait_statistics
+[2026-07-20 13:44:05] INFO     | buffer_wait_statistics_parser | Found 3 rows in Buffer Wait Statistics section
+[2026-07-20 13:44:05] INFO     | buffer_wait_statistics_parser | ✅ Parsed 3 Buffer Wait Statistics records
+[2026-07-20 13:44:05] INFO     | buffer_wait_statistics_parser | ✅ Inserted 3 rows into awr_buffer_wait_statistics
+[2026-07-20 14:03:47] INFO     | buffer_wait_statistics_parser | Found 6 rows in Buffer Wait Statistics section
+[2026-07-20 14:03:47] INFO     | buffer_wait_statistics_parser | ✅ Parsed 6 Buffer Wait Statistics records
+[2026-07-20 14:03:47] INFO     | buffer_wait_statistics_parser | ✅ Inserted 6 rows into awr_buffer_wait_statistics
+[2026-07-20 15:53:40] INFO     | buffer_wait_statistics_parser | Found 5 rows in Buffer Wait Statistics section
+[2026-07-20 15:53:40] INFO     | buffer_wait_statistics_parser | ✅ Parsed 5 Buffer Wait Statistics records
+[2026-07-20 15:53:40] INFO     | buffer_wait_statistics_parser | ✅ Inserted 5 rows into awr_buffer_wait_statistics
+[2026-07-20 15:57:12] INFO     | buffer_wait_statistics_parser | Found 6 rows in Buffer Wait Statistics section
+[2026-07-20 15:57:12] INFO     | buffer_wait_statistics_parser | ✅ Parsed 6 Buffer Wait Statistics records
+[2026-07-20 15:57:12] INFO     | buffer_wait_statistics_parser | ✅ Inserted 6 rows into awr_buffer_wait_statistics

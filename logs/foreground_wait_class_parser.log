@@ -1,0 +1,24 @@
+[2026-07-20 12:53:00] INFO     | foreground_wait_class_parser | ✅ Parsed 11 Foreground Wait Class records.
+[2026-07-20 12:53:00] INFO     | foreground_wait_class_parser | ✅ Inserted 11 rows into awr_foreground_wait_class
+[2026-07-20 12:53:48] INFO     | foreground_wait_class_parser | ✅ Parsed 9 Foreground Wait Class records.
+[2026-07-20 12:53:48] INFO     | foreground_wait_class_parser | ✅ Inserted 9 rows into awr_foreground_wait_class
+[2026-07-20 12:54:19] INFO     | foreground_wait_class_parser | ✅ Parsed 11 Foreground Wait Class records.
+[2026-07-20 12:54:19] INFO     | foreground_wait_class_parser | ✅ Inserted 11 rows into awr_foreground_wait_class
+[2026-07-20 12:55:36] INFO     | foreground_wait_class_parser | ✅ Parsed 8 Foreground Wait Class records.
+[2026-07-20 12:55:36] INFO     | foreground_wait_class_parser | ✅ Inserted 8 rows into awr_foreground_wait_class
+[2026-07-20 12:56:27] INFO     | foreground_wait_class_parser | ✅ Parsed 9 Foreground Wait Class records.
+[2026-07-20 12:56:27] INFO     | foreground_wait_class_parser | ✅ Inserted 9 rows into awr_foreground_wait_class
+[2026-07-20 12:56:52] INFO     | foreground_wait_class_parser | ✅ Parsed 9 Foreground Wait Class records.
+[2026-07-20 12:56:52] INFO     | foreground_wait_class_parser | ✅ Inserted 9 rows into awr_foreground_wait_class
+[2026-07-20 12:58:12] INFO     | foreground_wait_class_parser | ✅ Parsed 9 Foreground Wait Class records.
+[2026-07-20 12:58:13] INFO     | foreground_wait_class_parser | ✅ Inserted 9 rows into awr_foreground_wait_class
+[2026-07-20 13:04:41] INFO     | foreground_wait_class_parser | ✅ Parsed 9 Foreground Wait Class records.
+[2026-07-20 13:04:41] INFO     | foreground_wait_class_parser | ✅ Inserted 9 rows into awr_foreground_wait_class
+[2026-07-20 13:44:14] INFO     | foreground_wait_class_parser | ✅ Parsed 9 Foreground Wait Class records.
+[2026-07-20 13:44:14] INFO     | foreground_wait_class_parser | ✅ Inserted 9 rows into awr_foreground_wait_class
+[2026-07-20 14:03:52] INFO     | foreground_wait_class_parser | ✅ Parsed 10 Foreground Wait Class records.
+[2026-07-20 14:03:52] INFO     | foreground_wait_class_parser | ✅ Inserted 10 rows into awr_foreground_wait_class
+[2026-07-20 15:53:45] INFO     | foreground_wait_class_parser | ✅ Parsed 9 Foreground Wait Class records.
+[2026-07-20 15:53:45] INFO     | foreground_wait_class_parser | ✅ Inserted 9 rows into awr_foreground_wait_class
+[2026-07-20 15:57:17] INFO     | foreground_wait_class_parser | ✅ Parsed 9 Foreground Wait Class records.
+[2026-07-20 15:57:17] INFO     | foreground_wait_class_parser | ✅ Inserted 9 rows into awr_foreground_wait_class

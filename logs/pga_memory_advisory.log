@@ -1,0 +1,24 @@
+[2026-07-20 12:53:20] INFO     | pga_memory_advisory | ✅ Parsed 14 PGA Memory Advisory records.
+[2026-07-20 12:53:20] INFO     | pga_memory_advisory | ✅ Inserted 14 rows into awr_advisory_pga
+[2026-07-20 12:54:28] WARNING  | pga_memory_advisory | ⚠️ PGA Memory Advisory section not found.
+[2026-07-20 12:54:28] WARNING  | pga_memory_advisory | ⚠️ No records to insert into awr_advisory_pga
+[2026-07-20 12:54:39] INFO     | pga_memory_advisory | ✅ Parsed 14 PGA Memory Advisory records.
+[2026-07-20 12:54:40] INFO     | pga_memory_advisory | ✅ Inserted 14 rows into awr_advisory_pga
+[2026-07-20 12:55:53] INFO     | pga_memory_advisory | ✅ Parsed 14 PGA Memory Advisory records.
+[2026-07-20 12:55:54] INFO     | pga_memory_advisory | ✅ Inserted 14 rows into awr_advisory_pga
+[2026-07-20 12:57:07] WARNING  | pga_memory_advisory | ⚠️ PGA Memory Advisory section not found.
+[2026-07-20 12:57:07] WARNING  | pga_memory_advisory | ⚠️ No records to insert into awr_advisory_pga
+[2026-07-20 12:57:13] INFO     | pga_memory_advisory | ✅ Parsed 14 PGA Memory Advisory records.
+[2026-07-20 12:57:13] INFO     | pga_memory_advisory | ✅ Inserted 14 rows into awr_advisory_pga
+[2026-07-20 12:58:31] INFO     | pga_memory_advisory | ✅ Parsed 14 PGA Memory Advisory records.
+[2026-07-20 12:58:31] INFO     | pga_memory_advisory | ✅ Inserted 14 rows into awr_advisory_pga
+[2026-07-20 13:42:19] WARNING  | pga_memory_advisory | ⚠️ PGA Memory Advisory section not found.
+[2026-07-20 13:42:19] WARNING  | pga_memory_advisory | ⚠️ No records to insert into awr_advisory_pga
+[2026-07-20 13:44:51] WARNING  | pga_memory_advisory | ⚠️ PGA Memory Advisory section not found.
+[2026-07-20 13:44:51] WARNING  | pga_memory_advisory | ⚠️ No records to insert into awr_advisory_pga
+[2026-07-20 14:04:13] INFO     | pga_memory_advisory | ✅ Parsed 14 PGA Memory Advisory records.
+[2026-07-20 14:04:13] INFO     | pga_memory_advisory | ✅ Inserted 14 rows into awr_advisory_pga
+[2026-07-20 15:54:04] INFO     | pga_memory_advisory | ✅ Parsed 14 PGA Memory Advisory records.
+[2026-07-20 15:54:05] INFO     | pga_memory_advisory | ✅ Inserted 14 rows into awr_advisory_pga
+[2026-07-20 15:57:36] INFO     | pga_memory_advisory | ✅ Parsed 14 PGA Memory Advisory records.
+[2026-07-20 15:57:36] INFO     | pga_memory_advisory | ✅ Inserted 14 rows into awr_advisory_pga

@@ -1,0 +1,24 @@
+[2026-07-20 12:52:53] INFO     | background_wait_events_parser | ✅ Parsed 78 Background Wait Event records.
+[2026-07-20 12:52:54] INFO     | background_wait_events_parser | ✅ Inserted 78 rows into awr_background_wait_events
+[2026-07-20 12:53:36] INFO     | background_wait_events_parser | ✅ Parsed 61 Background Wait Event records.
+[2026-07-20 12:53:36] INFO     | background_wait_events_parser | ✅ Inserted 61 rows into awr_background_wait_events
+[2026-07-20 12:54:13] INFO     | background_wait_events_parser | ✅ Parsed 65 Background Wait Event records.
+[2026-07-20 12:54:13] INFO     | background_wait_events_parser | ✅ Inserted 65 rows into awr_background_wait_events
+[2026-07-20 12:55:30] INFO     | background_wait_events_parser | ✅ Parsed 51 Background Wait Event records.
+[2026-07-20 12:55:30] INFO     | background_wait_events_parser | ✅ Inserted 51 rows into awr_background_wait_events
+[2026-07-20 12:56:15] INFO     | background_wait_events_parser | ✅ Parsed 57 Background Wait Event records.
+[2026-07-20 12:56:15] INFO     | background_wait_events_parser | ✅ Inserted 57 rows into awr_background_wait_events
+[2026-07-20 12:56:46] INFO     | background_wait_events_parser | ✅ Parsed 65 Background Wait Event records.
+[2026-07-20 12:56:46] INFO     | background_wait_events_parser | ✅ Inserted 65 rows into awr_background_wait_events
+[2026-07-20 12:58:06] INFO     | background_wait_events_parser | ✅ Parsed 58 Background Wait Event records.
+[2026-07-20 12:58:07] INFO     | background_wait_events_parser | ✅ Inserted 58 rows into awr_background_wait_events
+[2026-07-20 12:58:54] INFO     | background_wait_events_parser | ✅ Parsed 56 Background Wait Event records.
+[2026-07-20 12:58:54] INFO     | background_wait_events_parser | ✅ Inserted 56 rows into awr_background_wait_events
+[2026-07-20 13:44:02] INFO     | background_wait_events_parser | ✅ Parsed 58 Background Wait Event records.
+[2026-07-20 13:44:02] INFO     | background_wait_events_parser | ✅ Inserted 58 rows into awr_background_wait_events
+[2026-07-20 14:03:45] INFO     | background_wait_events_parser | ✅ Parsed 80 Background Wait Event records.
+[2026-07-20 14:03:45] INFO     | background_wait_events_parser | ✅ Inserted 80 rows into awr_background_wait_events
+[2026-07-20 15:53:39] INFO     | background_wait_events_parser | ✅ Parsed 68 Background Wait Event records.
+[2026-07-20 15:53:39] INFO     | background_wait_events_parser | ✅ Inserted 68 rows into awr_background_wait_events
+[2026-07-20 15:57:11] INFO     | background_wait_events_parser | ✅ Parsed 73 Background Wait Event records.
+[2026-07-20 15:57:11] INFO     | background_wait_events_parser | ✅ Inserted 73 rows into awr_background_wait_events

@@ -1,0 +1,47 @@
+[2026-07-20 12:41:24] INFO     | sar_watcher | ✅ WSL available — binary SAR files will be auto-converted
+[2026-07-20 12:41:24] INFO     | sar_watcher | 🔍 SAR Watcher started. Monitoring: C:\AWR_Insight_Portal_v2\sar_drop
+[2026-07-20 12:41:24] INFO     | sar_watcher |    Drop layout : C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>\sa01  OR  C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>_filename.txt
+[2026-07-20 12:41:24] INFO     | sar_watcher |    SAR queues  : C:\AWR_Insight_Portal_v2\sar_queues
+[2026-07-20 12:41:24] INFO     | sar_watcher |    Archive     : C:\AWR_Insight_Portal_v2\sar_archive
+[2026-07-20 13:54:04] INFO     | sar_watcher | 📝 Queued [text]: LTPOL3VLMSDBO02_sa27.txt → LTPOL3VLMSDBO02
+[2026-07-20 13:58:36] INFO     | sar_watcher | 📝 Queued [text]: sa02 → TCLFSLPRDDB1
+[2026-07-20 14:48:31] INFO     | sar_watcher | ✅ WSL available — binary SAR files will be auto-converted
+[2026-07-20 14:48:31] INFO     | sar_watcher | 🔍 SAR Watcher started. Monitoring: C:\AWR_Insight_Portal_v2\sar_drop
+[2026-07-20 14:48:31] INFO     | sar_watcher |    Drop layout : C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>\sa01  OR  C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>_filename.txt
+[2026-07-20 14:48:31] INFO     | sar_watcher |    SAR queues  : C:\AWR_Insight_Portal_v2\sar_queues
+[2026-07-20 14:48:31] INFO     | sar_watcher |    Archive     : C:\AWR_Insight_Portal_v2\sar_archive
+[2026-07-20 15:38:40] INFO     | sar_watcher | ✅ WSL available — binary SAR files will be auto-converted
+[2026-07-20 15:38:40] INFO     | sar_watcher | 🔍 SAR Watcher started. Monitoring: C:\AWR_Insight_Portal_v2\sar_drop
+[2026-07-20 15:38:40] INFO     | sar_watcher |    Drop layout : C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>\sa01  OR  C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>_filename.txt
+[2026-07-20 15:38:40] INFO     | sar_watcher |    SAR queues  : C:\AWR_Insight_Portal_v2\sar_queues
+[2026-07-20 15:38:40] INFO     | sar_watcher |    Archive     : C:\AWR_Insight_Portal_v2\sar_archive
+[2026-07-21 17:44:24] INFO     | sar_watcher | ✅ WSL available — binary SAR files will be auto-converted
+[2026-07-21 17:44:24] INFO     | sar_watcher | 🔍 SAR Watcher started. Monitoring: C:\AWR_Insight_Portal_v2\sar_drop
+[2026-07-21 17:44:24] INFO     | sar_watcher |    Drop layout : C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>\sa01  OR  C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>_filename.txt
+[2026-07-21 17:44:24] INFO     | sar_watcher |    SAR queues  : C:\AWR_Insight_Portal_v2\sar_queues
+[2026-07-21 17:44:24] INFO     | sar_watcher |    Archive     : C:\AWR_Insight_Portal_v2\sar_archive
+[2026-07-22 11:35:15] INFO     | sar_watcher | ✅ WSL available — binary SAR files will be auto-converted
+[2026-07-22 11:35:15] INFO     | sar_watcher | 🔍 SAR Watcher started. Monitoring: C:\AWR_Insight_Portal_v2\sar_drop
+[2026-07-22 11:35:15] INFO     | sar_watcher |    Drop layout : C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>\sa01  OR  C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>_filename.txt
+[2026-07-22 11:35:15] INFO     | sar_watcher |    SAR queues  : C:\AWR_Insight_Portal_v2\sar_queues
+[2026-07-22 11:35:15] INFO     | sar_watcher |    Archive     : C:\AWR_Insight_Portal_v2\sar_archive
+[2026-07-23 16:38:28] INFO     | sar_watcher | ✅ WSL available — binary SAR files will be auto-converted
+[2026-07-23 16:38:28] INFO     | sar_watcher | 🔍 SAR Watcher started. Monitoring: C:\AWR_Insight_Portal_v2\sar_drop
+[2026-07-23 16:38:28] INFO     | sar_watcher |    Drop layout : C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>\sa01  OR  C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>_filename.txt
+[2026-07-23 16:38:28] INFO     | sar_watcher |    SAR queues  : C:\AWR_Insight_Portal_v2\sar_queues
+[2026-07-23 16:38:28] INFO     | sar_watcher |    Archive     : C:\AWR_Insight_Portal_v2\sar_archive
+[2026-07-23 17:08:32] INFO     | sar_watcher | ✅ WSL available — binary SAR files will be auto-converted
+[2026-07-23 17:08:32] INFO     | sar_watcher | 🔍 SAR Watcher started. Monitoring: C:\AWR_Insight_Portal_v2\sar_drop
+[2026-07-23 17:08:32] INFO     | sar_watcher |    Drop layout : C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>\sa01  OR  C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>_filename.txt
+[2026-07-23 17:08:32] INFO     | sar_watcher |    SAR queues  : C:\AWR_Insight_Portal_v2\sar_queues
+[2026-07-23 17:08:32] INFO     | sar_watcher |    Archive     : C:\AWR_Insight_Portal_v2\sar_archive
+[2026-07-24 10:56:47] INFO     | sar_watcher | ✅ WSL available — binary SAR files will be auto-converted
+[2026-07-24 10:56:47] INFO     | sar_watcher | 🔍 SAR Watcher started. Monitoring: C:\AWR_Insight_Portal_v2\sar_drop
+[2026-07-24 10:56:47] INFO     | sar_watcher |    Drop layout : C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>\sa01  OR  C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>_filename.txt
+[2026-07-24 10:56:47] INFO     | sar_watcher |    SAR queues  : C:\AWR_Insight_Portal_v2\sar_queues
+[2026-07-24 10:56:47] INFO     | sar_watcher |    Archive     : C:\AWR_Insight_Portal_v2\sar_archive
+[2026-07-24 14:52:25] INFO     | sar_watcher | ✅ WSL available — binary SAR files will be auto-converted
+[2026-07-24 14:52:25] INFO     | sar_watcher | 🔍 SAR Watcher started. Monitoring: C:\AWR_Insight_Portal_v2\sar_drop
+[2026-07-24 14:52:25] INFO     | sar_watcher |    Drop layout : C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>\sa01  OR  C:\AWR_Insight_Portal_v2\sar_drop\<HOSTNAME>_filename.txt
+[2026-07-24 14:52:25] INFO     | sar_watcher |    SAR queues  : C:\AWR_Insight_Portal_v2\sar_queues
+[2026-07-24 14:52:25] INFO     | sar_watcher |    Archive     : C:\AWR_Insight_Portal_v2\sar_archive

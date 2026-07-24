@@ -1,0 +1,18 @@
+[2026-07-20 13:54:19] INFO     | sar_master_parser | ============================================================
+[2026-07-20 13:54:19] INFO     | sar_master_parser | Processing SAR: LTPOL3VLMSDBO02_sa27.txt
+[2026-07-20 13:54:19] INFO     | sar_master_parser | Text SAR: timestamps shifted to IST (+5:30)
+[2026-07-20 13:54:19] INFO     | sar_master_parser |    Host    : LTPOL3VLMSDBO02 (override - header had: LTPOL3VLMSDBO02)
+[2026-07-20 13:54:19] INFO     | sar_master_parser |    SAR date: 06/27/2026
+[2026-07-20 13:54:20] INFO     | sar_master_parser |   OK CPU                - 1859 rows
+[2026-07-20 13:54:20] INFO     | sar_master_parser |   OK Memory             - 143 rows
+[2026-07-20 13:54:20] INFO     | sar_master_parser |   OK Swap               - 143 rows
+[2026-07-20 13:54:22] INFO     | sar_master_parser |   OK Disk I/O           - 9009 rows
+[2026-07-20 13:54:22] INFO     | sar_master_parser |   OK Network            - 429 rows
+[2026-07-20 13:54:22] INFO     | sar_master_parser |   OK Paging             - 143 rows
+[2026-07-20 13:54:22] INFO     | sar_master_parser |   OK Context Switch     - 143 rows
+[2026-07-20 13:54:22] INFO     | sar_master_parser |   OK Load Average       - 143 rows
+[2026-07-20 13:54:23] INFO     | sar_master_parser |   OK HugePages          - 143 rows
+[2026-07-20 13:54:23] INFO     | sar_master_parser |   OK Sockets            - 143 rows
+[2026-07-20 13:54:23] INFO     | sar_master_parser | SAR complete - OK
+[2026-07-20 13:54:23] INFO     | sar_master_parser | 🔍 Running SAR anomaly detection for LTPOL3VLMSDBO02 …
+[2026-07-20 13:54:23] INFO     | sar_master_parser | 🔍 SAR anomaly detection complete for LTPOL3VLMSDBO02

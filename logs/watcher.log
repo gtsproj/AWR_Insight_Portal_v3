@@ -1,0 +1,49 @@
+[2026-07-20 12:41:17] INFO     | watcher | Watcher started — monitoring AWR reports
+[2026-07-20 12:41:17] INFO     | watcher |   Watch dir : C:\AWR_Insight_Portal_v2\awr_reports
+[2026-07-20 12:41:17] INFO     | watcher |   Queue dir : C:\AWR_Insight_Portal_v2\queues
+[2026-07-20 12:41:17] INFO     | watcher |   Layout    : C:\AWR_Insight_Portal_v2\awr_reports\<DBNAME>\awr_*.html
+[2026-07-20 12:52:17] INFO     | watcher | Queued: awr_COLDBPRD_1_221212_0030_0130.html -> COLDBPRD
+[2026-07-20 12:52:17] INFO     | watcher | Queued: awr_COLDBPRD_1_221212_0130_0230.html -> COLDBPRD
+[2026-07-20 12:52:17] INFO     | watcher | Queued: awr_COLDBPRD_1_221212_0230_0330.html -> COLDBPRD
+[2026-07-20 12:52:17] INFO     | watcher | Queued: awr_COLDBPRD_1_221212_0330_0430.html -> COLDBPRD
+[2026-07-20 12:52:17] INFO     | watcher | Queued: awr_COLDBPRD_1_221212_0430_0530.html -> COLDBPRD
+[2026-07-20 12:52:27] INFO     | watcher | Queued: 10_1.html -> ONE_LMS
+[2026-07-20 12:52:27] INFO     | watcher | Queued: 11_1.html -> ONE_LMS
+[2026-07-20 12:52:27] INFO     | watcher | Queued: 12_1.html -> ONE_LMS
+[2026-07-20 12:52:27] INFO     | watcher | Queued: 9_1.html -> ONE_LMS
+[2026-07-20 13:52:29] INFO     | watcher | Queued: awr_DMSDB_1_240116_0000_0030.html -> DMSDB
+[2026-07-20 14:03:19] INFO     | watcher | Queued: awr_COLDBPRD_1_221212_0530_0630.html -> COLDBPRD
+[2026-07-20 14:48:22] INFO     | watcher | Watcher started — monitoring AWR reports
+[2026-07-20 14:48:22] INFO     | watcher |   Watch dir : C:\AWR_Insight_Portal_v2\awr_reports
+[2026-07-20 14:48:22] INFO     | watcher |   Queue dir : C:\AWR_Insight_Portal_v2\queues
+[2026-07-20 14:48:22] INFO     | watcher |   Layout    : C:\AWR_Insight_Portal_v2\awr_reports\<DBNAME>\awr_*.html
+[2026-07-20 15:38:33] INFO     | watcher | Watcher started — monitoring AWR reports
+[2026-07-20 15:38:33] INFO     | watcher |   Watch dir : C:\AWR_Insight_Portal_v2\awr_reports
+[2026-07-20 15:38:33] INFO     | watcher |   Queue dir : C:\AWR_Insight_Portal_v2\queues
+[2026-07-20 15:38:33] INFO     | watcher |   Layout    : C:\AWR_Insight_Portal_v2\awr_reports\<DBNAME>\awr_*.html
+[2026-07-20 15:40:03] INFO     | watcher | Queued: awr_COLDBPRD_1_221212_0630_0730.html -> COLDBPRD
+[2026-07-20 15:53:13] INFO     | watcher | Queued: awr_COLDBPRD_1_221212_0730_0830.html -> COLDBPRD
+[2026-07-21 17:44:16] INFO     | watcher | Watcher started — monitoring AWR reports
+[2026-07-21 17:44:16] INFO     | watcher |   Watch dir : C:\AWR_Insight_Portal_v2\awr_reports
+[2026-07-21 17:44:16] INFO     | watcher |   Queue dir : C:\AWR_Insight_Portal_v2\queues
+[2026-07-21 17:44:16] INFO     | watcher |   Layout    : C:\AWR_Insight_Portal_v2\awr_reports\<DBNAME>\awr_*.html
+[2026-07-22 11:35:06] INFO     | watcher | Watcher started — monitoring AWR reports
+[2026-07-22 11:35:06] INFO     | watcher |   Watch dir : C:\AWR_Insight_Portal_v2\awr_reports
+[2026-07-22 11:35:06] INFO     | watcher |   Queue dir : C:\AWR_Insight_Portal_v2\queues
+[2026-07-22 11:35:06] INFO     | watcher |   Layout    : C:\AWR_Insight_Portal_v2\awr_reports\<DBNAME>\awr_*.html
+[2026-07-23 16:38:21] INFO     | watcher | Watcher started — monitoring AWR reports
+[2026-07-23 16:38:21] INFO     | watcher |   Watch dir : C:\AWR_Insight_Portal_v2\awr_reports
+[2026-07-23 16:38:21] INFO     | watcher |   Queue dir : C:\AWR_Insight_Portal_v2\queues
+[2026-07-23 16:38:21] INFO     | watcher |   Layout    : C:\AWR_Insight_Portal_v2\awr_reports\<DBNAME>\awr_*.html
+[2026-07-23 17:08:25] INFO     | watcher | Watcher started — monitoring AWR reports
+[2026-07-23 17:08:25] INFO     | watcher |   Watch dir : C:\AWR_Insight_Portal_v2\awr_reports
+[2026-07-23 17:08:25] INFO     | watcher |   Queue dir : C:\AWR_Insight_Portal_v2\queues
+[2026-07-23 17:08:25] INFO     | watcher |   Layout    : C:\AWR_Insight_Portal_v2\awr_reports\<DBNAME>\awr_*.html
+[2026-07-24 10:56:40] INFO     | watcher | Watcher started — monitoring AWR reports
+[2026-07-24 10:56:40] INFO     | watcher |   Watch dir : C:\AWR_Insight_Portal_v2\awr_reports
+[2026-07-24 10:56:40] INFO     | watcher |   Queue dir : C:\AWR_Insight_Portal_v2\queues
+[2026-07-24 10:56:40] INFO     | watcher |   Layout    : C:\AWR_Insight_Portal_v2\awr_reports\<DBNAME>\awr_*.html
+[2026-07-24 14:52:18] INFO     | watcher | Watcher started — monitoring AWR reports
+[2026-07-24 14:52:18] INFO     | watcher |   Watch dir : C:\AWR_Insight_Portal_v2\awr_reports
+[2026-07-24 14:52:18] INFO     | watcher |   Queue dir : C:\AWR_Insight_Portal_v2\queues
+[2026-07-24 14:52:18] INFO     | watcher |   Layout    : C:\AWR_Insight_Portal_v2\awr_reports\<DBNAME>\awr_*.html

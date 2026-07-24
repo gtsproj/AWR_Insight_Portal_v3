@@ -1,0 +1,1650 @@
+[2026-07-20 12:52:24] INFO     | master_parser | ============================================================
+[2026-07-20 12:52:24] INFO     | master_parser | 📂 Processing: awr_COLDBPRD_1_221212_0030_0130.html
+[2026-07-20 12:52:24] INFO     | master_parser |    DB Name  : COLDBPRD
+[2026-07-20 12:52:24] INFO     | master_parser |    Full path: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0030_0130.html
+[2026-07-20 12:52:24] INFO     | master_parser | Running 49 parser modules …
+[2026-07-20 12:52:25] INFO     | master_parser |   ✅ generic_segment_parser                        1.31s
+[2026-07-20 12:52:26] INFO     | master_parser |   ✅ awr_seg_Phy_read_req_parser                   0.60s
+[2026-07-20 12:52:26] INFO     | master_parser |   ✅ awr_seg_buff_busy_waits_parser                0.52s
+[2026-07-20 12:52:28] INFO     | master_parser |   ✅ awr_seg_cr_blk_rec_parser                     1.75s
+[2026-07-20 12:52:30] INFO     | master_parser |   ✅ awr_seg_cur_blk_rec_parser                    1.80s
+[2026-07-20 12:52:31] INFO     | master_parser |   ✅ awr_seg_db_blk_chg_parser                     1.62s
+[2026-07-20 12:52:33] INFO     | master_parser |   ✅ awr_seg_direct_phy_reads_parser               1.89s
+[2026-07-20 12:52:35] INFO     | master_parser |   ✅ awr_seg_direct_phy_writes_parser              1.68s
+[2026-07-20 12:52:37] INFO     | master_parser |   ✅ awr_seg_gbl_cache_buff_busy_parser            1.76s
+[2026-07-20 12:52:37] INFO     | master_parser | ============================================================
+[2026-07-20 12:52:37] INFO     | master_parser | 📂 Processing: 10_1.html
+[2026-07-20 12:52:37] INFO     | master_parser |    DB Name  : ONE_LMS
+[2026-07-20 12:52:37] INFO     | master_parser |    Full path: C:\AWR_Insight_Portal_v2\awr_reports\ONE_LMS\10_1.html
+[2026-07-20 12:52:37] INFO     | master_parser | Running 49 parser modules …
+[2026-07-20 12:52:38] INFO     | master_parser |   ✅ awr_seg_itl_waits_parser                      1.56s
+[2026-07-20 12:52:39] INFO     | master_parser |   ✅ generic_segment_parser                        1.63s
+[2026-07-20 12:52:40] INFO     | master_parser |   ✅ awr_seg_logical_reads_parser                  1.87s
+[2026-07-20 12:52:41] INFO     | master_parser |   ✅ awr_seg_Phy_read_req_parser                   2.01s
+[2026-07-20 12:52:41] INFO     | master_parser |   ✅ awr_seg_opt_reads_parser                      1.43s
+[2026-07-20 12:52:43] INFO     | master_parser |   ✅ awr_seg_phy_reads_parser                      1.74s
+[2026-07-20 12:52:44] INFO     | master_parser |   ✅ awr_seg_buff_busy_waits_parser                2.97s
+[2026-07-20 12:52:45] INFO     | master_parser |   ✅ awr_seg_phy_write_req_parser                  1.56s
+[2026-07-20 12:52:47] INFO     | master_parser |   ✅ awr_seg_phy_writes_parser                     1.83s
+[2026-07-20 12:52:47] INFO     | master_parser |   ✅ awr_seg_cr_blk_rec_parser                     3.18s
+[2026-07-20 12:52:48] INFO     | master_parser |   ✅ awr_seg_row_lck_waits_parser                  1.57s
+[2026-07-20 12:52:50] INFO     | master_parser |   ✅ awr_seg_table_scan_parser                     1.84s
+[2026-07-20 12:52:50] INFO     | master_parser |   ✅ awr_seg_cur_blk_rec_parser                    3.17s
+[2026-07-20 12:52:52] INFO     | master_parser |   ✅ awr_seg_unopt_reads_parser                    1.71s
+[2026-07-20 12:52:54] INFO     | master_parser |   ✅ background_wait_events_parser                 1.85s
+[2026-07-20 12:52:54] INFO     | master_parser |   ✅ awr_seg_db_blk_chg_parser                     3.34s
+[2026-07-20 12:52:55] INFO     | master_parser |   ✅ buffer_wait_statistics_parser                 1.61s
+[2026-07-20 12:52:56] INFO     | master_parser |   ✅ db_info_parser                                1.32s
+[2026-07-20 12:52:57] INFO     | master_parser |   ✅ awr_seg_direct_phy_reads_parser               3.21s
+[2026-07-20 12:52:58] INFO     | master_parser |   ✅ enqueue_wait_statistics_parser                1.62s
+[2026-07-20 12:53:00] INFO     | master_parser |   ✅ foreground_wait_class_parser                  1.73s
+[2026-07-20 12:53:00] INFO     | master_parser |   ✅ awr_seg_direct_phy_writes_parser              3.16s
+[2026-07-20 12:53:02] INFO     | master_parser |   ✅ foreground_wait_events                        1.76s
+[2026-07-20 12:53:03] INFO     | master_parser |   ✅ awr_seg_gbl_cache_buff_busy_parser            3.33s
+[2026-07-20 12:53:03] INFO     | master_parser |   ✅ instance_activity_statistics_parser           1.89s
+[2026-07-20 12:53:05] INFO     | master_parser |   ✅ instance_efficiency_parser                    1.33s
+[2026-07-20 12:53:07] INFO     | master_parser |   ✅ io_profile_parser                             1.80s
+[2026-07-20 12:53:07] INFO     | master_parser |   ✅ awr_seg_itl_waits_parser                      3.36s
+[2026-07-20 12:53:08] INFO     | master_parser |   ✅ io_stat_by_filetype_summary_parser            1.62s
+[2026-07-20 12:53:10] INFO     | master_parser |   ✅ awr_seg_logical_reads_parser                  3.29s
+[2026-07-20 12:53:10] INFO     | master_parser |   ✅ io_stat_by_func_filetype_summary_parser       1.84s
+[2026-07-20 12:53:12] INFO     | master_parser |   ✅ io_stat_by_function_summary_parser            1.72s
+[2026-07-20 12:53:13] INFO     | master_parser |   ✅ awr_seg_opt_reads_parser                      3.31s
+[2026-07-20 12:53:14] INFO     | master_parser |   ✅ io_stat_file_parser                           1.94s
+[2026-07-20 12:53:15] INFO     | master_parser |   ✅ io_stat_tablespaces_parser                    1.52s
+[2026-07-20 12:53:15] INFO     | master_parser |   ✅ license_engine_20jul26                        0.04s
+[2026-07-20 12:53:16] INFO     | master_parser |   ✅ awr_seg_phy_reads_parser                      3.20s
+[2026-07-20 12:53:17] INFO     | master_parser |   ✅ load_profile_parser                           1.52s
+[2026-07-20 12:53:18] INFO     | master_parser |   ✅ operating_system_statistics_parser            1.61s
+[2026-07-20 12:53:20] INFO     | master_parser |   ✅ awr_seg_phy_write_req_parser                  3.15s
+[2026-07-20 12:53:20] INFO     | master_parser |   ✅ pga_target_advisory_parser                    1.78s
+[2026-07-20 12:53:21] INFO     | master_parser |   ✅ sga_target_advisory_parser                    1.23s
+[2026-07-20 12:53:23] INFO     | master_parser |   ✅ awr_seg_phy_writes_parser                     2.88s
+[2026-07-20 12:53:23] INFO     | master_parser |   ✅ sql_cluster_wait_parser                       1.82s
+[2026-07-20 12:53:25] INFO     | master_parser |   ✅ sql_cpu_time_parser                           1.58s
+[2026-07-20 12:53:26] INFO     | master_parser |   ✅ awr_seg_row_lck_waits_parser                  3.23s
+[2026-07-20 12:53:27] INFO     | master_parser |   ✅ sql_elapsed_time_parser                       1.80s
+[2026-07-20 12:53:28] INFO     | master_parser |   ✅ sql_executions_parser                         1.66s
+[2026-07-20 12:53:29] INFO     | master_parser |   ✅ awr_seg_table_scan_parser                     3.29s
+[2026-07-20 12:53:30] INFO     | master_parser |   ✅ sql_gets_parser                               1.92s
+[2026-07-20 12:53:32] INFO     | master_parser |   ✅ sql_parse_calls_parser                        1.62s
+[2026-07-20 12:53:32] INFO     | master_parser |   ✅ awr_seg_unopt_reads_parser                    3.27s
+[2026-07-20 12:53:34] INFO     | master_parser |   ✅ sql_physical_reads_unopt_parser               1.80s
+[2026-07-20 12:53:35] INFO     | master_parser |   ✅ sql_reads_parser                              1.70s
+[2026-07-20 12:53:36] INFO     | master_parser |   ✅ background_wait_events_parser                 3.32s
+[2026-07-20 12:53:37] INFO     | master_parser |   ✅ sql_text_parser                               2.00s
+[2026-07-20 12:53:39] INFO     | master_parser |   ✅ buffer_wait_statistics_parser                 3.37s
+[2026-07-20 12:53:39] INFO     | master_parser |   ✅ sql_user_io_wait_parser                       1.70s
+[2026-07-20 12:53:41] INFO     | master_parser |   ✅ time_model_stats_parser                       1.84s
+[2026-07-20 12:53:41] INFO     | master_parser |   ✅ db_info_parser                                2.47s
+[2026-07-20 12:53:43] INFO     | master_parser |   ✅ undo_statistics_parser                        1.78s
+[2026-07-20 12:53:43] INFO     | master_parser | Modules complete in 79.0s — 0 failure(s)
+[2026-07-20 12:53:43] INFO     | master_parser | 🔁 Refreshing materialized views …
+[2026-07-20 12:53:43] INFO     | master_parser |   ✅ public.awr_sql_summary_mv (CONCURRENT)
+[2026-07-20 12:53:43] INFO     | master_parser |   ✅ public.awr_segment_summary_mv (CONCURRENT)
+[2026-07-20 12:53:43] INFO     | master_parser |   ✅ public.awr_fg_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:53:43] INFO     | master_parser |   ✅ public.awr_fg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 12:53:43] INFO     | master_parser |   ✅ public.awr_bg_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:53:43] INFO     | master_parser |   ✅ public.awr_bg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 12:53:43] INFO     | master_parser |   ✅ public.awr_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:53:43] INFO     | master_parser | 🎉 MV refresh complete
+[2026-07-20 12:53:43] INFO     | master_parser | 🤖 Generating recommendations: COLDBPRD snaps 32543–32543
+[2026-07-20 12:53:43] INFO     | master_parser |   ✅ Recommendations stored for COLDBPRD snaps 32543–32543
+[2026-07-20 12:53:43] INFO     | master_parser | 🔍 Running anomaly detection: COLDBPRD snaps 32543–32543
+[2026-07-20 12:53:43] INFO     | master_parser |   ✅ Anomaly detection complete for COLDBPRD snaps 32543–32543
+[2026-07-20 12:53:43] INFO     | master_parser | 📦 Archived to C:\AWR_Insight_Portal_v2\archive\COLDBPRD\awr_COLDBPRD_1_221212_0030_0130.html
+[2026-07-20 12:53:43] INFO     | master_parser | 🎉 File processed successfully: awr_COLDBPRD_1_221212_0030_0130.html
+[2026-07-20 12:53:44] INFO     | master_parser | ============================================================
+[2026-07-20 12:53:44] INFO     | master_parser | 📂 Processing: awr_COLDBPRD_1_221212_0130_0230.html
+[2026-07-20 12:53:44] INFO     | master_parser |    DB Name  : COLDBPRD
+[2026-07-20 12:53:44] INFO     | master_parser |    Full path: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0130_0230.html
+[2026-07-20 12:53:44] INFO     | master_parser | Running 49 parser modules …
+[2026-07-20 12:53:45] INFO     | master_parser |   ✅ enqueue_wait_statistics_parser                3.17s
+[2026-07-20 12:53:46] INFO     | master_parser |   ✅ generic_segment_parser                        1.19s
+[2026-07-20 12:53:46] INFO     | master_parser |   ✅ awr_seg_Phy_read_req_parser                   0.53s
+[2026-07-20 12:53:47] INFO     | master_parser |   ✅ awr_seg_buff_busy_waits_parser                0.48s
+[2026-07-20 12:53:48] INFO     | master_parser |   ✅ foreground_wait_class_parser                  3.16s
+[2026-07-20 12:53:48] INFO     | master_parser |   ✅ awr_seg_cr_blk_rec_parser                     1.45s
+[2026-07-20 12:53:50] INFO     | master_parser |   ✅ awr_seg_cur_blk_rec_parser                    1.48s
+[2026-07-20 12:53:51] INFO     | master_parser |   ✅ foreground_wait_events                        3.29s
+[2026-07-20 12:53:51] INFO     | master_parser |   ✅ awr_seg_db_blk_chg_parser                     1.75s
+[2026-07-20 12:53:53] INFO     | master_parser |   ✅ awr_seg_direct_phy_reads_parser               1.55s
+[2026-07-20 12:53:54] INFO     | master_parser |   ✅ instance_activity_statistics_parser           3.21s
+[2026-07-20 12:53:55] INFO     | master_parser |   ✅ awr_seg_direct_phy_writes_parser              1.69s
+[2026-07-20 12:53:56] INFO     | master_parser |   ✅ awr_seg_gbl_cache_buff_busy_parser            1.56s
+[2026-07-20 12:53:57] INFO     | master_parser |   ✅ instance_efficiency_parser                    2.67s
+[2026-07-20 12:53:58] INFO     | master_parser |   ✅ awr_seg_itl_waits_parser                      1.72s
+[2026-07-20 12:53:59] INFO     | master_parser |   ✅ awr_seg_logical_reads_parser                  1.49s
+[2026-07-20 12:54:00] INFO     | master_parser |   ✅ io_profile_parser                             3.29s
+[2026-07-20 12:54:01] INFO     | master_parser |   ✅ awr_seg_opt_reads_parser                      1.72s
+[2026-07-20 12:54:03] INFO     | master_parser |   ✅ awr_seg_phy_reads_parser                      1.59s
+[2026-07-20 12:54:04] INFO     | master_parser |   ✅ io_stat_by_filetype_summary_parser            3.33s
+[2026-07-20 12:54:04] INFO     | master_parser |   ✅ awr_seg_phy_write_req_parser                  1.70s
+[2026-07-20 12:54:06] INFO     | master_parser |   ✅ awr_seg_phy_writes_parser                     1.52s
+[2026-07-20 12:54:07] INFO     | master_parser |   ✅ io_stat_by_func_filetype_summary_parser       3.33s
+[2026-07-20 12:54:08] INFO     | master_parser |   ✅ awr_seg_row_lck_waits_parser                  1.77s
+[2026-07-20 12:54:09] INFO     | master_parser |   ✅ awr_seg_table_scan_parser                     1.62s
+[2026-07-20 12:54:10] INFO     | master_parser |   ✅ io_stat_by_function_summary_parser            3.24s
+[2026-07-20 12:54:11] INFO     | master_parser |   ✅ awr_seg_unopt_reads_parser                    1.76s
+[2026-07-20 12:54:13] INFO     | master_parser |   ✅ background_wait_events_parser                 1.62s
+[2026-07-20 12:54:14] INFO     | master_parser |   ✅ io_stat_file_parser                           4.36s
+[2026-07-20 12:54:15] INFO     | master_parser |   ✅ buffer_wait_statistics_parser                 1.99s
+[2026-07-20 12:54:16] INFO     | master_parser |   ✅ db_info_parser                                1.08s
+[2026-07-20 12:54:18] INFO     | master_parser |   ✅ enqueue_wait_statistics_parser                1.79s
+[2026-07-20 12:54:18] INFO     | master_parser |   ✅ io_stat_tablespaces_parser                    3.45s
+[2026-07-20 12:54:18] INFO     | master_parser |   ✅ license_engine_20jul26                        0.01s
+[2026-07-20 12:54:19] INFO     | master_parser |   ✅ foreground_wait_class_parser                  1.77s
+[2026-07-20 12:54:21] INFO     | master_parser |   ✅ load_profile_parser                           3.13s
+[2026-07-20 12:54:21] INFO     | master_parser |   ✅ foreground_wait_events                        1.81s
+[2026-07-20 12:54:23] INFO     | master_parser |   ✅ instance_activity_statistics_parser           1.85s
+[2026-07-20 12:54:24] INFO     | master_parser |   ✅ instance_efficiency_parser                    1.28s
+[2026-07-20 12:54:25] INFO     | master_parser |   ✅ operating_system_statistics_parser            3.50s
+[2026-07-20 12:54:26] INFO     | master_parser |   ✅ io_profile_parser                             1.88s
+[2026-07-20 12:54:28] INFO     | master_parser |   ✅ io_stat_by_filetype_summary_parser            1.69s
+[2026-07-20 12:54:28] INFO     | master_parser |   ✅ pga_target_advisory_parser                    3.54s
+[2026-07-20 12:54:30] INFO     | master_parser |   ✅ io_stat_by_func_filetype_summary_parser       1.71s
+[2026-07-20 12:54:31] INFO     | master_parser |   ✅ io_stat_by_function_summary_parser            1.82s
+[2026-07-20 12:54:32] ERROR    | master_parser |   ❌ sga_target_advisory_parser                    3.75s — 'SGA Target Size (M)'
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\indexes\base.py", line 3812, in get_loc
+    return self._engine.get_loc(casted_key)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "pandas/_libs/index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7088, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7096, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'SGA Target Size (M)'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 370, in process_file
+    ok      = _run_module(module, module_name, filepath)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 95, in _run_module
+    exec(code, {
+    ~~~~^^^^^^^^
+        "__file__":     file_origin,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        "__builtins__": __builtins__,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    })
+    ^^
+  File "C:\AWR_Insight_Portal_v2\modules\sga_target_advisory_parser.py", line 124, in <module>
+    records = parse_sga_target_advisory(_target)
+  File "C:\AWR_Insight_Portal_v2\modules\sga_target_advisory_parser.py", line 61, in parse_sga_target_advisory
+    "sga_target_size_m": clean_number(row["SGA Target Size (M)"]),
+                                      ~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\series.py", line 1130, in __getitem__
+    return self._get_value(key)
+           ~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\series.py", line 1246, in _get_value
+    loc = self.index.get_loc(label)
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\indexes\base.py", line 3819, in get_loc
+    raise KeyError(key) from err
+KeyError: 'SGA Target Size (M)'
+[2026-07-20 12:54:33] INFO     | master_parser |   ✅ io_stat_file_parser                           1.90s
+[2026-07-20 12:54:35] INFO     | master_parser |   ✅ io_stat_tablespaces_parser                    1.51s
+[2026-07-20 12:54:35] INFO     | master_parser |   ✅ license_engine_20jul26                        0.01s
+[2026-07-20 12:54:35] INFO     | master_parser |   ✅ sql_cluster_wait_parser                       3.26s
+[2026-07-20 12:54:36] INFO     | master_parser |   ✅ load_profile_parser                           1.34s
+[2026-07-20 12:54:38] INFO     | master_parser |   ✅ operating_system_statistics_parser            1.56s
+[2026-07-20 12:54:38] INFO     | master_parser |   ✅ sql_cpu_time_parser                           3.34s
+[2026-07-20 12:54:40] INFO     | master_parser |   ✅ pga_target_advisory_parser                    1.88s
+[2026-07-20 12:54:41] INFO     | master_parser |   ✅ sga_target_advisory_parser                    1.58s
+[2026-07-20 12:54:42] INFO     | master_parser |   ✅ sql_elapsed_time_parser                       3.59s
+[2026-07-20 12:54:43] INFO     | master_parser |   ✅ sql_cluster_wait_parser                       1.64s
+[2026-07-20 12:54:44] INFO     | master_parser |   ✅ sql_cpu_time_parser                           1.62s
+[2026-07-20 12:54:45] INFO     | master_parser |   ✅ sql_executions_parser                         3.37s
+[2026-07-20 12:54:46] INFO     | master_parser |   ✅ sql_elapsed_time_parser                       1.79s
+[2026-07-20 12:54:48] INFO     | master_parser |   ✅ sql_executions_parser                         1.47s
+[2026-07-20 12:54:49] INFO     | master_parser |   ✅ sql_gets_parser                               3.30s
+[2026-07-20 12:54:49] INFO     | master_parser |   ✅ sql_gets_parser                               1.76s
+[2026-07-20 12:54:51] INFO     | master_parser |   ✅ sql_parse_calls_parser                        1.59s
+[2026-07-20 12:54:52] INFO     | master_parser |   ✅ sql_parse_calls_parser                        3.43s
+[2026-07-20 12:54:53] INFO     | master_parser |   ✅ sql_physical_reads_unopt_parser               1.76s
+[2026-07-20 12:54:54] INFO     | master_parser |   ✅ sql_reads_parser                              1.50s
+[2026-07-20 12:54:55] INFO     | master_parser |   ✅ sql_physical_reads_unopt_parser               3.26s
+[2026-07-20 12:54:56] INFO     | master_parser |   ✅ sql_text_parser                               1.72s
+[2026-07-20 12:54:58] INFO     | master_parser |   ✅ sql_user_io_wait_parser                       1.87s
+[2026-07-20 12:54:59] INFO     | master_parser |   ✅ sql_reads_parser                              3.44s
+[2026-07-20 12:55:00] INFO     | master_parser |   ✅ time_model_stats_parser                       1.64s
+[2026-07-20 12:55:01] INFO     | master_parser |   ✅ undo_statistics_parser                        1.64s
+[2026-07-20 12:55:01] INFO     | master_parser | Modules complete in 76.7s — 0 failure(s)
+[2026-07-20 12:55:01] INFO     | master_parser | 🔁 Refreshing materialized views …
+[2026-07-20 12:55:01] INFO     | master_parser |   ✅ public.awr_sql_summary_mv (CONCURRENT)
+[2026-07-20 12:55:01] INFO     | master_parser |   ✅ public.awr_segment_summary_mv (CONCURRENT)
+[2026-07-20 12:55:01] INFO     | master_parser |   ✅ public.awr_fg_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:55:01] INFO     | master_parser |   ✅ public.awr_fg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 12:55:01] INFO     | master_parser |   ✅ public.awr_bg_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:55:01] INFO     | master_parser |   ✅ public.awr_bg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 12:55:01] INFO     | master_parser |   ✅ public.awr_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:55:01] INFO     | master_parser | 🎉 MV refresh complete
+[2026-07-20 12:55:01] INFO     | master_parser | 🤖 Generating recommendations: COLDBPRD snaps 32544–32544
+[2026-07-20 12:55:02] INFO     | master_parser |   ✅ Recommendations stored for COLDBPRD snaps 32544–32544
+[2026-07-20 12:55:02] INFO     | master_parser | 🔍 Running anomaly detection: COLDBPRD snaps 32544–32544
+[2026-07-20 12:55:02] INFO     | master_parser |   ✅ Anomaly detection complete for COLDBPRD snaps 32544–32544
+[2026-07-20 12:55:02] INFO     | master_parser | 📦 Archived to C:\AWR_Insight_Portal_v2\archive\COLDBPRD\awr_COLDBPRD_1_221212_0130_0230.html
+[2026-07-20 12:55:02] INFO     | master_parser | 🎉 File processed successfully: awr_COLDBPRD_1_221212_0130_0230.html
+[2026-07-20 12:55:02] INFO     | master_parser |   ✅ sql_text_parser                               3.28s
+[2026-07-20 12:55:03] INFO     | master_parser | ============================================================
+[2026-07-20 12:55:03] INFO     | master_parser | 📂 Processing: awr_COLDBPRD_1_221212_0230_0330.html
+[2026-07-20 12:55:03] INFO     | master_parser |    DB Name  : COLDBPRD
+[2026-07-20 12:55:03] INFO     | master_parser |    Full path: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0230_0330.html
+[2026-07-20 12:55:03] INFO     | master_parser | Running 49 parser modules …
+[2026-07-20 12:55:04] INFO     | master_parser |   ✅ generic_segment_parser                        1.24s
+[2026-07-20 12:55:05] INFO     | master_parser |   ✅ awr_seg_Phy_read_req_parser                   0.51s
+[2026-07-20 12:55:05] INFO     | master_parser |   ✅ sql_user_io_wait_parser                       2.96s
+[2026-07-20 12:55:05] INFO     | master_parser |   ✅ awr_seg_buff_busy_waits_parser                0.48s
+[2026-07-20 12:55:07] INFO     | master_parser |   ✅ awr_seg_cr_blk_rec_parser                     1.46s
+[2026-07-20 12:55:08] INFO     | master_parser |   ✅ awr_seg_cur_blk_rec_parser                    1.46s
+[2026-07-20 12:55:08] INFO     | master_parser |   ✅ time_model_stats_parser                       3.32s
+[2026-07-20 12:55:10] INFO     | master_parser |   ✅ awr_seg_db_blk_chg_parser                     1.68s
+[2026-07-20 12:55:11] INFO     | master_parser |   ✅ awr_seg_direct_phy_reads_parser               1.49s
+[2026-07-20 12:55:12] INFO     | master_parser |   ✅ undo_statistics_parser                        3.34s
+[2026-07-20 12:55:12] INFO     | master_parser | Modules complete in 154.4s — 1 failure(s)
+[2026-07-20 12:55:12] INFO     | master_parser | 🔁 Refreshing materialized views …
+[2026-07-20 12:55:12] INFO     | master_parser |   ✅ public.awr_sql_summary_mv (CONCURRENT)
+[2026-07-20 12:55:12] INFO     | master_parser |   ✅ public.awr_segment_summary_mv (CONCURRENT)
+[2026-07-20 12:55:12] INFO     | master_parser |   ✅ public.awr_fg_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:55:12] INFO     | master_parser |   ✅ public.awr_fg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 12:55:12] INFO     | master_parser |   ✅ public.awr_bg_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:55:12] INFO     | master_parser |   ✅ public.awr_bg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 12:55:12] INFO     | master_parser |   ✅ public.awr_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:55:12] INFO     | master_parser | 🎉 MV refresh complete
+[2026-07-20 12:55:12] INFO     | master_parser | 🤖 Generating recommendations: ONE_LMS snaps 139373–139373
+[2026-07-20 12:55:12] INFO     | master_parser |   ✅ Recommendations stored for ONE_LMS snaps 139373–139373
+[2026-07-20 12:55:12] INFO     | master_parser | 🔍 Running anomaly detection: ONE_LMS snaps 139373–139373
+[2026-07-20 12:55:12] INFO     | master_parser |   ✅ Anomaly detection complete for ONE_LMS snaps 139373–139373
+[2026-07-20 12:55:12] INFO     | master_parser | 📦 Archived to C:\AWR_Insight_Portal_v2\archive\ONE_LMS\10_1.html
+[2026-07-20 12:55:12] WARNING  | master_parser | ⚠  File processed with 1 module error(s): 10_1.html
+[2026-07-20 12:55:12] WARNING  | master_parser |    Failed modules: ['sga_target_advisory_parser']
+[2026-07-20 12:55:13] INFO     | master_parser |   ✅ awr_seg_direct_phy_writes_parser              1.68s
+[2026-07-20 12:55:14] INFO     | master_parser | ============================================================
+[2026-07-20 12:55:14] INFO     | master_parser | 📂 Processing: 11_1.html
+[2026-07-20 12:55:14] INFO     | master_parser |    DB Name  : ONE_LMS
+[2026-07-20 12:55:14] INFO     | master_parser |    Full path: C:\AWR_Insight_Portal_v2\awr_reports\ONE_LMS\11_1.html
+[2026-07-20 12:55:14] INFO     | master_parser | Running 49 parser modules …
+[2026-07-20 12:55:14] INFO     | master_parser |   ✅ awr_seg_gbl_cache_buff_busy_parser            1.11s
+[2026-07-20 12:55:16] INFO     | master_parser |   ✅ generic_segment_parser                        1.94s
+[2026-07-20 12:55:16] INFO     | master_parser |   ✅ awr_seg_itl_waits_parser                      1.60s
+[2026-07-20 12:55:18] INFO     | master_parser |   ✅ awr_seg_logical_reads_parser                  1.73s
+[2026-07-20 12:55:18] INFO     | master_parser |   ✅ awr_seg_Phy_read_req_parser                   2.44s
+[2026-07-20 12:55:19] INFO     | master_parser |   ✅ awr_seg_opt_reads_parser                      1.43s
+[2026-07-20 12:55:21] INFO     | master_parser |   ✅ awr_seg_phy_reads_parser                      1.60s
+[2026-07-20 12:55:21] INFO     | master_parser |   ✅ awr_seg_buff_busy_waits_parser                3.38s
+[2026-07-20 12:55:22] INFO     | master_parser |   ✅ awr_seg_phy_write_req_parser                  1.54s
+[2026-07-20 12:55:24] INFO     | master_parser |   ✅ awr_seg_phy_writes_parser                     1.61s
+[2026-07-20 12:55:25] INFO     | master_parser |   ✅ awr_seg_cr_blk_rec_parser                     3.33s
+[2026-07-20 12:55:25] INFO     | master_parser |   ✅ awr_seg_row_lck_waits_parser                  1.48s
+[2026-07-20 12:55:27] INFO     | master_parser |   ✅ awr_seg_table_scan_parser                     1.60s
+[2026-07-20 12:55:28] INFO     | master_parser |   ✅ awr_seg_cur_blk_rec_parser                    3.30s
+[2026-07-20 12:55:28] INFO     | master_parser |   ✅ awr_seg_unopt_reads_parser                    1.49s
+[2026-07-20 12:55:30] INFO     | master_parser |   ✅ background_wait_events_parser                 1.59s
+[2026-07-20 12:55:31] INFO     | master_parser |   ✅ awr_seg_db_blk_chg_parser                     3.40s
+[2026-07-20 12:55:31] INFO     | master_parser |   ✅ buffer_wait_statistics_parser                 1.60s
+[2026-07-20 12:55:33] INFO     | master_parser |   ✅ db_info_parser                                1.08s
+[2026-07-20 12:55:34] INFO     | master_parser |   ✅ enqueue_wait_statistics_parser                1.70s
+[2026-07-20 12:55:35] INFO     | master_parser |   ✅ awr_seg_direct_phy_reads_parser               3.44s
+[2026-07-20 12:55:36] INFO     | master_parser |   ✅ foreground_wait_class_parser                  1.44s
+[2026-07-20 12:55:37] INFO     | master_parser |   ✅ foreground_wait_events                        1.61s
+[2026-07-20 12:55:38] INFO     | master_parser |   ✅ awr_seg_direct_phy_writes_parser              3.30s
+[2026-07-20 12:55:39] INFO     | master_parser |   ✅ instance_activity_statistics_parser           1.41s
+[2026-07-20 12:55:40] INFO     | master_parser |   ✅ instance_efficiency_parser                    1.07s
+[2026-07-20 12:55:41] INFO     | master_parser |   ✅ awr_seg_gbl_cache_buff_busy_parser            3.27s
+[2026-07-20 12:55:42] INFO     | master_parser |   ✅ io_profile_parser                             1.73s
+[2026-07-20 12:55:43] INFO     | master_parser |   ✅ io_stat_by_filetype_summary_parser            1.44s
+[2026-07-20 12:55:45] INFO     | master_parser |   ✅ io_stat_by_func_filetype_summary_parser       1.59s
+[2026-07-20 12:55:45] INFO     | master_parser |   ✅ awr_seg_itl_waits_parser                      3.33s
+[2026-07-20 12:55:46] INFO     | master_parser |   ✅ io_stat_by_function_summary_parser            1.53s
+[2026-07-20 12:55:48] INFO     | master_parser |   ✅ io_stat_file_parser                           1.76s
+[2026-07-20 12:55:48] INFO     | master_parser |   ✅ awr_seg_logical_reads_parser                  3.40s
+[2026-07-20 12:55:49] INFO     | master_parser |   ✅ io_stat_tablespaces_parser                    1.40s
+[2026-07-20 12:55:49] INFO     | master_parser |   ✅ license_engine_20jul26                        0.02s
+[2026-07-20 12:55:51] INFO     | master_parser |   ✅ load_profile_parser                           1.33s
+[2026-07-20 12:55:51] INFO     | master_parser |   ✅ awr_seg_opt_reads_parser                      3.24s
+[2026-07-20 12:55:52] INFO     | master_parser |   ✅ operating_system_statistics_parser            1.46s
+[2026-07-20 12:55:54] INFO     | master_parser |   ✅ pga_target_advisory_parser                    1.52s
+[2026-07-20 12:55:55] INFO     | master_parser |   ✅ awr_seg_phy_reads_parser                      3.33s
+[2026-07-20 12:55:55] INFO     | master_parser |   ✅ sga_target_advisory_parser                    1.64s
+[2026-07-20 12:55:57] INFO     | master_parser |   ✅ sql_cluster_wait_parser                       1.40s
+[2026-07-20 12:55:58] INFO     | master_parser |   ✅ awr_seg_phy_write_req_parser                  3.34s
+[2026-07-20 12:55:58] INFO     | master_parser |   ✅ sql_cpu_time_parser                           1.71s
+[2026-07-20 12:56:00] INFO     | master_parser |   ✅ sql_elapsed_time_parser                       1.50s
+[2026-07-20 12:56:01] INFO     | master_parser |   ✅ sql_executions_parser                         1.65s
+[2026-07-20 12:56:01] INFO     | master_parser |   ✅ awr_seg_phy_writes_parser                     3.40s
+[2026-07-20 12:56:03] INFO     | master_parser |   ✅ sql_gets_parser                               1.39s
+[2026-07-20 12:56:04] INFO     | master_parser |   ✅ sql_parse_calls_parser                        1.58s
+[2026-07-20 12:56:05] INFO     | master_parser |   ✅ awr_seg_row_lck_waits_parser                  3.35s
+[2026-07-20 12:56:06] INFO     | master_parser |   ✅ sql_physical_reads_unopt_parser               1.56s
+[2026-07-20 12:56:07] INFO     | master_parser |   ✅ sql_reads_parser                              1.48s
+[2026-07-20 12:56:08] INFO     | master_parser |   ✅ awr_seg_table_scan_parser                     3.41s
+[2026-07-20 12:56:09] INFO     | master_parser |   ✅ sql_text_parser                               1.79s
+[2026-07-20 12:56:11] INFO     | master_parser |   ✅ sql_user_io_wait_parser                       1.46s
+[2026-07-20 12:56:12] INFO     | master_parser |   ✅ awr_seg_unopt_reads_parser                    3.35s
+[2026-07-20 12:56:12] INFO     | master_parser |   ✅ time_model_stats_parser                       1.72s
+[2026-07-20 12:56:14] INFO     | master_parser |   ✅ undo_statistics_parser                        1.44s
+[2026-07-20 12:56:14] INFO     | master_parser | Modules complete in 70.8s — 0 failure(s)
+[2026-07-20 12:56:14] INFO     | master_parser | 🔁 Refreshing materialized views …
+[2026-07-20 12:56:14] INFO     | master_parser |   ✅ public.awr_sql_summary_mv (CONCURRENT)
+[2026-07-20 12:56:14] INFO     | master_parser |   ✅ public.awr_segment_summary_mv (CONCURRENT)
+[2026-07-20 12:56:14] INFO     | master_parser |   ✅ public.awr_fg_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:56:14] INFO     | master_parser |   ✅ public.awr_fg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 12:56:14] INFO     | master_parser |   ✅ public.awr_bg_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:56:14] INFO     | master_parser |   ✅ public.awr_bg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 12:56:14] INFO     | master_parser |   ✅ public.awr_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:56:14] INFO     | master_parser | 🎉 MV refresh complete
+[2026-07-20 12:56:14] INFO     | master_parser | 🤖 Generating recommendations: COLDBPRD snaps 32545–32545
+[2026-07-20 12:56:14] INFO     | master_parser |   ✅ Recommendations stored for COLDBPRD snaps 32545–32545
+[2026-07-20 12:56:14] INFO     | master_parser | 🔍 Running anomaly detection: COLDBPRD snaps 32545–32545
+[2026-07-20 12:56:14] INFO     | master_parser |   ✅ Anomaly detection complete for COLDBPRD snaps 32545–32545
+[2026-07-20 12:56:14] INFO     | master_parser | 📦 Archived to C:\AWR_Insight_Portal_v2\archive\COLDBPRD\awr_COLDBPRD_1_221212_0230_0330.html
+[2026-07-20 12:56:14] INFO     | master_parser | 🎉 File processed successfully: awr_COLDBPRD_1_221212_0230_0330.html
+[2026-07-20 12:56:15] INFO     | master_parser |   ✅ background_wait_events_parser                 3.40s
+[2026-07-20 12:56:16] INFO     | master_parser | ============================================================
+[2026-07-20 12:56:16] INFO     | master_parser | 📂 Processing: awr_COLDBPRD_1_221212_0330_0430.html
+[2026-07-20 12:56:16] INFO     | master_parser |    DB Name  : COLDBPRD
+[2026-07-20 12:56:16] INFO     | master_parser |    Full path: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0330_0430.html
+[2026-07-20 12:56:16] INFO     | master_parser | Running 49 parser modules …
+[2026-07-20 12:56:17] INFO     | master_parser |   ✅ generic_segment_parser                        1.26s
+[2026-07-20 12:56:18] INFO     | master_parser |   ✅ awr_seg_Phy_read_req_parser                   0.68s
+[2026-07-20 12:56:18] INFO     | master_parser |   ✅ buffer_wait_statistics_parser                 3.13s
+[2026-07-20 12:56:19] INFO     | master_parser |   ✅ awr_seg_buff_busy_waits_parser                1.38s
+[2026-07-20 12:56:21] INFO     | master_parser |   ✅ awr_seg_cr_blk_rec_parser                     1.71s
+[2026-07-20 12:56:21] INFO     | master_parser |   ✅ db_info_parser                                2.61s
+[2026-07-20 12:56:22] INFO     | master_parser |   ✅ awr_seg_cur_blk_rec_parser                    1.58s
+[2026-07-20 12:56:24] INFO     | master_parser |   ✅ awr_seg_db_blk_chg_parser                     1.80s
+[2026-07-20 12:56:24] INFO     | master_parser |   ✅ enqueue_wait_statistics_parser                3.39s
+[2026-07-20 12:56:26] INFO     | master_parser |   ✅ awr_seg_direct_phy_reads_parser               1.66s
+[2026-07-20 12:56:27] INFO     | master_parser |   ✅ foreground_wait_class_parser                  3.34s
+[2026-07-20 12:56:27] INFO     | master_parser |   ✅ awr_seg_direct_phy_writes_parser              1.74s
+[2026-07-20 12:56:29] INFO     | master_parser |   ✅ awr_seg_gbl_cache_buff_busy_parser            1.57s
+[2026-07-20 12:56:31] INFO     | master_parser |   ✅ foreground_wait_events                        3.40s
+[2026-07-20 12:56:31] INFO     | master_parser |   ✅ awr_seg_itl_waits_parser                      1.92s
+[2026-07-20 12:56:33] INFO     | master_parser |   ✅ awr_seg_logical_reads_parser                  1.54s
+[2026-07-20 12:56:34] INFO     | master_parser |   ✅ instance_activity_statistics_parser           2.85s
+[2026-07-20 12:56:34] INFO     | master_parser |   ✅ awr_seg_opt_reads_parser                      1.32s
+[2026-07-20 12:56:35] INFO     | master_parser |   ✅ awr_seg_phy_reads_parser                      1.63s
+[2026-07-20 12:56:36] INFO     | master_parser |   ✅ instance_efficiency_parser                    2.71s
+[2026-07-20 12:56:37] INFO     | master_parser |   ✅ awr_seg_phy_write_req_parser                  1.87s
+[2026-07-20 12:56:39] INFO     | master_parser |   ✅ awr_seg_phy_writes_parser                     1.57s
+[2026-07-20 12:56:40] INFO     | master_parser |   ✅ io_profile_parser                             3.45s
+[2026-07-20 12:56:41] INFO     | master_parser |   ✅ awr_seg_row_lck_waits_parser                  1.80s
+[2026-07-20 12:56:42] INFO     | master_parser |   ✅ awr_seg_table_scan_parser                     1.67s
+[2026-07-20 12:56:43] INFO     | master_parser |   ✅ io_stat_by_filetype_summary_parser            3.46s
+[2026-07-20 12:56:44] INFO     | master_parser |   ✅ awr_seg_unopt_reads_parser                    1.78s
+[2026-07-20 12:56:46] INFO     | master_parser |   ✅ background_wait_events_parser                 1.68s
+[2026-07-20 12:56:47] INFO     | master_parser |   ✅ io_stat_by_func_filetype_summary_parser       3.40s
+[2026-07-20 12:56:48] INFO     | master_parser |   ✅ buffer_wait_statistics_parser                 1.76s
+[2026-07-20 12:56:49] INFO     | master_parser |   ✅ db_info_parser                                1.26s
+[2026-07-20 12:56:50] INFO     | master_parser |   ✅ io_stat_by_function_summary_parser            3.44s
+[2026-07-20 12:56:51] INFO     | master_parser |   ✅ enqueue_wait_statistics_parser                1.89s
+[2026-07-20 12:56:52] INFO     | master_parser |   ✅ foreground_wait_class_parser                  1.55s
+[2026-07-20 12:56:54] INFO     | master_parser |   ✅ foreground_wait_events                        1.91s
+[2026-07-20 12:56:54] INFO     | master_parser |   ✅ io_stat_file_parser                           4.24s
+[2026-07-20 12:56:56] INFO     | master_parser |   ✅ instance_activity_statistics_parser           1.78s
+[2026-07-20 12:56:57] INFO     | master_parser |   ✅ instance_efficiency_parser                    1.43s
+[2026-07-20 12:56:58] INFO     | master_parser |   ✅ io_stat_tablespaces_parser                    3.73s
+[2026-07-20 12:56:58] INFO     | master_parser |   ✅ license_engine_20jul26                        0.01s
+[2026-07-20 12:56:59] INFO     | master_parser |   ✅ io_profile_parser                             1.62s
+[2026-07-20 12:57:01] INFO     | master_parser |   ✅ load_profile_parser                           2.50s
+[2026-07-20 12:57:01] INFO     | master_parser |   ✅ io_stat_by_filetype_summary_parser            1.84s
+[2026-07-20 12:57:03] INFO     | master_parser |   ✅ io_stat_by_func_filetype_summary_parser       1.75s
+[2026-07-20 12:57:04] INFO     | master_parser |   ✅ operating_system_statistics_parser            3.63s
+[2026-07-20 12:57:04] INFO     | master_parser |   ✅ io_stat_by_function_summary_parser            1.86s
+[2026-07-20 12:57:06] INFO     | master_parser |   ✅ io_stat_file_parser                           1.66s
+[2026-07-20 12:57:07] INFO     | master_parser |   ✅ pga_target_advisory_parser                    3.19s
+[2026-07-20 12:57:08] INFO     | master_parser |   ✅ io_stat_tablespaces_parser                    1.86s
+[2026-07-20 12:57:08] INFO     | master_parser |   ✅ license_engine_20jul26                        0.02s
+[2026-07-20 12:57:09] INFO     | master_parser |   ✅ load_profile_parser                           1.35s
+[2026-07-20 12:57:11] ERROR    | master_parser |   ❌ sga_target_advisory_parser                    3.46s — 'SGA Target Size (M)'
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\indexes\base.py", line 3812, in get_loc
+    return self._engine.get_loc(casted_key)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "pandas/_libs/index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7088, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7096, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'SGA Target Size (M)'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 370, in process_file
+    ok      = _run_module(module, module_name, filepath)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 95, in _run_module
+    exec(code, {
+    ~~~~^^^^^^^^
+        "__file__":     file_origin,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        "__builtins__": __builtins__,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    })
+    ^^
+  File "C:\AWR_Insight_Portal_v2\modules\sga_target_advisory_parser.py", line 124, in <module>
+    records = parse_sga_target_advisory(_target)
+  File "C:\AWR_Insight_Portal_v2\modules\sga_target_advisory_parser.py", line 61, in parse_sga_target_advisory
+    "sga_target_size_m": clean_number(row["SGA Target Size (M)"]),
+                                      ~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\series.py", line 1130, in __getitem__
+    return self._get_value(key)
+           ~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\series.py", line 1246, in _get_value
+    loc = self.index.get_loc(label)
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\indexes\base.py", line 3819, in get_loc
+    raise KeyError(key) from err
+KeyError: 'SGA Target Size (M)'
+[2026-07-20 12:57:11] INFO     | master_parser |   ✅ operating_system_statistics_parser            1.90s
+[2026-07-20 12:57:13] INFO     | master_parser |   ✅ pga_target_advisory_parser                    1.66s
+[2026-07-20 12:57:15] INFO     | master_parser |   ✅ sql_cluster_wait_parser                       3.59s
+[2026-07-20 12:57:15] INFO     | master_parser |   ✅ sga_target_advisory_parser                    2.01s
+[2026-07-20 12:57:17] INFO     | master_parser |   ✅ sql_cluster_wait_parser                       1.65s
+[2026-07-20 12:57:18] INFO     | master_parser |   ✅ sql_cpu_time_parser                           3.48s
+[2026-07-20 12:57:18] INFO     | master_parser |   ✅ sql_cpu_time_parser                           1.87s
+[2026-07-20 12:57:20] INFO     | master_parser |   ✅ sql_elapsed_time_parser                       1.63s
+[2026-07-20 12:57:22] INFO     | master_parser |   ✅ sql_elapsed_time_parser                       3.58s
+[2026-07-20 12:57:22] INFO     | master_parser |   ✅ sql_executions_parser                         1.96s
+[2026-07-20 12:57:24] INFO     | master_parser |   ✅ sql_gets_parser                               1.70s
+[2026-07-20 12:57:25] INFO     | master_parser |   ✅ sql_executions_parser                         3.27s
+[2026-07-20 12:57:26] INFO     | master_parser |   ✅ sql_parse_calls_parser                        1.80s
+[2026-07-20 12:57:27] INFO     | master_parser |   ✅ sql_physical_reads_unopt_parser               1.69s
+[2026-07-20 12:57:28] INFO     | master_parser |   ✅ sql_gets_parser                               3.45s
+[2026-07-20 12:57:29] INFO     | master_parser |   ✅ sql_reads_parser                              1.92s
+[2026-07-20 12:57:31] INFO     | master_parser |   ✅ sql_text_parser                               1.68s
+[2026-07-20 12:57:32] INFO     | master_parser |   ✅ sql_parse_calls_parser                        3.28s
+[2026-07-20 12:57:33] INFO     | master_parser |   ✅ sql_user_io_wait_parser                       1.89s
+[2026-07-20 12:57:34] INFO     | master_parser |   ✅ time_model_stats_parser                       1.63s
+[2026-07-20 12:57:35] INFO     | master_parser |   ✅ sql_physical_reads_unopt_parser               3.38s
+[2026-07-20 12:57:36] INFO     | master_parser |   ✅ undo_statistics_parser                        1.76s
+[2026-07-20 12:57:36] INFO     | master_parser | Modules complete in 80.4s — 0 failure(s)
+[2026-07-20 12:57:36] INFO     | master_parser | 🔁 Refreshing materialized views …
+[2026-07-20 12:57:36] INFO     | master_parser |   ✅ public.awr_sql_summary_mv (CONCURRENT)
+[2026-07-20 12:57:36] INFO     | master_parser |   ✅ public.awr_segment_summary_mv (CONCURRENT)
+[2026-07-20 12:57:36] INFO     | master_parser |   ✅ public.awr_fg_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:57:36] INFO     | master_parser |   ✅ public.awr_fg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 12:57:36] INFO     | master_parser |   ✅ public.awr_bg_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:57:36] INFO     | master_parser |   ✅ public.awr_bg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 12:57:36] INFO     | master_parser |   ✅ public.awr_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:57:36] INFO     | master_parser | 🎉 MV refresh complete
+[2026-07-20 12:57:36] INFO     | master_parser | 🤖 Generating recommendations: COLDBPRD snaps 32546–32546
+[2026-07-20 12:57:36] INFO     | master_parser |   ✅ Recommendations stored for COLDBPRD snaps 32546–32546
+[2026-07-20 12:57:36] INFO     | master_parser | 🔍 Running anomaly detection: COLDBPRD snaps 32546–32546
+[2026-07-20 12:57:37] INFO     | master_parser |   ✅ Anomaly detection complete for COLDBPRD snaps 32546–32546
+[2026-07-20 12:57:37] INFO     | master_parser | 📦 Archived to C:\AWR_Insight_Portal_v2\archive\COLDBPRD\awr_COLDBPRD_1_221212_0330_0430.html
+[2026-07-20 12:57:37] INFO     | master_parser | 🎉 File processed successfully: awr_COLDBPRD_1_221212_0330_0430.html
+[2026-07-20 12:57:38] INFO     | master_parser | ============================================================
+[2026-07-20 12:57:38] INFO     | master_parser | 📂 Processing: awr_COLDBPRD_1_221212_0430_0530.html
+[2026-07-20 12:57:38] INFO     | master_parser |    DB Name  : COLDBPRD
+[2026-07-20 12:57:38] INFO     | master_parser |    Full path: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0430_0530.html
+[2026-07-20 12:57:38] INFO     | master_parser | Running 49 parser modules …
+[2026-07-20 12:57:38] INFO     | master_parser |   ✅ sql_reads_parser                              3.13s
+[2026-07-20 12:57:39] INFO     | master_parser |   ✅ generic_segment_parser                        1.26s
+[2026-07-20 12:57:40] INFO     | master_parser |   ✅ awr_seg_Phy_read_req_parser                   0.75s
+[2026-07-20 12:57:41] INFO     | master_parser |   ✅ awr_seg_buff_busy_waits_parser                0.75s
+[2026-07-20 12:57:41] INFO     | master_parser |   ✅ sql_text_parser                               3.16s
+[2026-07-20 12:57:42] INFO     | master_parser |   ✅ awr_seg_cr_blk_rec_parser                     1.65s
+[2026-07-20 12:57:44] INFO     | master_parser |   ✅ awr_seg_cur_blk_rec_parser                    1.56s
+[2026-07-20 12:57:45] INFO     | master_parser |   ✅ sql_user_io_wait_parser                       3.45s
+[2026-07-20 12:57:46] INFO     | master_parser |   ✅ awr_seg_db_blk_chg_parser                     2.05s
+[2026-07-20 12:57:48] INFO     | master_parser |   ✅ awr_seg_direct_phy_reads_parser               1.62s
+[2026-07-20 12:57:48] INFO     | master_parser |   ✅ time_model_stats_parser                       3.41s
+[2026-07-20 12:57:49] INFO     | master_parser |   ✅ awr_seg_direct_phy_writes_parser              1.53s
+[2026-07-20 12:57:50] INFO     | master_parser |   ✅ awr_seg_gbl_cache_buff_busy_parser            1.41s
+[2026-07-20 12:57:51] INFO     | master_parser |   ✅ undo_statistics_parser                        3.23s
+[2026-07-20 12:57:51] INFO     | master_parser | Modules complete in 157.7s — 1 failure(s)
+[2026-07-20 12:57:51] INFO     | master_parser | 🔁 Refreshing materialized views …
+[2026-07-20 12:57:51] INFO     | master_parser |   ✅ public.awr_sql_summary_mv (CONCURRENT)
+[2026-07-20 12:57:51] INFO     | master_parser |   ✅ public.awr_segment_summary_mv (CONCURRENT)
+[2026-07-20 12:57:51] INFO     | master_parser |   ✅ public.awr_fg_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:57:52] INFO     | master_parser |   ✅ public.awr_fg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 12:57:52] INFO     | master_parser |   ✅ public.awr_bg_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:57:52] INFO     | master_parser |   ✅ public.awr_bg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 12:57:52] INFO     | master_parser |   ✅ public.awr_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:57:52] INFO     | master_parser | 🎉 MV refresh complete
+[2026-07-20 12:57:52] INFO     | master_parser | 🤖 Generating recommendations: ONE_LMS snaps 139377–139377
+[2026-07-20 12:57:52] INFO     | master_parser |   ✅ Recommendations stored for ONE_LMS snaps 139377–139377
+[2026-07-20 12:57:52] INFO     | master_parser | 🔍 Running anomaly detection: ONE_LMS snaps 139377–139377
+[2026-07-20 12:57:52] INFO     | master_parser |   ✅ Anomaly detection complete for ONE_LMS snaps 139377–139377
+[2026-07-20 12:57:52] INFO     | master_parser | 📦 Archived to C:\AWR_Insight_Portal_v2\archive\ONE_LMS\11_1.html
+[2026-07-20 12:57:52] WARNING  | master_parser | ⚠  File processed with 1 module error(s): 11_1.html
+[2026-07-20 12:57:52] WARNING  | master_parser |    Failed modules: ['sga_target_advisory_parser']
+[2026-07-20 12:57:52] INFO     | master_parser |   ✅ awr_seg_itl_waits_parser                      1.75s
+[2026-07-20 12:57:53] INFO     | master_parser | ============================================================
+[2026-07-20 12:57:53] INFO     | master_parser | 📂 Processing: 12_1.html
+[2026-07-20 12:57:53] INFO     | master_parser |    DB Name  : ONE_LMS
+[2026-07-20 12:57:53] INFO     | master_parser |    Full path: C:\AWR_Insight_Portal_v2\awr_reports\ONE_LMS\12_1.html
+[2026-07-20 12:57:53] INFO     | master_parser | Running 49 parser modules …
+[2026-07-20 12:57:54] INFO     | master_parser |   ✅ awr_seg_logical_reads_parser                  1.28s
+[2026-07-20 12:57:55] INFO     | master_parser |   ✅ generic_segment_parser                        1.72s
+[2026-07-20 12:57:55] INFO     | master_parser |   ✅ awr_seg_opt_reads_parser                      1.50s
+[2026-07-20 12:57:57] INFO     | master_parser |   ✅ awr_seg_Phy_read_req_parser                   1.75s
+[2026-07-20 12:57:57] INFO     | master_parser |   ✅ awr_seg_phy_reads_parser                      1.58s
+[2026-07-20 12:57:58] INFO     | master_parser |   ✅ awr_seg_phy_write_req_parser                  1.58s
+[2026-07-20 12:58:00] INFO     | master_parser |   ✅ awr_seg_buff_busy_waits_parser                3.30s
+[2026-07-20 12:58:00] INFO     | master_parser |   ✅ awr_seg_phy_writes_parser                     1.66s
+[2026-07-20 12:58:01] INFO     | master_parser |   ✅ awr_seg_row_lck_waits_parser                  1.64s
+[2026-07-20 12:58:03] INFO     | master_parser |   ✅ awr_seg_table_scan_parser                     1.69s
+[2026-07-20 12:58:03] INFO     | master_parser |   ✅ awr_seg_cr_blk_rec_parser                     3.36s
+[2026-07-20 12:58:05] INFO     | master_parser |   ✅ awr_seg_unopt_reads_parser                    1.55s
+[2026-07-20 12:58:07] INFO     | master_parser |   ✅ background_wait_events_parser                 1.81s
+[2026-07-20 12:58:07] INFO     | master_parser |   ✅ awr_seg_cur_blk_rec_parser                    3.44s
+[2026-07-20 12:58:08] INFO     | master_parser |   ✅ buffer_wait_statistics_parser                 1.43s
+[2026-07-20 12:58:09] INFO     | master_parser |   ✅ db_info_parser                                1.27s
+[2026-07-20 12:58:10] INFO     | master_parser |   ✅ awr_seg_db_blk_chg_parser                     3.32s
+[2026-07-20 12:58:11] INFO     | master_parser |   ✅ enqueue_wait_statistics_parser                1.63s
+[2026-07-20 12:58:13] INFO     | master_parser |   ✅ foreground_wait_class_parser                  1.68s
+[2026-07-20 12:58:13] INFO     | master_parser |   ✅ awr_seg_direct_phy_reads_parser               3.37s
+[2026-07-20 12:58:14] INFO     | master_parser |   ✅ foreground_wait_events                        1.45s
+[2026-07-20 12:58:16] INFO     | master_parser |   ✅ instance_activity_statistics_parser           1.52s
+[2026-07-20 12:58:17] INFO     | master_parser |   ✅ awr_seg_direct_phy_writes_parser              3.41s
+[2026-07-20 12:58:17] INFO     | master_parser |   ✅ instance_efficiency_parser                    1.35s
+[2026-07-20 12:58:18] INFO     | master_parser |   ✅ io_profile_parser                             1.58s
+[2026-07-20 12:58:20] INFO     | master_parser |   ✅ io_stat_by_filetype_summary_parser            1.63s
+[2026-07-20 12:58:20] INFO     | master_parser |   ✅ awr_seg_gbl_cache_buff_busy_parser            3.40s
+[2026-07-20 12:58:22] INFO     | master_parser |   ✅ io_stat_by_func_filetype_summary_parser       1.46s
+[2026-07-20 12:58:23] INFO     | master_parser |   ✅ io_stat_by_function_summary_parser            1.82s
+[2026-07-20 12:58:24] INFO     | master_parser |   ✅ awr_seg_itl_waits_parser                      3.50s
+[2026-07-20 12:58:25] INFO     | master_parser |   ✅ io_stat_file_parser                           1.57s
+[2026-07-20 12:58:27] INFO     | master_parser |   ✅ io_stat_tablespaces_parser                    1.66s
+[2026-07-20 12:58:27] INFO     | master_parser |   ✅ license_engine_20jul26                        0.01s
+[2026-07-20 12:58:27] INFO     | master_parser |   ✅ awr_seg_logical_reads_parser                  3.35s
+[2026-07-20 12:58:28] INFO     | master_parser |   ✅ load_profile_parser                           1.14s
+[2026-07-20 12:58:29] INFO     | master_parser |   ✅ operating_system_statistics_parser            1.73s
+[2026-07-20 12:58:30] INFO     | master_parser |   ✅ awr_seg_opt_reads_parser                      3.43s
+[2026-07-20 12:58:31] INFO     | master_parser |   ✅ pga_target_advisory_parser                    1.51s
+[2026-07-20 12:58:33] INFO     | master_parser |   ✅ sga_target_advisory_parser                    1.54s
+[2026-07-20 12:58:34] INFO     | master_parser |   ✅ awr_seg_phy_reads_parser                      3.31s
+[2026-07-20 12:58:34] INFO     | master_parser |   ✅ sql_cluster_wait_parser                       1.55s
+[2026-07-20 12:58:36] INFO     | master_parser |   ✅ sql_cpu_time_parser                           1.67s
+[2026-07-20 12:58:37] INFO     | master_parser |   ✅ awr_seg_phy_write_req_parser                  3.46s
+[2026-07-20 12:58:37] INFO     | master_parser |   ✅ sql_elapsed_time_parser                       1.68s
+[2026-07-20 12:58:39] INFO     | master_parser |   ✅ sql_executions_parser                         1.40s
+[2026-07-20 12:58:40] INFO     | master_parser |   ✅ sql_gets_parser                               1.69s
+[2026-07-20 12:58:41] INFO     | master_parser |   ✅ awr_seg_phy_writes_parser                     3.34s
+[2026-07-20 12:58:42] INFO     | master_parser |   ✅ sql_parse_calls_parser                        1.65s
+[2026-07-20 12:58:44] INFO     | master_parser |   ✅ sql_physical_reads_unopt_parser               1.61s
+[2026-07-20 12:58:44] INFO     | master_parser |   ✅ awr_seg_row_lck_waits_parser                  3.47s
+[2026-07-20 12:58:45] INFO     | master_parser |   ✅ sql_reads_parser                              1.50s
+[2026-07-20 12:58:47] INFO     | master_parser |   ✅ sql_text_parser                               1.71s
+[2026-07-20 12:58:47] INFO     | master_parser |   ✅ awr_seg_table_scan_parser                     3.25s
+[2026-07-20 12:58:48] INFO     | master_parser |   ✅ sql_user_io_wait_parser                       1.50s
+[2026-07-20 12:58:50] INFO     | master_parser |   ✅ time_model_stats_parser                       1.82s
+[2026-07-20 12:58:51] INFO     | master_parser |   ✅ awr_seg_unopt_reads_parser                    3.47s
+[2026-07-20 12:58:52] INFO     | master_parser |   ✅ undo_statistics_parser                        1.43s
+[2026-07-20 12:58:52] INFO     | master_parser | Modules complete in 73.8s — 0 failure(s)
+[2026-07-20 12:58:52] INFO     | master_parser | 🔁 Refreshing materialized views …
+[2026-07-20 12:58:52] INFO     | master_parser |   ✅ public.awr_sql_summary_mv (CONCURRENT)
+[2026-07-20 12:58:52] INFO     | master_parser |   ✅ public.awr_segment_summary_mv (CONCURRENT)
+[2026-07-20 12:58:52] INFO     | master_parser |   ✅ public.awr_fg_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:58:52] INFO     | master_parser |   ✅ public.awr_fg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 12:58:52] INFO     | master_parser |   ✅ public.awr_bg_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:58:52] INFO     | master_parser |   ✅ public.awr_bg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 12:58:52] INFO     | master_parser |   ✅ public.awr_wait_summary_mv (CONCURRENT)
+[2026-07-20 12:58:52] INFO     | master_parser | 🎉 MV refresh complete
+[2026-07-20 12:58:52] INFO     | master_parser | 🤖 Generating recommendations: COLDBPRD snaps 32547–32547
+[2026-07-20 12:58:52] INFO     | master_parser |   ✅ Recommendations stored for COLDBPRD snaps 32547–32547
+[2026-07-20 12:58:52] INFO     | master_parser | 🔍 Running anomaly detection: COLDBPRD snaps 32547–32547
+[2026-07-20 12:58:52] INFO     | master_parser |   ✅ Anomaly detection complete for COLDBPRD snaps 32547–32547
+[2026-07-20 12:58:52] INFO     | master_parser | 📦 Archived to C:\AWR_Insight_Portal_v2\archive\COLDBPRD\awr_COLDBPRD_1_221212_0430_0530.html
+[2026-07-20 12:58:52] INFO     | master_parser | 🎉 File processed successfully: awr_COLDBPRD_1_221212_0430_0530.html
+[2026-07-20 12:58:54] INFO     | master_parser |   ✅ background_wait_events_parser                 3.18s
+[2026-07-20 12:58:58] INFO     | master_parser |   ✅ buffer_wait_statistics_parser                 4.21s
+[2026-07-20 13:01:21] INFO     | master_parser |   ✅ db_info_parser                                142.60s
+[2026-07-20 13:01:25] INFO     | master_parser |   ✅ enqueue_wait_statistics_parser                3.99s
+[2026-07-20 13:04:41] INFO     | master_parser |   ✅ foreground_wait_class_parser                  196.75s
+[2026-07-20 13:04:58] INFO     | master_parser |   ✅ foreground_wait_events                        16.46s
+[2026-07-20 13:05:02] INFO     | master_parser |   ✅ instance_activity_statistics_parser           4.29s
+[2026-07-20 13:07:32] INFO     | master_parser |   ✅ instance_efficiency_parser                    149.32s
+[2026-07-20 13:10:58] INFO     | master_parser |   ✅ io_profile_parser                             206.36s
+[2026-07-20 13:13:00] INFO     | master_parser |   ✅ io_stat_by_filetype_summary_parser            122.55s
+[2026-07-20 13:15:22] INFO     | master_parser |   ✅ io_stat_by_func_filetype_summary_parser       141.91s
+[2026-07-20 13:16:28] INFO     | master_parser |   ✅ io_stat_by_function_summary_parser            65.74s
+[2026-07-20 13:20:39] INFO     | master_parser |   ✅ io_stat_file_parser                           250.70s
+[2026-07-20 13:26:01] INFO     | master_parser |   ✅ io_stat_tablespaces_parser                    322.57s
+[2026-07-20 13:26:01] INFO     | master_parser |   ✅ license_engine_20jul26                        0.03s
+[2026-07-20 13:26:28] INFO     | master_parser |   ✅ load_profile_parser                           26.67s
+[2026-07-20 13:26:32] INFO     | master_parser |   ✅ operating_system_statistics_parser            4.01s
+[2026-07-20 13:42:19] INFO     | master_parser |   ✅ pga_target_advisory_parser                    947.37s
+[2026-07-20 13:42:23] ERROR    | master_parser |   ❌ sga_target_advisory_parser                    3.62s — 'SGA Target Size (M)'
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\indexes\base.py", line 3812, in get_loc
+    return self._engine.get_loc(casted_key)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "pandas/_libs/index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7088, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7096, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'SGA Target Size (M)'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 370, in process_file
+    ok      = _run_module(module, module_name, filepath)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 95, in _run_module
+    exec(code, {
+    ~~~~^^^^^^^^
+        "__file__":     file_origin,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        "__builtins__": __builtins__,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    })
+    ^^
+  File "C:\AWR_Insight_Portal_v2\modules\sga_target_advisory_parser.py", line 124, in <module>
+    records = parse_sga_target_advisory(_target)
+  File "C:\AWR_Insight_Portal_v2\modules\sga_target_advisory_parser.py", line 61, in parse_sga_target_advisory
+    "sga_target_size_m": clean_number(row["SGA Target Size (M)"]),
+                                      ~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\series.py", line 1130, in __getitem__
+    return self._get_value(key)
+           ~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\series.py", line 1246, in _get_value
+    loc = self.index.get_loc(label)
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\indexes\base.py", line 3819, in get_loc
+    raise KeyError(key) from err
+KeyError: 'SGA Target Size (M)'
+[2026-07-20 13:42:26] INFO     | master_parser |   ✅ sql_cluster_wait_parser                       2.49s
+[2026-07-20 13:42:29] INFO     | master_parser |   ✅ sql_cpu_time_parser                           3.41s
+[2026-07-20 13:42:32] INFO     | master_parser |   ✅ sql_elapsed_time_parser                       3.07s
+[2026-07-20 13:42:35] INFO     | master_parser |   ✅ sql_executions_parser                         3.06s
+[2026-07-20 13:42:38] INFO     | master_parser |   ✅ sql_gets_parser                               2.97s
+[2026-07-20 13:42:41] INFO     | master_parser |   ✅ sql_parse_calls_parser                        3.03s
+[2026-07-20 13:42:44] INFO     | master_parser |   ✅ sql_physical_reads_unopt_parser               3.01s
+[2026-07-20 13:42:47] INFO     | master_parser |   ✅ sql_reads_parser                              3.00s
+[2026-07-20 13:42:50] INFO     | master_parser |   ✅ sql_text_parser                               3.30s
+[2026-07-20 13:42:53] INFO     | master_parser |   ✅ sql_user_io_wait_parser                       3.08s
+[2026-07-20 13:42:57] INFO     | master_parser |   ✅ time_model_stats_parser                       3.46s
+[2026-07-20 13:43:00] INFO     | master_parser |   ✅ undo_statistics_parser                        3.12s
+[2026-07-20 13:43:00] INFO     | master_parser | Modules complete in 2707.0s — 1 failure(s)
+[2026-07-20 13:43:00] INFO     | master_parser | 🔁 Refreshing materialized views …
+[2026-07-20 13:43:00] INFO     | master_parser |   ✅ public.awr_sql_summary_mv (CONCURRENT)
+[2026-07-20 13:43:00] INFO     | master_parser |   ✅ public.awr_segment_summary_mv (CONCURRENT)
+[2026-07-20 13:43:00] INFO     | master_parser |   ✅ public.awr_fg_wait_summary_mv (CONCURRENT)
+[2026-07-20 13:43:00] INFO     | master_parser |   ✅ public.awr_fg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 13:43:00] INFO     | master_parser |   ✅ public.awr_bg_wait_summary_mv (CONCURRENT)
+[2026-07-20 13:43:00] INFO     | master_parser |   ✅ public.awr_bg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 13:43:00] INFO     | master_parser |   ✅ public.awr_wait_summary_mv (CONCURRENT)
+[2026-07-20 13:43:00] INFO     | master_parser | 🎉 MV refresh complete
+[2026-07-20 13:43:00] INFO     | master_parser | 🤖 Generating recommendations: ONE_LMS snaps 139381–139381
+[2026-07-20 13:43:01] INFO     | master_parser |   ✅ Recommendations stored for ONE_LMS snaps 139381–139381
+[2026-07-20 13:43:01] INFO     | master_parser | 🔍 Running anomaly detection: ONE_LMS snaps 139381–139381
+[2026-07-20 13:43:01] INFO     | master_parser |   ✅ Anomaly detection complete for ONE_LMS snaps 139381–139381
+[2026-07-20 13:43:01] INFO     | master_parser | 📦 Archived to C:\AWR_Insight_Portal_v2\archive\ONE_LMS\12_1.html
+[2026-07-20 13:43:01] WARNING  | master_parser | ⚠  File processed with 1 module error(s): 12_1.html
+[2026-07-20 13:43:01] WARNING  | master_parser |    Failed modules: ['sga_target_advisory_parser']
+[2026-07-20 13:43:02] INFO     | master_parser | ============================================================
+[2026-07-20 13:43:02] INFO     | master_parser | 📂 Processing: 9_1.html
+[2026-07-20 13:43:02] INFO     | master_parser |    DB Name  : ONE_LMS
+[2026-07-20 13:43:02] INFO     | master_parser |    Full path: C:\AWR_Insight_Portal_v2\awr_reports\ONE_LMS\9_1.html
+[2026-07-20 13:43:02] INFO     | master_parser | Running 49 parser modules …
+[2026-07-20 13:43:04] INFO     | master_parser |   ✅ generic_segment_parser                        1.91s
+[2026-07-20 13:43:06] INFO     | master_parser |   ✅ awr_seg_Phy_read_req_parser                   2.09s
+[2026-07-20 13:43:09] INFO     | master_parser |   ✅ awr_seg_buff_busy_waits_parser                3.21s
+[2026-07-20 13:43:12] INFO     | master_parser |   ✅ awr_seg_cr_blk_rec_parser                     3.14s
+[2026-07-20 13:43:16] INFO     | master_parser |   ✅ awr_seg_cur_blk_rec_parser                    3.36s
+[2026-07-20 13:43:19] INFO     | master_parser |   ✅ awr_seg_db_blk_chg_parser                     3.44s
+[2026-07-20 13:43:23] INFO     | master_parser |   ✅ awr_seg_direct_phy_reads_parser               3.53s
+[2026-07-20 13:43:26] INFO     | master_parser |   ✅ awr_seg_direct_phy_writes_parser              3.29s
+[2026-07-20 13:43:29] INFO     | master_parser |   ✅ awr_seg_gbl_cache_buff_busy_parser            3.26s
+[2026-07-20 13:43:32] INFO     | master_parser |   ✅ awr_seg_itl_waits_parser                      3.30s
+[2026-07-20 13:43:36] INFO     | master_parser |   ✅ awr_seg_logical_reads_parser                  3.39s
+[2026-07-20 13:43:39] INFO     | master_parser |   ✅ awr_seg_opt_reads_parser                      3.17s
+[2026-07-20 13:43:42] INFO     | master_parser |   ✅ awr_seg_phy_reads_parser                      3.34s
+[2026-07-20 13:43:46] INFO     | master_parser |   ✅ awr_seg_phy_write_req_parser                  3.21s
+[2026-07-20 13:43:49] INFO     | master_parser |   ✅ awr_seg_phy_writes_parser                     3.30s
+[2026-07-20 13:43:52] INFO     | master_parser |   ✅ awr_seg_row_lck_waits_parser                  3.22s
+[2026-07-20 13:43:55] INFO     | master_parser |   ✅ awr_seg_table_scan_parser                     3.22s
+[2026-07-20 13:43:58] INFO     | master_parser |   ✅ awr_seg_unopt_reads_parser                    3.15s
+[2026-07-20 13:44:02] INFO     | master_parser |   ✅ background_wait_events_parser                 3.31s
+[2026-07-20 13:44:05] INFO     | master_parser |   ✅ buffer_wait_statistics_parser                 3.16s
+[2026-07-20 13:44:07] INFO     | master_parser |   ✅ db_info_parser                                2.42s
+[2026-07-20 13:44:11] INFO     | master_parser |   ✅ enqueue_wait_statistics_parser                3.16s
+[2026-07-20 13:44:14] INFO     | master_parser |   ✅ foreground_wait_class_parser                  3.27s
+[2026-07-20 13:44:17] INFO     | master_parser |   ✅ foreground_wait_events                        2.99s
+[2026-07-20 13:44:20] INFO     | master_parser |   ✅ instance_activity_statistics_parser           3.39s
+[2026-07-20 13:44:22] INFO     | master_parser |   ✅ instance_efficiency_parser                    2.11s
+[2026-07-20 13:44:25] INFO     | master_parser |   ✅ io_profile_parser                             3.16s
+[2026-07-20 13:44:29] INFO     | master_parser |   ✅ io_stat_by_filetype_summary_parser            3.33s
+[2026-07-20 13:44:32] INFO     | master_parser |   ✅ io_stat_by_func_filetype_summary_parser       3.16s
+[2026-07-20 13:44:35] INFO     | master_parser |   ✅ io_stat_by_function_summary_parser            3.08s
+[2026-07-20 13:44:39] INFO     | master_parser |   ✅ io_stat_file_parser                           4.19s
+[2026-07-20 13:44:43] INFO     | master_parser |   ✅ io_stat_tablespaces_parser                    3.31s
+[2026-07-20 13:44:43] INFO     | master_parser |   ✅ license_engine_20jul26                        0.02s
+[2026-07-20 13:44:45] INFO     | master_parser |   ✅ load_profile_parser                           2.53s
+[2026-07-20 13:44:48] INFO     | master_parser |   ✅ operating_system_statistics_parser            3.03s
+[2026-07-20 13:44:51] INFO     | master_parser |   ✅ pga_target_advisory_parser                    3.20s
+[2026-07-20 13:44:54] ERROR    | master_parser |   ❌ sga_target_advisory_parser                    2.46s — 'SGA Target Size (M)'
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\indexes\base.py", line 3812, in get_loc
+    return self._engine.get_loc(casted_key)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "pandas/_libs/index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7088, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7096, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'SGA Target Size (M)'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 370, in process_file
+    ok      = _run_module(module, module_name, filepath)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 95, in _run_module
+    exec(code, {
+    ~~~~^^^^^^^^
+        "__file__":     file_origin,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        "__builtins__": __builtins__,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    })
+    ^^
+  File "C:\AWR_Insight_Portal_v2\modules\sga_target_advisory_parser.py", line 124, in <module>
+    records = parse_sga_target_advisory(_target)
+  File "C:\AWR_Insight_Portal_v2\modules\sga_target_advisory_parser.py", line 61, in parse_sga_target_advisory
+    "sga_target_size_m": clean_number(row["SGA Target Size (M)"]),
+                                      ~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\series.py", line 1130, in __getitem__
+    return self._get_value(key)
+           ~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\series.py", line 1246, in _get_value
+    loc = self.index.get_loc(label)
+  File "C:\Users\Admin\AppData\Roaming\Python\Python313\site-packages\pandas\core\indexes\base.py", line 3819, in get_loc
+    raise KeyError(key) from err
+KeyError: 'SGA Target Size (M)'
+[2026-07-20 13:44:57] INFO     | master_parser |   ✅ sql_cluster_wait_parser                       3.34s
+[2026-07-20 13:45:00] INFO     | master_parser |   ✅ sql_cpu_time_parser                           3.19s
+[2026-07-20 13:45:03] INFO     | master_parser |   ✅ sql_elapsed_time_parser                       3.16s
+[2026-07-20 13:45:07] INFO     | master_parser |   ✅ sql_executions_parser                         3.40s
+[2026-07-20 13:45:10] INFO     | master_parser |   ✅ sql_gets_parser                               3.17s
+[2026-07-20 13:45:13] INFO     | master_parser |   ✅ sql_parse_calls_parser                        3.09s
+[2026-07-20 13:45:16] INFO     | master_parser |   ✅ sql_physical_reads_unopt_parser               3.27s
+[2026-07-20 13:45:20] INFO     | master_parser |   ✅ sql_reads_parser                              3.19s
+[2026-07-20 13:45:23] INFO     | master_parser |   ✅ sql_text_parser                               3.21s
+[2026-07-20 13:45:26] INFO     | master_parser |   ✅ sql_user_io_wait_parser                       3.04s
+[2026-07-20 13:45:29] INFO     | master_parser |   ✅ time_model_stats_parser                       3.06s
+[2026-07-20 13:45:32] INFO     | master_parser |   ✅ undo_statistics_parser                        3.11s
+[2026-07-20 13:45:32] INFO     | master_parser | Modules complete in 150.1s — 1 failure(s)
+[2026-07-20 13:45:32] INFO     | master_parser | 🔁 Refreshing materialized views …
+[2026-07-20 13:45:32] INFO     | master_parser |   ✅ public.awr_sql_summary_mv (CONCURRENT)
+[2026-07-20 13:45:32] INFO     | master_parser |   ✅ public.awr_segment_summary_mv (CONCURRENT)
+[2026-07-20 13:45:32] INFO     | master_parser |   ✅ public.awr_fg_wait_summary_mv (CONCURRENT)
+[2026-07-20 13:45:32] INFO     | master_parser |   ✅ public.awr_fg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 13:45:32] INFO     | master_parser |   ✅ public.awr_bg_wait_summary_mv (CONCURRENT)
+[2026-07-20 13:45:32] INFO     | master_parser |   ✅ public.awr_bg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 13:45:32] INFO     | master_parser |   ✅ public.awr_wait_summary_mv (CONCURRENT)
+[2026-07-20 13:45:32] INFO     | master_parser | 🎉 MV refresh complete
+[2026-07-20 13:45:32] INFO     | master_parser | 🤖 Generating recommendations: ONE_LMS snaps 139381–139381
+[2026-07-20 13:45:32] INFO     | master_parser |   ✅ Recommendations stored for ONE_LMS snaps 139381–139381
+[2026-07-20 13:45:32] INFO     | master_parser | 🔍 Running anomaly detection: ONE_LMS snaps 139381–139381
+[2026-07-20 13:45:32] INFO     | master_parser |   ✅ Anomaly detection complete for ONE_LMS snaps 139381–139381
+[2026-07-20 13:45:32] INFO     | master_parser | 📦 Archived to C:\AWR_Insight_Portal_v2\archive\ONE_LMS\9_1.html
+[2026-07-20 13:45:32] WARNING  | master_parser | ⚠  File processed with 1 module error(s): 9_1.html
+[2026-07-20 13:45:32] WARNING  | master_parser |    Failed modules: ['sga_target_advisory_parser']
+[2026-07-20 14:03:15] INFO     | master_parser | ============================================================
+[2026-07-20 14:03:15] INFO     | master_parser | 📂 Processing: awr_COLDBPRD_1_221212_0530_0630.html
+[2026-07-20 14:03:15] INFO     | master_parser |    DB Name  : COLDBPRD
+[2026-07-20 14:03:15] INFO     | master_parser |    Full path: C:\AWR_Insight_Portal_v2\awr_reports\coldbprd\awr_COLDBPRD_1_221212_0530_0630.html
+[2026-07-20 14:03:15] INFO     | master_parser | Running 49 parser modules …
+[2026-07-20 14:03:16] INFO     | master_parser |   ✅ generic_segment_parser                        1.30s
+[2026-07-20 14:03:16] INFO     | master_parser |   ✅ awr_seg_Phy_read_req_parser                   0.57s
+[2026-07-20 14:03:17] INFO     | master_parser |   ✅ awr_seg_buff_busy_waits_parser                0.58s
+[2026-07-20 14:03:19] INFO     | master_parser |   ✅ awr_seg_cr_blk_rec_parser                     1.71s
+[2026-07-20 14:03:21] INFO     | master_parser |   ✅ awr_seg_cur_blk_rec_parser                    1.92s
+[2026-07-20 14:03:22] INFO     | master_parser |   ✅ awr_seg_db_blk_chg_parser                     1.71s
+[2026-07-20 14:03:24] INFO     | master_parser |   ✅ awr_seg_direct_phy_reads_parser               1.85s
+[2026-07-20 14:03:26] INFO     | master_parser |   ✅ awr_seg_direct_phy_writes_parser              1.69s
+[2026-07-20 14:03:28] INFO     | master_parser |   ✅ awr_seg_gbl_cache_buff_busy_parser            1.71s
+[2026-07-20 14:03:29] INFO     | master_parser |   ✅ awr_seg_itl_waits_parser                      1.73s
+[2026-07-20 14:03:31] INFO     | master_parser |   ✅ awr_seg_logical_reads_parser                  1.91s
+[2026-07-20 14:03:33] INFO     | master_parser |   ✅ awr_seg_opt_reads_parser                      1.67s
+[2026-07-20 14:03:35] INFO     | master_parser |   ✅ awr_seg_phy_reads_parser                      1.76s
+[2026-07-20 14:03:36] INFO     | master_parser |   ✅ awr_seg_phy_write_req_parser                  1.75s
+[2026-07-20 14:03:38] INFO     | master_parser |   ✅ awr_seg_phy_writes_parser                     1.81s
+[2026-07-20 14:03:40] INFO     | master_parser |   ✅ awr_seg_row_lck_waits_parser                  1.60s
+[2026-07-20 14:03:42] INFO     | master_parser |   ✅ awr_seg_table_scan_parser                     1.90s
+[2026-07-20 14:03:43] INFO     | master_parser |   ✅ awr_seg_unopt_reads_parser                    1.64s
+[2026-07-20 14:03:45] INFO     | master_parser |   ✅ background_wait_events_parser                 1.97s
+[2026-07-20 14:03:47] INFO     | master_parser |   ✅ buffer_wait_statistics_parser                 1.63s
+[2026-07-20 14:03:48] INFO     | master_parser |   ✅ db_info_parser                                1.32s
+[2026-07-20 14:03:50] INFO     | master_parser |   ✅ enqueue_wait_statistics_parser                1.81s
+[2026-07-20 14:03:52] INFO     | master_parser |   ✅ foreground_wait_class_parser                  1.87s
+[2026-07-20 14:03:54] INFO     | master_parser |   ✅ foreground_wait_events                        1.87s
+[2026-07-20 14:03:56] INFO     | master_parser |   ✅ instance_activity_statistics_parser           1.82s
+[2026-07-20 14:03:57] INFO     | master_parser |   ✅ instance_efficiency_parser                    1.44s
+[2026-07-20 14:03:59] INFO     | master_parser |   ✅ io_profile_parser                             1.73s
+[2026-07-20 14:04:01] INFO     | master_parser |   ✅ io_stat_by_filetype_summary_parser            1.86s
+[2026-07-20 14:04:02] INFO     | master_parser |   ✅ io_stat_by_func_filetype_summary_parser       1.75s
+[2026-07-20 14:04:04] INFO     | master_parser |   ✅ io_stat_by_function_summary_parser            1.90s
+[2026-07-20 14:04:06] INFO     | master_parser |   ✅ io_stat_file_parser                           1.77s
+[2026-07-20 14:04:08] INFO     | master_parser |   ✅ io_stat_tablespaces_parser                    2.07s
+[2026-07-20 14:04:08] INFO     | master_parser |   ✅ license_engine_20jul26                        0.01s
+[2026-07-20 14:04:09] INFO     | master_parser |   ✅ load_profile_parser                           1.31s
+[2026-07-20 14:04:11] INFO     | master_parser |   ✅ operating_system_statistics_parser            1.93s
+[2026-07-20 14:04:13] INFO     | master_parser |   ✅ pga_target_advisory_parser                    1.77s
+[2026-07-20 14:04:15] INFO     | master_parser |   ✅ sga_target_advisory_parser                    1.86s
+[2026-07-20 14:04:17] INFO     | master_parser |   ✅ sql_cluster_wait_parser                       1.59s
+[2026-07-20 14:04:19] INFO     | master_parser |   ✅ sql_cpu_time_parser                           2.07s
+[2026-07-20 14:04:20] INFO     | master_parser |   ✅ sql_elapsed_time_parser                       1.71s
+[2026-07-20 14:04:22] INFO     | master_parser |   ✅ sql_executions_parser                         1.85s
+[2026-07-20 14:04:24] INFO     | master_parser |   ✅ sql_gets_parser                               1.68s
+[2026-07-20 14:04:26] INFO     | master_parser |   ✅ sql_parse_calls_parser                        1.85s
+[2026-07-20 14:04:28] INFO     | master_parser |   ✅ sql_physical_reads_unopt_parser               1.75s
+[2026-07-20 14:04:29] INFO     | master_parser |   ✅ sql_reads_parser                              1.88s
+[2026-07-20 14:04:31] INFO     | master_parser |   ✅ sql_text_parser                               1.80s
+[2026-07-20 14:04:33] INFO     | master_parser |   ✅ sql_user_io_wait_parser                       1.97s
+[2026-07-20 14:04:35] INFO     | master_parser |   ✅ time_model_stats_parser                       1.67s
+[2026-07-20 14:04:37] INFO     | master_parser |   ✅ undo_statistics_parser                        1.95s
+[2026-07-20 14:04:37] INFO     | master_parser | Modules complete in 82.3s — 0 failure(s)
+[2026-07-20 14:04:37] INFO     | master_parser | 🔁 Refreshing materialized views …
+[2026-07-20 14:04:37] INFO     | master_parser |   ✅ public.awr_sql_summary_mv (CONCURRENT)
+[2026-07-20 14:04:37] INFO     | master_parser |   ✅ public.awr_segment_summary_mv (CONCURRENT)
+[2026-07-20 14:04:37] INFO     | master_parser |   ✅ public.awr_fg_wait_summary_mv (CONCURRENT)
+[2026-07-20 14:04:37] INFO     | master_parser |   ✅ public.awr_fg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 14:04:37] INFO     | master_parser |   ✅ public.awr_bg_wait_summary_mv (CONCURRENT)
+[2026-07-20 14:04:37] INFO     | master_parser |   ✅ public.awr_bg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 14:04:37] INFO     | master_parser |   ✅ public.awr_wait_summary_mv (CONCURRENT)
+[2026-07-20 14:04:37] INFO     | master_parser | 🎉 MV refresh complete
+[2026-07-20 14:04:37] INFO     | master_parser | 🤖 Generating recommendations: COLDBPRD snaps 32548–32548
+[2026-07-20 14:04:37] INFO     | master_parser |   ✅ Recommendations stored for COLDBPRD snaps 32548–32548
+[2026-07-20 14:04:37] INFO     | master_parser | 🔍 Running anomaly detection: COLDBPRD snaps 32548–32548
+[2026-07-20 14:04:37] INFO     | master_parser |   ✅ Anomaly detection complete for COLDBPRD snaps 32548–32548
+[2026-07-20 14:04:37] INFO     | master_parser | 📦 Archived to C:\AWR_Insight_Portal_v2\archive\COLDBPRD\awr_COLDBPRD_1_221212_0530_0630.html
+[2026-07-20 14:04:37] INFO     | master_parser | 🎉 File processed successfully: awr_COLDBPRD_1_221212_0530_0630.html
+[2026-07-20 14:04:38] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0530_0630.html
+[2026-07-20 14:04:40] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0530_0630.html
+[2026-07-20 14:04:41] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0530_0630.html
+[2026-07-20 15:40:03] INFO     | master_parser | ============================================================
+[2026-07-20 15:40:03] INFO     | master_parser | 📂 Processing: awr_COLDBPRD_1_221212_0630_0730.html
+[2026-07-20 15:40:03] INFO     | master_parser |    DB Name  : COLDBPRD
+[2026-07-20 15:40:03] INFO     | master_parser |    Full path: C:\AWR_Insight_Portal_v2\awr_reports\coldbprd\awr_COLDBPRD_1_221212_0630_0730.html
+[2026-07-20 15:40:03] INFO     | master_parser | Running 51 parser modules …
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ generic_segment_parser                        0.01s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr\generic_segment_parser.py", line 36, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_Phy_read_req_parser                   0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_Phy_read_req_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_buff_busy_waits_parser                0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_buff_busy_waits_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_cr_blk_rec_parser                     0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_cr_blk_rec_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_cur_blk_rec_parser                    0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_cur_blk_rec_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_db_blk_chg_parser                     0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_db_blk_chg_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_direct_phy_reads_parser               0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_direct_phy_reads_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_direct_phy_writes_parser              0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_direct_phy_writes_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_gbl_cache_buff_busy_parser            0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_gbl_cache_buff_busy_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_itl_waits_parser                      0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_itl_waits_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_logical_reads_parser                  0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_logical_reads_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_opt_reads_parser                      0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_opt_reads_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_phy_reads_parser                      0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_phy_reads_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_phy_write_req_parser                  0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_phy_write_req_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_phy_writes_parser                     0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_phy_writes_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_row_lck_waits_parser                  0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_row_lck_waits_parser.py", line 18, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_table_scan_parser                     0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_table_scan_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ awr_seg_unopt_reads_parser                    0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\awr_seg_unopt_reads_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ background_wait_events_parser                 0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\background_wait_events_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ buffer_wait_statistics_parser                 0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\buffer_wait_statistics_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ db_info_parser                                0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\db_info_parser.py", line 15, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ enqueue_wait_statistics_parser                0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\enqueue_wait_statistics_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ foreground_wait_class_parser                  0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\foreground_wait_class_parser.py", line 18, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ foreground_wait_events                        0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\foreground_wait_events.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ instance_activity_statistics_parser           0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\instance_activity_statistics_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ instance_efficiency_parser                    0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\instance_efficiency_parser.py", line 18, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ io_profile_parser                             0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\io_profile_parser.py", line 13, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ io_stat_by_filetype_summary_parser            0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\io_stat_by_filetype_summary_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, convert_to_thousand, convert_to_mb, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ io_stat_by_func_filetype_summary_parser       0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\io_stat_by_func_filetype_summary_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, convert_to_thousand, convert_to_mb, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ io_stat_by_function_summary_parser            0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\io_stat_by_function_summary_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, convert_to_thousand, convert_to_mb, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ io_stat_file_parser                           0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\io_stat_file_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ io_stat_tablespaces_parser                    0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\io_stat_tablespaces_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] INFO     | master_parser |   ✅ license_engine_20jul26                        0.02s
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ load_profile_parser                           0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\load_profile_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ operating_system_statistics_parser            0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\operating_system_statistics_parser.py", line 18, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ pga_target_advisory_parser                    0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\pga_target_advisory_parser.py", line 19, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ recommendation_engine_unused_duplicate        0.02s — main() takes 0 positional arguments but 1 was given
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 370, in process_file
+    ok      = _run_module(module, module_name, filepath)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 72, in _run_module
+    module.main(filepath)
+    ~~~~~~~~~~~^^^^^^^^^^
+TypeError: main() takes 0 positional arguments but 1 was given
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ sga_target_advisory_parser                    0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\sga_target_advisory_parser.py", line 19, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, sanitize_record, get_col
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ sga_target_advisory_parser_20jul26            0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\sga_target_advisory_parser_20jul26.py", line 19, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ sql_cluster_wait_parser                       0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\sql_cluster_wait_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ sql_cpu_time_parser                           0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\sql_cpu_time_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ sql_elapsed_time_parser                       0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\sql_elapsed_time_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ sql_executions_parser                         0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\sql_executions_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ sql_gets_parser                               0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\sql_gets_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ sql_parse_calls_parser                        0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\sql_parse_calls_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ sql_physical_reads_unopt_parser               0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\sql_physical_reads_unopt_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ sql_reads_parser                              0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\sql_reads_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ sql_text_parser                               0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\sql_text_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ sql_user_io_wait_parser                       0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\sql_user_io_wait_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ time_model_stats_parser                       0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\time_model_stats_parser.py", line 18, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] ERROR    | master_parser |   ❌ undo_statistics_parser                        0.00s — cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 369, in process_file
+    module  = _load_module(module_path)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 65, in _load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\AWR_Insight_Portal_v2\modules\undo_statistics_parser.py", line 17, in <module>
+    from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
+ImportError: cannot import name 'row_hash' from 'utils' (C:\AWR_Insight_Portal_v2\common\utils.py)
+[2026-07-20 15:40:03] INFO     | master_parser | Modules complete in 0.2s — 50 failure(s)
+[2026-07-20 15:40:03] INFO     | master_parser | 🔁 Refreshing materialized views …
+[2026-07-20 15:40:03] INFO     | master_parser |   ✅ public.awr_sql_summary_mv (CONCURRENT)
+[2026-07-20 15:40:03] INFO     | master_parser |   ✅ public.awr_segment_summary_mv (CONCURRENT)
+[2026-07-20 15:40:03] INFO     | master_parser |   ✅ public.awr_fg_wait_summary_mv (CONCURRENT)
+[2026-07-20 15:40:03] INFO     | master_parser |   ✅ public.awr_fg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 15:40:03] INFO     | master_parser |   ✅ public.awr_bg_wait_summary_mv (CONCURRENT)
+[2026-07-20 15:40:03] INFO     | master_parser |   ✅ public.awr_bg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 15:40:03] INFO     | master_parser |   ✅ public.awr_wait_summary_mv (CONCURRENT)
+[2026-07-20 15:40:03] INFO     | master_parser | 🎉 MV refresh complete
+[2026-07-20 15:40:03] INFO     | master_parser | 🤖 Generating recommendations: COLDBPRD snaps 32548–32548
+[2026-07-20 15:40:04] INFO     | master_parser |   ✅ Recommendations stored for COLDBPRD snaps 32548–32548
+[2026-07-20 15:40:04] INFO     | master_parser | 🔍 Running anomaly detection: COLDBPRD snaps 32548–32548
+[2026-07-20 15:40:04] INFO     | master_parser |   ✅ Anomaly detection complete for COLDBPRD snaps 32548–32548
+[2026-07-20 15:40:04] INFO     | master_parser | 📦 Archived to C:\AWR_Insight_Portal_v2\archive\COLDBPRD\awr_COLDBPRD_1_221212_0630_0730.html
+[2026-07-20 15:40:04] WARNING  | master_parser | ⚠  File processed with 50 module error(s): awr_COLDBPRD_1_221212_0630_0730.html
+[2026-07-20 15:40:04] WARNING  | master_parser |    Failed modules: ['generic_segment_parser', 'awr_seg_Phy_read_req_parser', 'awr_seg_buff_busy_waits_parser', 'awr_seg_cr_blk_rec_parser', 'awr_seg_cur_blk_rec_parser', 'awr_seg_db_blk_chg_parser', 'awr_seg_direct_phy_reads_parser', 'awr_seg_direct_phy_writes_parser', 'awr_seg_gbl_cache_buff_busy_parser', 'awr_seg_itl_waits_parser', 'awr_seg_logical_reads_parser', 'awr_seg_opt_reads_parser', 'awr_seg_phy_reads_parser', 'awr_seg_phy_write_req_parser', 'awr_seg_phy_writes_parser', 'awr_seg_row_lck_waits_parser', 'awr_seg_table_scan_parser', 'awr_seg_unopt_reads_parser', 'background_wait_events_parser', 'buffer_wait_statistics_parser', 'db_info_parser', 'enqueue_wait_statistics_parser', 'foreground_wait_class_parser', 'foreground_wait_events', 'instance_activity_statistics_parser', 'instance_efficiency_parser', 'io_profile_parser', 'io_stat_by_filetype_summary_parser', 'io_stat_by_func_filetype_summary_parser', 'io_stat_by_function_summary_parser', 'io_stat_file_parser', 'io_stat_tablespaces_parser', 'load_profile_parser', 'operating_system_statistics_parser', 'pga_target_advisory_parser', 'recommendation_engine_unused_duplicate', 'sga_target_advisory_parser', 'sga_target_advisory_parser_20jul26', 'sql_cluster_wait_parser', 'sql_cpu_time_parser', 'sql_elapsed_time_parser', 'sql_executions_parser', 'sql_gets_parser', 'sql_parse_calls_parser', 'sql_physical_reads_unopt_parser', 'sql_reads_parser', 'sql_text_parser', 'sql_user_io_wait_parser', 'time_model_stats_parser', 'undo_statistics_parser']
+[2026-07-20 15:40:05] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0630_0730.html
+[2026-07-20 15:40:06] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0630_0730.html
+[2026-07-20 15:40:07] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0630_0730.html
+[2026-07-20 15:53:09] INFO     | master_parser | ============================================================
+[2026-07-20 15:53:09] INFO     | master_parser | 📂 Processing: awr_COLDBPRD_1_221212_0730_0830.html
+[2026-07-20 15:53:09] INFO     | master_parser |    DB Name  : COLDBPRD
+[2026-07-20 15:53:09] INFO     | master_parser |    Full path: C:\AWR_Insight_Portal_v2\awr_reports\coldbprd\awr_COLDBPRD_1_221212_0730_0830.html
+[2026-07-20 15:53:09] INFO     | master_parser | Running 51 parser modules …
+[2026-07-20 15:53:10] INFO     | master_parser |   ✅ generic_segment_parser                        1.16s
+[2026-07-20 15:53:11] INFO     | master_parser |   ✅ awr_seg_Phy_read_req_parser                   0.67s
+[2026-07-20 15:53:11] INFO     | master_parser |   ✅ awr_seg_buff_busy_waits_parser                0.59s
+[2026-07-20 15:53:13] INFO     | master_parser |   ✅ awr_seg_cr_blk_rec_parser                     1.62s
+[2026-07-20 15:53:15] INFO     | master_parser |   ✅ awr_seg_cur_blk_rec_parser                    1.88s
+[2026-07-20 15:53:16] INFO     | master_parser |   ✅ awr_seg_db_blk_chg_parser                     1.57s
+[2026-07-20 15:53:18] INFO     | master_parser |   ✅ awr_seg_direct_phy_reads_parser               1.82s
+[2026-07-20 15:53:20] INFO     | master_parser |   ✅ awr_seg_direct_phy_writes_parser              1.76s
+[2026-07-20 15:53:22] INFO     | master_parser |   ✅ awr_seg_gbl_cache_buff_busy_parser            1.70s
+[2026-07-20 15:53:23] INFO     | master_parser |   ✅ awr_seg_itl_waits_parser                      1.64s
+[2026-07-20 15:53:25] INFO     | master_parser |   ✅ awr_seg_logical_reads_parser                  1.82s
+[2026-07-20 15:53:27] INFO     | master_parser |   ✅ awr_seg_opt_reads_parser                      1.75s
+[2026-07-20 15:53:28] INFO     | master_parser |   ✅ awr_seg_phy_reads_parser                      1.72s
+[2026-07-20 15:53:30] INFO     | master_parser |   ✅ awr_seg_phy_write_req_parser                  1.56s
+[2026-07-20 15:53:32] INFO     | master_parser |   ✅ awr_seg_phy_writes_parser                     1.84s
+[2026-07-20 15:53:33] INFO     | master_parser |   ✅ awr_seg_row_lck_waits_parser                  1.59s
+[2026-07-20 15:53:35] INFO     | master_parser |   ✅ awr_seg_table_scan_parser                     1.74s
+[2026-07-20 15:53:37] INFO     | master_parser |   ✅ awr_seg_unopt_reads_parser                    1.55s
+[2026-07-20 15:53:39] INFO     | master_parser |   ✅ background_wait_events_parser                 1.91s
+[2026-07-20 15:53:40] INFO     | master_parser |   ✅ buffer_wait_statistics_parser                 1.53s
+[2026-07-20 15:53:41] INFO     | master_parser |   ✅ db_info_parser                                1.32s
+[2026-07-20 15:53:43] INFO     | master_parser |   ✅ enqueue_wait_statistics_parser                1.55s
+[2026-07-20 15:53:45] INFO     | master_parser |   ✅ foreground_wait_class_parser                  1.94s
+[2026-07-20 15:53:47] INFO     | master_parser |   ✅ foreground_wait_events                        1.55s
+[2026-07-20 15:53:48] INFO     | master_parser |   ✅ instance_activity_statistics_parser           1.75s
+[2026-07-20 15:53:49] INFO     | master_parser |   ✅ instance_efficiency_parser                    1.21s
+[2026-07-20 15:53:51] INFO     | master_parser |   ✅ io_profile_parser                             1.78s
+[2026-07-20 15:53:53] INFO     | master_parser |   ✅ io_stat_by_filetype_summary_parser            1.65s
+[2026-07-20 15:53:55] INFO     | master_parser |   ✅ io_stat_by_func_filetype_summary_parser       1.67s
+[2026-07-20 15:53:56] INFO     | master_parser |   ✅ io_stat_by_function_summary_parser            1.65s
+[2026-07-20 15:53:58] INFO     | master_parser |   ✅ io_stat_file_parser                           1.82s
+[2026-07-20 15:54:00] INFO     | master_parser |   ✅ io_stat_tablespaces_parser                    1.60s
+[2026-07-20 15:54:00] INFO     | master_parser |   ✅ license_engine_20jul26                        0.01s
+[2026-07-20 15:54:01] INFO     | master_parser |   ✅ load_profile_parser                           1.36s
+[2026-07-20 15:54:03] INFO     | master_parser |   ✅ operating_system_statistics_parser            1.69s
+[2026-07-20 15:54:05] INFO     | master_parser |   ✅ pga_target_advisory_parser                    1.84s
+[2026-07-20 15:54:05] ERROR    | master_parser |   ❌ recommendation_engine_unused_duplicate        0.01s — main() takes 0 positional arguments but 1 was given
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 370, in process_file
+    ok      = _run_module(module, module_name, filepath)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 72, in _run_module
+    module.main(filepath)
+    ~~~~~~~~~~~^^^^^^^^^^
+TypeError: main() takes 0 positional arguments but 1 was given
+[2026-07-20 15:54:06] INFO     | master_parser |   ✅ sga_target_advisory_parser                    1.60s
+[2026-07-20 15:54:08] INFO     | master_parser |   ✅ sga_target_advisory_parser_20jul26            1.69s
+[2026-07-20 15:54:10] INFO     | master_parser |   ✅ sql_cluster_wait_parser                       1.80s
+[2026-07-20 15:54:11] INFO     | master_parser |   ✅ sql_cpu_time_parser                           1.71s
+[2026-07-20 15:54:13] INFO     | master_parser |   ✅ sql_elapsed_time_parser                       1.77s
+[2026-07-20 15:54:15] INFO     | master_parser |   ✅ sql_executions_parser                         1.69s
+[2026-07-20 15:54:17] INFO     | master_parser |   ✅ sql_gets_parser                               1.78s
+[2026-07-20 15:54:18] INFO     | master_parser |   ✅ sql_parse_calls_parser                        1.65s
+[2026-07-20 15:54:20] INFO     | master_parser |   ✅ sql_physical_reads_unopt_parser               1.58s
+[2026-07-20 15:54:22] INFO     | master_parser |   ✅ sql_reads_parser                              1.68s
+[2026-07-20 15:54:23] INFO     | master_parser |   ✅ sql_text_parser                               1.85s
+[2026-07-20 15:54:25] INFO     | master_parser |   ✅ sql_user_io_wait_parser                       1.55s
+[2026-07-20 15:54:27] INFO     | master_parser |   ✅ time_model_stats_parser                       1.84s
+[2026-07-20 15:54:29] INFO     | master_parser |   ✅ undo_statistics_parser                        1.79s
+[2026-07-20 15:54:29] INFO     | master_parser | Modules complete in 79.8s — 1 failure(s)
+[2026-07-20 15:54:29] INFO     | master_parser | 🔁 Refreshing materialized views …
+[2026-07-20 15:54:29] INFO     | master_parser |   ✅ public.awr_sql_summary_mv (CONCURRENT)
+[2026-07-20 15:54:29] INFO     | master_parser |   ✅ public.awr_segment_summary_mv (CONCURRENT)
+[2026-07-20 15:54:29] INFO     | master_parser |   ✅ public.awr_fg_wait_summary_mv (CONCURRENT)
+[2026-07-20 15:54:29] INFO     | master_parser |   ✅ public.awr_fg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 15:54:29] INFO     | master_parser |   ✅ public.awr_bg_wait_summary_mv (CONCURRENT)
+[2026-07-20 15:54:29] INFO     | master_parser |   ✅ public.awr_bg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 15:54:29] INFO     | master_parser |   ✅ public.awr_wait_summary_mv (CONCURRENT)
+[2026-07-20 15:54:29] INFO     | master_parser | 🎉 MV refresh complete
+[2026-07-20 15:54:29] INFO     | master_parser | 🤖 Generating recommendations: COLDBPRD snaps 32550–32550
+[2026-07-20 15:54:29] INFO     | master_parser |   ✅ Recommendations stored for COLDBPRD snaps 32550–32550
+[2026-07-20 15:54:29] INFO     | master_parser | 🔍 Running anomaly detection: COLDBPRD snaps 32550–32550
+[2026-07-20 15:54:29] INFO     | master_parser |   ✅ Anomaly detection complete for COLDBPRD snaps 32550–32550
+[2026-07-20 15:54:29] INFO     | master_parser | 📦 Archived to C:\AWR_Insight_Portal_v2\archive\COLDBPRD\awr_COLDBPRD_1_221212_0730_0830.html
+[2026-07-20 15:54:29] WARNING  | master_parser | ⚠  File processed with 1 module error(s): awr_COLDBPRD_1_221212_0730_0830.html
+[2026-07-20 15:54:29] WARNING  | master_parser |    Failed modules: ['recommendation_engine_unused_duplicate']
+[2026-07-20 15:54:31] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0730_0830.html
+[2026-07-20 15:54:32] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0730_0830.html
+[2026-07-20 15:54:33] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0730_0830.html
+[2026-07-20 15:56:39] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0530_0630.html
+[2026-07-20 15:56:41] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0530_0630.html
+[2026-07-20 15:56:42] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0530_0630.html
+[2026-07-20 15:56:43] INFO     | master_parser | ============================================================
+[2026-07-20 15:56:43] INFO     | master_parser | 📂 Processing: awr_COLDBPRD_1_221212_0630_0730.html
+[2026-07-20 15:56:43] INFO     | master_parser |    DB Name  : COLDBPRD
+[2026-07-20 15:56:43] INFO     | master_parser |    Full path: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0630_0730.html
+[2026-07-20 15:56:43] INFO     | master_parser | Running 51 parser modules …
+[2026-07-20 15:56:45] INFO     | master_parser |   ✅ generic_segment_parser                        1.54s
+[2026-07-20 15:56:46] INFO     | master_parser |   ✅ awr_seg_Phy_read_req_parser                   0.91s
+[2026-07-20 15:56:47] INFO     | master_parser |   ✅ awr_seg_buff_busy_waits_parser                1.37s
+[2026-07-20 15:56:49] INFO     | master_parser |   ✅ awr_seg_cr_blk_rec_parser                     1.29s
+[2026-07-20 15:56:50] INFO     | master_parser |   ✅ awr_seg_cur_blk_rec_parser                    1.41s
+[2026-07-20 15:56:52] INFO     | master_parser |   ✅ awr_seg_db_blk_chg_parser                     1.69s
+[2026-07-20 15:56:53] INFO     | master_parser |   ✅ awr_seg_direct_phy_reads_parser               1.82s
+[2026-07-20 15:56:55] INFO     | master_parser |   ✅ awr_seg_direct_phy_writes_parser              1.30s
+[2026-07-20 15:56:56] INFO     | master_parser |   ✅ awr_seg_gbl_cache_buff_busy_parser            1.48s
+[2026-07-20 15:56:58] INFO     | master_parser |   ✅ awr_seg_itl_waits_parser                      1.67s
+[2026-07-20 15:56:59] INFO     | master_parser |   ✅ awr_seg_logical_reads_parser                  1.44s
+[2026-07-20 15:57:01] INFO     | master_parser |   ✅ awr_seg_opt_reads_parser                      1.27s
+[2026-07-20 15:57:02] INFO     | master_parser |   ✅ awr_seg_phy_reads_parser                      1.52s
+[2026-07-20 15:57:04] INFO     | master_parser |   ✅ awr_seg_phy_write_req_parser                  1.55s
+[2026-07-20 15:57:05] INFO     | master_parser |   ✅ awr_seg_phy_writes_parser                     1.47s
+[2026-07-20 15:57:06] INFO     | master_parser |   ✅ awr_seg_row_lck_waits_parser                  1.28s
+[2026-07-20 15:57:08] INFO     | master_parser |   ✅ awr_seg_table_scan_parser                     1.62s
+[2026-07-20 15:57:10] INFO     | master_parser |   ✅ awr_seg_unopt_reads_parser                    1.54s
+[2026-07-20 15:57:11] INFO     | master_parser |   ✅ background_wait_events_parser                 1.58s
+[2026-07-20 15:57:12] INFO     | master_parser |   ✅ buffer_wait_statistics_parser                 1.21s
+[2026-07-20 15:57:13] INFO     | master_parser |   ✅ db_info_parser                                1.04s
+[2026-07-20 15:57:15] INFO     | master_parser |   ✅ enqueue_wait_statistics_parser                1.50s
+[2026-07-20 15:57:17] INFO     | master_parser |   ✅ foreground_wait_class_parser                  1.66s
+[2026-07-20 15:57:18] INFO     | master_parser |   ✅ foreground_wait_events                        1.64s
+[2026-07-20 15:57:20] INFO     | master_parser |   ✅ instance_activity_statistics_parser           1.91s
+[2026-07-20 15:57:22] INFO     | master_parser |   ✅ instance_efficiency_parser                    1.59s
+[2026-07-20 15:57:23] INFO     | master_parser |   ✅ io_profile_parser                             1.73s
+[2026-07-20 15:57:25] INFO     | master_parser |   ✅ io_stat_by_filetype_summary_parser            1.54s
+[2026-07-20 15:57:27] INFO     | master_parser |   ✅ io_stat_by_func_filetype_summary_parser       1.64s
+[2026-07-20 15:57:28] INFO     | master_parser |   ✅ io_stat_by_function_summary_parser            1.60s
+[2026-07-20 15:57:30] INFO     | master_parser |   ✅ io_stat_file_parser                           1.76s
+[2026-07-20 15:57:32] INFO     | master_parser |   ✅ io_stat_tablespaces_parser                    1.55s
+[2026-07-20 15:57:32] INFO     | master_parser |   ✅ license_engine_20jul26                        0.02s
+[2026-07-20 15:57:33] INFO     | master_parser |   ✅ load_profile_parser                           1.44s
+[2026-07-20 15:57:35] INFO     | master_parser |   ✅ operating_system_statistics_parser            1.68s
+[2026-07-20 15:57:36] INFO     | master_parser |   ✅ pga_target_advisory_parser                    1.62s
+[2026-07-20 15:57:36] ERROR    | master_parser |   ❌ recommendation_engine_unused_duplicate        0.01s — main() takes 0 positional arguments but 1 was given
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 370, in process_file
+    ok      = _run_module(module, module_name, filepath)
+  File "C:\AWR_Insight_Portal_v2\master_parser.py", line 72, in _run_module
+    module.main(filepath)
+    ~~~~~~~~~~~^^^^^^^^^^
+TypeError: main() takes 0 positional arguments but 1 was given
+[2026-07-20 15:57:38] INFO     | master_parser |   ✅ sga_target_advisory_parser                    1.38s
+[2026-07-20 15:57:40] INFO     | master_parser |   ✅ sga_target_advisory_parser_20jul26            1.79s
+[2026-07-20 15:57:41] INFO     | master_parser |   ✅ sql_cluster_wait_parser                       1.88s
+[2026-07-20 15:57:43] INFO     | master_parser |   ✅ sql_cpu_time_parser                           1.48s
+[2026-07-20 15:57:45] INFO     | master_parser |   ✅ sql_elapsed_time_parser                       1.66s
+[2026-07-20 15:57:46] INFO     | master_parser |   ✅ sql_executions_parser                         1.38s
+[2026-07-20 15:57:48] INFO     | master_parser |   ✅ sql_gets_parser                               1.70s
+[2026-07-20 15:57:49] INFO     | master_parser |   ✅ sql_parse_calls_parser                        1.22s
+[2026-07-20 15:57:50] INFO     | master_parser |   ✅ sql_physical_reads_unopt_parser               1.50s
+[2026-07-20 15:57:52] INFO     | master_parser |   ✅ sql_reads_parser                              1.35s
+[2026-07-20 15:57:53] INFO     | master_parser |   ✅ sql_text_parser                               1.77s
+[2026-07-20 15:57:55] INFO     | master_parser |   ✅ sql_user_io_wait_parser                       1.28s
+[2026-07-20 15:57:56] INFO     | master_parser |   ✅ time_model_stats_parser                       1.47s
+[2026-07-20 15:57:58] INFO     | master_parser |   ✅ undo_statistics_parser                        1.30s
+[2026-07-20 15:57:58] INFO     | master_parser | Modules complete in 74.0s — 1 failure(s)
+[2026-07-20 15:57:58] INFO     | master_parser | 🔁 Refreshing materialized views …
+[2026-07-20 15:57:58] INFO     | master_parser |   ✅ public.awr_sql_summary_mv (CONCURRENT)
+[2026-07-20 15:57:58] INFO     | master_parser |   ✅ public.awr_segment_summary_mv (CONCURRENT)
+[2026-07-20 15:57:58] INFO     | master_parser |   ✅ public.awr_fg_wait_summary_mv (CONCURRENT)
+[2026-07-20 15:57:58] INFO     | master_parser |   ✅ public.awr_fg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 15:57:58] INFO     | master_parser |   ✅ public.awr_bg_wait_summary_mv (CONCURRENT)
+[2026-07-20 15:57:58] INFO     | master_parser |   ✅ public.awr_bg_wait_event_summary_mv (CONCURRENT)
+[2026-07-20 15:57:58] INFO     | master_parser |   ✅ public.awr_wait_summary_mv (CONCURRENT)
+[2026-07-20 15:57:58] INFO     | master_parser | 🎉 MV refresh complete
+[2026-07-20 15:57:58] INFO     | master_parser | 🤖 Generating recommendations: COLDBPRD snaps 32550–32550
+[2026-07-20 15:57:58] INFO     | master_parser |   ✅ Recommendations stored for COLDBPRD snaps 32550–32550
+[2026-07-20 15:57:58] INFO     | master_parser | 🔍 Running anomaly detection: COLDBPRD snaps 32550–32550
+[2026-07-20 15:57:58] INFO     | master_parser |   ✅ Anomaly detection complete for COLDBPRD snaps 32550–32550
+[2026-07-20 15:57:58] INFO     | master_parser | 📦 Archived to C:\AWR_Insight_Portal_v2\archive\COLDBPRD\awr_COLDBPRD_1_221212_0630_0730_20260720_155758.html
+[2026-07-20 15:57:58] WARNING  | master_parser | ⚠  File processed with 1 module error(s): awr_COLDBPRD_1_221212_0630_0730.html
+[2026-07-20 15:57:58] WARNING  | master_parser |    Failed modules: ['recommendation_engine_unused_duplicate']
+[2026-07-20 15:58:00] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0730_0830.html
+[2026-07-20 15:58:01] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0730_0830.html
+[2026-07-20 15:58:03] ERROR    | master_parser | ❌ File not found: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0730_0830.html

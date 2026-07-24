@@ -1,0 +1,1393 @@
+INFO:     192.168.1.218:52419 - "GET / HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:52419 - "GET /login?next=/ HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59180 - "POST /login HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:59180 - "GET / HTTP/1.1" 500 Internal Server Error
+INFO:     192.168.1.218:60231 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60231 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64798 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53048 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57455 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60231 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51376 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57742 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:65482 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52716 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52716 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56819 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61311 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54688 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52716 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56157 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64351 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52230 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61345 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62330 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59565 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63530 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55970 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64477 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54478 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59302 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58582 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61742 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52462 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63534 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64106 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54216 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58796 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62658 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:65172 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52741 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64374 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60034 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61716 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55974 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64241 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61403 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:53109 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63183 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61323 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55217 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55217 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50690 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57382 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57382 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64715 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49714 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57383 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57382 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59964 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55734 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58939 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49671 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58322 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59305 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60044 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52046 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55773 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49352 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55970 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52883 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52883 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52355 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57384 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51949 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51949 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51949 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60314 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61926 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55970 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51949 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51667 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56051 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54631 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60285 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60285 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60285 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60915 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53356 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61299 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60285 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56096 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56782 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60344 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59430 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59236 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64291 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50364 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:53884 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62824 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51601 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64114 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54308 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51644 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51644 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51644 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55091 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50811 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52427 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51644 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51817 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62475 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52220 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61815 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:53628 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61929 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63002 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49991 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49991 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61364 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57589 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57589 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60663 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63492 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49352 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57589 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51794 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63427 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56344 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64585 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51251 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60100 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59514 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63417 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52462 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51850 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51850 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55148 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53664 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64558 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51850 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58013 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49991 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62530 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55746 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60342 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51612 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52264 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57995 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57995 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58762 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57714 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58480 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59284 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59284 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59284 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59284 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50921 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64019 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55970 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59284 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51622 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62133 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54033 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59649 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:53430 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50673 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55153 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49748 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60046 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53474 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57384 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51232 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53190 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55970 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55970 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54032 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56493 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58578 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50650 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59186 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56580 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49991 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58030 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56608 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49745 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49671 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55275 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55296 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50918 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59775 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57063 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64343 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50185 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:65045 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57745 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62456 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62456 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57745 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58496 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54610 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62531 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62531 - "GET / HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:62531 - "GET /login?next=/ HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51524 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51524 - "GET /ai-recommendations HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:51524 - "GET /login?next=/ai-recommendations HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49672 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51801 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54668 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54668 - "GET / HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:54668 - "GET /login?next=/ HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54668 - "POST /login HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:54668 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54668 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58641 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61779 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62422 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54668 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64880 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64880 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62237 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64880 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55970 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55716 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55716 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56134 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57574 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49359 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62587 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62587 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54555 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49352 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52254 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52254 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54259 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50544 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58278 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58559 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:53526 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53401 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56898 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55295 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53928 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63700 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60621 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56251 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64617 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58412 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:65287 - "GET / HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:65287 - "GET /login?next=/ HTTP/1.1" 200 OK
+INFO:     192.168.1.218:65287 - "POST /login HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62738 - "POST /login HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:62738 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62738 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61880 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63346 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61883 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62738 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55996 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55996 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52346 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64506 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56985 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56985 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55761 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55228 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57808 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61514 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:65119 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56999 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52196 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55077 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49671 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50858 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63369 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52551 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52551 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52551 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62988 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49352 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:65007 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52551 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60984 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60984 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55971 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64552 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50982 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50982 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50338 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55082 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55082 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55003 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52652 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64665 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56317 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64447 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56976 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59846 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59846 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56224 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62562 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63949 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59846 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59846 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59846 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63949 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62562 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56224 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56224 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56224 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56670 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61791 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52846 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60169 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60169 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51810 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58535 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56092 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60169 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60169 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63653 - "GET /settings HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63653 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63653 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63931 - "GET /api/license/mac-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63635 - "GET /api/db-master HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59849 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59849 - "POST /api/settings/save HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59849 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59849 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63635 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63931 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63653 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63653 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55275 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55275 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55769 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50567 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51119 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55275 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55275 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:53725 - "GET /ai-recommendations HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53725 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56803 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56803 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53725 - "GET /api/ai/history?dbname=&limit=100 HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53725 - "GET /ai-recommendations HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53725 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56803 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56803 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53725 - "GET /api/ai/history?dbname=&limit=100 HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53725 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56803 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56803 - "GET /ai-recommendations HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56803 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53725 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53725 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56803 - "GET /api/ai/history?dbname=&limit=100 HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56803 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56803 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53725 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60012 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64216 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64216 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54183 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56987 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58997 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56106 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56106 - "GET /ai-recommendations HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56106 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58997 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58997 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56106 - "GET /api/ai/history?dbname=&limit=100 HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52660 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54410 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56666 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50128 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62770 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62770 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50620 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51000 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:65099 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62770 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56925 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:65099 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54399 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59751 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63921 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63921 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63921 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59751 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60755 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60066 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60066 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55971 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62862 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52945 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50430 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50430 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50430 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58500 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61800 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54225 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54225 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57544 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58970 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55657 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:65505 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:65505 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64146 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62534 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49991 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:65505 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:65505 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62534 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57382 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51737 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51737 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55992 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63619 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52995 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52995 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52995 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52995 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61632 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:53087 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55836 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63344 - "GET /ai-recommendations HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63344 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50619 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50619 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63344 - "GET /api/ai/history?dbname=&limit=100 HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63344 - "GET /api/instance-list?dbname=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63344 - "GET /api/snaps?dbname=COLDBPRD&instance=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64548 - "POST /api/ai/recommend HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64548 - "GET /api/ai/history?dbname=&limit=100 HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62809 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62809 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61943 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52714 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49992 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62809 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62809 - "GET /comparison HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62809 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62809 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56993 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56993 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57382 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60131 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52741 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56993 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58569 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62617 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56400 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52372 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:53138 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63446 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54581 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63015 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60589 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52061 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60740 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54540 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54540 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49671 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64222 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62286 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52748 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55517 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62109 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57551 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52298 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51846 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54574 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61269 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64838 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51107 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61640 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58469 - "GET /comparison HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58469 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58469 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59653 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59653 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50811 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56942 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52153 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59653 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51844 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62489 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57382 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59267 - "GET /comparison HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59267 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59267 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62165 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62165 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:65240 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62429 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50671 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62165 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49352 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50631 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50213 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60972 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60552 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52664 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57835 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62533 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63787 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50811 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62265 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49671 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61308 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51184 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59278 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:65124 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56864 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55068 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51669 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56586 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50462 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57396 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59715 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62408 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58019 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53779 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57758 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51017 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51017 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51017 - "GET /comparison HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51017 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51017 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54262 - "GET /comparison HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:54262 - "GET /login?next=/comparison HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61199 - "POST /login HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:61199 - "GET /comparison HTTP/1.1" 500 Internal Server Error
+INFO:     192.168.1.218:57080 - "GET /comparison HTTP/1.1" 500 Internal Server Error
+INFO:     192.168.1.218:55404 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55404 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:65424 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:65453 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63335 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55404 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55404 - "GET /comparison HTTP/1.1" 500 Internal Server Error
+INFO:     192.168.1.218:51166 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55395 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58675 - "GET /comparison HTTP/1.1" 500 Internal Server Error
+INFO:     192.168.1.218:59793 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56343 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51393 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63176 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54036 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52983 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56202 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49671 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55264 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54708 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58804 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52722 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55294 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55013 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55013 - "GET / HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:55013 - "GET /login?next=/ HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55013 - "POST /login HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:55013 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55013 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64752 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64085 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63769 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55013 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51996 - "GET /comparison HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51996 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51996 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51037 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51037 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63798 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52986 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:65037 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51037 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60787 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52494 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:65245 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53149 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63224 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59041 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63639 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55711 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55457 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60344 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59452 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57985 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49671 - "GET /comparison HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49671 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49671 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56503 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56503 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50811 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52080 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54677 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54677 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49355 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49355 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54566 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54613 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51578 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49355 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59116 - "GET /settings HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59116 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53092 - "GET /api/license/mac-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49671 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55788 - "GET /api/db-master HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53092 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53092 - "POST /api/settings/save HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53092 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53092 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55788 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49671 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59116 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53092 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60858 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50904 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56013 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56144 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51252 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:65106 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49352 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61019 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62101 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57957 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63172 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63172 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59406 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49671 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62264 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62264 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62264 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49671 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63508 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63508 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52418 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52418 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49671 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53955 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61836 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49671 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52418 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61836 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64817 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50105 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50105 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:65121 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49384 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49384 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52718 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55558 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63958 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63958 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55558 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52718 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52955 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:53660 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59568 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59568 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59568 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53660 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63605 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59540 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59540 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54127 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60681 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60681 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57879 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53290 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61230 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61230 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63185 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60133 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63306 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63306 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63306 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61078 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63754 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49991 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49991 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57925 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56962 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55431 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61258 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58907 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62439 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64349 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61323 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:65196 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:65170 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63705 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52709 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52709 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52569 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52383 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50170 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50170 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50170 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50170 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54753 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49991 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61909 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61909 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61909 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49991 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60439 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62113 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49991 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54023 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52637 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62911 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61525 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49671 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63340 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55319 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58467 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58467 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58467 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53554 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61621 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60230 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60230 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61073 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60589 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55729 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57875 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56782 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51492 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55970 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62403 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52800 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61883 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58780 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50636 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54320 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:65417 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55557 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54320 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57382 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:65417 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64924 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64924 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64680 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62850 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60252 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58051 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58051 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63619 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62470 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56625 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56625 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56625 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56625 - "GET /ai-recommendations HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56625 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60614 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60614 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60614 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60614 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56625 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54883 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52820 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60614 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60614 - "GET /comparison HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60614 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60614 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57802 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57802 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49738 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50205 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51667 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57802 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51558 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51487 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63326 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50991 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50367 - "GET /comparison HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50367 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50367 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50367 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50367 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49365 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52454 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:53225 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53225 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59030 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59030 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64660 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56791 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58036 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59030 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59030 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59030 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58036 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58036 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58036 - "GET /api/instance-list?dbname=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58036 - "GET /api/snaps?dbname=COLDBPRD&instance=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52872 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52872 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59875 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53081 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55555 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52872 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64397 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64397 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64397 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52497 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52497 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60540 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60540 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51969 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62113 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57944 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60540 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62860 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62354 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54204 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49399 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62912 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58738 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63471 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:60165 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63689 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54124 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63932 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55266 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62761 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61324 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57767 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62595 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64967 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:53691 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50307 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:53398 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51964 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58235 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63914 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63914 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63914 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58235 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58235 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58235 - "GET /api/instance-list?dbname=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58235 - "GET /api/snaps?dbname=COLDBPRD&instance=COLDBPRD HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /awr-trends HTTP/1.1" 303 See Other
+INFO:     127.0.0.1:50060 - "GET /login?next=/awr-trends HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /static/logo.jpg HTTP/1.1" 304 Not Modified
+INFO:     192.168.1.218:55004 - "GET /awr-trends HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:55004 - "GET /login?next=/awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61117 - "GET /awr-trends HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:61117 - "GET /login?next=/awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63865 - "POST /login HTTP/1.1" 303 See Other
+INFO:     192.168.1.218:63865 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63865 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56847 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56847 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56847 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56847 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63865 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49671 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:52640 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56847 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60851 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60851 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58102 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58102 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:58102 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61604 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56782 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55709 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51281 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62231 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56125 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54824 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54509 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51634 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57632 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54722 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54722 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61279 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49671 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62233 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54609 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57785 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57785 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62493 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.218:62493 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64151 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:50547 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57930 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59764 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64891 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.218:64891 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63718 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63718 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56013 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:62268 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53509 - "GET /api/instance-list?dbname=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52431 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61657 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61657 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61657 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56871 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56871 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51973 - "GET /api/instance-list?dbname=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51973 - "GET /api/snaps?dbname=COLDBPRD&instance=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55591 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59177 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56224 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64918 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63165 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:64011 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51155 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:63537 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63884 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49377 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54595 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61508 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57842 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:60037 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:59246 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:49671 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58431 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59657 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:53031 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54933 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57382 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55665 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:57811 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:52498 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55707 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57382 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55116 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:65199 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:63720 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:56889 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:55610 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:54976 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58258 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:50385 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:51729 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:53507 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:49991 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:59277 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:53256 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:61975 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:58579 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57382 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:61301 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:51973 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:54005 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:55362 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.218:56431 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.218:57695 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49671 - "GET /logout HTTP/1.1" 303 See Other
+INFO:     192.168.1.2:49671 - "GET /login HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49671 - "GET /static/logo.jpg HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49671 - "GET /favicon.ico HTTP/1.1" 303 See Other
+INFO:     192.168.1.2:49671 - "GET /login?next=/favicon.ico HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49671 - "POST /login HTTP/1.1" 303 See Other
+INFO:     192.168.1.2:49671 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49671 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61792 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:58638 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63571 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52137 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49671 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49671 - "GET /settings HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49671 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52137 - "GET /api/license/mac-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:63571 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:58638 - "GET /api/db-master HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49671 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:55819 - "POST /api/settings/save HTTP/1.1" 200 OK
+INFO:     192.168.1.2:50460 - "GET / HTTP/1.1" 303 See Other
+INFO:     192.168.1.2:50460 - "GET /login?next=/ HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61321 - "POST /login HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61321 - "POST /login HTTP/1.1" 422 Unprocessable Content
+INFO:     192.168.1.2:61321 - "GET /login HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61321 - "POST /login HTTP/1.1" 303 See Other
+INFO:     192.168.1.2:61321 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61321 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53219 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57553 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:57442 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61321 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59305 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:65141 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:64156 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61293 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:64967 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49743 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:56996 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:58938 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:58048 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:58715 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63158 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:58337 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53694 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:64598 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:58149 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:59382 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:65365 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54176 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60325 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54800 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:58818 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54692 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57471 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63793 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:50060 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54195 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53934 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:52655 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60776 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:60776 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:55794 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49705 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49777 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54162 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:54844 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:55470 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:51395 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:55373 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59572 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:59572 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53047 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:55707 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57929 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:60302 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:64934 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49883 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:51099 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:56782 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:58250 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63365 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:54477 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:52752 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:64395 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:55192 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57385 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63115 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59990 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:56952 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:64302 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63514 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61992 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:61992 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:51682 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:61055 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:51907 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51907 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61655 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:56376 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:56376 - "GET /logout HTTP/1.1" 303 See Other
+INFO:     192.168.1.2:56376 - "GET /login HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49925 - "POST /login HTTP/1.1" 303 See Other
+INFO:     192.168.1.2:49925 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49925 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61446 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59188 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:53811 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49925 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61740 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61740 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:56535 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.2:56535 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:56535 - "GET /api/instance-list?dbname=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57688 - "GET /api/snaps?dbname=COLDBPRD&instance=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.2:62259 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.2:62259 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:62342 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.2:62342 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:62342 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.2:62342 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:62259 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.2:62259 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57025 - "GET /api/instance-list?dbname=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59504 - "GET /api/snaps?dbname=COLDBPRD&instance=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.2:50916 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.2:50916 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60919 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60919 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60919 - "GET /api/instance-list?dbname=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60919 - "GET /api/snaps?dbname=COLDBPRD&instance=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60919 - "GET /api/instance-list?dbname=ONE_LMS HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59118 - "GET /api/snaps?dbname=ONE_LMS&instance=ONELMS HTTP/1.1" 200 OK
+INFO:     192.168.1.2:51162 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.2:51162 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:50617 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.2:50617 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:50617 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.2:50617 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:51162 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59034 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:59489 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:50617 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57073 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:57383 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57383 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57073 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57073 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57073 - "GET /api/instance-list?dbname=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57073 - "GET /api/snaps?dbname=COLDBPRD&instance=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.2:54162 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.2:54162 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53668 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53668 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:55014 - "GET /awr-trends HTTP/1.1" 303 See Other
+INFO:     192.168.1.2:55014 - "GET /login?next=/awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57429 - "POST /login HTTP/1.1" 303 See Other
+INFO:     192.168.1.2:57429 - "GET /awr-trends HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57429 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52297 - "GET /api/db-list HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52297 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52297 - "GET /api/instance-list?dbname=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53361 - "GET /api/snaps?dbname=COLDBPRD&instance=COLDBPRD HTTP/1.1" 200 OK
+INFO:     192.168.1.2:63986 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.2:63986 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60100 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53327 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:52189 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:63986 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52862 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:65029 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:56917 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:54435 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:58126 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63208 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53801 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:55693 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49671 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53683 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:58970 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54191 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60847 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:53183 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:58084 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59743 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60258 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49378 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:62336 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:58340 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:60266 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:55303 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63395 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:54162 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:64446 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:56819 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51719 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59895 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49370 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49672 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60039 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:64359 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:52902 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:64111 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:57023 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:50854 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49271 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51967 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54757 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60346 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:56333 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57382 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:64964 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:63205 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:56317 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61446 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49674 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49674 - "GET /comparison HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49674 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49674 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:55409 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.2:55409 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:64614 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59915 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63807 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:55409 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:62707 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:61446 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:52039 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:55022 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:53635 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:61823 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:63323 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:58684 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:60350 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52832 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51758 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:56926 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:55567 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:60876 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52902 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:52847 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59672 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:57997 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60411 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54507 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61688 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51921 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:51913 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:55412 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49671 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:60369 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59204 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:60427 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49945 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52774 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49671 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49671 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:58528 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63993 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:57745 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52561 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:53681 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:57452 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52386 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:62864 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:62093 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51705 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:64485 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:53085 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:58390 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53125 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49882 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63114 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60463 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:52951 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61017 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:61017 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:56500 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:53835 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49391 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:60954 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:63293 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:50581 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:56148 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:53334 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:54980 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:57912 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61190 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:50238 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59103 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:61985 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57701 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49916 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61623 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54162 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:54162 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51962 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63667 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:51458 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51921 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:58568 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57900 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:49370 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63364 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:63051 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63051 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:55863 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:55646 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:50680 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:61190 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:64410 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51703 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:51703 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54162 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:53128 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:58975 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60412 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:65095 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:60314 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:58863 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:65305 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:62383 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:64757 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:54939 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:53184 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:51195 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63730 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:50338 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:57382 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:65529 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51859 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53333 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63689 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:51580 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:57469 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53859 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:53859 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53859 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:53311 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:61082 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53741 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51423 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:59640 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52419 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:58396 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:56234 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:50792 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:53583 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:50657 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:51203 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:59104 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:65001 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:53491 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:62826 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:62115 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:65378 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:50637 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60163 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:59906 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:64955 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:58921 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:63904 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63466 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:62683 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:55951 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59350 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:60074 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57382 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:50500 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:58132 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:65363 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61294 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63415 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:64587 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51784 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:59166 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:52897 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:64536 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:60814 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:57971 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:52803 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:55764 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:62074 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:58673 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:56901 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51050 - "GET /settings HTTP/1.1" 303 See Other
+INFO:     192.168.1.2:51050 - "GET /login?next=/settings HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52107 - "POST /login HTTP/1.1" 303 See Other
+INFO:     192.168.1.2:52107 - "GET /settings HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52107 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:65368 - "GET /api/license/mac-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57895 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:61294 - "GET /api/db-master HTTP/1.1" 200 OK
+INFO:     192.168.1.2:65368 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:65368 - "POST /api/settings/save HTTP/1.1" 200 OK
+INFO:     192.168.1.2:65368 - "GET / HTTP/1.1" 200 OK
+INFO:     192.168.1.2:65368 - "GET /api/portal-info HTTP/1.1" 200 OK
+INFO:     192.168.1.2:55302 - "GET /api/metadata/refresh-status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:55360 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:56265 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:65368 - "GET /api/license/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:56545 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:55044 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51564 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:57955 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:58352 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:52714 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:55650 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:51718 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54254 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:64679 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63491 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:63491 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54687 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54687 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:60617 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52290 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:65349 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:57769 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:56585 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:64622 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:61447 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:65054 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54162 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:56349 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:62473 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:61294 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:52921 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:59224 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:65381 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:52017 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:53530 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54685 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:64125 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:54384 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:49910 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:63456 - "GET /api/services/status HTTP/1.1" 200 OK
+INFO:     192.168.1.2:58664 - "GET /api/queue-stats HTTP/1.1" 404 Not Found
+INFO:     192.168.1.2:60739 - "GET /api/services/status HTTP/1.1" 200 OK

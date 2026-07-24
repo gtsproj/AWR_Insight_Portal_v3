@@ -1,0 +1,56 @@
+[2026-07-20 12:53:43] INFO     | recommendation_engine | Loaded 42 recommendation rules from C:\AWR_Insight_Portal_v2\rules/recommendation_rules_v2.json
+[2026-07-20 12:53:43] INFO     | recommendation_engine | Evaluating recommendations: COLDBPRD snaps 32543-32543
+[2026-07-20 12:53:43] INFO     | recommendation_engine | Recommendations complete: 9 findings (critical=0, high=7)
+[2026-07-20 12:53:43] INFO     | recommendation_engine | Stored 9 recommendations to DB
+[2026-07-20 12:55:01] INFO     | recommendation_engine | Loaded 42 recommendation rules from C:\AWR_Insight_Portal_v2\rules/recommendation_rules_v2.json
+[2026-07-20 12:55:01] INFO     | recommendation_engine | Evaluating recommendations: COLDBPRD snaps 32544-32544
+[2026-07-20 12:55:01] INFO     | recommendation_engine | Recommendations complete: 7 findings (critical=0, high=5)
+[2026-07-20 12:55:02] INFO     | recommendation_engine | Stored 7 recommendations to DB
+[2026-07-20 12:55:12] INFO     | recommendation_engine | Loaded 42 recommendation rules from C:\AWR_Insight_Portal_v2\rules/recommendation_rules_v2.json
+[2026-07-20 12:55:12] INFO     | recommendation_engine | Evaluating recommendations: ONE_LMS snaps 139373-139373
+[2026-07-20 12:55:12] WARNING  | recommendation_engine | SQL metrics fetch failed: unsupported operand type(s) for /: 'float' and 'decimal.Decimal'
+[2026-07-20 12:55:12] INFO     | recommendation_engine | Recommendations complete: 4 findings (critical=0, high=3)
+[2026-07-20 12:55:12] INFO     | recommendation_engine | Stored 4 recommendations to DB
+[2026-07-20 12:56:14] INFO     | recommendation_engine | Loaded 42 recommendation rules from C:\AWR_Insight_Portal_v2\rules/recommendation_rules_v2.json
+[2026-07-20 12:56:14] INFO     | recommendation_engine | Evaluating recommendations: COLDBPRD snaps 32545-32545
+[2026-07-20 12:56:14] INFO     | recommendation_engine | Recommendations complete: 5 findings (critical=0, high=4)
+[2026-07-20 12:56:14] INFO     | recommendation_engine | Stored 5 recommendations to DB
+[2026-07-20 12:57:36] INFO     | recommendation_engine | Loaded 42 recommendation rules from C:\AWR_Insight_Portal_v2\rules/recommendation_rules_v2.json
+[2026-07-20 12:57:36] INFO     | recommendation_engine | Evaluating recommendations: COLDBPRD snaps 32546-32546
+[2026-07-20 12:57:36] INFO     | recommendation_engine | Recommendations complete: 5 findings (critical=0, high=4)
+[2026-07-20 12:57:36] INFO     | recommendation_engine | Stored 5 recommendations to DB
+[2026-07-20 12:57:52] INFO     | recommendation_engine | Loaded 42 recommendation rules from C:\AWR_Insight_Portal_v2\rules/recommendation_rules_v2.json
+[2026-07-20 12:57:52] INFO     | recommendation_engine | Evaluating recommendations: ONE_LMS snaps 139377-139377
+[2026-07-20 12:57:52] WARNING  | recommendation_engine | SQL metrics fetch failed: unsupported operand type(s) for /: 'float' and 'decimal.Decimal'
+[2026-07-20 12:57:52] INFO     | recommendation_engine | Recommendations complete: 3 findings (critical=0, high=2)
+[2026-07-20 12:57:52] INFO     | recommendation_engine | Stored 3 recommendations to DB
+[2026-07-20 12:58:52] INFO     | recommendation_engine | Loaded 42 recommendation rules from C:\AWR_Insight_Portal_v2\rules/recommendation_rules_v2.json
+[2026-07-20 12:58:52] INFO     | recommendation_engine | Evaluating recommendations: COLDBPRD snaps 32547-32547
+[2026-07-20 12:58:52] INFO     | recommendation_engine | Recommendations complete: 5 findings (critical=0, high=4)
+[2026-07-20 12:58:52] INFO     | recommendation_engine | Stored 5 recommendations to DB
+[2026-07-20 13:43:00] INFO     | recommendation_engine | Loaded 42 recommendation rules from C:\AWR_Insight_Portal_v2\rules/recommendation_rules_v2.json
+[2026-07-20 13:43:00] INFO     | recommendation_engine | Evaluating recommendations: ONE_LMS snaps 139381-139381
+[2026-07-20 13:43:00] WARNING  | recommendation_engine | SQL metrics fetch failed: unsupported operand type(s) for /: 'float' and 'decimal.Decimal'
+[2026-07-20 13:43:01] INFO     | recommendation_engine | Recommendations complete: 4 findings (critical=0, high=3)
+[2026-07-20 13:43:01] INFO     | recommendation_engine | Stored 4 recommendations to DB
+[2026-07-20 13:45:32] INFO     | recommendation_engine | Loaded 42 recommendation rules from C:\AWR_Insight_Portal_v2\rules/recommendation_rules_v2.json
+[2026-07-20 13:45:32] INFO     | recommendation_engine | Evaluating recommendations: ONE_LMS snaps 139381-139381
+[2026-07-20 13:45:32] WARNING  | recommendation_engine | SQL metrics fetch failed: unsupported operand type(s) for /: 'float' and 'decimal.Decimal'
+[2026-07-20 13:45:32] INFO     | recommendation_engine | Recommendations complete: 4 findings (critical=0, high=3)
+[2026-07-20 13:45:32] INFO     | recommendation_engine | Stored 4 recommendations to DB
+[2026-07-20 14:04:37] INFO     | recommendation_engine | Loaded 42 recommendation rules from C:\AWR_Insight_Portal_v2\rules/recommendation_rules_v2.json
+[2026-07-20 14:04:37] INFO     | recommendation_engine | Evaluating recommendations: COLDBPRD snaps 32548-32548
+[2026-07-20 14:04:37] INFO     | recommendation_engine | Recommendations complete: 8 findings (critical=1, high=5)
+[2026-07-20 14:04:37] INFO     | recommendation_engine | Stored 8 recommendations to DB
+[2026-07-20 15:40:03] INFO     | recommendation_engine | Loaded 42 recommendation rules from C:\AWR_Insight_Portal_v2\rules/recommendation_rules_v2.json
+[2026-07-20 15:40:03] INFO     | recommendation_engine | Evaluating recommendations: COLDBPRD snaps 32548-32548
+[2026-07-20 15:40:03] INFO     | recommendation_engine | Recommendations complete: 8 findings (critical=1, high=5)
+[2026-07-20 15:40:04] INFO     | recommendation_engine | Stored 8 recommendations to DB
+[2026-07-20 15:54:29] INFO     | recommendation_engine | Loaded 42 recommendation rules from C:\AWR_Insight_Portal_v2\rules/recommendation_rules_v2.json
+[2026-07-20 15:54:29] INFO     | recommendation_engine | Evaluating recommendations: COLDBPRD snaps 32550-32550
+[2026-07-20 15:54:29] INFO     | recommendation_engine | Recommendations complete: 7 findings (critical=0, high=5)
+[2026-07-20 15:54:29] INFO     | recommendation_engine | Stored 7 recommendations to DB
+[2026-07-20 15:57:58] INFO     | recommendation_engine | Loaded 42 recommendation rules from C:\AWR_Insight_Portal_v2\rules/recommendation_rules_v2.json
+[2026-07-20 15:57:58] INFO     | recommendation_engine | Evaluating recommendations: COLDBPRD snaps 32550-32550
+[2026-07-20 15:57:58] INFO     | recommendation_engine | Recommendations complete: 7 findings (critical=0, high=5)
+[2026-07-20 15:57:58] INFO     | recommendation_engine | Stored 7 recommendations to DB

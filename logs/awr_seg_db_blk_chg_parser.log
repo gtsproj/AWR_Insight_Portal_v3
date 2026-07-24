@@ -1,0 +1,36 @@
+[2026-07-20 12:52:31] INFO     | awr_seg_db_blk_chg_parser | Found 5 rows in Segments by DB Blocks Changes section
+[2026-07-20 12:52:31] INFO     | awr_seg_db_blk_chg_parser | ✅ Parsed 5 Segments by DB Blocks Changes records
+[2026-07-20 12:52:31] INFO     | awr_seg_db_blk_chg_parser | ✅ Inserted 5 rows into awr_seg_db_blk_chg
+[2026-07-20 12:52:54] INFO     | awr_seg_db_blk_chg_parser | Found 5 rows in Segments by DB Blocks Changes section
+[2026-07-20 12:52:54] INFO     | awr_seg_db_blk_chg_parser | ✅ Parsed 5 Segments by DB Blocks Changes records
+[2026-07-20 12:52:54] INFO     | awr_seg_db_blk_chg_parser | ✅ Inserted 5 rows into awr_seg_db_blk_chg
+[2026-07-20 12:53:51] INFO     | awr_seg_db_blk_chg_parser | Found 5 rows in Segments by DB Blocks Changes section
+[2026-07-20 12:53:51] INFO     | awr_seg_db_blk_chg_parser | ✅ Parsed 5 Segments by DB Blocks Changes records
+[2026-07-20 12:53:51] INFO     | awr_seg_db_blk_chg_parser | ✅ Inserted 5 rows into awr_seg_db_blk_chg
+[2026-07-20 12:55:10] INFO     | awr_seg_db_blk_chg_parser | Found 5 rows in Segments by DB Blocks Changes section
+[2026-07-20 12:55:10] INFO     | awr_seg_db_blk_chg_parser | ✅ Parsed 5 Segments by DB Blocks Changes records
+[2026-07-20 12:55:10] INFO     | awr_seg_db_blk_chg_parser | ✅ Inserted 5 rows into awr_seg_db_blk_chg
+[2026-07-20 12:55:31] INFO     | awr_seg_db_blk_chg_parser | Found 5 rows in Segments by DB Blocks Changes section
+[2026-07-20 12:55:31] INFO     | awr_seg_db_blk_chg_parser | ✅ Parsed 5 Segments by DB Blocks Changes records
+[2026-07-20 12:55:31] INFO     | awr_seg_db_blk_chg_parser | ✅ Inserted 5 rows into awr_seg_db_blk_chg
+[2026-07-20 12:56:24] INFO     | awr_seg_db_blk_chg_parser | Found 5 rows in Segments by DB Blocks Changes section
+[2026-07-20 12:56:24] INFO     | awr_seg_db_blk_chg_parser | ✅ Parsed 5 Segments by DB Blocks Changes records
+[2026-07-20 12:56:24] INFO     | awr_seg_db_blk_chg_parser | ✅ Inserted 5 rows into awr_seg_db_blk_chg
+[2026-07-20 12:57:46] INFO     | awr_seg_db_blk_chg_parser | Found 5 rows in Segments by DB Blocks Changes section
+[2026-07-20 12:57:46] INFO     | awr_seg_db_blk_chg_parser | ✅ Parsed 5 Segments by DB Blocks Changes records
+[2026-07-20 12:57:46] INFO     | awr_seg_db_blk_chg_parser | ✅ Inserted 5 rows into awr_seg_db_blk_chg
+[2026-07-20 12:58:10] INFO     | awr_seg_db_blk_chg_parser | Found 5 rows in Segments by DB Blocks Changes section
+[2026-07-20 12:58:10] INFO     | awr_seg_db_blk_chg_parser | ✅ Parsed 5 Segments by DB Blocks Changes records
+[2026-07-20 12:58:10] INFO     | awr_seg_db_blk_chg_parser | ✅ Inserted 5 rows into awr_seg_db_blk_chg
+[2026-07-20 13:43:19] INFO     | awr_seg_db_blk_chg_parser | Found 5 rows in Segments by DB Blocks Changes section
+[2026-07-20 13:43:19] INFO     | awr_seg_db_blk_chg_parser | ✅ Parsed 5 Segments by DB Blocks Changes records
+[2026-07-20 13:43:19] INFO     | awr_seg_db_blk_chg_parser | ✅ Inserted 5 rows into awr_seg_db_blk_chg
+[2026-07-20 14:03:22] INFO     | awr_seg_db_blk_chg_parser | Found 5 rows in Segments by DB Blocks Changes section
+[2026-07-20 14:03:22] INFO     | awr_seg_db_blk_chg_parser | ✅ Parsed 5 Segments by DB Blocks Changes records
+[2026-07-20 14:03:22] INFO     | awr_seg_db_blk_chg_parser | ✅ Inserted 5 rows into awr_seg_db_blk_chg
+[2026-07-20 15:53:16] INFO     | awr_seg_db_blk_chg_parser | Found 5 rows in Segments by DB Blocks Changes section
+[2026-07-20 15:53:16] INFO     | awr_seg_db_blk_chg_parser | ✅ Parsed 5 Segments by DB Blocks Changes records
+[2026-07-20 15:53:16] INFO     | awr_seg_db_blk_chg_parser | ✅ Inserted 5 rows into awr_seg_db_blk_chg
+[2026-07-20 15:56:52] INFO     | awr_seg_db_blk_chg_parser | Found 5 rows in Segments by DB Blocks Changes section
+[2026-07-20 15:56:52] INFO     | awr_seg_db_blk_chg_parser | ✅ Parsed 5 Segments by DB Blocks Changes records
+[2026-07-20 15:56:52] INFO     | awr_seg_db_blk_chg_parser | ✅ Inserted 5 rows into awr_seg_db_blk_chg

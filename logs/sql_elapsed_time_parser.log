@@ -1,0 +1,36 @@
+[2026-07-20 12:53:27] INFO     | sql_elapsed_time_parser | Found 16 rows in SQL Elapsed Time section
+[2026-07-20 12:53:27] INFO     | sql_elapsed_time_parser | ✅ Parsed 16 SQL Elapsed Time records
+[2026-07-20 12:53:27] INFO     | sql_elapsed_time_parser | ✅ Inserted 16 rows into awr_sql_elapsed_time
+[2026-07-20 12:54:42] INFO     | sql_elapsed_time_parser | Found 10 rows in SQL Elapsed Time section
+[2026-07-20 12:54:42] INFO     | sql_elapsed_time_parser | ✅ Parsed 10 SQL Elapsed Time records
+[2026-07-20 12:54:42] INFO     | sql_elapsed_time_parser | ✅ Inserted 10 rows into awr_sql_elapsed_time
+[2026-07-20 12:54:46] INFO     | sql_elapsed_time_parser | Found 10 rows in SQL Elapsed Time section
+[2026-07-20 12:54:46] INFO     | sql_elapsed_time_parser | ✅ Parsed 10 SQL Elapsed Time records
+[2026-07-20 12:54:46] INFO     | sql_elapsed_time_parser | ✅ Inserted 10 rows into awr_sql_elapsed_time
+[2026-07-20 12:56:00] INFO     | sql_elapsed_time_parser | Found 10 rows in SQL Elapsed Time section
+[2026-07-20 12:56:00] INFO     | sql_elapsed_time_parser | ✅ Parsed 10 SQL Elapsed Time records
+[2026-07-20 12:56:00] INFO     | sql_elapsed_time_parser | ✅ Inserted 10 rows into awr_sql_elapsed_time
+[2026-07-20 12:57:20] INFO     | sql_elapsed_time_parser | Found 22 rows in SQL Elapsed Time section
+[2026-07-20 12:57:20] INFO     | sql_elapsed_time_parser | ✅ Parsed 22 SQL Elapsed Time records
+[2026-07-20 12:57:20] INFO     | sql_elapsed_time_parser | ✅ Inserted 22 rows into awr_sql_elapsed_time
+[2026-07-20 12:57:21] INFO     | sql_elapsed_time_parser | Found 10 rows in SQL Elapsed Time section
+[2026-07-20 12:57:22] INFO     | sql_elapsed_time_parser | ✅ Parsed 10 SQL Elapsed Time records
+[2026-07-20 12:57:22] INFO     | sql_elapsed_time_parser | ✅ Inserted 10 rows into awr_sql_elapsed_time
+[2026-07-20 12:58:37] INFO     | sql_elapsed_time_parser | Found 10 rows in SQL Elapsed Time section
+[2026-07-20 12:58:37] INFO     | sql_elapsed_time_parser | ✅ Parsed 10 SQL Elapsed Time records
+[2026-07-20 12:58:37] INFO     | sql_elapsed_time_parser | ✅ Inserted 10 rows into awr_sql_elapsed_time
+[2026-07-20 13:42:32] INFO     | sql_elapsed_time_parser | Found 10 rows in SQL Elapsed Time section
+[2026-07-20 13:42:32] INFO     | sql_elapsed_time_parser | ✅ Parsed 10 SQL Elapsed Time records
+[2026-07-20 13:42:32] INFO     | sql_elapsed_time_parser | ✅ Inserted 10 rows into awr_sql_elapsed_time
+[2026-07-20 13:45:03] INFO     | sql_elapsed_time_parser | Found 10 rows in SQL Elapsed Time section
+[2026-07-20 13:45:03] INFO     | sql_elapsed_time_parser | ✅ Parsed 10 SQL Elapsed Time records
+[2026-07-20 13:45:03] INFO     | sql_elapsed_time_parser | ✅ Inserted 10 rows into awr_sql_elapsed_time
+[2026-07-20 14:04:20] INFO     | sql_elapsed_time_parser | Found 11 rows in SQL Elapsed Time section
+[2026-07-20 14:04:20] INFO     | sql_elapsed_time_parser | ✅ Parsed 11 SQL Elapsed Time records
+[2026-07-20 14:04:20] INFO     | sql_elapsed_time_parser | ✅ Inserted 11 rows into awr_sql_elapsed_time
+[2026-07-20 15:54:13] INFO     | sql_elapsed_time_parser | Found 14 rows in SQL Elapsed Time section
+[2026-07-20 15:54:13] INFO     | sql_elapsed_time_parser | ✅ Parsed 14 SQL Elapsed Time records
+[2026-07-20 15:54:13] INFO     | sql_elapsed_time_parser | ✅ Inserted 14 rows into awr_sql_elapsed_time
+[2026-07-20 15:57:44] INFO     | sql_elapsed_time_parser | Found 17 rows in SQL Elapsed Time section
+[2026-07-20 15:57:44] INFO     | sql_elapsed_time_parser | ✅ Parsed 17 SQL Elapsed Time records
+[2026-07-20 15:57:45] INFO     | sql_elapsed_time_parser | ✅ Inserted 17 rows into awr_sql_elapsed_time

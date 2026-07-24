@@ -1,0 +1,36 @@
+[2026-07-20 12:52:26] INFO     | awr_seg_buff_busy_waits_parser | Found 4 rows in Segments by Buffer Busy Waits section
+[2026-07-20 12:52:26] INFO     | awr_seg_buff_busy_waits_parser | ✅ Parsed 4 Segments by Buffer Busy Waits records
+[2026-07-20 12:52:26] INFO     | awr_seg_buff_busy_waits_parser | ✅ Inserted 4 rows into awr_seg_buff_busy_waits
+[2026-07-20 12:52:44] INFO     | awr_seg_buff_busy_waits_parser | Found 5 rows in Segments by Buffer Busy Waits section
+[2026-07-20 12:52:44] INFO     | awr_seg_buff_busy_waits_parser | ✅ Parsed 5 Segments by Buffer Busy Waits records
+[2026-07-20 12:52:44] INFO     | awr_seg_buff_busy_waits_parser | ✅ Inserted 5 rows into awr_seg_buff_busy_waits
+[2026-07-20 12:53:47] INFO     | awr_seg_buff_busy_waits_parser | Found 1 rows in Segments by Buffer Busy Waits section
+[2026-07-20 12:53:47] INFO     | awr_seg_buff_busy_waits_parser | ✅ Parsed 1 Segments by Buffer Busy Waits records
+[2026-07-20 12:53:47] INFO     | awr_seg_buff_busy_waits_parser | ✅ Inserted 1 rows into awr_seg_buff_busy_waits
+[2026-07-20 12:55:05] INFO     | awr_seg_buff_busy_waits_parser | Found 1 rows in Segments by Buffer Busy Waits section
+[2026-07-20 12:55:05] INFO     | awr_seg_buff_busy_waits_parser | ✅ Parsed 1 Segments by Buffer Busy Waits records
+[2026-07-20 12:55:05] INFO     | awr_seg_buff_busy_waits_parser | ✅ Inserted 1 rows into awr_seg_buff_busy_waits
+[2026-07-20 12:55:21] INFO     | awr_seg_buff_busy_waits_parser | Found 5 rows in Segments by Buffer Busy Waits section
+[2026-07-20 12:55:21] INFO     | awr_seg_buff_busy_waits_parser | ✅ Parsed 5 Segments by Buffer Busy Waits records
+[2026-07-20 12:55:21] INFO     | awr_seg_buff_busy_waits_parser | ✅ Inserted 5 rows into awr_seg_buff_busy_waits
+[2026-07-20 12:56:19] INFO     | awr_seg_buff_busy_waits_parser | Found 16 rows in Segments by Buffer Busy Waits section
+[2026-07-20 12:56:19] INFO     | awr_seg_buff_busy_waits_parser | ✅ Parsed 16 Segments by Buffer Busy Waits records
+[2026-07-20 12:56:19] INFO     | awr_seg_buff_busy_waits_parser | ✅ Inserted 16 rows into awr_seg_buff_busy_waits
+[2026-07-20 12:57:41] INFO     | awr_seg_buff_busy_waits_parser | Found 1 rows in Segments by Buffer Busy Waits section
+[2026-07-20 12:57:41] INFO     | awr_seg_buff_busy_waits_parser | ✅ Parsed 1 Segments by Buffer Busy Waits records
+[2026-07-20 12:57:41] INFO     | awr_seg_buff_busy_waits_parser | ✅ Inserted 1 rows into awr_seg_buff_busy_waits
+[2026-07-20 12:58:00] INFO     | awr_seg_buff_busy_waits_parser | Found 5 rows in Segments by Buffer Busy Waits section
+[2026-07-20 12:58:00] INFO     | awr_seg_buff_busy_waits_parser | ✅ Parsed 5 Segments by Buffer Busy Waits records
+[2026-07-20 12:58:00] INFO     | awr_seg_buff_busy_waits_parser | ✅ Inserted 5 rows into awr_seg_buff_busy_waits
+[2026-07-20 13:43:09] INFO     | awr_seg_buff_busy_waits_parser | Found 5 rows in Segments by Buffer Busy Waits section
+[2026-07-20 13:43:09] INFO     | awr_seg_buff_busy_waits_parser | ✅ Parsed 5 Segments by Buffer Busy Waits records
+[2026-07-20 13:43:09] INFO     | awr_seg_buff_busy_waits_parser | ✅ Inserted 5 rows into awr_seg_buff_busy_waits
+[2026-07-20 14:03:17] INFO     | awr_seg_buff_busy_waits_parser | Found 2 rows in Segments by Buffer Busy Waits section
+[2026-07-20 14:03:17] INFO     | awr_seg_buff_busy_waits_parser | ✅ Parsed 2 Segments by Buffer Busy Waits records
+[2026-07-20 14:03:17] INFO     | awr_seg_buff_busy_waits_parser | ✅ Inserted 2 rows into awr_seg_buff_busy_waits
+[2026-07-20 15:53:11] INFO     | awr_seg_buff_busy_waits_parser | Found 4 rows in Segments by Buffer Busy Waits section
+[2026-07-20 15:53:11] INFO     | awr_seg_buff_busy_waits_parser | ✅ Parsed 4 Segments by Buffer Busy Waits records
+[2026-07-20 15:53:11] INFO     | awr_seg_buff_busy_waits_parser | ✅ Inserted 4 rows into awr_seg_buff_busy_waits
+[2026-07-20 15:56:47] INFO     | awr_seg_buff_busy_waits_parser | Found 5 rows in Segments by Buffer Busy Waits section
+[2026-07-20 15:56:47] INFO     | awr_seg_buff_busy_waits_parser | ✅ Parsed 5 Segments by Buffer Busy Waits records
+[2026-07-20 15:56:47] INFO     | awr_seg_buff_busy_waits_parser | ✅ Inserted 5 rows into awr_seg_buff_busy_waits

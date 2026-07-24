@@ -1,0 +1,5 @@
+[2026-07-20 13:52:21] INFO     | awr_watcher | ✅ Enqueued [DMSDB]: awr_DMSDB_1_240116_0000_0030.html
+[2026-07-20 14:03:11] INFO     | awr_watcher | ✅ Enqueued [COLDBPRD]: awr_COLDBPRD_1_221212_0530_0630.html
+[2026-07-20 15:39:58] INFO     | awr_watcher | ✅ Enqueued [COLDBPRD]: awr_COLDBPRD_1_221212_0630_0730.html
+[2026-07-20 15:52:23] INFO     | awr_watcher | ⏭  Already queued (path match): C:\AWR_Insight_Portal_v2\awr_reports\coldbprd\awr_COLDBPRD_1_221212_0630_0730.html
+[2026-07-20 15:53:03] INFO     | awr_watcher | ✅ Enqueued [COLDBPRD]: awr_COLDBPRD_1_221212_0730_0830.html

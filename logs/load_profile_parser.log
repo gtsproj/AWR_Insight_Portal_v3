@@ -1,0 +1,304 @@
+[2026-07-20 12:53:15] INFO     | load_profile_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0030_0130.html
+[2026-07-20 12:53:17] INFO     | load_profile_parser | Parsed 22 load profile rows.
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:53:17] INFO     | load_profile_parser | ✅ Inserted 22 rows into awr_load_profile
+[2026-07-20 12:54:18] INFO     | load_profile_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\ONE_LMS\10_1.html
+[2026-07-20 12:54:21] INFO     | load_profile_parser | Parsed 23 load profile rows.
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:54:21] INFO     | load_profile_parser | ✅ Inserted 23 rows into awr_load_profile
+[2026-07-20 12:54:35] INFO     | load_profile_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0130_0230.html
+[2026-07-20 12:54:36] INFO     | load_profile_parser | Parsed 22 load profile rows.
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:54:36] INFO     | load_profile_parser | ✅ Inserted 22 rows into awr_load_profile
+[2026-07-20 12:55:49] INFO     | load_profile_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0230_0330.html
+[2026-07-20 12:55:51] INFO     | load_profile_parser | Parsed 22 load profile rows.
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:55:51] INFO     | load_profile_parser | ✅ Inserted 22 rows into awr_load_profile
+[2026-07-20 12:56:58] INFO     | load_profile_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\ONE_LMS\11_1.html
+[2026-07-20 12:57:01] INFO     | load_profile_parser | Parsed 23 load profile rows.
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 12:57:01] INFO     | load_profile_parser | ✅ Inserted 23 rows into awr_load_profile
+[2026-07-20 12:57:08] INFO     | load_profile_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0330_0430.html
+[2026-07-20 12:57:09] INFO     | load_profile_parser | Parsed 22 load profile rows.
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:57:09] INFO     | load_profile_parser | ✅ Inserted 22 rows into awr_load_profile
+[2026-07-20 12:58:27] INFO     | load_profile_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0430_0530.html
+[2026-07-20 12:58:28] INFO     | load_profile_parser | Parsed 22 load profile rows.
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 12:58:28] INFO     | load_profile_parser | ✅ Inserted 22 rows into awr_load_profile
+[2026-07-20 13:26:01] INFO     | load_profile_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\ONE_LMS\12_1.html
+[2026-07-20 13:26:28] INFO     | load_profile_parser | Parsed 23 load profile rows.
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:26:28] INFO     | load_profile_parser | ✅ Inserted 23 rows into awr_load_profile
+[2026-07-20 13:44:43] INFO     | load_profile_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\ONE_LMS\9_1.html
+[2026-07-20 13:44:45] INFO     | load_profile_parser | Parsed 23 load profile rows.
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted Load Profile for ONE_LMS / ONELMS
+[2026-07-20 13:44:45] INFO     | load_profile_parser | ✅ Inserted 23 rows into awr_load_profile
+[2026-07-20 14:04:08] INFO     | load_profile_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\coldbprd\awr_COLDBPRD_1_221212_0530_0630.html
+[2026-07-20 14:04:09] INFO     | load_profile_parser | Parsed 22 load profile rows.
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 14:04:09] INFO     | load_profile_parser | ✅ Inserted 22 rows into awr_load_profile
+[2026-07-20 15:54:00] INFO     | load_profile_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\coldbprd\awr_COLDBPRD_1_221212_0730_0830.html
+[2026-07-20 15:54:01] INFO     | load_profile_parser | Parsed 22 load profile rows.
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:54:01] INFO     | load_profile_parser | ✅ Inserted 22 rows into awr_load_profile
+[2026-07-20 15:57:32] INFO     | load_profile_parser | Parsing file: C:\AWR_Insight_Portal_v2\awr_reports\COLDBPRD\awr_COLDBPRD_1_221212_0630_0730.html
+[2026-07-20 15:57:33] INFO     | load_profile_parser | Parsed 22 load profile rows.
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted Load Profile for COLDBPRD / COLDBPRD
+[2026-07-20 15:57:33] INFO     | load_profile_parser | ✅ Inserted 22 rows into awr_load_profile

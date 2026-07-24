@@ -1,0 +1,55 @@
+[2026-07-20 12:53:43] INFO     | anomaly_detector | AWR anomaly detection complete — COLDBPRD/COLDBPRD snap 32543: 0 finding(s)
+[2026-07-20 12:55:02] INFO     | anomaly_detector | AWR anomaly detection complete — COLDBPRD/COLDBPRD snap 32544: 0 finding(s)
+[2026-07-20 12:55:12] INFO     | anomaly_detector | AWR anomaly detection complete — ONE_LMS/ONELMS snap 139373: 0 finding(s)
+[2026-07-20 12:56:14] INFO     | anomaly_detector |   [wait_event] 3 anomaly(ies) found
+[2026-07-20 12:56:14] INFO     | anomaly_detector |   [wait_class] 3 anomaly(ies) found
+[2026-07-20 12:56:14] INFO     | anomaly_detector | AWR anomaly detection complete — COLDBPRD/COLDBPRD snap 32545: 6 finding(s)
+[2026-07-20 12:56:14] INFO     | anomaly_detector | Stored 6 AWR anomalies
+[2026-07-20 12:57:37] INFO     | anomaly_detector |   [wait_event] 1 anomaly(ies) found
+[2026-07-20 12:57:37] INFO     | anomaly_detector |   [wait_class] 2 anomaly(ies) found
+[2026-07-20 12:57:37] INFO     | anomaly_detector |   [sql_elapsed] 1 anomaly(ies) found
+[2026-07-20 12:57:37] INFO     | anomaly_detector | AWR anomaly detection complete — COLDBPRD/COLDBPRD snap 32546: 4 finding(s)
+[2026-07-20 12:57:37] INFO     | anomaly_detector | Stored 4 AWR anomalies
+[2026-07-20 12:57:52] INFO     | anomaly_detector | AWR anomaly detection complete — ONE_LMS/ONELMS snap 139377: 0 finding(s)
+[2026-07-20 12:58:52] INFO     | anomaly_detector |   [wait_event] 3 anomaly(ies) found
+[2026-07-20 12:58:52] INFO     | anomaly_detector |   [wait_class] 2 anomaly(ies) found
+[2026-07-20 12:58:52] INFO     | anomaly_detector |   [sql_elapsed] 1 anomaly(ies) found
+[2026-07-20 12:58:52] INFO     | anomaly_detector |   [sql_cpu] 3 anomaly(ies) found
+[2026-07-20 12:58:52] INFO     | anomaly_detector |   [segment_pr] 1 anomaly(ies) found
+[2026-07-20 12:58:52] INFO     | anomaly_detector | AWR anomaly detection complete — COLDBPRD/COLDBPRD snap 32547: 10 finding(s)
+[2026-07-20 12:58:52] INFO     | anomaly_detector | Stored 10 AWR anomalies
+[2026-07-20 13:43:01] INFO     | anomaly_detector |   [wait_event] 2 anomaly(ies) found
+[2026-07-20 13:43:01] INFO     | anomaly_detector |   [wait_class] 2 anomaly(ies) found
+[2026-07-20 13:43:01] INFO     | anomaly_detector |   [sql_elapsed] 6 anomaly(ies) found
+[2026-07-20 13:43:01] INFO     | anomaly_detector |   [segment_lr] 3 anomaly(ies) found
+[2026-07-20 13:43:01] INFO     | anomaly_detector | AWR anomaly detection complete — ONE_LMS/ONELMS snap 139381: 13 finding(s)
+[2026-07-20 13:43:01] INFO     | anomaly_detector | Stored 13 AWR anomalies
+[2026-07-20 13:45:32] INFO     | anomaly_detector |   [wait_class] 1 anomaly(ies) found
+[2026-07-20 13:45:32] INFO     | anomaly_detector |   [sql_elapsed] 5 anomaly(ies) found
+[2026-07-20 13:45:32] INFO     | anomaly_detector | AWR anomaly detection complete — ONE_LMS/ONELMS snap 139381: 6 finding(s)
+[2026-07-20 13:45:32] INFO     | anomaly_detector | Stored 6 AWR anomalies
+[2026-07-20 13:54:23] INFO     | anomaly_detector | SAR anomaly detection complete for LTPOL3VLMSDBO02: 0 finding(s)
+[2026-07-20 14:04:37] INFO     | anomaly_detector |   [wait_event] 3 anomaly(ies) found
+[2026-07-20 14:04:37] INFO     | anomaly_detector |   [wait_class] 3 anomaly(ies) found
+[2026-07-20 14:04:37] INFO     | anomaly_detector |   [segment_pr] 2 anomaly(ies) found
+[2026-07-20 14:04:37] INFO     | anomaly_detector | AWR anomaly detection complete — COLDBPRD/COLDBPRD snap 32548: 8 finding(s)
+[2026-07-20 14:04:37] INFO     | anomaly_detector | Stored 8 AWR anomalies
+[2026-07-20 15:40:04] INFO     | anomaly_detector |   [wait_event] 3 anomaly(ies) found
+[2026-07-20 15:40:04] INFO     | anomaly_detector |   [wait_class] 3 anomaly(ies) found
+[2026-07-20 15:40:04] INFO     | anomaly_detector |   [segment_pr] 2 anomaly(ies) found
+[2026-07-20 15:40:04] INFO     | anomaly_detector | AWR anomaly detection complete — COLDBPRD/COLDBPRD snap 32548: 8 finding(s)
+[2026-07-20 15:40:04] INFO     | anomaly_detector | Stored 8 AWR anomalies
+[2026-07-20 15:54:29] INFO     | anomaly_detector |   [wait_event] 3 anomaly(ies) found
+[2026-07-20 15:54:29] INFO     | anomaly_detector |   [wait_class] 2 anomaly(ies) found
+[2026-07-20 15:54:29] INFO     | anomaly_detector |   [sql_cpu] 3 anomaly(ies) found
+[2026-07-20 15:54:29] INFO     | anomaly_detector |   [segment_lr] 2 anomaly(ies) found
+[2026-07-20 15:54:29] INFO     | anomaly_detector |   [segment_pr] 2 anomaly(ies) found
+[2026-07-20 15:54:29] INFO     | anomaly_detector | AWR anomaly detection complete — COLDBPRD/COLDBPRD snap 32550: 12 finding(s)
+[2026-07-20 15:54:29] INFO     | anomaly_detector | Stored 12 AWR anomalies
+[2026-07-20 15:57:58] INFO     | anomaly_detector |   [wait_event] 5 anomaly(ies) found
+[2026-07-20 15:57:58] INFO     | anomaly_detector |   [wait_class] 1 anomaly(ies) found
+[2026-07-20 15:57:58] INFO     | anomaly_detector |   [sql_cpu] 3 anomaly(ies) found
+[2026-07-20 15:57:58] INFO     | anomaly_detector |   [segment_lr] 2 anomaly(ies) found
+[2026-07-20 15:57:58] INFO     | anomaly_detector |   [segment_pr] 3 anomaly(ies) found
+[2026-07-20 15:57:58] INFO     | anomaly_detector | AWR anomaly detection complete — COLDBPRD/COLDBPRD snap 32550: 14 finding(s)
+[2026-07-20 15:57:58] INFO     | anomaly_detector | Stored 14 AWR anomalies

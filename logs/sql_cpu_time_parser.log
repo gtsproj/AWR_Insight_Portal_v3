@@ -1,0 +1,36 @@
+[2026-07-20 12:53:25] INFO     | sql_cpu_time_parser | Found 20 rows in SQL CPU Time section
+[2026-07-20 12:53:25] INFO     | sql_cpu_time_parser | ✅ Parsed 20 SQL CPU Time records
+[2026-07-20 12:53:25] INFO     | sql_cpu_time_parser | ✅ Inserted 20 rows into awr_sql_cpu_time
+[2026-07-20 12:54:38] INFO     | sql_cpu_time_parser | Found 10 rows in SQL CPU Time section
+[2026-07-20 12:54:38] INFO     | sql_cpu_time_parser | ✅ Parsed 10 SQL CPU Time records
+[2026-07-20 12:54:38] INFO     | sql_cpu_time_parser | ✅ Inserted 10 rows into awr_sql_cpu_time
+[2026-07-20 12:54:44] INFO     | sql_cpu_time_parser | Found 13 rows in SQL CPU Time section
+[2026-07-20 12:54:44] INFO     | sql_cpu_time_parser | ✅ Parsed 13 SQL CPU Time records
+[2026-07-20 12:54:44] INFO     | sql_cpu_time_parser | ✅ Inserted 13 rows into awr_sql_cpu_time
+[2026-07-20 12:55:58] INFO     | sql_cpu_time_parser | Found 10 rows in SQL CPU Time section
+[2026-07-20 12:55:58] INFO     | sql_cpu_time_parser | ✅ Parsed 10 SQL CPU Time records
+[2026-07-20 12:55:58] INFO     | sql_cpu_time_parser | ✅ Inserted 10 rows into awr_sql_cpu_time
+[2026-07-20 12:57:18] INFO     | sql_cpu_time_parser | Found 10 rows in SQL CPU Time section
+[2026-07-20 12:57:18] INFO     | sql_cpu_time_parser | ✅ Parsed 10 SQL CPU Time records
+[2026-07-20 12:57:18] INFO     | sql_cpu_time_parser | ✅ Inserted 10 rows into awr_sql_cpu_time
+[2026-07-20 12:57:18] INFO     | sql_cpu_time_parser | Found 23 rows in SQL CPU Time section
+[2026-07-20 12:57:18] INFO     | sql_cpu_time_parser | ✅ Parsed 23 SQL CPU Time records
+[2026-07-20 12:57:18] INFO     | sql_cpu_time_parser | ✅ Inserted 23 rows into awr_sql_cpu_time
+[2026-07-20 12:58:36] INFO     | sql_cpu_time_parser | Found 18 rows in SQL CPU Time section
+[2026-07-20 12:58:36] INFO     | sql_cpu_time_parser | ✅ Parsed 18 SQL CPU Time records
+[2026-07-20 12:58:36] INFO     | sql_cpu_time_parser | ✅ Inserted 18 rows into awr_sql_cpu_time
+[2026-07-20 13:42:29] INFO     | sql_cpu_time_parser | Found 10 rows in SQL CPU Time section
+[2026-07-20 13:42:29] INFO     | sql_cpu_time_parser | ✅ Parsed 10 SQL CPU Time records
+[2026-07-20 13:42:29] INFO     | sql_cpu_time_parser | ✅ Inserted 10 rows into awr_sql_cpu_time
+[2026-07-20 13:45:00] INFO     | sql_cpu_time_parser | Found 10 rows in SQL CPU Time section
+[2026-07-20 13:45:00] INFO     | sql_cpu_time_parser | ✅ Parsed 10 SQL CPU Time records
+[2026-07-20 13:45:00] INFO     | sql_cpu_time_parser | ✅ Inserted 10 rows into awr_sql_cpu_time
+[2026-07-20 14:04:19] INFO     | sql_cpu_time_parser | Found 24 rows in SQL CPU Time section
+[2026-07-20 14:04:19] INFO     | sql_cpu_time_parser | ✅ Parsed 24 SQL CPU Time records
+[2026-07-20 14:04:19] INFO     | sql_cpu_time_parser | ✅ Inserted 24 rows into awr_sql_cpu_time
+[2026-07-20 15:54:11] INFO     | sql_cpu_time_parser | Found 29 rows in SQL CPU Time section
+[2026-07-20 15:54:11] INFO     | sql_cpu_time_parser | ✅ Parsed 29 SQL CPU Time records
+[2026-07-20 15:54:11] INFO     | sql_cpu_time_parser | ✅ Inserted 29 rows into awr_sql_cpu_time
+[2026-07-20 15:57:43] INFO     | sql_cpu_time_parser | Found 28 rows in SQL CPU Time section
+[2026-07-20 15:57:43] INFO     | sql_cpu_time_parser | ✅ Parsed 28 SQL CPU Time records
+[2026-07-20 15:57:43] INFO     | sql_cpu_time_parser | ✅ Inserted 28 rows into awr_sql_cpu_time

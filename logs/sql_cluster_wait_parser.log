@@ -1,0 +1,24 @@
+[2026-07-20 12:53:23] WARNING  | sql_cluster_wait_parser | ⚠️ SQL ordered by Cluster Wait Time section not found.
+[2026-07-20 12:53:23] WARNING  | sql_cluster_wait_parser | ⚠️ No records to insert into awr_sql_cluster_wait_time
+[2026-07-20 12:54:35] WARNING  | sql_cluster_wait_parser | ⚠️ SQL ordered by Cluster Wait Time section not found.
+[2026-07-20 12:54:35] WARNING  | sql_cluster_wait_parser | ⚠️ No records to insert into awr_sql_cluster_wait_time
+[2026-07-20 12:54:43] WARNING  | sql_cluster_wait_parser | ⚠️ SQL ordered by Cluster Wait Time section not found.
+[2026-07-20 12:54:43] WARNING  | sql_cluster_wait_parser | ⚠️ No records to insert into awr_sql_cluster_wait_time
+[2026-07-20 12:55:57] WARNING  | sql_cluster_wait_parser | ⚠️ SQL ordered by Cluster Wait Time section not found.
+[2026-07-20 12:55:57] WARNING  | sql_cluster_wait_parser | ⚠️ No records to insert into awr_sql_cluster_wait_time
+[2026-07-20 12:57:15] WARNING  | sql_cluster_wait_parser | ⚠️ SQL ordered by Cluster Wait Time section not found.
+[2026-07-20 12:57:15] WARNING  | sql_cluster_wait_parser | ⚠️ No records to insert into awr_sql_cluster_wait_time
+[2026-07-20 12:57:17] WARNING  | sql_cluster_wait_parser | ⚠️ SQL ordered by Cluster Wait Time section not found.
+[2026-07-20 12:57:17] WARNING  | sql_cluster_wait_parser | ⚠️ No records to insert into awr_sql_cluster_wait_time
+[2026-07-20 12:58:34] WARNING  | sql_cluster_wait_parser | ⚠️ SQL ordered by Cluster Wait Time section not found.
+[2026-07-20 12:58:34] WARNING  | sql_cluster_wait_parser | ⚠️ No records to insert into awr_sql_cluster_wait_time
+[2026-07-20 13:42:26] WARNING  | sql_cluster_wait_parser | ⚠️ SQL ordered by Cluster Wait Time section not found.
+[2026-07-20 13:42:26] WARNING  | sql_cluster_wait_parser | ⚠️ No records to insert into awr_sql_cluster_wait_time
+[2026-07-20 13:44:57] WARNING  | sql_cluster_wait_parser | ⚠️ SQL ordered by Cluster Wait Time section not found.
+[2026-07-20 13:44:57] WARNING  | sql_cluster_wait_parser | ⚠️ No records to insert into awr_sql_cluster_wait_time
+[2026-07-20 14:04:17] WARNING  | sql_cluster_wait_parser | ⚠️ SQL ordered by Cluster Wait Time section not found.
+[2026-07-20 14:04:17] WARNING  | sql_cluster_wait_parser | ⚠️ No records to insert into awr_sql_cluster_wait_time
+[2026-07-20 15:54:10] WARNING  | sql_cluster_wait_parser | ⚠️ SQL ordered by Cluster Wait Time section not found.
+[2026-07-20 15:54:10] WARNING  | sql_cluster_wait_parser | ⚠️ No records to insert into awr_sql_cluster_wait_time
+[2026-07-20 15:57:41] WARNING  | sql_cluster_wait_parser | ⚠️ SQL ordered by Cluster Wait Time section not found.
+[2026-07-20 15:57:41] WARNING  | sql_cluster_wait_parser | ⚠️ No records to insert into awr_sql_cluster_wait_time

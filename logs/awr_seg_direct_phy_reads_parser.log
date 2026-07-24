@@ -1,0 +1,36 @@
+[2026-07-20 12:52:33] INFO     | awr_seg_direct_phy_reads_parser | Found 5 rows in Segments by Direct Physical Reads section
+[2026-07-20 12:52:33] INFO     | awr_seg_direct_phy_reads_parser | ✅ Parsed 5 Segments by Direct Physical Reads records
+[2026-07-20 12:52:33] INFO     | awr_seg_direct_phy_reads_parser | ✅ Inserted 5 rows into awr_seg_direct_phy_reads
+[2026-07-20 12:52:57] INFO     | awr_seg_direct_phy_reads_parser | Found 5 rows in Segments by Direct Physical Reads section
+[2026-07-20 12:52:57] INFO     | awr_seg_direct_phy_reads_parser | ✅ Parsed 5 Segments by Direct Physical Reads records
+[2026-07-20 12:52:57] INFO     | awr_seg_direct_phy_reads_parser | ✅ Inserted 5 rows into awr_seg_direct_phy_reads
+[2026-07-20 12:53:53] INFO     | awr_seg_direct_phy_reads_parser | Found 4 rows in Segments by Direct Physical Reads section
+[2026-07-20 12:53:53] INFO     | awr_seg_direct_phy_reads_parser | ✅ Parsed 4 Segments by Direct Physical Reads records
+[2026-07-20 12:53:53] INFO     | awr_seg_direct_phy_reads_parser | ✅ Inserted 4 rows into awr_seg_direct_phy_reads
+[2026-07-20 12:55:11] INFO     | awr_seg_direct_phy_reads_parser | Found 2 rows in Segments by Direct Physical Reads section
+[2026-07-20 12:55:11] INFO     | awr_seg_direct_phy_reads_parser | ✅ Parsed 2 Segments by Direct Physical Reads records
+[2026-07-20 12:55:11] INFO     | awr_seg_direct_phy_reads_parser | ✅ Inserted 2 rows into awr_seg_direct_phy_reads
+[2026-07-20 12:55:35] INFO     | awr_seg_direct_phy_reads_parser | Found 5 rows in Segments by Direct Physical Reads section
+[2026-07-20 12:55:35] INFO     | awr_seg_direct_phy_reads_parser | ✅ Parsed 5 Segments by Direct Physical Reads records
+[2026-07-20 12:55:35] INFO     | awr_seg_direct_phy_reads_parser | ✅ Inserted 5 rows into awr_seg_direct_phy_reads
+[2026-07-20 12:56:26] INFO     | awr_seg_direct_phy_reads_parser | Found 5 rows in Segments by Direct Physical Reads section
+[2026-07-20 12:56:26] INFO     | awr_seg_direct_phy_reads_parser | ✅ Parsed 5 Segments by Direct Physical Reads records
+[2026-07-20 12:56:26] INFO     | awr_seg_direct_phy_reads_parser | ✅ Inserted 5 rows into awr_seg_direct_phy_reads
+[2026-07-20 12:57:47] INFO     | awr_seg_direct_phy_reads_parser | Found 3 rows in Segments by Direct Physical Reads section
+[2026-07-20 12:57:47] INFO     | awr_seg_direct_phy_reads_parser | ✅ Parsed 3 Segments by Direct Physical Reads records
+[2026-07-20 12:57:48] INFO     | awr_seg_direct_phy_reads_parser | ✅ Inserted 3 rows into awr_seg_direct_phy_reads
+[2026-07-20 12:58:13] INFO     | awr_seg_direct_phy_reads_parser | Found 5 rows in Segments by Direct Physical Reads section
+[2026-07-20 12:58:13] INFO     | awr_seg_direct_phy_reads_parser | ✅ Parsed 5 Segments by Direct Physical Reads records
+[2026-07-20 12:58:13] INFO     | awr_seg_direct_phy_reads_parser | ✅ Inserted 5 rows into awr_seg_direct_phy_reads
+[2026-07-20 13:43:23] INFO     | awr_seg_direct_phy_reads_parser | Found 5 rows in Segments by Direct Physical Reads section
+[2026-07-20 13:43:23] INFO     | awr_seg_direct_phy_reads_parser | ✅ Parsed 5 Segments by Direct Physical Reads records
+[2026-07-20 13:43:23] INFO     | awr_seg_direct_phy_reads_parser | ✅ Inserted 5 rows into awr_seg_direct_phy_reads
+[2026-07-20 14:03:24] INFO     | awr_seg_direct_phy_reads_parser | Found 5 rows in Segments by Direct Physical Reads section
+[2026-07-20 14:03:24] INFO     | awr_seg_direct_phy_reads_parser | ✅ Parsed 5 Segments by Direct Physical Reads records
+[2026-07-20 14:03:24] INFO     | awr_seg_direct_phy_reads_parser | ✅ Inserted 5 rows into awr_seg_direct_phy_reads
+[2026-07-20 15:53:18] INFO     | awr_seg_direct_phy_reads_parser | Found 5 rows in Segments by Direct Physical Reads section
+[2026-07-20 15:53:18] INFO     | awr_seg_direct_phy_reads_parser | ✅ Parsed 5 Segments by Direct Physical Reads records
+[2026-07-20 15:53:18] INFO     | awr_seg_direct_phy_reads_parser | ✅ Inserted 5 rows into awr_seg_direct_phy_reads
+[2026-07-20 15:56:53] INFO     | awr_seg_direct_phy_reads_parser | Found 5 rows in Segments by Direct Physical Reads section
+[2026-07-20 15:56:53] INFO     | awr_seg_direct_phy_reads_parser | ✅ Parsed 5 Segments by Direct Physical Reads records
+[2026-07-20 15:56:53] INFO     | awr_seg_direct_phy_reads_parser | ✅ Inserted 5 rows into awr_seg_direct_phy_reads

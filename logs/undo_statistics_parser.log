@@ -1,0 +1,36 @@
+[2026-07-20 12:53:43] INFO     | undo_statistics_parser | Found 6 rows in Undo Segment Stats section
+[2026-07-20 12:53:43] INFO     | undo_statistics_parser | ✅ Parsed 6 Undo Segment Stats records
+[2026-07-20 12:53:43] INFO     | undo_statistics_parser | ✅ Inserted 6 rows into awr_undo_statistics
+[2026-07-20 12:55:01] INFO     | undo_statistics_parser | Found 6 rows in Undo Segment Stats section
+[2026-07-20 12:55:01] INFO     | undo_statistics_parser | ✅ Parsed 6 Undo Segment Stats records
+[2026-07-20 12:55:01] INFO     | undo_statistics_parser | ✅ Inserted 6 rows into awr_undo_statistics
+[2026-07-20 12:55:12] INFO     | undo_statistics_parser | Found 3 rows in Undo Segment Stats section
+[2026-07-20 12:55:12] INFO     | undo_statistics_parser | ✅ Parsed 3 Undo Segment Stats records
+[2026-07-20 12:55:12] INFO     | undo_statistics_parser | ✅ Inserted 3 rows into awr_undo_statistics
+[2026-07-20 12:56:14] INFO     | undo_statistics_parser | Found 6 rows in Undo Segment Stats section
+[2026-07-20 12:56:14] INFO     | undo_statistics_parser | ✅ Parsed 6 Undo Segment Stats records
+[2026-07-20 12:56:14] INFO     | undo_statistics_parser | ✅ Inserted 6 rows into awr_undo_statistics
+[2026-07-20 12:57:36] INFO     | undo_statistics_parser | Found 6 rows in Undo Segment Stats section
+[2026-07-20 12:57:36] INFO     | undo_statistics_parser | ✅ Parsed 6 Undo Segment Stats records
+[2026-07-20 12:57:36] INFO     | undo_statistics_parser | ✅ Inserted 6 rows into awr_undo_statistics
+[2026-07-20 12:57:51] INFO     | undo_statistics_parser | Found 3 rows in Undo Segment Stats section
+[2026-07-20 12:57:51] INFO     | undo_statistics_parser | ✅ Parsed 3 Undo Segment Stats records
+[2026-07-20 12:57:51] INFO     | undo_statistics_parser | ✅ Inserted 3 rows into awr_undo_statistics
+[2026-07-20 12:58:52] INFO     | undo_statistics_parser | Found 6 rows in Undo Segment Stats section
+[2026-07-20 12:58:52] INFO     | undo_statistics_parser | ✅ Parsed 6 Undo Segment Stats records
+[2026-07-20 12:58:52] INFO     | undo_statistics_parser | ✅ Inserted 6 rows into awr_undo_statistics
+[2026-07-20 13:43:00] INFO     | undo_statistics_parser | Found 3 rows in Undo Segment Stats section
+[2026-07-20 13:43:00] INFO     | undo_statistics_parser | ✅ Parsed 3 Undo Segment Stats records
+[2026-07-20 13:43:00] INFO     | undo_statistics_parser | ✅ Inserted 3 rows into awr_undo_statistics
+[2026-07-20 13:45:32] INFO     | undo_statistics_parser | Found 3 rows in Undo Segment Stats section
+[2026-07-20 13:45:32] INFO     | undo_statistics_parser | ✅ Parsed 3 Undo Segment Stats records
+[2026-07-20 13:45:32] INFO     | undo_statistics_parser | ✅ Inserted 3 rows into awr_undo_statistics
+[2026-07-20 14:04:37] INFO     | undo_statistics_parser | Found 6 rows in Undo Segment Stats section
+[2026-07-20 14:04:37] INFO     | undo_statistics_parser | ✅ Parsed 6 Undo Segment Stats records
+[2026-07-20 14:04:37] INFO     | undo_statistics_parser | ✅ Inserted 6 rows into awr_undo_statistics
+[2026-07-20 15:54:28] INFO     | undo_statistics_parser | Found 6 rows in Undo Segment Stats section
+[2026-07-20 15:54:29] INFO     | undo_statistics_parser | ✅ Parsed 6 Undo Segment Stats records
+[2026-07-20 15:54:29] INFO     | undo_statistics_parser | ✅ Inserted 6 rows into awr_undo_statistics
+[2026-07-20 15:57:57] INFO     | undo_statistics_parser | Found 6 rows in Undo Segment Stats section
+[2026-07-20 15:57:57] INFO     | undo_statistics_parser | ✅ Parsed 6 Undo Segment Stats records
+[2026-07-20 15:57:58] INFO     | undo_statistics_parser | ✅ Inserted 6 rows into awr_undo_statistics

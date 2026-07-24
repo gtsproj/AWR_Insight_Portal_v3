@@ -1,0 +1,36 @@
+[2026-07-20 12:52:40] INFO     | awr_seg_logical_reads_parser | Found 5 rows in Segments by Logical Reads section
+[2026-07-20 12:52:40] INFO     | awr_seg_logical_reads_parser | ✅ Parsed 5 Segments by Logical Reads records
+[2026-07-20 12:52:40] INFO     | awr_seg_logical_reads_parser | ✅ Inserted 5 rows into awr_seg_logical_reads
+[2026-07-20 12:53:10] INFO     | awr_seg_logical_reads_parser | Found 5 rows in Segments by Logical Reads section
+[2026-07-20 12:53:10] INFO     | awr_seg_logical_reads_parser | ✅ Parsed 5 Segments by Logical Reads records
+[2026-07-20 12:53:10] INFO     | awr_seg_logical_reads_parser | ✅ Inserted 5 rows into awr_seg_logical_reads
+[2026-07-20 12:53:59] INFO     | awr_seg_logical_reads_parser | Found 5 rows in Segments by Logical Reads section
+[2026-07-20 12:53:59] INFO     | awr_seg_logical_reads_parser | ✅ Parsed 5 Segments by Logical Reads records
+[2026-07-20 12:53:59] INFO     | awr_seg_logical_reads_parser | ✅ Inserted 5 rows into awr_seg_logical_reads
+[2026-07-20 12:55:17] INFO     | awr_seg_logical_reads_parser | Found 5 rows in Segments by Logical Reads section
+[2026-07-20 12:55:17] INFO     | awr_seg_logical_reads_parser | ✅ Parsed 5 Segments by Logical Reads records
+[2026-07-20 12:55:18] INFO     | awr_seg_logical_reads_parser | ✅ Inserted 5 rows into awr_seg_logical_reads
+[2026-07-20 12:55:48] INFO     | awr_seg_logical_reads_parser | Found 5 rows in Segments by Logical Reads section
+[2026-07-20 12:55:48] INFO     | awr_seg_logical_reads_parser | ✅ Parsed 5 Segments by Logical Reads records
+[2026-07-20 12:55:48] INFO     | awr_seg_logical_reads_parser | ✅ Inserted 5 rows into awr_seg_logical_reads
+[2026-07-20 12:56:32] INFO     | awr_seg_logical_reads_parser | Found 5 rows in Segments by Logical Reads section
+[2026-07-20 12:56:32] INFO     | awr_seg_logical_reads_parser | ✅ Parsed 5 Segments by Logical Reads records
+[2026-07-20 12:56:33] INFO     | awr_seg_logical_reads_parser | ✅ Inserted 5 rows into awr_seg_logical_reads
+[2026-07-20 12:57:53] INFO     | awr_seg_logical_reads_parser | Found 5 rows in Segments by Logical Reads section
+[2026-07-20 12:57:53] INFO     | awr_seg_logical_reads_parser | ✅ Parsed 5 Segments by Logical Reads records
+[2026-07-20 12:57:54] INFO     | awr_seg_logical_reads_parser | ✅ Inserted 5 rows into awr_seg_logical_reads
+[2026-07-20 12:58:27] INFO     | awr_seg_logical_reads_parser | Found 5 rows in Segments by Logical Reads section
+[2026-07-20 12:58:27] INFO     | awr_seg_logical_reads_parser | ✅ Parsed 5 Segments by Logical Reads records
+[2026-07-20 12:58:27] INFO     | awr_seg_logical_reads_parser | ✅ Inserted 5 rows into awr_seg_logical_reads
+[2026-07-20 13:43:36] INFO     | awr_seg_logical_reads_parser | Found 5 rows in Segments by Logical Reads section
+[2026-07-20 13:43:36] INFO     | awr_seg_logical_reads_parser | ✅ Parsed 5 Segments by Logical Reads records
+[2026-07-20 13:43:36] INFO     | awr_seg_logical_reads_parser | ✅ Inserted 5 rows into awr_seg_logical_reads
+[2026-07-20 14:03:31] INFO     | awr_seg_logical_reads_parser | Found 5 rows in Segments by Logical Reads section
+[2026-07-20 14:03:31] INFO     | awr_seg_logical_reads_parser | ✅ Parsed 5 Segments by Logical Reads records
+[2026-07-20 14:03:31] INFO     | awr_seg_logical_reads_parser | ✅ Inserted 5 rows into awr_seg_logical_reads
+[2026-07-20 15:53:25] INFO     | awr_seg_logical_reads_parser | Found 5 rows in Segments by Logical Reads section
+[2026-07-20 15:53:25] INFO     | awr_seg_logical_reads_parser | ✅ Parsed 5 Segments by Logical Reads records
+[2026-07-20 15:53:25] INFO     | awr_seg_logical_reads_parser | ✅ Inserted 5 rows into awr_seg_logical_reads
+[2026-07-20 15:56:59] INFO     | awr_seg_logical_reads_parser | Found 5 rows in Segments by Logical Reads section
+[2026-07-20 15:56:59] INFO     | awr_seg_logical_reads_parser | ✅ Parsed 5 Segments by Logical Reads records
+[2026-07-20 15:56:59] INFO     | awr_seg_logical_reads_parser | ✅ Inserted 5 rows into awr_seg_logical_reads

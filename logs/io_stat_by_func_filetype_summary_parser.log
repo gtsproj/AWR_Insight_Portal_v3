@@ -1,0 +1,24 @@
+[2026-07-20 12:53:10] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Parsed 23 IOStat by Function/Filetype summary records.
+[2026-07-20 12:53:10] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Inserted 23 rows into awr_iostat_func_filetype
+[2026-07-20 12:54:07] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Parsed 21 IOStat by Function/Filetype summary records.
+[2026-07-20 12:54:07] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Inserted 21 rows into awr_iostat_func_filetype
+[2026-07-20 12:54:29] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Parsed 25 IOStat by Function/Filetype summary records.
+[2026-07-20 12:54:30] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Inserted 25 rows into awr_iostat_func_filetype
+[2026-07-20 12:55:44] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Parsed 14 IOStat by Function/Filetype summary records.
+[2026-07-20 12:55:45] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Inserted 14 rows into awr_iostat_func_filetype
+[2026-07-20 12:56:47] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Parsed 21 IOStat by Function/Filetype summary records.
+[2026-07-20 12:56:47] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Inserted 21 rows into awr_iostat_func_filetype
+[2026-07-20 12:57:03] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Parsed 18 IOStat by Function/Filetype summary records.
+[2026-07-20 12:57:03] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Inserted 18 rows into awr_iostat_func_filetype
+[2026-07-20 12:58:21] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Parsed 18 IOStat by Function/Filetype summary records.
+[2026-07-20 12:58:22] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Inserted 18 rows into awr_iostat_func_filetype
+[2026-07-20 13:15:22] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Parsed 21 IOStat by Function/Filetype summary records.
+[2026-07-20 13:15:22] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Inserted 21 rows into awr_iostat_func_filetype
+[2026-07-20 13:44:32] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Parsed 21 IOStat by Function/Filetype summary records.
+[2026-07-20 13:44:32] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Inserted 21 rows into awr_iostat_func_filetype
+[2026-07-20 14:04:02] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Parsed 25 IOStat by Function/Filetype summary records.
+[2026-07-20 14:04:02] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Inserted 25 rows into awr_iostat_func_filetype
+[2026-07-20 15:53:55] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Parsed 20 IOStat by Function/Filetype summary records.
+[2026-07-20 15:53:55] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Inserted 20 rows into awr_iostat_func_filetype
+[2026-07-20 15:57:27] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Parsed 19 IOStat by Function/Filetype summary records.
+[2026-07-20 15:57:27] INFO     | io_stat_by_func_filetype_summary_parser | ✅ Inserted 19 rows into awr_iostat_func_filetype
