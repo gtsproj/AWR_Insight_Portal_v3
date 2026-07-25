@@ -5,17 +5,16 @@ bulk_export.py
 Bulk export all Grafana dashboard JSON files from Grafana.
 
 Usage:
-  py bulk_export.py
-  py bulk_export.py --dir grafana_export
-  py bulk_export.py --url http://localhost:3000 --user admin --password admin
-  py bulk_export.py --folder "AWR Portal" --dir my_export
+  py bulk_export.py                         (exports to dashboard/ folder)
+  py bulk_export.py --dir my_backup         (exports to custom folder)
+  py bulk_export.py --filter awr            (only dashboards with 'awr' in title)
+  py bulk_export.py --uid awr-anomalies     (single dashboard by UID)
 
-Defaults:
-  --dir      : grafana_export (created in script folder)
-  --url      : http://localhost:3000
-  --user     : admin
-  --password : admin
-  --folder   : (all folders)
+Defaults (read from config/settings.yaml):
+  --dir      : grafana.dashboard_dir  (default: dashboard/)
+  --url      : grafana.base_url       (default: http://localhost:3000)
+  --user     : grafana.admin_user     (default: admin)
+  --password : grafana.admin_password (default: admin)
 """
 
 import json
@@ -27,6 +26,32 @@ import urllib.error
 import base64
 import time
 import re
+
+_PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+
+def _load_settings() -> dict:
+    """Load config/settings.yaml, return empty dict on failure."""
+    try:
+        import yaml
+        cfg_path = os.path.join(_PROJECT_ROOT, "config", "settings.yaml")
+        with open(cfg_path, encoding="utf-8") as f:
+            return yaml.safe_load(f) or {}
+    except Exception:
+        return {}
+
+
+def _grafana_defaults() -> dict:
+    cfg = _load_settings().get("grafana", {})
+    dashboard_dir = cfg.get("dashboard_dir", "dashboard")
+    if not os.path.isabs(dashboard_dir):
+        dashboard_dir = os.path.join(_PROJECT_ROOT, dashboard_dir)
+    return {
+        "url":      cfg.get("base_url",       "http://localhost:3000").rstrip("/"),
+        "user":     cfg.get("admin_user",     "admin"),
+        "password": cfg.get("admin_password", "admin"),
+        "dir":      dashboard_dir,
+    }
 
 
 def get_auth_header(user: str, password: str) -> str:
@@ -59,23 +84,22 @@ def safe_filename(title: str, uid: str) -> str:
 
 
 def main():
+    defaults = _grafana_defaults()
+
     parser = argparse.ArgumentParser(
         description="Bulk export all Grafana dashboards to JSON files"
     )
     parser.add_argument(
         "--dir",
-        default=os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "grafana_export"
-        ),
-        help="Output directory for exported JSON files (default: grafana_export)"
+        default=defaults["dir"],
+        help=f"Output directory (default: dashboard_dir from settings.yaml = {defaults['dir']})"
     )
-    parser.add_argument("--url",      default="http://localhost:3000",
-                        help="Grafana URL (default: http://localhost:3000)")
-    parser.add_argument("--user",     default="admin",
-                        help="Grafana admin username (default: admin)")
-    parser.add_argument("--password", default="admin",
-                        help="Grafana admin password (default: admin)")
+    parser.add_argument("--url",      default=defaults["url"],
+                        help=f"Grafana URL (default: {defaults['url']})")
+    parser.add_argument("--user",     default=defaults["user"],
+                        help=f"Grafana admin username (default: {defaults['user']})")
+    parser.add_argument("--password", default=defaults["password"],
+                        help="Grafana admin password (default: from settings.yaml)")
     parser.add_argument("--folder",   default="",
                         help="Export only dashboards in this folder (default: all)")
     parser.add_argument("--filter",   default="",
