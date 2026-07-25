@@ -491,11 +491,18 @@ function updateCards() {
   document.querySelectorAll('.trend-card').forEach(card => {
     if (ok) {
       card.classList.remove('disabled');
-      card.href = buildUrl(card.dataset.uid, card.dataset.slug);
-      card.target = 'awr_child_tab';
+      const url = buildUrl(card.dataset.uid, card.dataset.slug);
+      // Use window.open via onclick so the opened tab is script-controlled
+      // This allows the child tab to call window.close() when navigating back
+      card.removeAttribute('href');
+      card.onclick = function(e) {
+        e.preventDefault();
+        window.open(url, 'awr_child_tab');
+      };
     } else {
       card.classList.add('disabled');
       card.removeAttribute('href');
+      card.onclick = null;
     }
   });
 

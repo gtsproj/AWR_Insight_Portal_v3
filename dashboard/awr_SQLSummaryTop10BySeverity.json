@@ -39,7 +39,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "\n<a href=\"${portal_url}/awr-trends?dbname=$dbname&instance=$instance&start_snap=$start_snap&end_snap=$end_snap\" target=\"awr_trends_tab\">⬅ Return to Navigation</a>&nbsp;&nbsp;|&nbsp;&nbsp, \n<a href=\"${portal_url}/awr-trends\" target=\"_self\">🔄 Reset Filters, \n<a href=\"/d/fdv31-sql-text-viewer/fdv3-1-sql-text-viewer?dbname=$dbname&instance=$instance&start_snap=$start_snap&end_snap=$end_snap\" target=\"_self\">⬅ SQL Text Viewer</a>&nbsp;&nbsp;|&nbsp;&nbsp</a>",
+        "content": "\n<a href=\"${portal_url}/awr-trends?dbname=$dbname&instance=$instance&start_snap=$start_snap&end_snap=$end_snap\" target=\"awr_trends_tab\" onclick=\"window.close()\">⬅ Return to Navigation</a>&nbsp;&nbsp;|&nbsp;&nbsp, \n<a href=\"${portal_url}/awr-trends\" target=\"awr_trends_tab\" onclick=\"window.close()\">🔄 Reset Filters, \n<a href=\"/d/fdv31-sql-text-viewer/fdv3-1-sql-text-viewer?dbname=$dbname&instance=$instance&start_snap=$start_snap&end_snap=$end_snap\" target=\"_self\">⬅ SQL Text Viewer</a>&nbsp;&nbsp;|&nbsp;&nbsp</a>",
         "mode": "html"
       },
       "pluginVersion": "12.0.2",
