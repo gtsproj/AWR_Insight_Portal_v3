@@ -107,6 +107,10 @@
       </select>
     </div>
     <button class="sel-btn" onclick="loadSnaps()">Load snaps</button>
+    <button class="sel-btn" onclick="resetFilters()"
+            style="background:var(--surface2);color:var(--text2);border:1px solid var(--border);margin-left:4px">
+      🔄 Reset
+    </button>
     <span id="sel-status" class="waiting">Select values to activate cards</span>
   </div>
 
@@ -500,7 +504,24 @@ function updateCards() {
   }
 }
 
-// Load databases on page load
+// Read URL query parameters — used when returning from a child dashboard
+// e.g. /awr-trends?dbname=MERC&instance=MERC1&start_snap=32543&end_snap=32550
+function getUrlParams() {
+  const p = new URLSearchParams(window.location.search);
+  return {
+    dbname:     p.get('dbname')     || '',
+    instance:   p.get('instance')   || '',
+    start_snap: p.get('start_snap') || '',
+    end_snap:   p.get('end_snap')   || '',
+  };
+}
+
+// Reset all filters and reload the page cleanly
+function resetFilters() {
+  window.location.href = window.location.pathname;
+}
+
+// Load databases on page load, then pre-populate from URL params if present
 (async function initDbs() {
   try {
     const r = await fetch('/api/db-list');
@@ -511,6 +532,38 @@ function updateCards() {
       o.value = o.textContent = db;
       sel.appendChild(o);
     });
+
+    // Pre-populate from URL params (returned from child dashboard)
+    const params = getUrlParams();
+    if (params.dbname) {
+      sel.value = params.dbname;
+      // Load instances for the pre-selected DB
+      await onDbChange();
+      if (params.instance) {
+        document.getElementById('t-instance').value = params.instance;
+        // Load snaps for the pre-selected instance
+        await loadSnaps();
+        // Pre-select start and end snap
+        if (params.start_snap) {
+          // Find the option whose value contains the snap ID
+          const ssel = document.getElementById('t-start');
+          const esel = document.getElementById('t-end');
+          for (const opt of ssel.options) {
+            if (opt.value.startsWith(params.start_snap + ' ') ||
+                opt.value === params.start_snap) {
+              ssel.value = opt.value; break;
+            }
+          }
+          for (const opt of esel.options) {
+            if (opt.value.startsWith(params.end_snap + ' ') ||
+                opt.value === params.end_snap) {
+              esel.value = opt.value; break;
+            }
+          }
+          updateCards();
+        }
+      }
+    }
   } catch(_) {}
 })();
 
