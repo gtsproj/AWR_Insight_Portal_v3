@@ -451,6 +451,10 @@
 </div><!-- /.trends-wrap -->
 
 <script>
+// Name this tab so child dashboards can return to it via target="awr_trends_tab"
+// Must be set before any navigation happens
+window.name = 'awr_trends_tab';
+
 const GRAFANA_URL = '{{ grafana_url }}';
 
 // Build a Grafana dashboard URL from uid, slug, and current selections.
