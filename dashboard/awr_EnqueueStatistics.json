@@ -39,7 +39,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "<a href=\"${portal_url}/awr-trends?var-dbname=$dbname&var-instance=$instance&var-start_snap=$start_snap&var-end_snap=$end_snap&from=$__from&to=$__to\" target=\"_self\">⬅ Return to Navigation</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=\"${portal_url}/awr-trends\" target=\"_self\">🔄 Reset Filters</a>",
+        "content": "<a href=\"${portal_url}/awr-trends?dbname=$dbname&instance=$instance&start_snap=$start_snap&end_snap=$end_snap\" target=\"awr_trends_tab\">⬅ Return to Navigation</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href=\"${portal_url}/awr-trends\" target=\"_self\">🔄 Reset Filters</a>",
         "mode": "html"
       },
       "pluginVersion": "12.0.2",

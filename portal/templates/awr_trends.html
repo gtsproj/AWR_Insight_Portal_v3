@@ -488,7 +488,7 @@ function updateCards() {
     if (ok) {
       card.classList.remove('disabled');
       card.href = buildUrl(card.dataset.uid, card.dataset.slug);
-      card.target = '_blank';
+      card.target = 'awr_child_tab';
     } else {
       card.classList.add('disabled');
       card.removeAttribute('href');
