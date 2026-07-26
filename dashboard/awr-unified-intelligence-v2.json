@@ -5,7 +5,8 @@
   "tags": [
     "awr",
     "correlation",
-    "v2"
+    "v2",
+    "intelligence"
   ],
   "timezone": "Asia/Kolkata",
   "schemaVersion": 41,
@@ -32,7 +33,7 @@
         "y": 0
       },
       "options": {
-        "content": "<div style=\"font-family:Inter,Arial,sans-serif;padding:4px 0;line-height:2\"><a href=\"/d/awr-intelligence-ai-v2?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">🤖 AI mode</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/awr-anomalies?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">🚨 Anomaly detection</a><a href=\"/d/awr-memory-advisory?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">💾 Memory advisory</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/fdv31-awr-nav?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">📊 AWR trends</a><a href=\"/d/awr-unified-intelligence?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.35);padding:3px 9px;border:1px solid rgba(255,255,255,0.08);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">📌 Original (Rules)</a></div>",
+        "content": "<div style=\"font-family:Inter,Arial,sans-serif;padding:4px 0;line-height:2\"><a href=\"/d/awr-intelligence-ai-v2?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">🤖 AI mode</a><a href=\"/d/awr-anomalies?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">🚨 Anomaly detection</a><a href=\"/d/awr-memory-advisory?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">💾 Memory advisory</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/sar-awr-correlation?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">🔗 AWR+SAR correlation</a><a href=\"/d/sar-overview?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">🖥️ SAR overview</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/fdv31-awr-nav?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">📊 AWR trends</a><a href=\"/d/awr-unified-intelligence?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.35);padding:3px 9px;border:1px solid rgba(255,255,255,0.08);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">📌 Classic (Rules)</a></div>",
         "mode": "html"
       },
       "transparent": true,
@@ -49,7 +50,7 @@
         "y": 2
       },
       "options": {
-        "content": "<div style=\"font-family:Inter,system-ui,sans-serif;padding:6px 10px;background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.3);border-left:3px solid #FBBF24;border-radius:6px;display:flex;align-items:flex-start;gap:10px\"><span style=\"font-size:16px;flex-shrink:0;margin-top:1px\">⚠️</span><div><span style=\"font-size:12px;font-weight:600;color:#FBBF24\">Advisory Disclaimer</span><span style=\"font-size:11px;color:rgba(255,255,255,0.6);margin-left:10px\">Recommendations generated by this tool are based on AWR snapshot data and statistical analysis. All recommendations must be reviewed, validated, and tested in a non-production environment before implementation. The impact of any change is workload-specific and may vary significantly by environment. Avekshaa Technologies accepts no liability for outcomes resulting from implementation without appropriate DBA review and testing.</span></div></div>",
+        "content": "<div style=\"font-family:Inter,system-ui,sans-serif;padding:6px 10px;background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.3);border-left:3px solid #FBBF24;border-radius:6px;display:flex;align-items:flex-start;gap:10px\"><span style=\"font-size:16px;flex-shrink:0;margin-top:1px\">⚠️</span><div><span style=\"font-size:12px;font-weight:600;color:#FBBF24\">Advisory Disclaimer — </span><span style=\"font-size:11px;color:rgba(255,255,255,0.6)\">Recommendations are based on AWR snapshot data and statistical analysis. All must be reviewed, validated, and tested in a non-production environment before implementation. Avekshaa Technologies accepts no liability for outcomes without appropriate DBA review.</span></div></div>",
         "mode": "html"
       },
       "transparent": true,
@@ -66,24 +67,24 @@
         "y": 4
       },
       "options": {
-        "content": "<div style=\"font-family:Inter,Arial,sans-serif;font-size:12px;color:rgba(255,255,255,0.65);padding:6px 10px;background:rgba(55,138,221,0.07);border:1px solid rgba(55,138,221,0.2);border-left:3px solid #378ADD;border-radius:6px\"><strong style=\"color:#85b7eb\">ℹ️ Correlation Intelligence v2</strong> — Three fact-based correlation panels shown simultaneously. No variable configuration needed. <br><strong style=\"color:#85b7eb\">Panel 1 — Wait → Segments:</strong> Top wait events with the segments that have the statistically matching activity (physical reads for User I/O, buffer busy for Concurrency, row locks for Application, GC busy for Cluster). Events with no segment correlation (redo, network, background) show inline advisory text. <br><strong style=\"color:#85b7eb\">Panel 2 — Segments → Wait Classes + SQLs:</strong> Top segments by severity with the wait classes their activity implies, object metadata (BLEVEL, clustering factor, row count), and referencing SQL IDs from the text map. <br><strong style=\"color:#85b7eb\">Panel 3 — SQL → Segments + Wait Context:</strong> Top SQL by elapsed time with segments they reference (regex parse of SQL text) and the top 3 foreground wait events as circumstantial execution context. <br><em style=\"color:rgba(255,255,255,0.4)\">Note: SQL→Segment mapping uses regex text parsing — dynamic SQL or bind-heavy SQL may show \"not in text map\". Wait→SQL direct linkage is not available in Oracle AWR data.</em></div>",
+        "content": "<div style=\"font-family:Inter,Arial,sans-serif;font-size:12px;color:rgba(255,255,255,0.65);padding:6px 10px;background:rgba(55,138,221,0.07);border:1px solid rgba(55,138,221,0.2);border-left:3px solid #378ADD;border-radius:6px\"><strong style=\"color:#85b7eb\">ℹ️ Correlation Intelligence v2</strong> — Three always-visible, fact-based correlation panels. No drawer configuration required.<br><strong style=\"color:#85b7eb\">Panel 1 — Wait → Segments:</strong> Top wait events with segments matched by the correct AWR statistic per wait class (physical reads for User I/O, buffer busy for Concurrency, row locks for Application, GC busy for Cluster). Non-correlatable events show inline guidance text from the wait event master table.<br><strong style=\"color:#85b7eb\">Panel 2 — Segments → Wait Classes + SQLs:</strong> Top segments by severity with implied wait classes, object metadata (BLEVEL, CF ratio, row count, stale stats), and referencing SQL IDs from the text map.<br><strong style=\"color:#85b7eb\">Panel 3 — SQL → Segments + Wait Context:</strong> Top SQL by severity with referenced segments (regex text parse) and top 3 foreground waits as context.<br><em style=\"color:rgba(255,255,255,0.4)\">Note: SQL→Segment mapping uses regex text parsing — dynamic SQL may show \"not in text map\". Wait→SQL direct linkage is not available in Oracle AWR data — \"Top 3 Waits\" is snap-range context, not per-SQL causation.</em></div>",
         "mode": "html"
       },
       "transparent": true,
       "datasource": null
     },
     {
-      "collapsed": false,
+      "id": 3,
+      "type": "row",
+      "title": "📊 Top Issues — Wait Events · SQL · Segments (Severity Score)",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
         "y": 8
       },
-      "id": 3,
-      "panels": [],
-      "title": "📊 Top Issues — Wait Events · SQL · Segments (RAG Scored)",
-      "type": "row"
+      "collapsed": false,
+      "panels": []
     },
     {
       "datasource": {
@@ -107,8 +108,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 14,
-        "w": 11,
+        "h": 12,
+        "w": 8,
         "x": 0,
         "y": 9
       },
@@ -159,160 +160,6 @@
       },
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
-            "inspect": false
-          },
-          "links": [
-            {
-              "targetBlank": false,
-              "title": "🔗 Drill into this wait event",
-              "url": "/d/awr-unified-intelligence?var-focus_type=wait&var-focus_value=${__data.fields.event}&var-open_drawer=true&var-dbname=${dbname}&var-instance=${instance}&var-start_snap=${start_snap}&var-end_snap=${end_snap}&var-wait_scope=${wait_scope}&var-rag_mode=${rag_mode}&var-baseline_days=${baseline_days}"
-            }
-          ],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "severity_rag"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "RAG"
-              },
-              {
-                "id": "custom.width",
-                "value": 55
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "severity_score"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Score"
-              },
-              {
-                "id": "custom.width",
-                "value": 75
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green"
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 11
-                    },
-                    {
-                      "color": "orange",
-                      "value": 41
-                    },
-                    {
-                      "color": "red",
-                      "value": 80
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "wait_class"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 130
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "event"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 623
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 14,
-        "w": 13,
-        "x": 11,
-        "y": 23
-      },
-      "id": 5,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": []
-      },
-      "pluginVersion": "12.0.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "ferwfz6k211j4b"
-          },
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "WITH base AS (\nSELECT s.begin_snap,s.event::text AS event, COALESCE(m.wait_class, 'Other') AS wait_class, SUM(s.pct_time) AS event_pct_snap\nFROM awr_wait_summary_mv s\n LEFT JOIN awr_wait_event_master m\nON TRIM(LOWER(s.event)) = TRIM(LOWER(m.event))\nWHERE s.dbname = '$dbname' AND s.instance = '$instance'\nAND s.begin_snap BETWEEN split_part('$start_snap',' - ',1)::int\nAND split_part('$end_snap',' - ',1)::int\nAND ( '$wait_scope' IN ('', 'All') OR s.wait_scope = '$wait_scope' )\nGROUP BY s.begin_snap, s.event, m.wait_class),\ntot AS (\nSELECT s.begin_snap, SUM(s.pct_time) AS total_pct_snap\nFROM awr_wait_summary_mv s\nWHERE s.dbname = '$dbname'\nAND s.instance = '$instance'\nAND s.begin_snap BETWEEN split_part('$start_snap',' - ',1)::int\nAND split_part('$end_snap',' - ',1)::int\nAND ( '$wait_scope' IN ('', 'All') OR s.wait_scope = '$wait_scope' )\nGROUP BY s.begin_snap)\nSELECT b.wait_class, b.event,\nROUND( 100.0 * SUM(b.event_pct_snap) / NULLIF(SUM(t.total_pct_snap), 0), 2 ) AS severity_score,\nCASE\nWHEN ROUND( 100.0 * SUM(b.event_pct_snap) / NULLIF(SUM(t.total_pct_snap), 0), 2 ) >= 80 THEN '🔴'\nWHEN ROUND( 100.0 * SUM(b.event_pct_snap) / NULLIF(SUM(t.total_pct_snap), 0), 2 ) BETWEEN 41 AND 79 THEN '🟠'\nWHEN ROUND( 100.0 * SUM(b.event_pct_snap) / NULLIF(SUM(t.total_pct_snap), 0), 2 ) BETWEEN 11 AND 40 THEN '🟡'\nELSE '🟢'\nEND AS severity_rag\nFROM base b\nJOIN tot t USING (begin_snap)\nGROUP BY b.wait_class, b.event\nORDER BY severity_score DESC\nLIMIT 10;",
-          "refId": "A"
-        }
-      ],
-      "title": "Wait Events — RAG Summary",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "ferwfz6k211j4b"
-      },
-      "fieldConfig": {
-        "defaults": {
           "color": {
             "mode": "palette-classic"
           },
@@ -328,10 +175,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 14,
-        "w": 11,
-        "x": 0,
-        "y": 37
+        "h": 12,
+        "w": 8,
+        "x": 8,
+        "y": 9
       },
       "id": 6,
       "options": {
@@ -380,125 +227,6 @@
       },
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
-            "inspect": false
-          },
-          "links": [
-            {
-              "targetBlank": false,
-              "title": "🔗 Drill into this SQL",
-              "url": "/d/awr-unified-intelligence?var-focus_type=sql&var-focus_value=${__data.fields.sql_id}&var-open_drawer=true&var-dbname=${dbname}&var-instance=${instance}&var-start_snap=${start_snap}&var-end_snap=${end_snap}&var-wait_scope=${wait_scope}&var-rag_mode=${rag_mode}&var-baseline_days=${baseline_days}"
-            }
-          ],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "severity_rag"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "RAG"
-              },
-              {
-                "id": "custom.width",
-                "value": 55
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "sql_id"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 150
-              },
-              {
-                "id": "displayName",
-                "value": "SQL ID"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "SQL ID"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 447
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 14,
-        "w": 13,
-        "x": 11,
-        "y": 51
-      },
-      "id": 7,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": []
-      },
-      "pluginVersion": "12.0.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "ferwfz6k211j4b"
-          },
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "WITH base AS (  SELECT sql_id, AVG(severity_score) AS score   FROM awr_sql_summary_mv   WHERE dbname='$dbname' AND instance='$instance'     AND begin_snap BETWEEN split_part('$start_snap',' - ',1)::int AND split_part('$end_snap',' - ',1)::int   GROUP BY sql_id ), bl AS (   SELECT     percentile_cont(0.10) WITHIN GROUP (ORDER BY s) AS p10,     percentile_cont(0.40) WITHIN GROUP (ORDER BY s) AS p40,     percentile_cont(0.70) WITHIN GROUP (ORDER BY s) AS p70,     percentile_cont(0.90) WITHIN GROUP (ORDER BY s) AS p90   FROM (     SELECT AVG(severity_score) AS s     FROM awr_sql_summary_mv     WHERE dbname='$dbname' AND instance='$instance'       AND snap_time >= now() - concat('$baseline_days',' days')::interval     GROUP BY sql_id, begin_snap   ) t ), norm AS (   SELECT b.*, GREATEST(0, LEAST(100, 100 * (b.score - bl.p10) / NULLIF(bl.p90 - bl.p10, 0))) AS score_norm   FROM base b CROSS JOIN bl ) SELECT b.sql_id, CASE WHEN '$rag_mode'='percentile' THEN   CASE WHEN b.score >= bl.p90 THEN '🔴'        WHEN b.score >= bl.p70 THEN '🟠'        WHEN b.score >= bl.p40 THEN '🟡'        ELSE '🟢' END ELSE   CASE WHEN n.score_norm >= 80 THEN '🔴'        WHEN n.score_norm >= 41 THEN '🟠'        WHEN n.score_norm >= 11 THEN '🟡'        ELSE '🟢' END END AS severity_rag FROM base b CROSS JOIN bl LEFT JOIN norm n USING (sql_id) ORDER BY b.score DESC LIMIT 10;",
-          "refId": "A"
-        }
-      ],
-      "title": "SQL — RAG Summary",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "ferwfz6k211j4b"
-      },
-      "fieldConfig": {
-        "defaults": {
           "color": {
             "mode": "palette-classic"
           },
@@ -514,10 +242,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 14,
-        "w": 11,
-        "x": 0,
-        "y": 65
+        "h": 12,
+        "w": 8,
+        "x": 16,
+        "y": 9
       },
       "id": 8,
       "options": {
@@ -560,116 +288,14 @@
       "type": "piechart"
     },
     {
-      "datasource": {
-        "type": "postgres",
-        "uid": "ferwfz6k211j4b"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
-            "inspect": false
-          },
-          "links": [
-            {
-              "targetBlank": false,
-              "title": "🔗 Drill into this segment",
-              "url": "/d/awr-unified-intelligence?var-focus_type=segment&var-focus_value=${__data.fields.object_name}&var-open_drawer=true&var-dbname=${dbname}&var-instance=${instance}&var-start_snap=${start_snap}&var-end_snap=${end_snap}&var-wait_scope=${wait_scope}&var-rag_mode=${rag_mode}&var-baseline_days=${baseline_days}"
-            }
-          ],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "severity_rag"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "RAG"
-              },
-              {
-                "id": "custom.width",
-                "value": 55
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "object_name"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 200
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 14,
-        "w": 13,
-        "x": 11,
-        "y": 79
-      },
-      "id": 9,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "12.0.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "ferwfz6k211j4b"
-          },
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "WITH base AS (  SELECT owner, object_name, obj_type, COALESCE(subobject_name,'') AS subobject_name,         AVG(severity_score) AS score   FROM awr_segment_summary_mv   WHERE dbname='$dbname' AND instance='$instance'     AND begin_snap BETWEEN split_part('$start_snap',' - ',1)::int AND split_part('$end_snap',' - ',1)::int   GROUP BY owner, object_name, obj_type, subobject_name ), bl AS (   SELECT     percentile_cont(0.10) WITHIN GROUP (ORDER BY s) AS p10,     percentile_cont(0.40) WITHIN GROUP (ORDER BY s) AS p40,     percentile_cont(0.70) WITHIN GROUP (ORDER BY s) AS p70,     percentile_cont(0.90) WITHIN GROUP (ORDER BY s) AS p90   FROM (     SELECT AVG(severity_score) AS s     FROM awr_segment_summary_mv     WHERE dbname='$dbname' AND instance='$instance'       AND snap_time >= now() - concat('$baseline_days',' days')::interval     GROUP BY owner, object_name, obj_type, COALESCE(subobject_name,'')   ) t ), norm AS (   SELECT b.*, GREATEST(0, LEAST(100, 100 * (b.score - bl.p10) / NULLIF(bl.p90 - bl.p10, 0))) AS score_norm   FROM base b CROSS JOIN bl ) SELECT b.owner, b.object_name, b.obj_type, b.subobject_name, CASE WHEN '$rag_mode'='percentile' THEN   CASE WHEN b.score >= bl.p90 THEN '🔴'        WHEN b.score >= bl.p70 THEN '🟠'        WHEN b.score >= bl.p40 THEN '🟡'        ELSE '🟢' END ELSE   CASE WHEN n.score_norm >= 80 THEN '🔴'        WHEN n.score_norm >= 41 THEN '🟠'        WHEN n.score_norm >= 11 THEN '🟡'        ELSE '🟢' END END AS severity_rag FROM base b CROSS JOIN bl LEFT JOIN norm n USING (owner, object_name, obj_type, subobject_name) ORDER BY b.score DESC LIMIT 10;",
-          "refId": "A"
-        }
-      ],
-      "title": "Segments — RAG Summary",
-      "type": "table"
-    },
-    {
       "id": 20,
       "type": "row",
-      "title": "🔗 Correlation Intelligence — Wait Events · Segments · SQL (Fact-Based)",
+      "title": "🔗 Correlation Intelligence v2 — Fact-Based 3-Way Analysis",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 93
+        "y": 21
       },
       "collapsed": false,
       "panels": []
@@ -677,12 +303,12 @@
     {
       "id": 21,
       "type": "row",
-      "title": "⏱️ Panel 1 — Wait Events → Correlated Segments (by matching stat: physical reads / buffer busy / row locks / GC busy)",
+      "title": "⏱️ Panel 1 — Wait Events → Correlated Segments (matched by AWR stat: physical reads / buffer busy / row locks / GC busy)",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 94
+        "y": 22
       },
       "collapsed": false,
       "panels": []
@@ -690,12 +316,12 @@
     {
       "id": 22,
       "type": "table",
-      "title": "⏱️ Top Wait Events with Correlated Segments & Advisory",
+      "title": "⏱️ Top Wait Events — Correlated Segments & Advisory",
       "gridPos": {
         "h": 16,
         "w": 24,
         "x": 0,
-        "y": 95
+        "y": 23
       },
       "datasource": {
         "type": "postgres",
@@ -723,8 +349,7 @@
           ],
           "show": false
         },
-        "showHeader": true,
-        "sortBy": []
+        "showHeader": true
       },
       "fieldConfig": {
         "defaults": {
@@ -735,7 +360,7 @@
             },
             "filterable": true,
             "inspect": false,
-            "minWidth": 100,
+            "minWidth": 80,
             "wrap": true
           },
           "color": {
@@ -768,7 +393,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 400
+                "value": 420
               },
               {
                 "id": "custom.wrap",
@@ -811,28 +436,16 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Top 3 Waits (snap range context)"
+              "options": "Top 3 Foreground Waits (snap range context)"
             },
             "properties": [
               {
                 "id": "custom.width",
-                "value": 300
+                "value": 320
               },
               {
                 "id": "custom.wrap",
                 "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Referencing SQLs"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 250
               }
             ]
           },
@@ -844,7 +457,31 @@
             "properties": [
               {
                 "id": "custom.width",
+                "value": 200
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Referencing SQLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
                 "value": 220
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Correlation Basis"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 160
               }
             ]
           },
@@ -859,22 +496,6 @@
                 "value": {
                   "type": "color-background"
                 }
-              },
-              {
-                "id": "custom.width",
-                "value": 100
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "^(Phys Reads|Logical Reads|Buf Busy Waits|Row Lock Waits|Table Scans|GC Busy|Disk Reads|Buffer Gets|Executions|Parse Calls|Total Elapsed.*|Avg Elapsed.*|Total CPU.*|Total Waits|Avg Wait.*)$"
-            },
-            "properties": [
-              {
-                "id": "custom.align",
-                "value": "right"
               },
               {
                 "id": "custom.width",
@@ -927,6 +548,22 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(Phys Reads|Logical Reads|Buf Busy Waits|Row Lock Waits|Table Scans|GC Busy|Disk Reads|Buffer Gets|Executions|Parse Calls|Total Elapsed.*|Avg Elapsed.*|Total CPU.*|Total Waits|Avg Wait.*)$"
+            },
+            "properties": [
+              {
+                "id": "custom.align",
+                "value": "right"
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
           }
         ]
       },
@@ -941,7 +578,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 111
+        "y": 39
       },
       "collapsed": false,
       "panels": []
@@ -954,7 +591,7 @@
         "h": 16,
         "w": 24,
         "x": 0,
-        "y": 112
+        "y": 40
       },
       "datasource": {
         "type": "postgres",
@@ -982,8 +619,7 @@
           ],
           "show": false
         },
-        "showHeader": true,
-        "sortBy": []
+        "showHeader": true
       },
       "fieldConfig": {
         "defaults": {
@@ -994,7 +630,7 @@
             },
             "filterable": true,
             "inspect": false,
-            "minWidth": 100,
+            "minWidth": 80,
             "wrap": true
           },
           "color": {
@@ -1027,7 +663,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 400
+                "value": 420
               },
               {
                 "id": "custom.wrap",
@@ -1070,28 +706,16 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Top 3 Waits (snap range context)"
+              "options": "Top 3 Foreground Waits (snap range context)"
             },
             "properties": [
               {
                 "id": "custom.width",
-                "value": 300
+                "value": 320
               },
               {
                 "id": "custom.wrap",
                 "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Referencing SQLs"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 250
               }
             ]
           },
@@ -1103,7 +727,31 @@
             "properties": [
               {
                 "id": "custom.width",
+                "value": 200
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Referencing SQLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
                 "value": 220
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Correlation Basis"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 160
               }
             ]
           },
@@ -1118,22 +766,6 @@
                 "value": {
                   "type": "color-background"
                 }
-              },
-              {
-                "id": "custom.width",
-                "value": 100
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "^(Phys Reads|Logical Reads|Buf Busy Waits|Row Lock Waits|Table Scans|GC Busy|Disk Reads|Buffer Gets|Executions|Parse Calls|Total Elapsed.*|Avg Elapsed.*|Total CPU.*|Total Waits|Avg Wait.*)$"
-            },
-            "properties": [
-              {
-                "id": "custom.align",
-                "value": "right"
               },
               {
                 "id": "custom.width",
@@ -1186,6 +818,22 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(Phys Reads|Logical Reads|Buf Busy Waits|Row Lock Waits|Table Scans|GC Busy|Disk Reads|Buffer Gets|Executions|Parse Calls|Total Elapsed.*|Avg Elapsed.*|Total CPU.*|Total Waits|Avg Wait.*)$"
+            },
+            "properties": [
+              {
+                "id": "custom.align",
+                "value": "right"
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
           }
         ]
       },
@@ -1195,12 +843,12 @@
     {
       "id": 25,
       "type": "row",
-      "title": "💻 Panel 3 — Top SQL → Referenced Segments + Wait Context",
+      "title": "💻 Panel 3 — Top SQL (by severity) → Referenced Segments + Snap Range Wait Context",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 128
+        "y": 56
       },
       "collapsed": false,
       "panels": []
@@ -1213,7 +861,7 @@
         "h": 14,
         "w": 24,
         "x": 0,
-        "y": 129
+        "y": 57
       },
       "datasource": {
         "type": "postgres",
@@ -1227,7 +875,7 @@
           },
           "format": "table",
           "rawQuery": true,
-          "rawSql": "-- ═══════════════════════════════════════════════════════════════\n-- Panel 3: Top SQL → Referenced Segments + Wait Context\n-- For each top SQL: which segments it touches (from object map MV),\n-- key performance metrics, and the top wait events in the snap range\n-- as circumstantial context for the SQL's execution environment.\n-- ═══════════════════════════════════════════════════════════════\nWITH params AS (\n  SELECT\n    split_part('${start_snap}',' - ',1)::int AS s_snap,\n    split_part('${end_snap}',' - ',1)::int   AS e_snap,\n    '${dbname}'   AS dbname,\n    '${instance}' AS instance\n),\n\n-- Top SQL by elapsed time with key metrics\ntop_sql AS (\n  SELECT\n    lower(s.sql_id) AS sql_id,\n    ROUND(AVG(s.severity_score)::numeric, 2)    AS severity,\n    ROUND(SUM(s.elapsed_time_s)::numeric, 2)    AS total_elapsed_s,\n    ROUND(AVG(s.elapsed_time_s)::numeric, 4)    AS avg_elapsed_s,\n    ROUND(SUM(s.cpu_time_s)::numeric, 2)        AS total_cpu_s,\n    ROUND(SUM(s.disk_reads)::numeric, 0)        AS disk_reads,\n    ROUND(SUM(s.buffer_gets)::numeric, 0)       AS buffer_gets,\n    SUM(s.executions)                           AS executions,\n    ROUND(SUM(s.parse_calls)::numeric, 0)       AS parse_calls\n  FROM awr_sql_summary_mv s\n  JOIN params p ON p.dbname = s.dbname AND p.instance = s.instance\n  WHERE s.begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n  GROUP BY lower(s.sql_id)\n  ORDER BY SUM(s.elapsed_time_s) DESC\n  LIMIT 15\n),\n\n-- Segments referenced by each SQL (from object map MV)\nsql_segs AS (\n  SELECT\n    lower(m.sql_id) AS sql_id,\n    string_agg(\n      CASE WHEN m.owner <> '' THEN m.owner || '.' ELSE '' END || m.object ||\n      COALESCE((\n        SELECT\n          CASE\n            WHEN UPPER(om.object_type) LIKE 'INDEX%'\n              THEN ' [idx BLVL=' || COALESCE(om.blevel::text,'?') ||\n                   CASE WHEN om.blevel > 4 THEN ' ⚠HIGH' ELSE '' END || ']'\n            WHEN UPPER(om.object_type) LIKE 'TABLE%'\n              THEN ' [tbl rows=' || TO_CHAR(COALESCE(om.num_rows,0),'FM999,999,999') || ']'\n            ELSE ''\n          END\n        FROM awr_object_metadata om\n        WHERE UPPER(om.dbname) = UPPER((SELECT dbname FROM params))\n          AND (m.owner = '' OR UPPER(om.owner) = UPPER(m.owner))\n          AND UPPER(om.object_name) = UPPER(m.object)\n        LIMIT 1\n      ), ''),\n      E'\\n'\n      ORDER BY m.object\n    ) AS segments\n  FROM awr_sql_object_map_mv m\n  WHERE lower(m.sql_id) IN (SELECT sql_id FROM top_sql)\n  GROUP BY lower(m.sql_id)\n),\n\n-- Top 3 wait events in this snap range (circumstantial context)\ntop_3_waits AS (\n  SELECT\n    string_agg(\n      event || ' (' || ROUND(pct_db_time::numeric,1)::text || '% DB time)',\n      E'\\n' ORDER BY pct_db_time DESC\n    ) AS wait_context\n  FROM (\n    SELECT w.event, ROUND(AVG(w.pct_time)::numeric,2) AS pct_db_time\n    FROM awr_wait_summary_mv w\n    JOIN params p ON p.dbname=w.dbname AND p.instance=w.instance\n    WHERE w.begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n      AND w.wait_scope = 'Foreground'\n    GROUP BY w.event\n    ORDER BY AVG(w.pct_time) DESC\n    LIMIT 3\n  ) t\n)\n\nSELECT\n  ts.sql_id                                   AS \"SQL ID\",\n  ts.severity                                 AS \"Severity Score\",\n  ts.total_elapsed_s                          AS \"Total Elapsed (s)\",\n  ts.avg_elapsed_s                            AS \"Avg Elapsed (s)\",\n  ts.total_cpu_s                              AS \"Total CPU (s)\",\n  ts.disk_reads                               AS \"Disk Reads\",\n  ts.buffer_gets                              AS \"Buffer Gets\",\n  ts.executions                               AS \"Executions\",\n  ts.parse_calls                              AS \"Parse Calls\",\n  COALESCE(ss.segments, '— not in text map —')  AS \"Segments Referenced\",\n  (SELECT wait_context FROM top_3_waits)      AS \"Top 3 Waits (snap range context)\"\nFROM top_sql ts\nLEFT JOIN sql_segs ss ON ss.sql_id = ts.sql_id\nWHERE '${dbname}' != '' AND '${start_snap}' != '' AND '${end_snap}' != ''\nORDER BY ts.total_elapsed_s DESC;",
+          "rawSql": "WITH params AS (\n  SELECT\n    split_part('${start_snap}',' - ',1)::int AS s_snap,\n    split_part('${end_snap}',' - ',1)::int   AS e_snap,\n    '${dbname}'   AS dbname,\n    '${instance}' AS instance\n),\ntop_sql AS (\n  SELECT\n    lower(s.sql_id) AS sql_id,\n    ROUND(AVG(s.severity_score)::numeric, 2)            AS severity,\n    ROUND(SUM(s.elapsed_time_per_exec_s)::numeric, 2)   AS total_elapsed_s,\n    ROUND(AVG(s.elapsed_time_per_exec_s)::numeric, 4)   AS avg_elapsed_s,\n    ROUND(SUM(s.cpu_per_exec_s)::numeric, 2)            AS total_cpu_s,\n    ROUND(SUM(s.disk_reads_per_exec)::numeric, 0)       AS disk_reads,\n    ROUND(SUM(s.buffer_gets_per_exec)::numeric, 0)      AS buffer_gets,\n    SUM(s.executions)                                   AS executions,\n    ROUND(SUM(s.parse_calls)::numeric, 0)               AS parse_calls\n  FROM awr_sql_summary_mv s\n  JOIN params p ON p.dbname = s.dbname AND p.instance = s.instance\n  WHERE s.begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n  GROUP BY lower(s.sql_id)\n  ORDER BY AVG(s.severity_score) DESC\n  LIMIT 10\n),\nsql_segs AS (\n  SELECT\n    lower(m.sql_id) AS sql_id,\n    string_agg(\n      CASE WHEN m.owner <> '' THEN m.owner || '.' ELSE '' END || m.object ||\n      COALESCE((\n        SELECT\n          CASE\n            WHEN UPPER(om.object_type) LIKE 'INDEX%'\n              THEN ' [idx BLVL=' || COALESCE(om.blevel::text,'?') ||\n                   CASE WHEN om.blevel > 4 THEN ' ⚠HIGH' ELSE '' END || ']'\n            WHEN UPPER(om.object_type) LIKE 'TABLE%'\n              THEN ' [tbl rows=' || TO_CHAR(COALESCE(om.num_rows,0),'FM999,999,999') || ']'\n            ELSE ''\n          END\n        FROM awr_object_metadata om\n        WHERE UPPER(om.dbname) = UPPER((SELECT dbname FROM params))\n          AND (m.owner = '' OR UPPER(om.owner) = UPPER(m.owner))\n          AND UPPER(om.object_name) = UPPER(m.object)\n        LIMIT 1\n      ), ''),\n      E'\\n' ORDER BY m.object\n    ) AS segments\n  FROM awr_sql_object_map_mv m\n  WHERE lower(m.sql_id) IN (SELECT sql_id FROM top_sql)\n  GROUP BY lower(m.sql_id)\n),\n-- Per-SQL top waits using co-occurrence (snaps where SQL was active)\n-- Since AWR doesn't link waits to SQL directly, we show the top 3 waits\n-- from the same snap range — labelled as context, not causation\ntop_waits_context AS (\n  SELECT\n    w.event,\n    ROUND(AVG(w.pct_time)::numeric,1) AS pct_db_time,\n    ROW_NUMBER() OVER (ORDER BY AVG(w.pct_time) DESC) AS rn\n  FROM awr_wait_summary_mv w\n  JOIN params p ON p.dbname=w.dbname AND p.instance=w.instance\n  WHERE w.begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n    AND w.wait_scope = 'Foreground'\n  GROUP BY w.event\n),\nwait_context_text AS (\n  SELECT string_agg(\n    event || ' (' || pct_db_time::text || '% DB time)',\n    E'\\n' ORDER BY rn\n  ) AS txt\n  FROM top_waits_context\n  WHERE rn <= 3\n)\nSELECT\n  ts.sql_id                                    AS \"SQL ID\",\n  ts.severity                                  AS \"Severity Score\",\n  ts.total_elapsed_s                           AS \"Total Elapsed (s)\",\n  ts.avg_elapsed_s                             AS \"Avg Elapsed/Exec (s)\",\n  ts.total_cpu_s                               AS \"Total CPU (s)\",\n  ts.disk_reads                                AS \"Disk Reads\",\n  ts.buffer_gets                               AS \"Buffer Gets\",\n  ts.executions                                AS \"Executions\",\n  ts.parse_calls                               AS \"Parse Calls\",\n  COALESCE(ss.segments, '— not in text map —') AS \"Segments Referenced\",\n  (SELECT txt FROM wait_context_text)          AS \"Top 3 Foreground Waits (snap range context)\"\nFROM top_sql ts\nLEFT JOIN sql_segs ss ON ss.sql_id = ts.sql_id\nWHERE '${dbname}' != '' AND '${start_snap}' != '' AND '${end_snap}' != ''\nORDER BY ts.severity DESC;",
           "refId": "A"
         }
       ],
@@ -1241,8 +889,7 @@
           ],
           "show": false
         },
-        "showHeader": true,
-        "sortBy": []
+        "showHeader": true
       },
       "fieldConfig": {
         "defaults": {
@@ -1253,7 +900,7 @@
             },
             "filterable": true,
             "inspect": false,
-            "minWidth": 100,
+            "minWidth": 80,
             "wrap": true
           },
           "color": {
@@ -1286,7 +933,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 400
+                "value": 420
               },
               {
                 "id": "custom.wrap",
@@ -1329,28 +976,16 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Top 3 Waits (snap range context)"
+              "options": "Top 3 Foreground Waits (snap range context)"
             },
             "properties": [
               {
                 "id": "custom.width",
-                "value": 300
+                "value": 320
               },
               {
                 "id": "custom.wrap",
                 "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Referencing SQLs"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 250
               }
             ]
           },
@@ -1362,7 +997,31 @@
             "properties": [
               {
                 "id": "custom.width",
+                "value": 200
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Referencing SQLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
                 "value": 220
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Correlation Basis"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 160
               }
             ]
           },
@@ -1377,22 +1036,6 @@
                 "value": {
                   "type": "color-background"
                 }
-              },
-              {
-                "id": "custom.width",
-                "value": 100
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "^(Phys Reads|Logical Reads|Buf Busy Waits|Row Lock Waits|Table Scans|GC Busy|Disk Reads|Buffer Gets|Executions|Parse Calls|Total Elapsed.*|Avg Elapsed.*|Total CPU.*|Total Waits|Avg Wait.*)$"
-            },
-            "properties": [
-              {
-                "id": "custom.align",
-                "value": "right"
               },
               {
                 "id": "custom.width",
@@ -1445,6 +1088,22 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(Phys Reads|Logical Reads|Buf Busy Waits|Row Lock Waits|Table Scans|GC Busy|Disk Reads|Buffer Gets|Executions|Parse Calls|Total Elapsed.*|Avg Elapsed.*|Total CPU.*|Total Waits|Avg Wait.*)$"
+            },
+            "properties": [
+              {
+                "id": "custom.align",
+                "value": "right"
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
           }
         ]
       },
@@ -1457,7 +1116,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 143
+        "y": 71
       },
       "id": 12,
       "panels": [],
@@ -1573,7 +1232,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 144
+        "y": 72
       },
       "id": 13,
       "options": {
@@ -1728,90 +1387,6 @@
         "refresh": 2,
         "regex": "",
         "type": "query"
-      },
-      {
-        "current": {
-          "text": "All",
-          "value": "All"
-        },
-        "includeAll": false,
-        "label": "Wait Scope",
-        "name": "wait_scope",
-        "options": [
-          {
-            "selected": true,
-            "text": "All",
-            "value": "All"
-          },
-          {
-            "selected": false,
-            "text": "Foreground",
-            "value": "Foreground"
-          },
-          {
-            "selected": false,
-            "text": "Background",
-            "value": "Background"
-          }
-        ],
-        "query": "All,Foreground,Background",
-        "type": "custom"
-      },
-      {
-        "current": {
-          "text": "normalized",
-          "value": "normalized"
-        },
-        "includeAll": false,
-        "label": "RAG Mode",
-        "name": "rag_mode",
-        "options": [
-          {
-            "selected": true,
-            "text": "normalized",
-            "value": "normalized"
-          },
-          {
-            "selected": false,
-            "text": "percentile",
-            "value": "percentile"
-          }
-        ],
-        "query": "normalized,percentile",
-        "type": "custom"
-      },
-      {
-        "current": {
-          "text": "30",
-          "value": "30"
-        },
-        "includeAll": false,
-        "label": "Baseline Days",
-        "name": "baseline_days",
-        "options": [
-          {
-            "selected": false,
-            "text": "15",
-            "value": "15"
-          },
-          {
-            "selected": true,
-            "text": "30",
-            "value": "30"
-          },
-          {
-            "selected": false,
-            "text": "60",
-            "value": "60"
-          },
-          {
-            "selected": false,
-            "text": "90",
-            "value": "90"
-          }
-        ],
-        "query": "15,30,60,90",
-        "type": "custom"
       }
     ]
   },
