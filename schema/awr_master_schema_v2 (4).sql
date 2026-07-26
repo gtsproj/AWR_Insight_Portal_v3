@@ -1548,7 +1548,7 @@ AS
             awr_seg_row_lck_wait.subobject_name,
             awr_seg_row_lck_wait.obj_type,
             sum(awr_seg_row_lck_wait.row_lock_waits) AS row_lock_waits
-           FROM awr_seg_row_lck_wait
+           FROM awr_seg_row_lck_waits
           GROUP BY awr_seg_row_lck_wait.dbname, awr_seg_row_lck_wait.instance, awr_seg_row_lck_wait.begin_snap,
                    awr_seg_row_lck_wait.owner, awr_seg_row_lck_wait.object_name, awr_seg_row_lck_wait.subobject_name, awr_seg_row_lck_wait.obj_type
         ),
@@ -1620,22 +1620,22 @@ AS
     (COALESCE(pr.physical_reads, 0::numeric) * 0.15 + (COALESCE(dr.direct_reads, 0::numeric) + COALESCE(dw.direct_writes, 0::numeric)) * 0.10 + COALESCE(l.logical_reads, 0::numeric) * 0.10 + (COALESCE(cb.cr_blocks_received, 0::numeric) + COALESCE(cur.current_blocks_received, 0::numeric)) * 0.10 + COALESCE(ts.table_scans, 0::numeric) * 0.05 + COALESCE(un.unoptimized_reads, 0::numeric) * 0.05 + (COALESCE(rr.phys_read_requests, 0::numeric) + COALESCE(wr.phys_write_requests, 0::numeric)) * 0.03 + COALESCE(opt.optimized_reads, 0::numeric) * 0.02 + COALESCE(dbc.db_block_changes, 0::numeric) * 0.10 + COALESCE(rl.row_lock_waits, 0::numeric) * 0.10 + COALESCE(it.itl_waits, 0::numeric) * 0.05 + COALESCE(bb.buffer_busy_waits, 0::numeric) * 0.10 + COALESCE(gc.gc_buffer_busy, 0::numeric) * 0.05)::numeric(18,4) AS severity_score,
     row_number() over () AS mv_id
    FROM logical_reads l
-     LEFT JOIN physical_reads pr ON pr.dbname = l.dbname AND pr.instance = l.instance AND pr.begin_snap = l.begin_snap AND pr.owner = l.owner AND pr.object_name = l.object_name AND pr.subobject_name = l.subobject_name
-     LEFT JOIN physical_writes pw ON pw.dbname = l.dbname AND pw.instance = l.instance AND pw.begin_snap = l.begin_snap AND pw.owner = l.owner AND pw.object_name = l.object_name AND pw.subobject_name = l.subobject_name
-     LEFT JOIN direct_reads dr ON dr.dbname = l.dbname AND dr.instance = l.instance AND dr.begin_snap = l.begin_snap AND dr.owner = l.owner AND dr.object_name = l.object_name AND dr.subobject_name = l.subobject_name
-     LEFT JOIN direct_writes dw ON dw.dbname = l.dbname AND dw.instance = l.instance AND dw.begin_snap = l.begin_snap AND dw.owner = l.owner AND dw.object_name = l.object_name AND dw.subobject_name = l.subobject_name
-     LEFT JOIN read_req rr ON rr.dbname = l.dbname AND rr.instance = l.instance AND rr.begin_snap = l.begin_snap AND rr.owner = l.owner AND rr.object_name = l.object_name AND rr.subobject_name = l.subobject_name
-     LEFT JOIN write_req wr ON wr.dbname = l.dbname AND wr.instance = l.instance AND wr.begin_snap = l.begin_snap AND wr.owner = l.owner AND wr.object_name = l.object_name AND wr.subobject_name = l.subobject_name
-     LEFT JOIN cr_blocks cb ON cb.dbname = l.dbname AND cb.instance = l.instance AND cb.begin_snap = l.begin_snap AND cb.owner = l.owner AND cb.object_name = l.object_name AND cb.subobject_name = l.subobject_name
-     LEFT JOIN cur_blocks cur ON cur.dbname = l.dbname AND cur.instance = l.instance AND cur.begin_snap = l.begin_snap AND cur.owner = l.owner AND cur.object_name = l.object_name AND cur.subobject_name = l.subobject_name
-     LEFT JOIN unopt_reads un ON un.dbname = l.dbname AND un.instance = l.instance AND un.begin_snap = l.begin_snap AND un.owner = l.owner AND un.object_name = l.object_name AND un.subobject_name = l.subobject_name
-     LEFT JOIN opt_reads opt ON opt.dbname = l.dbname AND opt.instance = l.instance AND opt.begin_snap = l.begin_snap AND opt.owner = l.owner AND opt.object_name = l.object_name AND opt.subobject_name = l.subobject_name
-     LEFT JOIN table_scans ts ON ts.dbname = l.dbname AND ts.instance = l.instance AND ts.begin_snap = l.begin_snap AND ts.owner = l.owner AND ts.object_name = l.object_name AND ts.subobject_name = l.subobject_name
-     LEFT JOIN db_block_changes dbc ON dbc.dbname = l.dbname AND dbc.instance = l.instance AND dbc.begin_snap = l.begin_snap AND dbc.owner = l.owner AND dbc.object_name = l.object_name AND dbc.subobject_name = l.subobject_name
-     LEFT JOIN row_lock rl ON rl.dbname = l.dbname AND rl.instance = l.instance AND rl.begin_snap = l.begin_snap AND rl.owner = l.owner AND rl.object_name = l.object_name AND rl.subobject_name = l.subobject_name
-     LEFT JOIN itl it ON it.dbname = l.dbname AND it.instance = l.instance AND it.begin_snap = l.begin_snap AND it.owner = l.owner AND it.object_name = l.object_name AND it.subobject_name = l.subobject_name
-     LEFT JOIN buff_busy bb ON bb.dbname = l.dbname AND bb.instance = l.instance AND bb.begin_snap = l.begin_snap AND bb.owner = l.owner AND bb.object_name = l.object_name AND bb.subobject_name = l.subobject_name
-     LEFT JOIN gc_busy gc ON gc.dbname = l.dbname AND gc.instance = l.instance AND gc.begin_snap = l.begin_snap AND gc.owner = l.owner AND gc.object_name = l.object_name AND gc.subobject_name = l.subobject_name
+     LEFT JOIN physical_reads pr ON pr.dbname = l.dbname AND pr.instance = l.instance AND pr.begin_snap = l.begin_snap AND pr.owner = l.owner AND pr.object_name = l.object_name AND pr.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN physical_writes pw ON pw.dbname = l.dbname AND pw.instance = l.instance AND pw.begin_snap = l.begin_snap AND pw.owner = l.owner AND pw.object_name = l.object_name AND pw.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN direct_reads dr ON dr.dbname = l.dbname AND dr.instance = l.instance AND dr.begin_snap = l.begin_snap AND dr.owner = l.owner AND dr.object_name = l.object_name AND dr.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN direct_writes dw ON dw.dbname = l.dbname AND dw.instance = l.instance AND dw.begin_snap = l.begin_snap AND dw.owner = l.owner AND dw.object_name = l.object_name AND dw.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN read_req rr ON rr.dbname = l.dbname AND rr.instance = l.instance AND rr.begin_snap = l.begin_snap AND rr.owner = l.owner AND rr.object_name = l.object_name AND rr.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN write_req wr ON wr.dbname = l.dbname AND wr.instance = l.instance AND wr.begin_snap = l.begin_snap AND wr.owner = l.owner AND wr.object_name = l.object_name AND wr.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN cr_blocks cb ON cb.dbname = l.dbname AND cb.instance = l.instance AND cb.begin_snap = l.begin_snap AND cb.owner = l.owner AND cb.object_name = l.object_name AND cb.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN cur_blocks cur ON cur.dbname = l.dbname AND cur.instance = l.instance AND cur.begin_snap = l.begin_snap AND cur.owner = l.owner AND cur.object_name = l.object_name AND cur.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN unopt_reads un ON un.dbname = l.dbname AND un.instance = l.instance AND un.begin_snap = l.begin_snap AND un.owner = l.owner AND un.object_name = l.object_name AND un.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN opt_reads opt ON opt.dbname = l.dbname AND opt.instance = l.instance AND opt.begin_snap = l.begin_snap AND opt.owner = l.owner AND opt.object_name = l.object_name AND opt.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN table_scans ts ON ts.dbname = l.dbname AND ts.instance = l.instance AND ts.begin_snap = l.begin_snap AND ts.owner = l.owner AND ts.object_name = l.object_name AND ts.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN db_block_changes dbc ON dbc.dbname = l.dbname AND dbc.instance = l.instance AND dbc.begin_snap = l.begin_snap AND dbc.owner = l.owner AND dbc.object_name = l.object_name AND dbc.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN row_lock rl ON rl.dbname = l.dbname AND rl.instance = l.instance AND rl.begin_snap = l.begin_snap AND rl.owner = l.owner AND rl.object_name = l.object_name AND rl.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN itl it ON it.dbname = l.dbname AND it.instance = l.instance AND it.begin_snap = l.begin_snap AND it.owner = l.owner AND it.object_name = l.object_name AND it.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN buff_busy bb ON bb.dbname = l.dbname AND bb.instance = l.instance AND bb.begin_snap = l.begin_snap AND bb.owner = l.owner AND bb.object_name = l.object_name AND bb.subobject_name IS NOT DISTINCT FROM l.subobject_name
+     LEFT JOIN gc_busy gc ON gc.dbname = l.dbname AND gc.instance = l.instance AND gc.begin_snap = l.begin_snap AND gc.owner = l.owner AND gc.object_name = l.object_name AND gc.subobject_name IS NOT DISTINCT FROM l.subobject_name
 WITH DATA;
 
 -- Indexes for performance
