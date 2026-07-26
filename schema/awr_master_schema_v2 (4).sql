@@ -1376,121 +1376,220 @@ AS
             awr_seg_logical_reads.owner,
             awr_seg_logical_reads.object_name,
             awr_seg_logical_reads.subobject_name,
-            avg(awr_seg_logical_reads.logical_reads) AS logical_reads
+            sum(awr_seg_logical_reads.logical_reads) AS logical_reads
            FROM awr_seg_logical_reads
-          GROUP BY awr_seg_logical_reads.dbname, awr_seg_logical_reads.instance, awr_seg_logical_reads.begin_snap, awr_seg_logical_reads.tablespace_name, awr_seg_logical_reads.obj_type, awr_seg_logical_reads.owner, awr_seg_logical_reads.object_name, awr_seg_logical_reads.subobject_name
-        ), physical_reads AS (
+          GROUP BY awr_seg_logical_reads.dbname, awr_seg_logical_reads.instance,
+                   awr_seg_logical_reads.begin_snap, awr_seg_logical_reads.tablespace_name,
+                   awr_seg_logical_reads.obj_type, awr_seg_logical_reads.owner,
+                   awr_seg_logical_reads.object_name, awr_seg_logical_reads.subobject_name
+        ),
+        physical_reads AS (
          SELECT awr_seg_phy_reads.dbname,
             awr_seg_phy_reads.instance,
             awr_seg_phy_reads.begin_snap,
-            avg(awr_seg_phy_reads.physical_reads) AS physical_reads
+            awr_seg_phy_reads.owner,
+            awr_seg_phy_reads.object_name,
+            awr_seg_phy_reads.subobject_name,
+            awr_seg_phy_reads.obj_type,
+            sum(awr_seg_phy_reads.physical_reads) AS physical_reads
            FROM awr_seg_phy_reads
-          GROUP BY awr_seg_phy_reads.dbname, awr_seg_phy_reads.instance, awr_seg_phy_reads.begin_snap
-        ), physical_writes AS (
+          GROUP BY awr_seg_phy_reads.dbname, awr_seg_phy_reads.instance, awr_seg_phy_reads.begin_snap,
+                   awr_seg_phy_reads.owner, awr_seg_phy_reads.object_name, awr_seg_phy_reads.subobject_name, awr_seg_phy_reads.obj_type
+        ),
+        physical_writes AS (
          SELECT awr_seg_phy_writes.dbname,
             awr_seg_phy_writes.instance,
             awr_seg_phy_writes.begin_snap,
-            avg(awr_seg_phy_writes.physical_writes) AS physical_writes
+            awr_seg_phy_writes.owner,
+            awr_seg_phy_writes.object_name,
+            awr_seg_phy_writes.subobject_name,
+            awr_seg_phy_writes.obj_type,
+            sum(awr_seg_phy_writes.physical_writes) AS physical_writes
            FROM awr_seg_phy_writes
-          GROUP BY awr_seg_phy_writes.dbname, awr_seg_phy_writes.instance, awr_seg_phy_writes.begin_snap
-        ), direct_reads AS (
+          GROUP BY awr_seg_phy_writes.dbname, awr_seg_phy_writes.instance, awr_seg_phy_writes.begin_snap,
+                   awr_seg_phy_writes.owner, awr_seg_phy_writes.object_name, awr_seg_phy_writes.subobject_name, awr_seg_phy_writes.obj_type
+        ),
+        direct_reads AS (
          SELECT awr_seg_direct_phy_reads.dbname,
             awr_seg_direct_phy_reads.instance,
             awr_seg_direct_phy_reads.begin_snap,
-            avg(awr_seg_direct_phy_reads.direct_reads) AS direct_reads
+            awr_seg_direct_phy_reads.owner,
+            awr_seg_direct_phy_reads.object_name,
+            awr_seg_direct_phy_reads.subobject_name,
+            awr_seg_direct_phy_reads.obj_type,
+            sum(awr_seg_direct_phy_reads.direct_reads) AS direct_reads
            FROM awr_seg_direct_phy_reads
-          GROUP BY awr_seg_direct_phy_reads.dbname, awr_seg_direct_phy_reads.instance, awr_seg_direct_phy_reads.begin_snap
-        ), direct_writes AS (
+          GROUP BY awr_seg_direct_phy_reads.dbname, awr_seg_direct_phy_reads.instance, awr_seg_direct_phy_reads.begin_snap,
+                   awr_seg_direct_phy_reads.owner, awr_seg_direct_phy_reads.object_name, awr_seg_direct_phy_reads.subobject_name, awr_seg_direct_phy_reads.obj_type
+        ),
+        direct_writes AS (
          SELECT awr_seg_direct_phy_writes.dbname,
             awr_seg_direct_phy_writes.instance,
             awr_seg_direct_phy_writes.begin_snap,
-            avg(awr_seg_direct_phy_writes.direct_writes) AS direct_writes
+            awr_seg_direct_phy_writes.owner,
+            awr_seg_direct_phy_writes.object_name,
+            awr_seg_direct_phy_writes.subobject_name,
+            awr_seg_direct_phy_writes.obj_type,
+            sum(awr_seg_direct_phy_writes.direct_writes) AS direct_writes
            FROM awr_seg_direct_phy_writes
-          GROUP BY awr_seg_direct_phy_writes.dbname, awr_seg_direct_phy_writes.instance, awr_seg_direct_phy_writes.begin_snap
-        ), read_req AS (
+          GROUP BY awr_seg_direct_phy_writes.dbname, awr_seg_direct_phy_writes.instance, awr_seg_direct_phy_writes.begin_snap,
+                   awr_seg_direct_phy_writes.owner, awr_seg_direct_phy_writes.object_name, awr_seg_direct_phy_writes.subobject_name, awr_seg_direct_phy_writes.obj_type
+        ),
+        read_req AS (
          SELECT awr_seg_phy_read_req.dbname,
             awr_seg_phy_read_req.instance,
             awr_seg_phy_read_req.begin_snap,
-            avg(awr_seg_phy_read_req.phys_read_requests) AS phys_read_requests
+            awr_seg_phy_read_req.owner,
+            awr_seg_phy_read_req.object_name,
+            awr_seg_phy_read_req.subobject_name,
+            awr_seg_phy_read_req.obj_type,
+            sum(awr_seg_phy_read_req.phys_read_requests) AS phys_read_requests
            FROM awr_seg_phy_read_req
-          GROUP BY awr_seg_phy_read_req.dbname, awr_seg_phy_read_req.instance, awr_seg_phy_read_req.begin_snap
-        ), write_req AS (
+          GROUP BY awr_seg_phy_read_req.dbname, awr_seg_phy_read_req.instance, awr_seg_phy_read_req.begin_snap,
+                   awr_seg_phy_read_req.owner, awr_seg_phy_read_req.object_name, awr_seg_phy_read_req.subobject_name, awr_seg_phy_read_req.obj_type
+        ),
+        write_req AS (
          SELECT awr_seg_phy_write_req.dbname,
             awr_seg_phy_write_req.instance,
             awr_seg_phy_write_req.begin_snap,
-            avg(awr_seg_phy_write_req.phys_write_requests) AS phys_write_requests
+            awr_seg_phy_write_req.owner,
+            awr_seg_phy_write_req.object_name,
+            awr_seg_phy_write_req.subobject_name,
+            awr_seg_phy_write_req.obj_type,
+            sum(awr_seg_phy_write_req.phys_write_requests) AS phys_write_requests
            FROM awr_seg_phy_write_req
-          GROUP BY awr_seg_phy_write_req.dbname, awr_seg_phy_write_req.instance, awr_seg_phy_write_req.begin_snap
-        ), cr_blocks AS (
+          GROUP BY awr_seg_phy_write_req.dbname, awr_seg_phy_write_req.instance, awr_seg_phy_write_req.begin_snap,
+                   awr_seg_phy_write_req.owner, awr_seg_phy_write_req.object_name, awr_seg_phy_write_req.subobject_name, awr_seg_phy_write_req.obj_type
+        ),
+        cr_blocks AS (
          SELECT awr_seg_cr_blk_rec.dbname,
             awr_seg_cr_blk_rec.instance,
             awr_seg_cr_blk_rec.begin_snap,
-            avg(awr_seg_cr_blk_rec.cr_blocks_received) AS cr_blocks_received
+            awr_seg_cr_blk_rec.owner,
+            awr_seg_cr_blk_rec.object_name,
+            awr_seg_cr_blk_rec.subobject_name,
+            awr_seg_cr_blk_rec.obj_type,
+            sum(awr_seg_cr_blk_rec.cr_blocks_received) AS cr_blocks_received
            FROM awr_seg_cr_blk_rec
-          GROUP BY awr_seg_cr_blk_rec.dbname, awr_seg_cr_blk_rec.instance, awr_seg_cr_blk_rec.begin_snap
-        ), cur_blocks AS (
+          GROUP BY awr_seg_cr_blk_rec.dbname, awr_seg_cr_blk_rec.instance, awr_seg_cr_blk_rec.begin_snap,
+                   awr_seg_cr_blk_rec.owner, awr_seg_cr_blk_rec.object_name, awr_seg_cr_blk_rec.subobject_name, awr_seg_cr_blk_rec.obj_type
+        ),
+        cur_blocks AS (
          SELECT awr_seg_cur_blk_rec.dbname,
             awr_seg_cur_blk_rec.instance,
             awr_seg_cur_blk_rec.begin_snap,
-            avg(awr_seg_cur_blk_rec.current_blocks_received) AS current_blocks_received
+            awr_seg_cur_blk_rec.owner,
+            awr_seg_cur_blk_rec.object_name,
+            awr_seg_cur_blk_rec.subobject_name,
+            awr_seg_cur_blk_rec.obj_type,
+            sum(awr_seg_cur_blk_rec.current_blocks_received) AS current_blocks_received
            FROM awr_seg_cur_blk_rec
-          GROUP BY awr_seg_cur_blk_rec.dbname, awr_seg_cur_blk_rec.instance, awr_seg_cur_blk_rec.begin_snap
-        ), unopt_reads AS (
+          GROUP BY awr_seg_cur_blk_rec.dbname, awr_seg_cur_blk_rec.instance, awr_seg_cur_blk_rec.begin_snap,
+                   awr_seg_cur_blk_rec.owner, awr_seg_cur_blk_rec.object_name, awr_seg_cur_blk_rec.subobject_name, awr_seg_cur_blk_rec.obj_type
+        ),
+        unopt_reads AS (
          SELECT awr_seg_unopt_reads.dbname,
             awr_seg_unopt_reads.instance,
             awr_seg_unopt_reads.begin_snap,
-            avg(awr_seg_unopt_reads.unoptimized_reads) AS unoptimized_reads
+            awr_seg_unopt_reads.owner,
+            awr_seg_unopt_reads.object_name,
+            awr_seg_unopt_reads.subobject_name,
+            awr_seg_unopt_reads.obj_type,
+            sum(awr_seg_unopt_reads.unoptimized_reads) AS unoptimized_reads
            FROM awr_seg_unopt_reads
-          GROUP BY awr_seg_unopt_reads.dbname, awr_seg_unopt_reads.instance, awr_seg_unopt_reads.begin_snap
-        ), opt_reads AS (
+          GROUP BY awr_seg_unopt_reads.dbname, awr_seg_unopt_reads.instance, awr_seg_unopt_reads.begin_snap,
+                   awr_seg_unopt_reads.owner, awr_seg_unopt_reads.object_name, awr_seg_unopt_reads.subobject_name, awr_seg_unopt_reads.obj_type
+        ),
+        opt_reads AS (
          SELECT awr_seg_opt_reads.dbname,
             awr_seg_opt_reads.instance,
             awr_seg_opt_reads.begin_snap,
-            avg(awr_seg_opt_reads.optimized_reads) AS optimized_reads
+            awr_seg_opt_reads.owner,
+            awr_seg_opt_reads.object_name,
+            awr_seg_opt_reads.subobject_name,
+            awr_seg_opt_reads.obj_type,
+            sum(awr_seg_opt_reads.optimized_reads) AS optimized_reads
            FROM awr_seg_opt_reads
-          GROUP BY awr_seg_opt_reads.dbname, awr_seg_opt_reads.instance, awr_seg_opt_reads.begin_snap
-        ), table_scans AS (
+          GROUP BY awr_seg_opt_reads.dbname, awr_seg_opt_reads.instance, awr_seg_opt_reads.begin_snap,
+                   awr_seg_opt_reads.owner, awr_seg_opt_reads.object_name, awr_seg_opt_reads.subobject_name, awr_seg_opt_reads.obj_type
+        ),
+        table_scans AS (
          SELECT awr_seg_table_scan.dbname,
             awr_seg_table_scan.instance,
             awr_seg_table_scan.begin_snap,
-            avg(awr_seg_table_scan.table_scans) AS table_scans
+            awr_seg_table_scan.owner,
+            awr_seg_table_scan.object_name,
+            awr_seg_table_scan.subobject_name,
+            awr_seg_table_scan.obj_type,
+            sum(awr_seg_table_scan.table_scans) AS table_scans
            FROM awr_seg_table_scan
-          GROUP BY awr_seg_table_scan.dbname, awr_seg_table_scan.instance, awr_seg_table_scan.begin_snap
-        ), db_block_changes AS (
+          GROUP BY awr_seg_table_scan.dbname, awr_seg_table_scan.instance, awr_seg_table_scan.begin_snap,
+                   awr_seg_table_scan.owner, awr_seg_table_scan.object_name, awr_seg_table_scan.subobject_name, awr_seg_table_scan.obj_type
+        ),
+        db_block_changes AS (
          SELECT awr_seg_db_blk_chg.dbname,
             awr_seg_db_blk_chg.instance,
             awr_seg_db_blk_chg.begin_snap,
-            avg(awr_seg_db_blk_chg.db_block_changes) AS db_block_changes
+            awr_seg_db_blk_chg.owner,
+            awr_seg_db_blk_chg.object_name,
+            awr_seg_db_blk_chg.subobject_name,
+            awr_seg_db_blk_chg.obj_type,
+            sum(awr_seg_db_blk_chg.db_block_changes) AS db_block_changes
            FROM awr_seg_db_blk_chg
-          GROUP BY awr_seg_db_blk_chg.dbname, awr_seg_db_blk_chg.instance, awr_seg_db_blk_chg.begin_snap
-        ), row_lock AS (
-         SELECT awr_seg_row_lck_waits.dbname,
-            awr_seg_row_lck_waits.instance,
-            awr_seg_row_lck_waits.begin_snap,
-            avg(awr_seg_row_lck_waits.row_lock_waits) AS row_lock_waits
-           FROM awr_seg_row_lck_waits
-          GROUP BY awr_seg_row_lck_waits.dbname, awr_seg_row_lck_waits.instance, awr_seg_row_lck_waits.begin_snap
-        ), itl AS (
+          GROUP BY awr_seg_db_blk_chg.dbname, awr_seg_db_blk_chg.instance, awr_seg_db_blk_chg.begin_snap,
+                   awr_seg_db_blk_chg.owner, awr_seg_db_blk_chg.object_name, awr_seg_db_blk_chg.subobject_name, awr_seg_db_blk_chg.obj_type
+        ),
+        row_lock AS (
+         SELECT awr_seg_row_lck_wait.dbname,
+            awr_seg_row_lck_wait.instance,
+            awr_seg_row_lck_wait.begin_snap,
+            awr_seg_row_lck_wait.owner,
+            awr_seg_row_lck_wait.object_name,
+            awr_seg_row_lck_wait.subobject_name,
+            awr_seg_row_lck_wait.obj_type,
+            sum(awr_seg_row_lck_wait.row_lock_waits) AS row_lock_waits
+           FROM awr_seg_row_lck_wait
+          GROUP BY awr_seg_row_lck_wait.dbname, awr_seg_row_lck_wait.instance, awr_seg_row_lck_wait.begin_snap,
+                   awr_seg_row_lck_wait.owner, awr_seg_row_lck_wait.object_name, awr_seg_row_lck_wait.subobject_name, awr_seg_row_lck_wait.obj_type
+        ),
+        itl AS (
          SELECT awr_seg_itl_waits.dbname,
             awr_seg_itl_waits.instance,
             awr_seg_itl_waits.begin_snap,
-            avg(awr_seg_itl_waits.itl_waits) AS itl_waits
+            awr_seg_itl_waits.owner,
+            awr_seg_itl_waits.object_name,
+            awr_seg_itl_waits.subobject_name,
+            awr_seg_itl_waits.obj_type,
+            sum(awr_seg_itl_waits.itl_waits) AS itl_waits
            FROM awr_seg_itl_waits
-          GROUP BY awr_seg_itl_waits.dbname, awr_seg_itl_waits.instance, awr_seg_itl_waits.begin_snap
-        ), buff_busy AS (
+          GROUP BY awr_seg_itl_waits.dbname, awr_seg_itl_waits.instance, awr_seg_itl_waits.begin_snap,
+                   awr_seg_itl_waits.owner, awr_seg_itl_waits.object_name, awr_seg_itl_waits.subobject_name, awr_seg_itl_waits.obj_type
+        ),
+        buff_busy AS (
          SELECT awr_seg_buff_busy_waits.dbname,
             awr_seg_buff_busy_waits.instance,
             awr_seg_buff_busy_waits.begin_snap,
-            avg(awr_seg_buff_busy_waits.buffer_busy_waits) AS buffer_busy_waits
+            awr_seg_buff_busy_waits.owner,
+            awr_seg_buff_busy_waits.object_name,
+            awr_seg_buff_busy_waits.subobject_name,
+            awr_seg_buff_busy_waits.obj_type,
+            sum(awr_seg_buff_busy_waits.buffer_busy_waits) AS buffer_busy_waits
            FROM awr_seg_buff_busy_waits
-          GROUP BY awr_seg_buff_busy_waits.dbname, awr_seg_buff_busy_waits.instance, awr_seg_buff_busy_waits.begin_snap
-        ), gc_busy AS (
+          GROUP BY awr_seg_buff_busy_waits.dbname, awr_seg_buff_busy_waits.instance, awr_seg_buff_busy_waits.begin_snap,
+                   awr_seg_buff_busy_waits.owner, awr_seg_buff_busy_waits.object_name, awr_seg_buff_busy_waits.subobject_name, awr_seg_buff_busy_waits.obj_type
+        ),
+        gc_busy AS (
          SELECT awr_seg_gbl_cache_buff_busy.dbname,
             awr_seg_gbl_cache_buff_busy.instance,
             awr_seg_gbl_cache_buff_busy.begin_snap,
-            avg(awr_seg_gbl_cache_buff_busy.gc_buffer_busy) AS gc_buffer_busy
+            awr_seg_gbl_cache_buff_busy.owner,
+            awr_seg_gbl_cache_buff_busy.object_name,
+            awr_seg_gbl_cache_buff_busy.subobject_name,
+            awr_seg_gbl_cache_buff_busy.obj_type,
+            sum(awr_seg_gbl_cache_buff_busy.gc_buffer_busy) AS gc_buffer_busy
            FROM awr_seg_gbl_cache_buff_busy
-          GROUP BY awr_seg_gbl_cache_buff_busy.dbname, awr_seg_gbl_cache_buff_busy.instance, awr_seg_gbl_cache_buff_busy.begin_snap
+          GROUP BY awr_seg_gbl_cache_buff_busy.dbname, awr_seg_gbl_cache_buff_busy.instance, awr_seg_gbl_cache_buff_busy.begin_snap,
+                   awr_seg_gbl_cache_buff_busy.owner, awr_seg_gbl_cache_buff_busy.object_name, awr_seg_gbl_cache_buff_busy.subobject_name, awr_seg_gbl_cache_buff_busy.obj_type
         )
  SELECT l.dbname,
     l.instance,
@@ -1518,25 +1617,25 @@ AS
     it.itl_waits,
     bb.buffer_busy_waits,
     gc.gc_buffer_busy,
-    (COALESCE(pr.physical_reads, 0::numeric) * 0.15 + (COALESCE(dr.direct_reads, 0::numeric) + COALESCE(dw.direct_writes, 0::numeric)) * 0.10 + COALESCE(l.logical_reads, 0::numeric) * 0.10 + (COALESCE(cb.cr_blocks_received, 0::numeric) + COALESCE(cur.current_blocks_received, 0::numeric)) * 0.10 + COALESCE(ts.table_scans, 0::numeric) * 0.05 + COALESCE(un.unoptimized_reads, 0::numeric) * 0.05 + (COALESCE(rr.phys_read_requests, 0::numeric) + COALESCE(wr.phys_write_requests, 0::numeric)) * 0.03 + COALESCE(opt.optimized_reads, 0::numeric) * 0.02 + COALESCE(dbc.db_block_changes, 0::numeric) * 0.10 + COALESCE(rl.row_lock_waits, 0::numeric) * 0.10 + COALESCE(it.itl_waits, 0::numeric) * 0.05 + COALESCE(bb.buffer_busy_waits, 0::numeric) * 0.10 + COALESCE(gc.gc_buffer_busy, 0::numeric) * 0.05)::numeric(18,4) AS severity_score, 
-row_number() over () AS mv_id 
+    (COALESCE(pr.physical_reads, 0::numeric) * 0.15 + (COALESCE(dr.direct_reads, 0::numeric) + COALESCE(dw.direct_writes, 0::numeric)) * 0.10 + COALESCE(l.logical_reads, 0::numeric) * 0.10 + (COALESCE(cb.cr_blocks_received, 0::numeric) + COALESCE(cur.current_blocks_received, 0::numeric)) * 0.10 + COALESCE(ts.table_scans, 0::numeric) * 0.05 + COALESCE(un.unoptimized_reads, 0::numeric) * 0.05 + (COALESCE(rr.phys_read_requests, 0::numeric) + COALESCE(wr.phys_write_requests, 0::numeric)) * 0.03 + COALESCE(opt.optimized_reads, 0::numeric) * 0.02 + COALESCE(dbc.db_block_changes, 0::numeric) * 0.10 + COALESCE(rl.row_lock_waits, 0::numeric) * 0.10 + COALESCE(it.itl_waits, 0::numeric) * 0.05 + COALESCE(bb.buffer_busy_waits, 0::numeric) * 0.10 + COALESCE(gc.gc_buffer_busy, 0::numeric) * 0.05)::numeric(18,4) AS severity_score,
+    row_number() over () AS mv_id
    FROM logical_reads l
-     LEFT JOIN physical_reads pr ON pr.dbname = l.dbname AND pr.instance = l.instance AND pr.begin_snap = l.begin_snap
-     LEFT JOIN physical_writes pw ON pw.dbname = l.dbname AND pw.instance = l.instance AND pw.begin_snap = l.begin_snap
-     LEFT JOIN direct_reads dr ON dr.dbname = l.dbname AND dr.instance = l.instance AND dr.begin_snap = l.begin_snap
-     LEFT JOIN direct_writes dw ON dw.dbname = l.dbname AND dw.instance = l.instance AND dw.begin_snap = l.begin_snap
-     LEFT JOIN read_req rr ON rr.dbname = l.dbname AND rr.instance = l.instance AND rr.begin_snap = l.begin_snap
-     LEFT JOIN write_req wr ON wr.dbname = l.dbname AND wr.instance = l.instance AND wr.begin_snap = l.begin_snap
-     LEFT JOIN cr_blocks cb ON cb.dbname = l.dbname AND cb.instance = l.instance AND cb.begin_snap = l.begin_snap
-     LEFT JOIN cur_blocks cur ON cur.dbname = l.dbname AND cur.instance = l.instance AND cur.begin_snap = l.begin_snap
-     LEFT JOIN unopt_reads un ON un.dbname = l.dbname AND un.instance = l.instance AND un.begin_snap = l.begin_snap
-     LEFT JOIN opt_reads opt ON opt.dbname = l.dbname AND opt.instance = l.instance AND opt.begin_snap = l.begin_snap
-     LEFT JOIN table_scans ts ON ts.dbname = l.dbname AND ts.instance = l.instance AND ts.begin_snap = l.begin_snap
-     LEFT JOIN db_block_changes dbc ON dbc.dbname = l.dbname AND dbc.instance = l.instance AND dbc.begin_snap = l.begin_snap
-     LEFT JOIN row_lock rl ON rl.dbname = l.dbname AND rl.instance = l.instance AND rl.begin_snap = l.begin_snap
-     LEFT JOIN itl it ON it.dbname = l.dbname AND it.instance = l.instance AND it.begin_snap = l.begin_snap
-     LEFT JOIN buff_busy bb ON bb.dbname = l.dbname AND bb.instance = l.instance AND bb.begin_snap = l.begin_snap
-     LEFT JOIN gc_busy gc ON gc.dbname = l.dbname AND gc.instance = l.instance AND gc.begin_snap = l.begin_snap
+     LEFT JOIN physical_reads pr ON pr.dbname = l.dbname AND pr.instance = l.instance AND pr.begin_snap = l.begin_snap AND pr.owner = l.owner AND pr.object_name = l.object_name AND pr.subobject_name = l.subobject_name
+     LEFT JOIN physical_writes pw ON pw.dbname = l.dbname AND pw.instance = l.instance AND pw.begin_snap = l.begin_snap AND pw.owner = l.owner AND pw.object_name = l.object_name AND pw.subobject_name = l.subobject_name
+     LEFT JOIN direct_reads dr ON dr.dbname = l.dbname AND dr.instance = l.instance AND dr.begin_snap = l.begin_snap AND dr.owner = l.owner AND dr.object_name = l.object_name AND dr.subobject_name = l.subobject_name
+     LEFT JOIN direct_writes dw ON dw.dbname = l.dbname AND dw.instance = l.instance AND dw.begin_snap = l.begin_snap AND dw.owner = l.owner AND dw.object_name = l.object_name AND dw.subobject_name = l.subobject_name
+     LEFT JOIN read_req rr ON rr.dbname = l.dbname AND rr.instance = l.instance AND rr.begin_snap = l.begin_snap AND rr.owner = l.owner AND rr.object_name = l.object_name AND rr.subobject_name = l.subobject_name
+     LEFT JOIN write_req wr ON wr.dbname = l.dbname AND wr.instance = l.instance AND wr.begin_snap = l.begin_snap AND wr.owner = l.owner AND wr.object_name = l.object_name AND wr.subobject_name = l.subobject_name
+     LEFT JOIN cr_blocks cb ON cb.dbname = l.dbname AND cb.instance = l.instance AND cb.begin_snap = l.begin_snap AND cb.owner = l.owner AND cb.object_name = l.object_name AND cb.subobject_name = l.subobject_name
+     LEFT JOIN cur_blocks cur ON cur.dbname = l.dbname AND cur.instance = l.instance AND cur.begin_snap = l.begin_snap AND cur.owner = l.owner AND cur.object_name = l.object_name AND cur.subobject_name = l.subobject_name
+     LEFT JOIN unopt_reads un ON un.dbname = l.dbname AND un.instance = l.instance AND un.begin_snap = l.begin_snap AND un.owner = l.owner AND un.object_name = l.object_name AND un.subobject_name = l.subobject_name
+     LEFT JOIN opt_reads opt ON opt.dbname = l.dbname AND opt.instance = l.instance AND opt.begin_snap = l.begin_snap AND opt.owner = l.owner AND opt.object_name = l.object_name AND opt.subobject_name = l.subobject_name
+     LEFT JOIN table_scans ts ON ts.dbname = l.dbname AND ts.instance = l.instance AND ts.begin_snap = l.begin_snap AND ts.owner = l.owner AND ts.object_name = l.object_name AND ts.subobject_name = l.subobject_name
+     LEFT JOIN db_block_changes dbc ON dbc.dbname = l.dbname AND dbc.instance = l.instance AND dbc.begin_snap = l.begin_snap AND dbc.owner = l.owner AND dbc.object_name = l.object_name AND dbc.subobject_name = l.subobject_name
+     LEFT JOIN row_lock rl ON rl.dbname = l.dbname AND rl.instance = l.instance AND rl.begin_snap = l.begin_snap AND rl.owner = l.owner AND rl.object_name = l.object_name AND rl.subobject_name = l.subobject_name
+     LEFT JOIN itl it ON it.dbname = l.dbname AND it.instance = l.instance AND it.begin_snap = l.begin_snap AND it.owner = l.owner AND it.object_name = l.object_name AND it.subobject_name = l.subobject_name
+     LEFT JOIN buff_busy bb ON bb.dbname = l.dbname AND bb.instance = l.instance AND bb.begin_snap = l.begin_snap AND bb.owner = l.owner AND bb.object_name = l.object_name AND bb.subobject_name = l.subobject_name
+     LEFT JOIN gc_busy gc ON gc.dbname = l.dbname AND gc.instance = l.instance AND gc.begin_snap = l.begin_snap AND gc.owner = l.owner AND gc.object_name = l.object_name AND gc.subobject_name = l.subobject_name
 WITH DATA;
 
 -- Indexes for performance
