@@ -2,539 +2,393 @@
 """
 extract_ddl.py
 ==============
-Extract DDL scripts for all AWR Insight Portal database objects.
-Generates a consolidated SQL script with all tables, indexes, views,
-materialized views, sequences, types, and functions.
+Extracts complete DDL for all portal objects from the live PostgreSQL database
+and writes them to a single consolidated SQL file.
+
+Objects extracted (in dependency order):
+  - Tables (with constraints)
+  - Indexes
+  - Views
+  - Materialized Views
+  - Sequences
 
 Usage:
   py extract_ddl.py
-  py extract_ddl.py --output awr_portal_full_schema.sql
-  py extract_ddl.py --schema public --output awr_portal_full_schema.sql
+  py extract_ddl.py --out schema/awr_portal_live_schema.sql
+  py extract_ddl.py --schema public --out my_ddl.sql
 
-Output file can be used to recreate the entire database schema from scratch.
+Output file can be used to:
+  - Replace the schema folder scripts with the currently deployed DDL
+  - Recreate the database on a new server
+  - Review and validate the deployed DDL against the source scripts
 """
 
-import sys
 import os
+import sys
 import argparse
-from datetime import datetime
+import datetime
 
-# Add common folder to path
 _PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(_PROJECT_ROOT, "common"))
 
-try:
-    from config_loader import load_config
+def _load_settings() -> dict:
+    try:
+        import yaml
+        with open(os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml'),
+                  encoding='utf-8') as f:
+            return yaml.safe_load(f) or {}
+    except Exception:
+        return {}
+
+def get_connection():
+    cfg = _load_settings().get('database', {})
     import psycopg2
+    return psycopg2.connect(
+        host     = cfg.get('host',     'localhost'),
+        port     = cfg.get('port',     5432),
+        dbname   = cfg.get('dbname',   'postgres'),
+        user     = cfg.get('user',     'postgres'),
+        password = cfg.get('password', ''),
+    )
 
-    def get_db_connection():
-        config = load_config()
-        db_config = config.get('database', {})
-        return psycopg2.connect(
-            host=db_config.get('host', 'localhost'),
-            port=db_config.get('port', 5432),
-            user=db_config.get('user'),
-            password=db_config.get('password'),
-            database=db_config.get('dbname', 'postgres')
-        )
-except ImportError:
-    import psycopg2
-    def get_db_connection():
-        return psycopg2.connect(
-            host='localhost', port=5432,
-            user='postgres', password='postgres',
-            database='postgres'
-        )
+def extract_ddl(schema: str = 'public', out_path: str = None) -> str:
+    conn = get_connection()
+    cur  = conn.cursor()
+    lines = []
 
-
-HEADER = """-- ============================================================
--- AWR Insight Portal v2 — Complete Database Schema
--- Generated: {timestamp}
--- Tool: extract_ddl.py
+    header = f"""-- ============================================================
+-- AWR Insight Portal — Live Database DDL Extract
+-- Generated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+-- Schema:    {schema}
 -- ============================================================
--- Run as: psql -U postgres -d postgres -f awr_portal_full_schema.sql
+-- This file was extracted from the live PostgreSQL database.
+-- Use this as the authoritative DDL reference.
+--
+-- Object order:
+--   1. Sequences
+--   2. Tables (with inline constraints)
+--   3. Indexes
+--   4. Views
+--   5. Materialized Views
+--   6. Grants (select privileges on MVs)
 -- ============================================================
 
+SET search_path = {schema};
 SET client_min_messages = WARNING;
-SET search_path = public;
 
 """
+    lines.append(header)
 
-SECTION = """
--- ============================================================
--- {title}
--- ============================================================
-"""
-
-
-def get_types(cur, schema):
-    cur.execute("""
-        SELECT
-            t.typname,
-            t.typtype
-        FROM pg_type t
-        JOIN pg_namespace n ON n.oid = t.typnamespace
-        WHERE n.nspname = %s
-          AND t.typtype IN ('e', 'c')
-          AND t.typname NOT LIKE '\\_%%'
-        ORDER BY t.typname
-    """, (schema,))
-    type_rows = cur.fetchall()
-
-    result = []
-    for tname, ttype in type_rows:
-        if ttype == 'e':
-            # Fetch enum labels separately
-            cur.execute("""
-                SELECT e.enumlabel
-                FROM pg_enum e
-                JOIN pg_type t ON t.oid = e.enumtypid
-                JOIN pg_namespace n ON n.oid = t.typnamespace
-                WHERE n.nspname = %s AND t.typname = %s
-                ORDER BY e.enumsortorder
-            """, (schema, tname))
-            labels = [r[0] for r in cur.fetchall()]
-            result.append((tname, ttype, labels))
-        else:
-            result.append((tname, ttype, []))
-    return result
-
-
-def get_sequences(cur, schema):
+    # ── 1. Sequences ─────────────────────────────────────────────────────────
     cur.execute("""
         SELECT sequence_name
         FROM information_schema.sequences
         WHERE sequence_schema = %s
         ORDER BY sequence_name
     """, (schema,))
-    return [r[0] for r in cur.fetchall()]
+    seqs = cur.fetchall()
 
+    if seqs:
+        lines.append('-- ============================================================\n')
+        lines.append('-- SEQUENCES\n')
+        lines.append('-- ============================================================\n\n')
+        for (seq_name,) in seqs:
+            cur.execute("""
+                SELECT start_value, minimum_value, maximum_value,
+                       increment, cycle_option, cache_size
+                FROM information_schema.sequences
+                WHERE sequence_schema = %s AND sequence_name = %s
+            """, (schema, seq_name))
+            row = cur.fetchone()
+            if row:
+                start, minv, maxv, inc, cycle, cache = row
+                cycle_sql = 'CYCLE' if cycle == 'YES' else 'NO CYCLE'
+                lines.append(
+                    f'CREATE SEQUENCE IF NOT EXISTS {seq_name}\n'
+                    f'    START WITH {start}\n'
+                    f'    INCREMENT BY {inc}\n'
+                    f'    MINVALUE {minv}\n'
+                    f'    MAXVALUE {maxv}\n'
+                    f'    CACHE {cache}\n'
+                    f'    {cycle_sql};\n\n'
+                )
 
-def get_tables(cur, schema):
+    # ── 2. Tables ─────────────────────────────────────────────────────────────
     cur.execute("""
         SELECT table_name
         FROM information_schema.tables
-        WHERE table_schema = %s
-          AND table_type = 'BASE TABLE'
+        WHERE table_schema = %s AND table_type = 'BASE TABLE'
         ORDER BY table_name
     """, (schema,))
-    return [r[0] for r in cur.fetchall()]
+    tables = [r[0] for r in cur.fetchall()]
 
+    lines.append('-- ============================================================\n')
+    lines.append(f'-- TABLES ({len(tables)} tables)\n')
+    lines.append('-- ============================================================\n\n')
 
-def get_table_ddl(cur, schema, table_name):
-    """Generate CREATE TABLE statement."""
-    # Get columns
+    for tbl in tables:
+        # Get columns
+        cur.execute("""
+            SELECT
+                c.column_name,
+                c.data_type,
+                c.character_maximum_length,
+                c.numeric_precision,
+                c.numeric_scale,
+                c.is_nullable,
+                c.column_default,
+                c.udt_name
+            FROM information_schema.columns c
+            WHERE c.table_schema = %s AND c.table_name = %s
+            ORDER BY c.ordinal_position
+        """, (schema, tbl))
+        cols = cur.fetchall()
+
+        # Get constraints
+        cur.execute("""
+            SELECT
+                tc.constraint_name,
+                tc.constraint_type,
+                kcu.column_name,
+                cc.check_clause,
+                ccu.table_name AS ref_table,
+                ccu.column_name AS ref_col
+            FROM information_schema.table_constraints tc
+            JOIN information_schema.key_column_usage kcu
+                ON tc.constraint_name = kcu.constraint_name
+                AND tc.table_schema = kcu.table_schema
+            LEFT JOIN information_schema.check_constraints cc
+                ON tc.constraint_name = cc.constraint_name
+            LEFT JOIN information_schema.constraint_column_usage ccu
+                ON tc.constraint_name = ccu.constraint_name
+                AND tc.constraint_type = 'FOREIGN KEY'
+            WHERE tc.table_schema = %s AND tc.table_name = %s
+            ORDER BY tc.constraint_type, tc.constraint_name, kcu.ordinal_position
+        """, (schema, tbl))
+        constraints = cur.fetchall()
+
+        # Get tablespace
+        cur.execute("""
+            SELECT spcname
+            FROM pg_class c
+            JOIN pg_namespace n ON n.oid = c.relnamespace
+            LEFT JOIN pg_tablespace t ON t.oid = c.reltablespace
+            WHERE n.nspname = %s AND c.relname = %s AND c.relkind = 'r'
+        """, (schema, tbl))
+        ts_row = cur.fetchone()
+        tablespace = ts_row[0] if ts_row and ts_row[0] else None
+
+        col_defs = []
+        for col_name, data_type, char_max, num_prec, num_scale, nullable, default, udt in cols:
+            # Build type string
+            if data_type == 'character varying':
+                type_str = f'VARCHAR({char_max})' if char_max else 'TEXT'
+            elif data_type == 'character':
+                type_str = f'CHAR({char_max})' if char_max else 'CHAR'
+            elif data_type == 'numeric':
+                if num_prec and num_scale:
+                    type_str = f'NUMERIC({num_prec},{num_scale})'
+                elif num_prec:
+                    type_str = f'NUMERIC({num_prec})'
+                else:
+                    type_str = 'NUMERIC'
+            elif data_type == 'integer':
+                type_str = 'INT'
+            elif data_type == 'bigint':
+                type_str = 'BIGINT'
+            elif data_type == 'smallint':
+                type_str = 'SMALLINT'
+            elif data_type == 'timestamp without time zone':
+                type_str = 'TIMESTAMP'
+            elif data_type == 'timestamp with time zone':
+                type_str = 'TIMESTAMPTZ'
+            elif data_type == 'boolean':
+                type_str = 'BOOLEAN'
+            elif data_type == 'text':
+                type_str = 'TEXT'
+            elif data_type == 'USER-DEFINED':
+                type_str = udt.upper()
+            else:
+                type_str = data_type.upper()
+
+            null_str = '' if nullable == 'YES' else ' NOT NULL'
+            # Clean up default
+            if default:
+                # Replace nextval with SERIAL hint in comment
+                if 'nextval' in default:
+                    default_str = f' DEFAULT {default}'
+                else:
+                    default_str = f' DEFAULT {default}'
+            else:
+                default_str = ''
+
+            col_defs.append(f'    {col_name} {type_str}{null_str}{default_str}')
+
+        # Add constraints
+        seen_constraints = set()
+        constraint_defs = []
+        pk_cols = []
+        unique_constraints = {}
+        check_constraints = {}
+        fk_constraints = {}
+
+        for cname, ctype, col, check_clause, ref_table, ref_col in constraints:
+            if ctype == 'PRIMARY KEY':
+                pk_cols.append(col)
+            elif ctype == 'UNIQUE':
+                if cname not in unique_constraints:
+                    unique_constraints[cname] = []
+                unique_constraints[cname].append(col)
+            elif ctype == 'CHECK' and cname not in seen_constraints:
+                seen_constraints.add(cname)
+                if check_clause and 'IS NOT NULL' not in check_clause:
+                    check_constraints[cname] = check_clause
+            elif ctype == 'FOREIGN KEY' and cname not in seen_constraints:
+                seen_constraints.add(cname)
+                fk_constraints[cname] = (col, ref_table, ref_col)
+
+        if pk_cols:
+            constraint_defs.append(
+                f'    CONSTRAINT pk_{tbl} PRIMARY KEY ({", ".join(pk_cols)})'
+            )
+        for cname, ucols in unique_constraints.items():
+            constraint_defs.append(
+                f'    CONSTRAINT {cname} UNIQUE ({", ".join(ucols)})'
+            )
+        for cname, clause in check_constraints.items():
+            constraint_defs.append(f'    CONSTRAINT {cname} CHECK ({clause})')
+        for cname, (col, ref_tbl, ref_col) in fk_constraints.items():
+            constraint_defs.append(
+                f'    CONSTRAINT {cname} FOREIGN KEY ({col}) REFERENCES {ref_tbl}({ref_col})'
+            )
+
+        all_defs = col_defs + constraint_defs
+        ts_clause = f'\nTABLESPACE {tablespace}' if tablespace and tablespace != 'pg_default' else ''
+        lines.append(f'CREATE TABLE IF NOT EXISTS {tbl} (\n')
+        lines.append(',\n'.join(all_defs) + '\n')
+        lines.append(f'){ts_clause};\n\n')
+
+    # ── 3. Indexes ────────────────────────────────────────────────────────────
     cur.execute("""
         SELECT
-            c.column_name,
-            c.data_type,
-            c.character_maximum_length,
-            c.numeric_precision,
-            c.numeric_scale,
-            c.is_nullable,
-            c.column_default,
-            c.udt_name
-        FROM information_schema.columns c
-        WHERE c.table_schema = %s
-          AND c.table_name = %s
-        ORDER BY c.ordinal_position
-    """, (schema, table_name))
-    columns = cur.fetchall()
+            i.relname AS index_name,
+            t.relname AS table_name,
+            ix.indisunique,
+            ix.indisprimary,
+            pg_get_indexdef(ix.indexrelid) AS index_def
+        FROM pg_index ix
+        JOIN pg_class i ON i.oid = ix.indexrelid
+        JOIN pg_class t ON t.oid = ix.indrelid
+        JOIN pg_namespace n ON n.oid = t.relnamespace
+        WHERE n.nspname = %s
+          AND NOT ix.indisprimary
+          AND t.relkind IN ('r', 'm')
+        ORDER BY t.relname, i.relname
+    """, (schema,))
+    indexes = cur.fetchall()
 
-    # Get constraints
-    cur.execute("""
-        SELECT
-            tc.constraint_name,
-            tc.constraint_type,
-            kcu.column_name,
-            cc.check_clause,
-            ccu.table_name AS ref_table,
-            ccu.column_name AS ref_column,
-            rc.update_rule,
-            rc.delete_rule
-        FROM information_schema.table_constraints tc
-        LEFT JOIN information_schema.key_column_usage kcu
-            ON kcu.constraint_name = tc.constraint_name
-            AND kcu.table_schema = tc.table_schema
-        LEFT JOIN information_schema.check_constraints cc
-            ON cc.constraint_name = tc.constraint_name
-        LEFT JOIN information_schema.referential_constraints rc
-            ON rc.constraint_name = tc.constraint_name
-        LEFT JOIN information_schema.constraint_column_usage ccu
-            ON ccu.constraint_name = tc.constraint_name
-        WHERE tc.table_schema = %s
-          AND tc.table_name = %s
-        ORDER BY tc.constraint_type, tc.constraint_name, kcu.ordinal_position
-    """, (schema, table_name))
-    constraints_raw = cur.fetchall()
+    if indexes:
+        lines.append('-- ============================================================\n')
+        lines.append(f'-- INDEXES ({len(indexes)} indexes)\n')
+        lines.append('-- ============================================================\n\n')
+        for idx_name, tbl_name, is_unique, is_pk, idx_def in indexes:
+            # Convert to IF NOT EXISTS style
+            idx_ddl = idx_def
+            if idx_ddl.startswith('CREATE INDEX'):
+                idx_ddl = idx_ddl.replace('CREATE INDEX', 'CREATE INDEX IF NOT EXISTS', 1)
+            elif idx_ddl.startswith('CREATE UNIQUE INDEX'):
+                idx_ddl = idx_ddl.replace('CREATE UNIQUE INDEX', 'CREATE UNIQUE INDEX IF NOT EXISTS', 1)
+            lines.append(f'{idx_ddl};\n\n')
 
-    # Build column definitions
-    col_defs = []
-    for col in columns:
-        col_name, data_type, char_len, num_prec, num_scale, nullable, default, udt = col
-
-        # Build type string
-        if data_type == 'character varying':
-            type_str = f"VARCHAR({char_len})" if char_len else "TEXT"
-        elif data_type == 'character':
-            type_str = f"CHAR({char_len})" if char_len else "CHAR"
-        elif data_type == 'numeric':
-            if num_prec and num_scale:
-                type_str = f"NUMERIC({num_prec},{num_scale})"
-            elif num_prec:
-                type_str = f"NUMERIC({num_prec})"
-            else:
-                type_str = "NUMERIC"
-        elif data_type == 'USER-DEFINED':
-            type_str = udt
-        elif data_type == 'ARRAY':
-            type_str = udt.lstrip('_') + '[]'
-        else:
-            type_str = data_type.upper()
-
-        col_def = f"    {col_name:<30} {type_str}"
-        if default and 'nextval' in str(default):
-            # SERIAL shorthand
-            if 'integer' in data_type or 'int4' in data_type:
-                col_def = f"    {col_name:<30} SERIAL"
-            elif 'bigint' in data_type or 'int8' in data_type:
-                col_def = f"    {col_name:<30} BIGSERIAL"
-            else:
-                col_def = f"    {col_name:<30} {type_str} DEFAULT {default}"
-        elif default:
-            col_def += f" DEFAULT {default}"
-
-        if nullable == 'NO' and 'nextval' not in str(default or ''):
-            col_def += " NOT NULL"
-
-        col_defs.append(col_def)
-
-    # Build constraint definitions
-    pk_cols = {}
-    uq_cols = {}
-    fk_defs = []
-    check_defs = []
-
-    for row in constraints_raw:
-        cname, ctype, col_name, check_clause, ref_table, ref_col, upd_rule, del_rule = row
-        if ctype == 'PRIMARY KEY':
-            pk_cols.setdefault(cname, []).append(col_name)
-        elif ctype == 'UNIQUE':
-            uq_cols.setdefault(cname, []).append(col_name)
-        elif ctype == 'FOREIGN KEY':
-            fk_defs.append((cname, col_name, ref_table, ref_col, upd_rule, del_rule))
-        elif ctype == 'CHECK' and 'not_null' not in cname.lower():
-            if check_clause and check_clause not in [c[1] for c in check_defs]:
-                check_defs.append((cname, check_clause))
-
-    constraint_defs = []
-    for cname, cols in pk_cols.items():
-        constraint_defs.append(
-            f"    CONSTRAINT {cname} PRIMARY KEY ({', '.join(cols)})"
-        )
-    for cname, cols in uq_cols.items():
-        constraint_defs.append(
-            f"    CONSTRAINT {cname} UNIQUE ({', '.join(cols)})"
-        )
-    for cname, col, ref_tab, ref_col, upd, del_ in fk_defs:
-        fk = f"    CONSTRAINT {cname} FOREIGN KEY ({col})\n"
-        fk += f"        REFERENCES {ref_tab} ({ref_col})"
-        if del_ and del_ != 'NO ACTION':
-            fk += f" ON DELETE {del_}"
-        constraint_defs.append(fk)
-    for cname, clause in check_defs:
-        constraint_defs.append(
-            f"    CONSTRAINT {cname} CHECK {clause}"
-        )
-
-    all_defs = col_defs + constraint_defs
-    ddl = f"CREATE TABLE IF NOT EXISTS {table_name} (\n"
-    ddl += ',\n'.join(all_defs)
-    ddl += "\n);\n"
-
-    # Add comment
-    cur.execute("""
-        SELECT obj_description(
-            (quote_ident(%s) || '.' || quote_ident(%s))::regclass, 'pg_class'
-        )
-    """, (schema, table_name))
-    comment = cur.fetchone()[0]
-    if comment:
-        ddl += f"\nCOMMENT ON TABLE {table_name} IS '{comment}';\n"
-
-    return ddl
-
-
-def get_indexes(cur, schema, table_name):
-    """Get CREATE INDEX statements for a table."""
-    cur.execute("""
-        SELECT indexname, indexdef
-        FROM pg_indexes
-        WHERE schemaname = %s
-          AND tablename = %s
-          AND indexname NOT IN (
-              SELECT constraint_name
-              FROM information_schema.table_constraints
-              WHERE table_schema = %s AND table_name = %s
-          )
-        ORDER BY indexname
-    """, (schema, table_name, schema, table_name))
-    rows = cur.fetchall()
-    ddls = []
-    for iname, idef in rows:
-        # Add IF NOT EXISTS
-        idef = idef.replace('CREATE INDEX ', 'CREATE INDEX IF NOT EXISTS ')
-        idef = idef.replace('CREATE UNIQUE INDEX ', 'CREATE UNIQUE INDEX IF NOT EXISTS ')
-        ddls.append(idef + ';')
-    return ddls
-
-
-def get_views(cur, schema):
+    # ── 4. Views ─────────────────────────────────────────────────────────────
     cur.execute("""
         SELECT table_name, view_definition
         FROM information_schema.views
         WHERE table_schema = %s
         ORDER BY table_name
     """, (schema,))
-    return cur.fetchall()
+    views = cur.fetchall()
 
+    if views:
+        lines.append('-- ============================================================\n')
+        lines.append(f'-- VIEWS ({len(views)} views)\n')
+        lines.append('-- ============================================================\n\n')
+        for vname, vdef in views:
+            lines.append(f'CREATE OR REPLACE VIEW {vname} AS\n{vdef};\n\n')
 
-def get_materialized_views(cur, schema):
-    cur.execute("""
-        SELECT matviewname, definition, ispopulated
-        FROM pg_matviews
-        WHERE schemaname = %s
-        ORDER BY matviewname
-    """, (schema,))
-    return cur.fetchall()
-
-
-def get_mv_indexes(cur, schema, mvname):
-    cur.execute("""
-        SELECT indexname, indexdef
-        FROM pg_indexes
-        WHERE schemaname = %s AND tablename = %s
-        ORDER BY indexname
-    """, (schema, mvname))
-    rows = cur.fetchall()
-    ddls = []
-    for iname, idef in rows:
-        idef = idef.replace('CREATE INDEX ', 'CREATE INDEX IF NOT EXISTS ')
-        idef = idef.replace('CREATE UNIQUE INDEX ', 'CREATE UNIQUE INDEX IF NOT EXISTS ')
-        ddls.append(idef + ';')
-    return ddls
-
-
-def get_functions(cur, schema):
+    # ── 5. Materialized Views ─────────────────────────────────────────────────
     cur.execute("""
         SELECT
-            p.proname,
-            pg_get_functiondef(p.oid) AS definition
-        FROM pg_proc p
-        JOIN pg_namespace n ON n.oid = p.pronamespace
-        WHERE n.nspname = %s
-          AND p.prokind IN ('f', 'p')
-        ORDER BY p.proname
+            c.relname AS mv_name,
+            pg_get_viewdef(c.oid) AS mv_def,
+            t.spcname AS tablespace_name
+        FROM pg_class c
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+        LEFT JOIN pg_tablespace t ON t.oid = c.reltablespace
+        WHERE n.nspname = %s AND c.relkind = 'm'
+        ORDER BY c.relname
     """, (schema,))
-    return cur.fetchall()
+    mvs = cur.fetchall()
 
-
-def get_tablespaces(cur):
-    cur.execute("""
-        SELECT spcname
-        FROM pg_tablespace
-        WHERE spcname NOT IN ('pg_default', 'pg_global')
-        ORDER BY spcname
-    """)
-    return [r[0] for r in cur.fetchall()]
-
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Extract DDL for all AWR Portal database objects"
-    )
-    parser.add_argument(
-        "--output", "-o",
-        default="awr_portal_full_schema.sql",
-        help="Output SQL file (default: awr_portal_full_schema.sql)"
-    )
-    parser.add_argument(
-        "--schema", "-s",
-        default="public",
-        help="PostgreSQL schema (default: public)"
-    )
-    parser.add_argument(
-        "--no-functions",
-        action="store_true",
-        help="Skip function/procedure DDL"
-    )
-    args = parser.parse_args()
-
-    print(f"Connecting to database...")
-    try:
-        conn = get_db_connection()
-        conn.autocommit = True
-        cur = conn.cursor()
-        print(f"Connected ✓")
-    except Exception as e:
-        print(f"Connection failed: {e}")
-        sys.exit(1)
-
-    schema = args.schema
-    output = os.path.join(_PROJECT_ROOT, args.output)
-    lines = []
-
-    # Header
-    lines.append(HEADER.format(
-        timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    ))
-
-    # ── Tablespaces ─────────────────────────────────────────────
-    tablespaces = get_tablespaces(cur)
-    if tablespaces:
-        lines.append(SECTION.format(title="TABLESPACES"))
-        for ts in tablespaces:
-            lines.append(f"-- NOTE: Update location path for your environment")
+    if mvs:
+        lines.append('-- ============================================================\n')
+        lines.append(f'-- MATERIALIZED VIEWS ({len(mvs)} MVs)\n')
+        lines.append('-- ============================================================\n\n')
+        for mv_name, mv_def, mv_ts in mvs:
+            ts_clause = f'\nTABLESPACE {mv_ts}' if mv_ts and mv_ts != 'pg_default' else ''
             lines.append(
-                f"CREATE TABLESPACE IF NOT EXISTS {ts} "
-                f"LOCATION '/var/lib/postgresql/tablespaces/{ts}';\n"
+                f'CREATE MATERIALIZED VIEW IF NOT EXISTS {mv_name}{ts_clause}\nAS\n{mv_def}\nWITH DATA;\n\n'
             )
 
-    # ── Types / Enums ────────────────────────────────────────────
-    types = get_types(cur, schema)
-    if types:
-        lines.append(SECTION.format(title="CUSTOM TYPES / ENUMS"))
-        for tname, ttype, labels in types:
-            if ttype == 'e' and labels:
-                label_list = ", ".join(f"'{l}'" for l in labels)
-                lines.append(
-                    f"CREATE TYPE {tname} AS ENUM ({label_list});\n"
-                )
+    # ── 6. Grants ─────────────────────────────────────────────────────────────
+    cur.execute("""
+        SELECT
+            grantee,
+            table_name,
+            string_agg(privilege_type, ', ' ORDER BY privilege_type) AS privileges
+        FROM information_schema.role_table_grants
+        WHERE table_schema = %s
+          AND grantee NOT IN ('PUBLIC', 'postgres')
+        GROUP BY grantee, table_name
+        ORDER BY table_name, grantee
+    """, (schema,))
+    grants = cur.fetchall()
 
-    # ── Tables ───────────────────────────────────────────────────
-    tables = get_tables(cur, schema)
-    lines.append(SECTION.format(title=f"TABLES ({len(tables)} total)"))
-    print(f"Extracting {len(tables)} tables...")
-
-    all_indexes = []
-    for tname in tables:
-        try:
-            lines.append(f"-- Table: {tname}")
-            ddl = get_table_ddl(cur, schema, tname)
-            lines.append(ddl)
-            # Collect indexes
-            idx = get_indexes(cur, schema, tname)
-            if idx:
-                all_indexes.extend(idx)
-                all_indexes.append("")
-        except Exception as e:
-            lines.append(f"-- ERROR extracting {tname}: {e}\n")
-            print(f"  WARNING: {tname}: {e}")
-
-    # ── Indexes ──────────────────────────────────────────────────
-    if all_indexes:
-        lines.append(SECTION.format(title="INDEXES"))
-        lines.extend(all_indexes)
-
-    # ── Views ────────────────────────────────────────────────────
-    views = get_views(cur, schema)
-    if views:
-        lines.append(SECTION.format(title=f"VIEWS ({len(views)} total)"))
-        print(f"Extracting {len(views)} views...")
-        for vname, vdef in views:
-            if vdef:
-                lines.append(f"-- View: {vname}")
-                lines.append(
-                    f"CREATE OR REPLACE VIEW {vname} AS\n{vdef.rstrip()};\n"
-                )
-
-    # ── Materialized Views ───────────────────────────────────────
-    mvs = get_materialized_views(cur, schema)
-    if mvs:
-        lines.append(SECTION.format(
-            title=f"MATERIALIZED VIEWS ({len(mvs)} total)"
-        ))
-        print(f"Extracting {len(mvs)} materialized views...")
-        mv_indexes = []
-        for mvname, mvdef, populated in mvs:
-            if mvdef:
-                lines.append(f"-- Materialized View: {mvname}")
-                lines.append(
-                    f"CREATE MATERIALIZED VIEW IF NOT EXISTS {mvname} AS\n"
-                    f"{mvdef.rstrip()}\nWITH {'DATA' if populated else 'NO DATA'};\n"
-                )
-                idx = get_mv_indexes(cur, schema, mvname)
-                if idx:
-                    mv_indexes.extend(idx)
-                    mv_indexes.append("")
-
-        if mv_indexes:
-            lines.append(SECTION.format(
-                title="MATERIALIZED VIEW INDEXES"
-            ))
-            lines.extend(mv_indexes)
-
-        # Refresh commands
-        lines.append(SECTION.format(title="REFRESH MATERIALIZED VIEWS"))
-        lines.append("-- Run after initial data load:")
-        for mvname, _, _ in mvs:
-            lines.append(f"-- REFRESH MATERIALIZED VIEW {mvname};")
-        lines.append("")
-
-    # ── Functions / Procedures ───────────────────────────────────
-    funcs = []
-    if not args.no_functions:
-        funcs = get_functions(cur, schema)
-        if funcs:
-            lines.append(SECTION.format(
-                title=f"FUNCTIONS & PROCEDURES ({len(funcs)} total)"
-            ))
-            print(f"Extracting {len(funcs)} functions...")
-            for fname, fdef in funcs:
-                if fdef:
-                    lines.append(f"-- Function: {fname}")
-                    lines.append(f"CREATE OR REPLACE {fdef.strip()};\n")
-
-    # ── Permissions ──────────────────────────────────────────────
-    lines.append(SECTION.format(title="PERMISSIONS"))
-    lines.append("""-- Adjust these grants for your environment
--- GRANT SELECT ON ALL TABLES IN SCHEMA public TO awr_portal_reader;
--- GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO awr_portal_dba;
--- GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO awr_portal_dba;
-""")
-
-    # ── Footer ───────────────────────────────────────────────────
-    func_count = len(funcs) if not args.no_functions else 'skipped'
-    lines.append(f"""
--- ============================================================
--- END OF SCHEMA SCRIPT
--- Tables:             {len(tables)}
--- Views:              {len(views)}
--- Materialized Views: {len(mvs)}
--- Functions:          {func_count}
--- Generated:          {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
--- ============================================================
-""")
-
-    # Write output
-    content = '\n'.join(lines)
-    with open(output, 'w', encoding='utf-8') as f:
-        f.write(content)
+    if grants:
+        lines.append('-- ============================================================\n')
+        lines.append('-- GRANTS\n')
+        lines.append('-- ============================================================\n\n')
+        for grantee, tbl_name, privs in grants:
+            lines.append(f'GRANT {privs} ON {tbl_name} TO {grantee};\n')
 
     cur.close()
     conn.close()
 
-    print(f"\n✅ DDL extracted successfully:")
-    print(f"   Tables:              {len(tables)}")
-    print(f"   Views:               {len(views)}")
-    print(f"   Materialized Views:  {len(mvs)}")
-    print(f"   Indexes:             {len(all_indexes)}")
-    if not args.no_functions:
-        print(f"   Functions:           {len(funcs)}")
-    print(f"\n   Output: {output}")
-    print(f"\nTo recreate schema on a new server:")
-    print(f"   psql -U postgres -d postgres -f {args.output}")
+    ddl = ''.join(lines)
+
+    if out_path:
+        os.makedirs(os.path.dirname(out_path) if os.path.dirname(out_path) else '.', exist_ok=True)
+        with open(out_path, 'w', encoding='utf-8') as f:
+            f.write(ddl)
+        print(f'DDL written to: {out_path}')
+        print(f'Tables: {len(tables)}, Indexes: {len(indexes)}, '
+              f'Views: {len(views)}, MVs: {len(mvs)}, Sequences: {len(seqs)}')
+
+    return ddl
 
 
-if __name__ == "__main__":
+def main():
+    parser = argparse.ArgumentParser(
+        description='Extract live DDL from the AWR Portal database'
+    )
+    parser.add_argument('--out', default='schema/awr_portal_live_schema.sql',
+                        help='Output file path (default: schema/awr_portal_live_schema.sql)')
+    parser.add_argument('--schema', default='public',
+                        help='PostgreSQL schema to extract (default: public)')
+    args = parser.parse_args()
+
+    print(f'Extracting DDL from live database...')
+    extract_ddl(schema=args.schema, out_path=args.out)
+
+
+if __name__ == '__main__':
     main()
