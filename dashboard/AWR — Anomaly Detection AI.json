@@ -103,7 +103,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT COUNT(*) AS value FROM awr_anomalies WHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != '' AND instance = '${instance}'\n  AND ('${start_snap}' = '' OR begin_snap >= split_part('${start_snap}',' - ',1)::int)\n  AND ('${end_snap}'   = '' OR begin_snap <= split_part('${end_snap}',' - ',1)::int) AND severity='critical'",
+          "rawSql": "SELECT COUNT(*) AS value FROM awr_anomalies WHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != '' AND instance = '${instance}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int AND severity='critical'",
           "refId": "A"
         }
       ],
@@ -166,7 +166,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT COUNT(*) AS value FROM awr_anomalies WHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != '' AND instance = '${instance}'\n  AND ('${start_snap}' = '' OR begin_snap >= split_part('${start_snap}',' - ',1)::int)\n  AND ('${end_snap}'   = '' OR begin_snap <= split_part('${end_snap}',' - ',1)::int) AND severity='alert'",
+          "rawSql": "SELECT COUNT(*) AS value FROM awr_anomalies WHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != '' AND instance = '${instance}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int AND severity='alert'",
           "refId": "A"
         }
       ],
@@ -229,7 +229,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT COUNT(*) AS value FROM awr_anomalies WHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != '' AND instance = '${instance}'\n  AND ('${start_snap}' = '' OR begin_snap >= split_part('${start_snap}',' - ',1)::int)\n  AND ('${end_snap}'   = '' OR begin_snap <= split_part('${end_snap}',' - ',1)::int) AND severity='warning'",
+          "rawSql": "SELECT COUNT(*) AS value FROM awr_anomalies WHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != '' AND instance = '${instance}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int AND severity='warning'",
           "refId": "A"
         }
       ],
@@ -292,7 +292,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT COUNT(DISTINCT begin_snap) AS value FROM awr_anomalies WHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != '' AND instance = '${instance}'\n  AND ('${start_snap}' = '' OR begin_snap >= split_part('${start_snap}',' - ',1)::int)\n  AND ('${end_snap}'   = '' OR begin_snap <= split_part('${end_snap}',' - ',1)::int)",
+          "rawSql": "SELECT COUNT(DISTINCT begin_snap) AS value FROM awr_anomalies WHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != '' AND instance = '${instance}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int",
           "refId": "A"
         }
       ],
@@ -355,7 +355,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT COUNT(DISTINCT object_name) AS value FROM awr_anomalies WHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != '' AND instance = '${instance}'\n  AND ('${start_snap}' = '' OR begin_snap >= split_part('${start_snap}',' - ',1)::int)\n  AND ('${end_snap}'   = '' OR begin_snap <= split_part('${end_snap}',' - ',1)::int) AND severity IN ('alert','critical')",
+          "rawSql": "SELECT COUNT(DISTINCT object_name) AS value FROM awr_anomalies WHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != '' AND instance = '${instance}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int AND severity IN ('alert','critical')",
           "refId": "A"
         }
       ],
@@ -418,7 +418,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT ROUND(MAX(ABS(z_score))::numeric,1) AS value FROM awr_anomalies WHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != '' AND instance = '${instance}'\n  AND ('${start_snap}' = '' OR begin_snap >= split_part('${start_snap}',' - ',1)::int)\n  AND ('${end_snap}'   = '' OR begin_snap <= split_part('${end_snap}',' - ',1)::int)",
+          "rawSql": "SELECT ROUND(MAX(ABS(z_score))::numeric,1) AS value FROM awr_anomalies WHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != '' AND instance = '${instance}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int",
           "refId": "A"
         }
       ],
@@ -622,7 +622,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  CASE severity\n    WHEN 'critical' THEN '🔴 CRITICAL'\n    WHEN 'alert'    THEN '🟠 ALERT'\n    ELSE                 '🟡 WARNING'\n  END AS \"Severity\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  begin_snap   AS \"Snap\",\n  metric_source AS \"Source\",\n  object_name  AS \"Object / Event\",\n  ROUND(metric_value::numeric,2)    AS \"Current Value\",\n  ROUND(baseline_mean::numeric,2)   AS \"Baseline Mean\",\n  ROUND(baseline_stddev::numeric,2) AS \"Baseline StdDev\",\n  ROUND(z_score::numeric,2)         AS \"Deviation Score\"\nFROM awr_anomalies\nWHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != ''\n  AND instance = '${instance}'\n  AND ('${start_snap}' = '' OR begin_snap >= split_part('${start_snap}',' - ',1)::int)\n  AND ('${end_snap}'   = '' OR begin_snap <= split_part('${end_snap}',' - ',1)::int)\nORDER BY ABS(z_score) DESC\nLIMIT 50",
+          "rawSql": "SELECT\n  CASE severity\n    WHEN 'critical' THEN '🔴 CRITICAL'\n    WHEN 'alert'    THEN '🟠 ALERT'\n    ELSE                 '🟡 WARNING'\n  END AS \"Severity\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  begin_snap   AS \"Snap\",\n  metric_source AS \"Source\",\n  object_name  AS \"Object / Event\",\n  ROUND(metric_value::numeric,2)    AS \"Current Value\",\n  ROUND(baseline_mean::numeric,2)   AS \"Baseline Mean\",\n  ROUND(baseline_stddev::numeric,2) AS \"Baseline StdDev\",\n  ROUND(z_score::numeric,2)         AS \"Deviation Score\"\nFROM awr_anomalies\nWHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != ''\n  AND instance = '${instance}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int\nORDER BY ABS(z_score) DESC\nLIMIT 50",
           "refId": "A",
           "sql": {
             "columns": [
@@ -791,7 +791,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT\n  to_char(snap_time,'MM-DD HH24:MI') AS \"Snap Time\",\n  COUNT(*) FILTER (WHERE severity='critical') AS \"Critical\",\n  COUNT(*) FILTER (WHERE severity='alert')    AS \"Alert\",\n  COUNT(*) FILTER (WHERE severity='warning')  AS \"Warning\"\nFROM awr_anomalies\nWHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != ''\n  AND instance = '${instance}'\n  AND ('${start_snap}' = '' OR begin_snap >= split_part('${start_snap}',' - ',1)::int)\n  AND ('${end_snap}'   = '' OR begin_snap <= split_part('${end_snap}',' - ',1)::int)\nGROUP BY snap_time, begin_snap\nORDER BY begin_snap",
+          "rawSql": "SELECT\n  to_char(snap_time,'MM-DD HH24:MI') AS \"Snap Time\",\n  COUNT(*) FILTER (WHERE severity='critical') AS \"Critical\",\n  COUNT(*) FILTER (WHERE severity='alert')    AS \"Alert\",\n  COUNT(*) FILTER (WHERE severity='warning')  AS \"Warning\"\nFROM awr_anomalies\nWHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != ''\n  AND instance = '${instance}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int\nGROUP BY snap_time, begin_snap\nORDER BY begin_snap",
           "refId": "A"
         }
       ],
@@ -997,7 +997,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT\n  metric_source AS \"Source\",\n  COUNT(*) FILTER (WHERE severity='critical') AS \"Critical\",\n  COUNT(*) FILTER (WHERE severity='alert')    AS \"Alert\",\n  COUNT(*) FILTER (WHERE severity='warning')  AS \"Warning\",\n  COUNT(*)                                    AS \"Total\"\nFROM awr_anomalies\nWHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != ''\n  AND instance = '${instance}'\n  AND ('${start_snap}' = '' OR begin_snap >= split_part('${start_snap}',' - ',1)::int)\n  AND ('${end_snap}'   = '' OR begin_snap <= split_part('${end_snap}',' - ',1)::int)\nGROUP BY metric_source\nORDER BY COUNT(*) FILTER (WHERE severity='critical') DESC, COUNT(*) FILTER (WHERE severity='alert') DESC",
+          "rawSql": "SELECT\n  metric_source AS \"Source\",\n  COUNT(*) FILTER (WHERE severity='critical') AS \"Critical\",\n  COUNT(*) FILTER (WHERE severity='alert')    AS \"Alert\",\n  COUNT(*) FILTER (WHERE severity='warning')  AS \"Warning\",\n  COUNT(*)                                    AS \"Total\"\nFROM awr_anomalies\nWHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != ''\n  AND instance = '${instance}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int\nGROUP BY metric_source\nORDER BY COUNT(*) FILTER (WHERE severity='critical') DESC, COUNT(*) FILTER (WHERE severity='alert') DESC",
           "refId": "A"
         }
       ],
@@ -1150,7 +1150,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT\n  metric_source            AS \"Source\",\n  object_name              AS \"Object / Event\",\n  COUNT(*)                 AS \"Times Flagged\",\n  ROUND(MAX(ABS(z_score))::numeric,2) AS \"Max Dev Score\",\n  ROUND(AVG(metric_value)::numeric,2) AS \"Avg Value\",\n  ROUND(AVG(baseline_mean)::numeric,2) AS \"Avg Baseline\"\nFROM awr_anomalies\nWHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != ''\n  AND instance = '${instance}'\n  AND ('${start_snap}' = '' OR begin_snap >= split_part('${start_snap}',' - ',1)::int)\n  AND ('${end_snap}'   = '' OR begin_snap <= split_part('${end_snap}',' - ',1)::int)\n  AND severity IN ('alert','critical')\nGROUP BY metric_source, object_name\nORDER BY COUNT(*) DESC, MAX(ABS(z_score)) DESC\nLIMIT 20",
+          "rawSql": "SELECT\n  metric_source            AS \"Source\",\n  object_name              AS \"Object / Event\",\n  COUNT(*)                 AS \"Times Flagged\",\n  ROUND(MAX(ABS(z_score))::numeric,2) AS \"Max Dev Score\",\n  ROUND(AVG(metric_value)::numeric,2) AS \"Avg Value\",\n  ROUND(AVG(baseline_mean)::numeric,2) AS \"Avg Baseline\"\nFROM awr_anomalies\nWHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != ''\n  AND instance = '${instance}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int\n  AND severity IN ('alert','critical')\nGROUP BY metric_source, object_name\nORDER BY COUNT(*) DESC, MAX(ABS(z_score)) DESC\nLIMIT 20",
           "refId": "A"
         }
       ],
@@ -1342,7 +1342,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  begin_snap  AS \"Snap\",\n  object_name AS \"Wait Event\",\n  ROUND(metric_value::numeric,2)  AS \"% DB Time\",\n  ROUND(baseline_mean::numeric,2) AS \"Baseline Mean\",\n  ROUND(z_score::numeric,2)       AS \"Deviation Score\"\nFROM awr_anomalies\nWHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != ''\n  AND instance = '${instance}'\n  AND ('${start_snap}' = '' OR begin_snap >= split_part('${start_snap}',' - ',1)::int)\n  AND ('${end_snap}'   = '' OR begin_snap <= split_part('${end_snap}',' - ',1)::int)\n  AND metric_source = 'wait_event'\nORDER BY ABS(z_score) DESC\nLIMIT 30",
+          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  begin_snap  AS \"Snap\",\n  object_name AS \"Wait Event\",\n  ROUND(metric_value::numeric,2)  AS \"% DB Time\",\n  ROUND(baseline_mean::numeric,2) AS \"Baseline Mean\",\n  ROUND(z_score::numeric,2)       AS \"Deviation Score\"\nFROM awr_anomalies\nWHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != ''\n  AND instance = '${instance}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int\n  AND metric_source = 'wait_event'\nORDER BY ABS(z_score) DESC\nLIMIT 30",
           "refId": "A",
           "sql": {
             "columns": [

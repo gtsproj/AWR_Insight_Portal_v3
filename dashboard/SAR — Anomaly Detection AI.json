@@ -103,7 +103,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT COUNT(*) AS value FROM sar_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\nAND severity='critical'",
+          "rawSql": "SELECT COUNT(*) AS value FROM sar_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nAND severity='critical'",
           "refId": "A"
         }
       ],
@@ -166,7 +166,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT COUNT(*) AS value FROM sar_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\nAND severity='alert'",
+          "rawSql": "SELECT COUNT(*) AS value FROM sar_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nAND severity='alert'",
           "refId": "A"
         }
       ],
@@ -229,7 +229,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT COUNT(*) AS value FROM sar_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\nAND severity='warning'",
+          "rawSql": "SELECT COUNT(*) AS value FROM sar_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nAND severity='warning'",
           "refId": "A"
         }
       ],
@@ -292,7 +292,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT COUNT(DISTINCT snap_time::date) AS value FROM sar_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\n",
+          "rawSql": "SELECT COUNT(DISTINCT snap_time::date) AS value FROM sar_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\n",
           "refId": "A"
         }
       ],
@@ -355,7 +355,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT COUNT(DISTINCT hostname) AS value FROM sar_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\n",
+          "rawSql": "SELECT COUNT(DISTINCT hostname) AS value FROM sar_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\n",
           "refId": "A"
         }
       ],
@@ -418,7 +418,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT ROUND(MAX(ABS(z_score))::numeric,1) AS value FROM sar_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\n",
+          "rawSql": "SELECT ROUND(MAX(ABS(z_score))::numeric,1) AS value FROM sar_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\n",
           "refId": "A"
         }
       ],
@@ -644,7 +644,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT\n  CASE severity\n    WHEN 'critical' THEN '🔴 CRITICAL'\n    WHEN 'alert'    THEN '🟠 ALERT'\n    ELSE                 '🟡 WARNING'\n  END AS \"Severity\",\n  hostname AS \"Hostname\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  metric_source AS \"Source\",\n  metric_name   AS \"Metric\",\n  object_name   AS \"Object\",\n  ROUND(metric_value::numeric,3)    AS \"Current Value\",\n  ROUND(baseline_mean::numeric,3)   AS \"Baseline Mean\",\n  ROUND(baseline_stddev::numeric,4) AS \"Baseline StdDev\",\n  ROUND(z_score::numeric,2)         AS \"Deviation Score\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\nORDER BY ABS(z_score) DESC\nLIMIT 50",
+          "rawSql": "SELECT\n  CASE severity\n    WHEN 'critical' THEN '🔴 CRITICAL'\n    WHEN 'alert'    THEN '🟠 ALERT'\n    ELSE                 '🟡 WARNING'\n  END AS \"Severity\",\n  hostname AS \"Hostname\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  metric_source AS \"Source\",\n  metric_name   AS \"Metric\",\n  object_name   AS \"Object\",\n  ROUND(metric_value::numeric,3)    AS \"Current Value\",\n  ROUND(baseline_mean::numeric,3)   AS \"Baseline Mean\",\n  ROUND(baseline_stddev::numeric,4) AS \"Baseline StdDev\",\n  ROUND(z_score::numeric,2)         AS \"Deviation Score\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nORDER BY ABS(z_score) DESC\nLIMIT 50",
           "refId": "A"
         }
       ],
@@ -755,7 +755,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT\n  to_char(snap_time::date,'YYYY-MM-DD') AS \"Date\",\n  NULLIF(COUNT(*) FILTER (WHERE severity='critical'),0) AS \"Critical\",\n  NULLIF(COUNT(*) FILTER (WHERE severity='alert'),0)    AS \"Alert\",\n  COUNT(*) FILTER (WHERE severity='warning')            AS \"Warning\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\nGROUP BY snap_time::date\nORDER BY snap_time::date",
+          "rawSql": "SELECT\n  to_char(snap_time::date,'YYYY-MM-DD') AS \"Date\",\n  NULLIF(COUNT(*) FILTER (WHERE severity='critical'),0) AS \"Critical\",\n  NULLIF(COUNT(*) FILTER (WHERE severity='alert'),0)    AS \"Alert\",\n  COUNT(*) FILTER (WHERE severity='warning')            AS \"Warning\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nGROUP BY snap_time::date\nORDER BY snap_time::date",
           "refId": "A"
         }
       ],
@@ -929,7 +929,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT\n  metric_source AS \"Source\",\n  COUNT(*) FILTER (WHERE severity='critical') AS \"Critical\",\n  COUNT(*) FILTER (WHERE severity='alert')    AS \"Alert\",\n  COUNT(*) FILTER (WHERE severity='warning')  AS \"Warning\",\n  COUNT(*)                                    AS \"Total\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\nGROUP BY metric_source\nORDER BY COUNT(*) FILTER (WHERE severity='critical') DESC,\n         COUNT(*) FILTER (WHERE severity='alert') DESC",
+          "rawSql": "SELECT\n  metric_source AS \"Source\",\n  COUNT(*) FILTER (WHERE severity='critical') AS \"Critical\",\n  COUNT(*) FILTER (WHERE severity='alert')    AS \"Alert\",\n  COUNT(*) FILTER (WHERE severity='warning')  AS \"Warning\",\n  COUNT(*)                                    AS \"Total\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nGROUP BY metric_source\nORDER BY COUNT(*) FILTER (WHERE severity='critical') DESC,\n         COUNT(*) FILTER (WHERE severity='alert') DESC",
           "refId": "A"
         }
       ],
@@ -1038,7 +1038,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT\n  metric_source AS \"Source\",\n  metric_name   AS \"Metric\",\n  object_name   AS \"Object\",\n  COUNT(*)      AS \"Times Flagged\",\n  ROUND(MAX(ABS(z_score))::numeric,2)  AS \"Max Dev Score\",\n  ROUND(AVG(metric_value)::numeric,3)  AS \"Avg Value\",\n  ROUND(AVG(baseline_mean)::numeric,3) AS \"Avg Baseline\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\nAND severity IN ('alert','critical')\nGROUP BY metric_source, metric_name, object_name\nORDER BY COUNT(*) DESC, MAX(ABS(z_score)) DESC\nLIMIT 20",
+          "rawSql": "SELECT\n  metric_source AS \"Source\",\n  metric_name   AS \"Metric\",\n  object_name   AS \"Object\",\n  COUNT(*)      AS \"Times Flagged\",\n  ROUND(MAX(ABS(z_score))::numeric,2)  AS \"Max Dev Score\",\n  ROUND(AVG(metric_value)::numeric,3)  AS \"Avg Value\",\n  ROUND(AVG(baseline_mean)::numeric,3) AS \"Avg Baseline\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nAND severity IN ('alert','critical')\nGROUP BY metric_source, metric_name, object_name\nORDER BY COUNT(*) DESC, MAX(ABS(z_score)) DESC\nLIMIT 20",
           "refId": "A"
         }
       ],
@@ -1196,7 +1196,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  hostname AS \"Hostname\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  object_name   AS \"CPU\",\n  metric_name   AS \"Metric\",\n  ROUND(metric_value::numeric,2)  AS \"Current Value\",\n  ROUND(baseline_mean::numeric,2) AS \"Baseline Mean\",\n  ROUND(z_score::numeric,2)       AS \"Deviation Score\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\nAND metric_source = 'sar_cpu'\nORDER BY ABS(z_score) DESC\nLIMIT 30",
+          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  hostname AS \"Hostname\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  object_name   AS \"CPU\",\n  metric_name   AS \"Metric\",\n  ROUND(metric_value::numeric,2)  AS \"Current Value\",\n  ROUND(baseline_mean::numeric,2) AS \"Baseline Mean\",\n  ROUND(z_score::numeric,2)       AS \"Deviation Score\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nAND metric_source = 'sar_cpu'\nORDER BY ABS(z_score) DESC\nLIMIT 30",
           "refId": "A"
         }
       ],
@@ -1354,7 +1354,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  hostname AS \"Hostname\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  metric_name   AS \"Metric\",\n  ROUND(metric_value::numeric,2)    AS \"Current Value\",\n  ROUND(baseline_mean::numeric,2)   AS \"Baseline Mean\",\n  ROUND(baseline_stddev::numeric,4) AS \"Baseline StdDev\",\n  ROUND(z_score::numeric,2)         AS \"Deviation Score\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\nAND metric_source = 'sar_mem'\nORDER BY ABS(z_score) DESC\nLIMIT 30",
+          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  hostname AS \"Hostname\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  metric_name   AS \"Metric\",\n  ROUND(metric_value::numeric,2)    AS \"Current Value\",\n  ROUND(baseline_mean::numeric,2)   AS \"Baseline Mean\",\n  ROUND(baseline_stddev::numeric,4) AS \"Baseline StdDev\",\n  ROUND(z_score::numeric,2)         AS \"Deviation Score\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nAND metric_source = 'sar_mem'\nORDER BY ABS(z_score) DESC\nLIMIT 30",
           "refId": "A"
         }
       ],
@@ -1512,7 +1512,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  hostname AS \"Hostname\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  object_name   AS \"Device\",\n  metric_name   AS \"Metric\",\n  ROUND(metric_value::numeric,2)  AS \"Current Value\",\n  ROUND(baseline_mean::numeric,2) AS \"Baseline Mean\",\n  ROUND(z_score::numeric,2)       AS \"Deviation Score\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\nAND metric_source = 'sar_disk'\nORDER BY ABS(z_score) DESC\nLIMIT 30",
+          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  hostname AS \"Hostname\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  object_name   AS \"Device\",\n  metric_name   AS \"Metric\",\n  ROUND(metric_value::numeric,2)  AS \"Current Value\",\n  ROUND(baseline_mean::numeric,2) AS \"Baseline Mean\",\n  ROUND(z_score::numeric,2)       AS \"Deviation Score\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nAND metric_source = 'sar_disk'\nORDER BY ABS(z_score) DESC\nLIMIT 30",
           "refId": "A"
         }
       ],
@@ -1587,7 +1587,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  metric_name AS \"Metric\",\n  ROUND(metric_value::numeric,3) AS \"Current\",\n  ROUND(baseline_mean::numeric,3) AS \"Baseline\",\n  ROUND(z_score::numeric,2) AS \"Dev Score\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\nAND metric_source = 'sar_paging'\nORDER BY ABS(z_score) DESC LIMIT 20",
+          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  metric_name AS \"Metric\",\n  ROUND(metric_value::numeric,3) AS \"Current\",\n  ROUND(baseline_mean::numeric,3) AS \"Baseline\",\n  ROUND(z_score::numeric,2) AS \"Dev Score\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nAND metric_source = 'sar_paging'\nORDER BY ABS(z_score) DESC LIMIT 20",
           "refId": "A"
         }
       ],
@@ -1649,7 +1649,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  metric_name AS \"Metric\",\n  ROUND(metric_value::numeric,3) AS \"Current\",\n  ROUND(baseline_mean::numeric,3) AS \"Baseline\",\n  ROUND(z_score::numeric,2) AS \"Dev Score\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\nAND metric_source = 'sar_load'\nORDER BY ABS(z_score) DESC LIMIT 20",
+          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  metric_name AS \"Metric\",\n  ROUND(metric_value::numeric,3) AS \"Current\",\n  ROUND(baseline_mean::numeric,3) AS \"Baseline\",\n  ROUND(z_score::numeric,2) AS \"Dev Score\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nAND metric_source = 'sar_load'\nORDER BY ABS(z_score) DESC LIMIT 20",
           "refId": "A"
         }
       ],
@@ -1711,7 +1711,7 @@
       "targets": [
         {
           "format": "table",
-          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  object_name AS \"Interface\",\n  metric_name AS \"Metric\",\n  ROUND(metric_value::numeric,3) AS \"Current\",\n  ROUND(baseline_mean::numeric,3) AS \"Baseline\",\n  ROUND(z_score::numeric,2) AS \"Dev Score\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND ('${from_date}' = '' OR snap_time::date >= to_date('${from_date}','DD-Mon-YYYY'))\n  AND ('${to_date}'   = '' OR snap_time::date <= to_date('${to_date}','DD-Mon-YYYY'))\nAND metric_source = 'sar_net'\nORDER BY ABS(z_score) DESC LIMIT 20",
+          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  object_name AS \"Interface\",\n  metric_name AS \"Metric\",\n  ROUND(metric_value::numeric,3) AS \"Current\",\n  ROUND(baseline_mean::numeric,3) AS \"Baseline\",\n  ROUND(z_score::numeric,2) AS \"Dev Score\"\nFROM sar_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nAND metric_source = 'sar_net'\nORDER BY ABS(z_score) DESC LIMIT 20",
           "refId": "A"
         }
       ],
