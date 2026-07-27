@@ -635,15 +635,20 @@
       "id": 13,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
         },
         "tooltip": {
-          "hideZeros": false,
           "mode": "multi",
-          "sort": "none"
+          "sort": "desc",
+          "hideZeros": false
         }
       },
       "pluginVersion": "12.0.2",
@@ -656,7 +661,7 @@
           "editorMode": "code",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "SELECT snap_time AS time,\n  device  AS metric, util_pct AS value\nFROM sar_disk_stats\nWHERE hostname='${hostname}' AND '${hostname}' != ''\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND snap_time >= COALESCE(\n    (SELECT snap_time - INTERVAL '30 minutes'\n     FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n     AND begin_snap=split_part('${start_snap}',' - ',1)::int\n     ORDER BY snap_time LIMIT 1),\n    NOW() - INTERVAL '999 years')\nAND snap_time <= COALESCE(\n    (SELECT snap_time + INTERVAL '30 minutes'\n     FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n     AND begin_snap=split_part('${end_snap}',' - ',1)::int\n     ORDER BY snap_time LIMIT 1),\n    NOW() + INTERVAL '999 years')\n    ORDER BY snap_time",
+          "rawSql": "SELECT snap_time AS time,\n  device  AS metric, util_pct AS value\nFROM sar_disk_stats\nWHERE hostname='${hostname}' AND '${hostname}' != ''\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND snap_time >= COALESCE(\n    (SELECT snap_time - INTERVAL '30 minutes'\n     FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n     AND begin_snap=split_part('${start_snap}',' - ',1)::int\n   AND device IN (\n      SELECT device FROM sar_disk_stats\n      WHERE hostname='${hostname}' AND '${hostname}' != ''\n        AND snap_time >= COALESCE(\n            (SELECT snap_time - INTERVAL '30 minutes'\n             FROM awr_load_profile\n             WHERE dbname='${dbname}' AND instance='${instance}'\n             AND begin_snap=split_part('${start_snap}',' - ',1)::int\n             ORDER BY snap_time LIMIT 1),\n            NOW() - INTERVAL '999 years')\n        AND snap_time <= COALESCE(\n            (SELECT snap_time + INTERVAL '30 minutes'\n             FROM awr_load_profile\n             WHERE dbname='${dbname}' AND instance='${instance}'\n             AND begin_snap=split_part('${end_snap}',' - ',1)::int\n             ORDER BY snap_time LIMIT 1),\n            NOW() + INTERVAL '999 years')\n      GROUP BY device\n      ORDER BY AVG(util_pct) DESC NULLS LAST\n      LIMIT 10\n  )\n    ORDER BY snap_time LIMIT 1),\n    NOW() - INTERVAL '999 years')\nAND snap_time <= COALESCE(\n    (SELECT snap_time + INTERVAL '30 minutes'\n     FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n     AND begin_snap=split_part('${end_snap}',' - ',1)::int\n   AND device IN (\n      SELECT device FROM sar_disk_stats\n      WHERE hostname='${hostname}' AND '${hostname}' != ''\n        AND snap_time >= COALESCE(\n            (SELECT snap_time - INTERVAL '30 minutes'\n             FROM awr_load_profile\n             WHERE dbname='${dbname}' AND instance='${instance}'\n             AND begin_snap=split_part('${start_snap}',' - ',1)::int\n             ORDER BY snap_time LIMIT 1),\n            NOW() - INTERVAL '999 years')\n        AND snap_time <= COALESCE(\n            (SELECT snap_time + INTERVAL '30 minutes'\n             FROM awr_load_profile\n             WHERE dbname='${dbname}' AND instance='${instance}'\n             AND begin_snap=split_part('${end_snap}',' - ',1)::int\n             ORDER BY snap_time LIMIT 1),\n            NOW() + INTERVAL '999 years')\n      GROUP BY device\n      ORDER BY AVG(util_pct) DESC NULLS LAST\n      LIMIT 10\n  )\n    ORDER BY snap_time LIMIT 1),\n    NOW() + INTERVAL '999 years')\n  AND device IN (\n      SELECT device FROM sar_disk_stats\n      WHERE hostname='${hostname}' AND '${hostname}' != ''\n        AND snap_time >= COALESCE(\n            (SELECT snap_time - INTERVAL '30 minutes'\n             FROM awr_load_profile\n             WHERE dbname='${dbname}' AND instance='${instance}'\n             AND begin_snap=split_part('${start_snap}',' - ',1)::int\n             ORDER BY snap_time LIMIT 1),\n            NOW() - INTERVAL '999 years')\n        AND snap_time <= COALESCE(\n            (SELECT snap_time + INTERVAL '30 minutes'\n             FROM awr_load_profile\n             WHERE dbname='${dbname}' AND instance='${instance}'\n             AND begin_snap=split_part('${end_snap}',' - ',1)::int\n             ORDER BY snap_time LIMIT 1),\n            NOW() + INTERVAL '999 years')\n      GROUP BY device\n      ORDER BY AVG(util_pct) DESC NULLS LAST\n      LIMIT 10\n  )\n    ORDER BY snap_time",
           "refId": "SAR_DISK",
           "sql": {
             "columns": [
