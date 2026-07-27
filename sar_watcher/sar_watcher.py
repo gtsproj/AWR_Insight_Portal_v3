@@ -107,15 +107,50 @@ def is_text_sar(filename: str) -> bool:
 
 # ── WSL binary conversion ─────────────────────────────────────────────
 def wsl_available() -> bool:
-    """Check if WSL is available on this Windows machine."""
-    try:
-        result = subprocess.run(
-            ["wsl", "echo", "ok"],
-            capture_output=True, text=True, timeout=10
-        )
-        return result.returncode == 0
-    except (FileNotFoundError, subprocess.TimeoutExpired):
-        return False
+    """
+    Check if WSL is available and working on this Windows machine.
+
+    Uses full path to wsl.exe to work correctly when called from a
+    Windows service (NSSM) which may not have the same PATH as an
+    interactive user session.
+
+    Retries up to 3 times with increasing timeout to handle WSL
+    initialisation delay after machine restart or service startup.
+    """
+    import shutil
+
+    # Full path first — more reliable from service context
+    wsl_exe = r"C:\Windows\System32\wsl.exe"
+    if not os.path.exists(wsl_exe):
+        # Fall back to PATH lookup
+        wsl_exe = shutil.which("wsl") or "wsl"
+
+    for attempt, timeout in enumerate([10, 20, 30], 1):
+        try:
+            result = subprocess.run(
+                [wsl_exe, "echo", "ok"],
+                capture_output=True, text=True,
+                timeout=timeout,
+                creationflags=0x08000000 if os.name == 'nt' else 0  # CREATE_NO_WINDOW
+            )
+            if result.returncode == 0 and "ok" in result.stdout:
+                return True
+            # WSL returned non-zero — log stderr for diagnosis
+            if attempt == 1:
+                logger.debug(f"WSL check attempt {attempt}: rc={result.returncode} "
+                             f"stderr={result.stderr[:100]!r}")
+        except subprocess.TimeoutExpired:
+            logger.debug(f"WSL check attempt {attempt}: timed out after {timeout}s")
+            if attempt < 3:
+                import time
+                time.sleep(2)
+        except FileNotFoundError:
+            logger.debug("wsl.exe not found — WSL not installed")
+            return False
+        except Exception as e:
+            logger.debug(f"WSL check attempt {attempt}: {e}")
+
+    return False
 
 
 def convert_binary_sar(binary_path: str, hostname: str) -> str | None:
@@ -141,10 +176,15 @@ def convert_binary_sar(binary_path: str, hostname: str) -> str | None:
     )
 
     logger.info(f"Converting binary SAR via WSL: {basename}")
+    wsl_exe = r"C:\Windows\System32\wsl.exe"
+    if not os.path.exists(wsl_exe):
+        import shutil
+        wsl_exe = shutil.which("wsl") or "wsl"
     try:
         result = subprocess.run(
-            ["wsl", "bash", "-c", cmd],
-            capture_output=True, text=True, timeout=120
+            [wsl_exe, "bash", "-c", cmd],
+            capture_output=True, text=True, timeout=120,
+            creationflags=0x08000000 if os.name == 'nt' else 0  # CREATE_NO_WINDOW
         )
         if result.returncode == 0 and os.path.exists(output_path):
             size = os.path.getsize(output_path)
@@ -288,8 +328,24 @@ def watch(hostname_override: str = None):
     logger.info(f"   SAR queues  : {SAR_QUEUES_DIR}")
     logger.info(f"   Archive     : {SAR_ARCHIVE_DIR}")
 
+    _wsl_last_check = 0   # epoch — force recheck on first scan
+
     while True:
         try:
+            import time as _time
+            # Re-check WSL every 5 minutes so a transient startup
+            # failure doesn't permanently disable binary SAR processing
+            now = _time.time()
+            if now - _wsl_last_check > 300:
+                new_wsl_ok = wsl_available()
+                if new_wsl_ok != _wsl_ok:
+                    if new_wsl_ok:
+                        logger.info("✅ WSL now available — binary SAR auto-conversion re-enabled")
+                    else:
+                        logger.warning("⚠  WSL no longer available — binary SAR files will be skipped")
+                _wsl_ok = new_wsl_ok
+                _wsl_last_check = now
+
             _scan_watch_dir(WATCH_DIR, _wsl_ok, hostname_override)
         except Exception as e:
             logger.error(f"❌ SAR Watcher error: {e}", exc_info=True)
