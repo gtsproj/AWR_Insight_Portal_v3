@@ -1480,10 +1480,13 @@
           ],
           "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
         },
         "tooltip": {
-          "mode": "multi"
+          "mode": "multi",
+          "sort": "desc"
         }
       },
       "targets": [
@@ -1493,7 +1496,7 @@
             "uid": "ferwfz6k211j4b"
           },
           "format": "time_series",
-          "rawSql": "\nSELECT snap_time AS time, device, read_mb_per_sec AS \"Read MB/s\"\nFROM sar_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}'\n  AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n  AND device IN (\n      SELECT device FROM sar_disk_stats\n      WHERE hostname = '${hostname}' AND '${hostname}' != ''\n        AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n      GROUP BY device\n      ORDER BY AVG(read_mb_per_sec) DESC NULLS LAST\n      LIMIT 5\n  )\nORDER BY snap_time, device",
+          "rawSql": "\nSELECT snap_time AS time, device, read_mb_per_sec AS \"Read MB/s\"\nFROM sar_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}'\n  AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n  AND device IN (\n      SELECT device FROM sar_disk_stats\n      WHERE hostname = '${hostname}' AND '${hostname}' != ''\n        AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n      GROUP BY device\n      ORDER BY AVG(read_mb_per_sec) DESC NULLS LAST\n      LIMIT 10\n  )\nORDER BY snap_time, device",
           "refId": "A"
         }
       ],
@@ -1530,10 +1533,13 @@
           ],
           "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
         },
         "tooltip": {
-          "mode": "multi"
+          "mode": "multi",
+          "sort": "desc"
         }
       },
       "targets": [
@@ -1543,7 +1549,7 @@
             "uid": "ferwfz6k211j4b"
           },
           "format": "time_series",
-          "rawSql": "\nSELECT snap_time AS time, device, write_mb_per_sec AS \"Write MB/s\"\nFROM sar_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}'\n  AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n  AND device IN (\n      SELECT device FROM sar_disk_stats\n      WHERE hostname = '${hostname}' AND '${hostname}' != ''\n        AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n      GROUP BY device\n      ORDER BY AVG(write_mb_per_sec) DESC NULLS LAST\n      LIMIT 5\n  )\nORDER BY snap_time, device",
+          "rawSql": "\nSELECT snap_time AS time, device, write_mb_per_sec AS \"Write MB/s\"\nFROM sar_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}'\n  AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n  AND device IN (\n      SELECT device FROM sar_disk_stats\n      WHERE hostname = '${hostname}' AND '${hostname}' != ''\n        AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n      GROUP BY device\n      ORDER BY AVG(write_mb_per_sec) DESC NULLS LAST\n      LIMIT 10\n  )\nORDER BY snap_time, device",
           "refId": "A"
         }
       ],
@@ -1614,10 +1620,13 @@
           ],
           "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
         },
         "tooltip": {
-          "mode": "multi"
+          "mode": "multi",
+          "sort": "desc"
         }
       },
       "targets": [
@@ -1627,7 +1636,7 @@
             "uid": "ferwfz6k211j4b"
           },
           "format": "time_series",
-          "rawSql": "\nSELECT snap_time AS time, device, await_ms AS \"Await (ms)\"\nFROM sar_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}'\n  AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n  AND device IN (\n      SELECT device FROM sar_disk_stats\n      WHERE hostname = '${hostname}' AND '${hostname}' != ''\n        AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n      GROUP BY device\n      ORDER BY AVG(await_ms) DESC NULLS LAST\n      LIMIT 5\n  )\nORDER BY snap_time, device",
+          "rawSql": "\nSELECT snap_time AS time, device, await_ms AS \"Await (ms)\"\nFROM sar_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}'\n  AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n  AND device IN (\n      SELECT device FROM sar_disk_stats\n      WHERE hostname = '${hostname}' AND '${hostname}' != ''\n        AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n      GROUP BY device\n      ORDER BY AVG(await_ms) DESC NULLS LAST\n      LIMIT 10\n  )\nORDER BY snap_time, device",
           "refId": "A"
         }
       ],
@@ -1698,10 +1707,13 @@
           ],
           "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
         },
         "tooltip": {
-          "mode": "multi"
+          "mode": "multi",
+          "sort": "desc"
         }
       },
       "targets": [
@@ -1711,7 +1723,7 @@
             "uid": "ferwfz6k211j4b"
           },
           "format": "time_series",
-          "rawSql": "\nSELECT snap_time AS time, device, util_pct AS \"%util\"\nFROM sar_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}'\n  AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n  AND device IN (\n      SELECT device FROM sar_disk_stats\n      WHERE hostname = '${hostname}' AND '${hostname}' != ''\n        AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n      GROUP BY device\n      ORDER BY AVG(util_pct) DESC NULLS LAST\n      LIMIT 5\n  )\nORDER BY snap_time, device",
+          "rawSql": "\nSELECT snap_time AS time, device, util_pct AS \"%util\"\nFROM sar_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}'\n  AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n  AND device IN (\n      SELECT device FROM sar_disk_stats\n      WHERE hostname = '${hostname}' AND '${hostname}' != ''\n        AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n      GROUP BY device\n      ORDER BY AVG(util_pct) DESC NULLS LAST\n      LIMIT 10\n  )\nORDER BY snap_time, device",
           "refId": "A"
         }
       ],
@@ -1748,10 +1760,13 @@
           ],
           "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
         },
         "tooltip": {
-          "mode": "multi"
+          "mode": "multi",
+          "sort": "desc"
         }
       },
       "targets": [
@@ -1761,7 +1776,7 @@
             "uid": "ferwfz6k211j4b"
           },
           "format": "time_series",
-          "rawSql": "\nSELECT snap_time AS time, device, tps AS \"TPS\"\nFROM sar_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}'\n  AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n  AND device IN (\n      SELECT device FROM sar_disk_stats\n      WHERE hostname = '${hostname}' AND '${hostname}' != ''\n        AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n      GROUP BY device\n      ORDER BY AVG(tps) DESC NULLS LAST\n      LIMIT 5\n  )\nORDER BY snap_time, device",
+          "rawSql": "\nSELECT snap_time AS time, device, tps AS \"TPS\"\nFROM sar_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}'\n  AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n  AND device IN (\n      SELECT device FROM sar_disk_stats\n      WHERE hostname = '${hostname}' AND '${hostname}' != ''\n        AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\n      GROUP BY device\n      ORDER BY AVG(tps) DESC NULLS LAST\n      LIMIT 10\n  )\nORDER BY snap_time, device",
           "refId": "A"
         }
       ],
@@ -1794,7 +1809,7 @@
             "uid": "ferwfz6k211j4b"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n    device                                  AS \"Device\",\n    ROUND(AVG(tps)::numeric, 1)             AS \"Avg TPS\",\n    ROUND(AVG(read_mb_per_sec)::numeric, 2) AS \"Avg Read MB/s\",\n    ROUND(AVG(write_mb_per_sec)::numeric,2) AS \"Avg Write MB/s\",\n    ROUND(AVG(await_ms)::numeric, 2)        AS \"Avg Await (ms)\",\n    ROUND(AVG(svctm_ms)::numeric, 2)        AS \"Avg SvcTm (ms)\",\n    ROUND(AVG(util_pct)::numeric, 1)        AS \"Avg %util\",\n    ROUND(MAX(util_pct)::numeric, 1)        AS \"Peak %util\",\n    ROUND(MAX(await_ms)::numeric, 2)        AS \"Peak Await (ms)\",\n    CASE\n        WHEN AVG(util_pct) >= 85 THEN '🔴 SATURATED'\n        WHEN AVG(util_pct) >= 60 THEN '🟠 HIGH'\n        WHEN AVG(await_ms) >= 50 THEN '🟡 SLOW'\n        ELSE '🟢 OK'\n    END                                     AS \"Status\"\nFROM sar_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}'\n  AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nGROUP BY device\nORDER BY AVG(util_pct) DESC NULLS LAST\nLIMIT 20",
+          "rawSql": "\nSELECT\n    device                                  AS \"Device\",\n    ROUND(AVG(tps)::numeric, 1)             AS \"Avg TPS\",\n    ROUND(AVG(read_mb_per_sec)::numeric, 2) AS \"Avg Read MB/s\",\n    ROUND(AVG(write_mb_per_sec)::numeric,2) AS \"Avg Write MB/s\",\n    ROUND(AVG(await_ms)::numeric, 2)        AS \"Avg Await (ms)\",\n    ROUND(AVG(svctm_ms)::numeric, 2)        AS \"Avg SvcTm (ms)\",\n    ROUND(AVG(util_pct)::numeric, 1)        AS \"Avg %util\",\n    ROUND(MAX(util_pct)::numeric, 1)        AS \"Peak %util\",\n    ROUND(MAX(await_ms)::numeric, 2)        AS \"Peak Await (ms)\",\n    CASE\n        WHEN AVG(util_pct) >= 85 THEN '🔴 SATURATED'\n        WHEN AVG(util_pct) >= 60 THEN '🟠 HIGH'\n        WHEN AVG(await_ms) >= 50 THEN '🟡 SLOW'\n        ELSE '🟢 OK'\n    END                                     AS \"Status\"\nFROM sar_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}'\n  AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nGROUP BY device\nORDER BY AVG(util_pct) DESC NULLS LAST\nLIMIT 10",
           "refId": "A"
         }
       ],
