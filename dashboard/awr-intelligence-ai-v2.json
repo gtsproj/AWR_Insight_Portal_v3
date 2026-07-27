@@ -1,90 +1,115 @@
 {
-  "id": null,
-  "uid": "awr-intelligence-ai-v2",
-  "title": "AWR Intelligence v2 — Correlation (AI Mode)",
-  "tags": [
-    "awr",
-    "correlation",
-    "v2",
-    "intelligence"
-  ],
-  "timezone": "Asia/Kolkata",
-  "schemaVersion": 41,
-  "version": 1,
-  "refresh": "",
-  "time": {
-    "from": "now-7d",
-    "to": "now"
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
   },
-  "timepicker": {
-    "hidden": true
-  },
+  "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
+  "id": 783,
+  "links": [],
   "panels": [
     {
-      "id": 1,
-      "type": "text",
-      "title": "",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 2,
         "w": 24,
         "x": 0,
         "y": 0
       },
+      "id": 1,
       "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
         "content": "<div style=\"font-family:Inter,Arial,sans-serif;padding:4px 0;line-height:2\"><a href=\"/d/awr-unified-intelligence-v2?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">🧠 Rules mode</a><a href=\"/d/awr-anomalies?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">🚨 Anomaly detection</a><a href=\"/d/awr-memory-advisory?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">💾 Memory advisory</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/sar-awr-correlation?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">🔗 AWR+SAR correlation</a><a href=\"/d/sar-overview?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">🖥️ SAR overview</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/fdv31-awr-nav?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">📊 AWR trends</a><a href=\"/d/awr-intelligence-ai?kiosk\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.35);padding:3px 9px;border:1px solid rgba(255,255,255,0.08);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px\">📌 Classic (AI)</a></div>",
         "mode": "html"
       },
+      "pluginVersion": "12.0.2",
+      "title": "",
       "transparent": true,
-      "datasource": null
+      "type": "text"
     },
     {
-      "id": 100,
-      "type": "text",
-      "title": "",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
-        "h": 2,
+        "h": 3,
         "w": 24,
         "x": 0,
         "y": 2
       },
+      "id": 100,
       "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
         "content": "<div style=\"font-family:Inter,system-ui,sans-serif;padding:6px 10px;background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.3);border-left:3px solid #FBBF24;border-radius:6px;display:flex;align-items:flex-start;gap:10px\"><span style=\"font-size:16px;flex-shrink:0;margin-top:1px\">⚠️</span><div><span style=\"font-size:12px;font-weight:600;color:#FBBF24\">Advisory Disclaimer — </span><span style=\"font-size:11px;color:rgba(255,255,255,0.6)\">Recommendations are based on AWR snapshot data and statistical analysis. All must be reviewed, validated, and tested in a non-production environment before implementation. Avekshaa Technologies accepts no liability for outcomes without appropriate DBA review.</span></div></div>",
         "mode": "html"
       },
+      "pluginVersion": "12.0.2",
+      "title": "",
       "transparent": true,
-      "datasource": null
+      "type": "text"
     },
     {
-      "id": 2,
-      "type": "text",
-      "title": "",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
-        "h": 4,
+        "h": 6,
         "w": 24,
         "x": 0,
-        "y": 4
+        "y": 5
       },
+      "id": 2,
       "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
         "content": "<div style=\"font-family:Inter,Arial,sans-serif;font-size:12px;color:rgba(255,255,255,0.65);padding:6px 10px;background:rgba(55,138,221,0.07);border:1px solid rgba(55,138,221,0.2);border-left:3px solid #378ADD;border-radius:6px\"><strong style=\"color:#85b7eb\">ℹ️ Correlation Intelligence v2</strong> — Three always-visible, fact-based correlation panels. No configuration required.<br><strong style=\"color:#85b7eb\">Panel 1 — Wait Events → Correlated Segments:</strong> Top wait events matched to segments by the correct AWR statistic per wait class (physical reads for User I/O · buffer busy for Concurrency · row locks for Application · GC busy for Cluster). Events with no segment correlation show inline advisory text.<br><strong style=\"color:#85b7eb\">Panel 2 — Segments → Implied Wait Classes + SQLs:</strong> Top segments by severity with implied wait classes, object metadata (BLEVEL, CF ratio, row count, stale stats), and SQL IDs that reference this segment in their SQL text (from AWR SQL text section). <em style=\"color:rgba(255,255,255,0.4)\">Referencing SQLs shows only SQL IDs whose text contains the segment name — blank if the SQL uses dynamic SQL or does not reference the segment by name in its text.</em><br><strong style=\"color:#85b7eb\">Panel 3 — SQL → Referenced Segments + Wait Context:</strong> Top SQL by severity with segments extracted from SQL text, and top 3 foreground waits as snap-range context. <em style=\"color:rgba(255,255,255,0.4)\">Segments Referenced shows only objects found by parsing the SQL text — blank for dynamic SQL. Top 3 Waits is snap-range context (not per-SQL causation — Oracle AWR does not link specific waits to specific SQL IDs).</em></div>",
         "mode": "html"
       },
+      "pluginVersion": "12.0.2",
+      "title": "",
       "transparent": true,
-      "datasource": null
+      "type": "text"
     },
     {
-      "id": 3,
-      "type": "row",
-      "title": "📊 Top Issues — Wait Events · SQL · Segments (Severity Score)",
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 11
       },
-      "collapsed": false,
-      "panels": []
+      "id": 3,
+      "panels": [],
+      "title": "📊 Top Issues — Wait Events · SQL · Segments (Severity Score)",
+      "type": "row"
     },
     {
       "datasource": {
@@ -111,7 +136,7 @@
         "h": 12,
         "w": 8,
         "x": 0,
-        "y": 9
+        "y": 12
       },
       "id": 4,
       "options": {
@@ -144,10 +169,28 @@
             "type": "postgres",
             "uid": "ferwfz6k211j4b"
           },
+          "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "-- Panel 2: Top Segments → Implied Wait Classes + SQLs\n-- SQL references filtered to selected snap range\nWITH params AS (\n  SELECT\n    split_part('${start_snap}',' - ',1)::int AS s_snap,\n    split_part('${end_snap}',' - ',1)::int   AS e_snap,\n    '${dbname}'   AS dbname,\n    '${instance}' AS instance\n),\ntop_segs AS (\n  SELECT\n    s.owner, s.object_name, s.obj_type,\n    ROUND(AVG(s.severity_score)::numeric, 2)              AS severity,\n    ROUND(SUM(COALESCE(s.physical_reads,0))::numeric,0)   AS phys_reads,\n    ROUND(SUM(COALESCE(s.logical_reads,0))::numeric,0)    AS log_reads,\n    ROUND(SUM(COALESCE(s.buffer_busy_waits,0))::numeric,0)AS buf_busy,\n    ROUND(SUM(COALESCE(s.row_lock_waits,0))::numeric,0)   AS row_locks,\n    ROUND(SUM(COALESCE(s.physical_writes,0))::numeric,0)  AS phys_writes,\n    ROUND(SUM(COALESCE(s.gc_buffer_busy,0))::numeric,0)   AS gc_busy,\n    ROUND(SUM(COALESCE(s.table_scans,0))::numeric,0)      AS tbl_scans\n  FROM awr_segment_summary_mv s\n  JOIN params p ON p.dbname = s.dbname AND p.instance = s.instance\n  WHERE s.begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n  GROUP BY s.owner, s.object_name, s.obj_type\n  ORDER BY AVG(s.severity_score) DESC\n  LIMIT 15\n),\nseg_meta AS (\n  SELECT\n    UPPER(m.owner) AS owner, UPPER(m.object) AS object_name,\n    m.object_type, m.num_rows, m.blevel, m.clustering_factor,\n    m.index_type, m.partitioned, m.last_analyzed,\n    CASE\n      WHEN UPPER(m.object_type) LIKE 'INDEX%'\n        THEN 'BLVL=' || COALESCE(m.blevel::text,'?') ||\n             CASE WHEN m.blevel > 4 THEN ' ⚠BLVL-HIGH' ELSE '' END ||\n             CASE WHEN m.clustering_factor IS NOT NULL AND m.num_rows > 0\n                       AND (m.clustering_factor::numeric/m.num_rows) > 0.5\n                  THEN ' CF=' || ROUND(m.clustering_factor::numeric/m.num_rows,2)::text || ' ⚠CF-POOR'\n                  WHEN m.clustering_factor IS NOT NULL AND m.num_rows > 0\n                  THEN ' CF=' || ROUND(m.clustering_factor::numeric/m.num_rows,2)::text\n                  ELSE '' END ||\n             COALESCE(' ' || NULLIF(m.index_type,'NORMAL'),'')\n      WHEN UPPER(m.object_type) LIKE 'TABLE%'\n        THEN 'rows=' || TO_CHAR(COALESCE(m.num_rows,0),'FM999,999,999') ||\n             CASE WHEN m.partitioned='YES' THEN ' PART' ELSE '' END\n      ELSE COALESCE(m.object_type,'')\n    END AS meta_summary,\n    CASE WHEN m.last_analyzed IS NOT NULL\n              AND (NOW() - m.last_analyzed) > INTERVAL '30 days'\n         THEN '⚠ STALE (' || to_char(m.last_analyzed,'DD-Mon-YY') || ')'\n         ELSE to_char(m.last_analyzed,'DD-Mon-YY')\n    END AS analyzed_label\n  FROM awr_object_metadata m\n  WHERE lower(m.dbname) = lower((SELECT dbname FROM params))\n),\nseg_wait_class AS (\n  SELECT owner, object_name, obj_type,\n    string_agg(wait_label, ', ' ORDER BY metric_val DESC) AS implied_waits\n  FROM (\n    SELECT owner, object_name, obj_type,\n           'User I/O (phys_reads=' || phys_reads::text || ')' AS wait_label,\n           phys_reads AS metric_val\n    FROM top_segs WHERE phys_reads > 0\n    UNION ALL\n    SELECT owner, object_name, obj_type,\n           'Concurrency (buf_busy=' || buf_busy::text || ')' AS wait_label,\n           buf_busy AS metric_val\n    FROM top_segs WHERE buf_busy > 0\n    UNION ALL\n    SELECT owner, object_name, obj_type,\n           'Application (row_locks=' || row_locks::text || ')' AS wait_label,\n           row_locks AS metric_val\n    FROM top_segs WHERE row_locks > 0\n    UNION ALL\n    SELECT owner, object_name, obj_type,\n           'Cluster (gc_busy=' || gc_busy::text || ')' AS wait_label,\n           gc_busy AS metric_val\n    FROM top_segs WHERE gc_busy > 0\n    UNION ALL\n    SELECT owner, object_name, obj_type,\n           'User I/O/scans (tbl_scans=' || tbl_scans::text || ')' AS wait_label,\n           tbl_scans AS metric_val\n    FROM top_segs WHERE tbl_scans > 0\n  ) x\n  GROUP BY owner, object_name, obj_type\n),\n-- SQL IDs filtered to the selected snap range\nsnaps_sqls AS (\n  SELECT DISTINCT lower(sql_id) AS sql_id\n  FROM awr_sql_summary_mv\n  WHERE dbname   = (SELECT dbname   FROM params)\n    AND instance = (SELECT instance FROM params)\n    AND begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n),\nseg_sqls AS (\n  SELECT\n    lower(m.owner) AS owner,\n    lower(m.object) AS object_name,\n    string_agg(DISTINCT m.sql_id, ', ' ORDER BY m.sql_id) AS sql_ids\n  FROM top_segs s\n  -- Only SQL IDs active in the selected snap range\n  JOIN snaps_sqls ss ON TRUE\n  JOIN awr_sql_object_map_mv m\n    ON lower(m.sql_id) = ss.sql_id\n   AND (\n     (m.owner <> '' AND lower(m.owner) = lower(s.owner) AND lower(m.object) = lower(s.object_name))\n     OR\n     (m.owner = ''  AND lower(m.object) = lower(s.object_name))\n   )\n  GROUP BY lower(m.owner), lower(m.object)\n)\nSELECT\n  ts.obj_type                           AS \"Type\",\n  ts.owner || '.' || ts.object_name     AS \"Segment\",\n  ts.severity                           AS \"Severity Score\",\n  COALESCE(sm.meta_summary, '—')        AS \"Object Metadata\",\n  COALESCE(sm.analyzed_label, '—')      AS \"Last Analyzed\",\n  COALESCE(swc.implied_waits, '—')      AS \"Implied Wait Classes\",\n  COALESCE(ss.sql_ids, '— not in text map —') AS \"Referencing SQLs (this snap range)\",\n  ts.phys_reads   AS \"Phys Reads\",\n  ts.log_reads    AS \"Logical Reads\",\n  ts.buf_busy     AS \"Buf Busy Waits\",\n  ts.row_locks    AS \"Row Lock Waits\",\n  ts.tbl_scans    AS \"Table Scans\",\n  ts.gc_busy      AS \"GC Busy\"\nFROM top_segs ts\nLEFT JOIN seg_meta sm\n       ON lower(sm.owner) = lower(ts.owner)\n      AND lower(sm.object) = lower(ts.object_name)\nLEFT JOIN seg_wait_class swc\n       ON lower(swc.owner) = lower(ts.owner)\n      AND lower(swc.object_name) = lower(ts.object_name)\n      AND swc.obj_type = ts.obj_type\nLEFT JOIN seg_sqls ss\n       ON lower(ss.owner) = lower(ts.owner)\n      AND lower(ss.object_name) = lower(ts.object_name)\nWHERE '${dbname}' != '' AND '${start_snap}' != '' AND '${end_snap}' != ''\nORDER BY ts.severity DESC;",
-          "refId": "A"
+          "rawSql": "WITH f AS (  SELECT begin_snap, event::text AS event, SUM(pct_time) AS event_pct_snap  \nFROM awr_wait_summary_mv  \nWHERE dbname='$dbname'    AND instance='$instance'    \nAND begin_snap BETWEEN split_part('$start_snap',' - ',1)::int AND split_part('$end_snap',' - ',1)::int  \nGROUP BY begin_snap, event ), t AS \n(  SELECT begin_snap, SUM(pct_time) AS total_pct_snap  \nFROM awr_wait_summary_mv  \nWHERE dbname='$dbname'    AND instance='$instance'    \nAND begin_snap BETWEEN split_part('$start_snap',' - ',1)::int AND split_part('$end_snap',' - ',1)::int  \nGROUP BY begin_snap ) \nSELECT f.event AS name, ROUND(100.0 * SUM(f.event_pct_snap) / NULLIF(SUM(t.total_pct_snap),0), 2) AS value \nFROM f JOIN t USING (begin_snap) \nGROUP BY f.event ORDER BY value DESC LIMIT 10;\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
       "title": "⏱ Top Wait Events — % DB Time",
@@ -178,7 +221,7 @@
         "h": 12,
         "w": 8,
         "x": 8,
-        "y": 9
+        "y": 12
       },
       "id": 6,
       "options": {
@@ -245,7 +288,7 @@
         "h": 12,
         "w": 8,
         "x": 16,
-        "y": 9
+        "y": 12
       },
       "id": 8,
       "options": {
@@ -288,45 +331,255 @@
       "type": "piechart"
     },
     {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
       "id": 20,
-      "type": "row",
+      "panels": [],
       "title": "🔗 Correlation Intelligence v2 — Fact-Based 3-Way Analysis",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 25
       },
-      "collapsed": false,
-      "panels": []
-    },
-    {
       "id": 21,
-      "type": "row",
+      "panels": [],
       "title": "⏱️ Panel 1 — Wait Events → Correlated Segments (matched by AWR stat: physical reads / buffer busy / row locks / GC busy)",
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 22
-      },
-      "collapsed": false,
-      "panels": []
+      "type": "row"
     },
     {
-      "id": 22,
-      "type": "table",
-      "title": "⏱️ Top Wait Events — Correlated Segments & Advisory",
-      "gridPos": {
-        "h": 16,
-        "w": 24,
-        "x": 0,
-        "y": 23
-      },
       "datasource": {
         "type": "postgres",
         "uid": "${ds}"
       },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto",
+              "wrapText": false
+            },
+            "filterable": true,
+            "inspect": false,
+            "minWidth": 80
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 8
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Correlated Segments / Advisory"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 500
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Implied Wait Classes"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 300
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Segments Referenced"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 350
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Top 3 Foreground Waits (snap range context)"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 320
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Object Metadata"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 200
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Referencing SQLs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 220
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Correlation Basis"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 160
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Severity Score"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "% DB Time"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 90
+              },
+              {
+                "id": "custom.align",
+                "value": "right"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 5
+                    },
+                    {
+                      "color": "orange",
+                      "value": 15
+                    },
+                    {
+                      "color": "red",
+                      "value": 25
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^(Phys Reads|Logical Reads|Buf Busy Waits|Row Lock Waits|Table Scans|GC Busy|Disk Reads|Buffer Gets|Executions|Parse Calls|Total Elapsed.*|Avg Elapsed.*|Total CPU.*|Total Waits|Avg Wait.*)$"
+            },
+            "properties": [
+              {
+                "id": "custom.align",
+                "value": "right"
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 26
+      },
+      "id": 22,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "12.0.2",
       "targets": [
         {
           "datasource": {
@@ -339,39 +592,48 @@
           "refId": "A"
         }
       ],
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
+      "title": "⏱️ Top Wait Events — Correlated Segments & Advisory",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 34
+      },
+      "id": 23,
+      "panels": [],
+      "title": "📦 Panel 2 — Top Segments → Implied Wait Classes + Referencing SQLs",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${ds}"
       },
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
-            "inspect": false,
-            "minWidth": 80,
-            "wrap": true
-          },
           "color": {
             "mode": "thresholds"
           },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto",
+              "wrapText": false
+            },
+            "filterable": true,
+            "inspect": false,
+            "minWidth": 80
+          },
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "yellow",
@@ -394,10 +656,6 @@
               {
                 "id": "custom.width",
                 "value": 500
-              },
-              {
-                "id": "custom.wrap",
-                "value": true
               }
             ]
           },
@@ -410,10 +668,6 @@
               {
                 "id": "custom.width",
                 "value": 300
-              },
-              {
-                "id": "custom.wrap",
-                "value": true
               }
             ]
           },
@@ -426,10 +680,6 @@
               {
                 "id": "custom.width",
                 "value": 350
-              },
-              {
-                "id": "custom.wrap",
-                "value": true
               }
             ]
           },
@@ -442,10 +692,6 @@
               {
                 "id": "custom.width",
                 "value": 320
-              },
-              {
-                "id": "custom.wrap",
-                "value": true
               }
             ]
           },
@@ -529,8 +775,7 @@
                   "mode": "absolute",
                   "steps": [
                     {
-                      "color": "green",
-                      "value": null
+                      "color": "green"
                     },
                     {
                       "color": "yellow",
@@ -567,81 +812,98 @@
           }
         ]
       },
-      "transformations": [],
-      "transparent": false
-    },
-    {
-      "id": 23,
-      "type": "row",
-      "title": "📦 Panel 2 — Top Segments → Implied Wait Classes + Referencing SQLs",
       "gridPos": {
-        "h": 1,
+        "h": 8,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 35
       },
-      "collapsed": false,
-      "panels": []
-    },
-    {
       "id": 24,
-      "type": "table",
-      "title": "📦 Top Segments — Wait Class Correlation · Metadata · SQL References",
-      "gridPos": {
-        "h": 16,
-        "w": 24,
-        "x": 0,
-        "y": 40
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
       },
-      "datasource": {
-        "type": "postgres",
-        "uid": "${ds}"
-      },
+      "pluginVersion": "12.0.2",
       "targets": [
         {
           "datasource": {
             "type": "postgres",
             "uid": "${ds}"
           },
+          "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "-- Panel 2: Top Segments → Implied Wait Classes + SQLs\n-- SQL references filtered to selected snap range\nWITH params AS (\n  SELECT\n    split_part('${start_snap}',' - ',1)::int AS s_snap,\n    split_part('${end_snap}',' - ',1)::int   AS e_snap,\n    '${dbname}'   AS dbname,\n    '${instance}' AS instance\n),\ntop_segs AS (\n  SELECT\n    s.owner, s.object_name, s.obj_type,\n    ROUND(AVG(s.severity_score)::numeric, 2)              AS severity,\n    ROUND(SUM(COALESCE(s.physical_reads,0))::numeric,0)   AS phys_reads,\n    ROUND(SUM(COALESCE(s.logical_reads,0))::numeric,0)    AS log_reads,\n    ROUND(SUM(COALESCE(s.buffer_busy_waits,0))::numeric,0)AS buf_busy,\n    ROUND(SUM(COALESCE(s.row_lock_waits,0))::numeric,0)   AS row_locks,\n    ROUND(SUM(COALESCE(s.physical_writes,0))::numeric,0)  AS phys_writes,\n    ROUND(SUM(COALESCE(s.gc_buffer_busy,0))::numeric,0)   AS gc_busy,\n    ROUND(SUM(COALESCE(s.table_scans,0))::numeric,0)      AS tbl_scans\n  FROM awr_segment_summary_mv s\n  JOIN params p ON p.dbname = s.dbname AND p.instance = s.instance\n  WHERE s.begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n  GROUP BY s.owner, s.object_name, s.obj_type\n  ORDER BY AVG(s.severity_score) DESC\n  LIMIT 15\n),\nseg_meta AS (\n  SELECT\n    UPPER(m.owner) AS owner, UPPER(m.object) AS object_name,\n    m.object_type, m.num_rows, m.blevel, m.clustering_factor,\n    m.index_type, m.partitioned, m.last_analyzed,\n    CASE\n      WHEN UPPER(m.object_type) LIKE 'INDEX%'\n        THEN 'BLVL=' || COALESCE(m.blevel::text,'?') ||\n             CASE WHEN m.blevel > 4 THEN ' ⚠BLVL-HIGH' ELSE '' END ||\n             CASE WHEN m.clustering_factor IS NOT NULL AND m.num_rows > 0\n                       AND (m.clustering_factor::numeric/m.num_rows) > 0.5\n                  THEN ' CF=' || ROUND(m.clustering_factor::numeric/m.num_rows,2)::text || ' ⚠CF-POOR'\n                  WHEN m.clustering_factor IS NOT NULL AND m.num_rows > 0\n                  THEN ' CF=' || ROUND(m.clustering_factor::numeric/m.num_rows,2)::text\n                  ELSE '' END ||\n             COALESCE(' ' || NULLIF(m.index_type,'NORMAL'),'')\n      WHEN UPPER(m.object_type) LIKE 'TABLE%'\n        THEN 'rows=' || TO_CHAR(COALESCE(m.num_rows,0),'FM999,999,999') ||\n             CASE WHEN m.partitioned='YES' THEN ' PART' ELSE '' END\n      ELSE COALESCE(m.object_type,'')\n    END AS meta_summary,\n    CASE WHEN m.last_analyzed IS NOT NULL\n              AND (NOW() - m.last_analyzed) > INTERVAL '30 days'\n         THEN '⚠ STALE (' || to_char(m.last_analyzed,'DD-Mon-YY') || ')'\n         ELSE to_char(m.last_analyzed,'DD-Mon-YY')\n    END AS analyzed_label\n  FROM awr_object_metadata m\n  WHERE lower(m.dbname) = lower((SELECT dbname FROM params))\n),\nseg_wait_class AS (\n  SELECT owner, object_name, obj_type,\n    string_agg(wait_label, ', ' ORDER BY metric_val DESC) AS implied_waits\n  FROM (\n    SELECT owner, object_name, obj_type,\n           'User I/O (phys_reads=' || phys_reads::text || ')' AS wait_label,\n           phys_reads AS metric_val\n    FROM top_segs WHERE phys_reads > 0\n    UNION ALL\n    SELECT owner, object_name, obj_type,\n           'Concurrency (buf_busy=' || buf_busy::text || ')' AS wait_label,\n           buf_busy AS metric_val\n    FROM top_segs WHERE buf_busy > 0\n    UNION ALL\n    SELECT owner, object_name, obj_type,\n           'Application (row_locks=' || row_locks::text || ')' AS wait_label,\n           row_locks AS metric_val\n    FROM top_segs WHERE row_locks > 0\n    UNION ALL\n    SELECT owner, object_name, obj_type,\n           'Cluster (gc_busy=' || gc_busy::text || ')' AS wait_label,\n           gc_busy AS metric_val\n    FROM top_segs WHERE gc_busy > 0\n    UNION ALL\n    SELECT owner, object_name, obj_type,\n           'User I/O/scans (tbl_scans=' || tbl_scans::text || ')' AS wait_label,\n           tbl_scans AS metric_val\n    FROM top_segs WHERE tbl_scans > 0\n  ) x\n  GROUP BY owner, object_name, obj_type\n),\n-- SQL IDs filtered to the selected snap range\nsnaps_sqls AS (\n  SELECT DISTINCT lower(sql_id) AS sql_id\n  FROM awr_sql_summary_mv\n  WHERE dbname   = (SELECT dbname   FROM params)\n    AND instance = (SELECT instance FROM params)\n    AND begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n),\nseg_sqls AS (\n  SELECT\n    lower(m.owner) AS owner,\n    lower(m.object) AS object_name,\n    string_agg(DISTINCT m.sql_id, ', ' ORDER BY m.sql_id) AS sql_ids\n  FROM top_segs s\n  -- Only SQL IDs active in the selected snap range\n  JOIN snaps_sqls ss ON TRUE\n  JOIN awr_sql_object_map_mv m\n    ON lower(m.sql_id) = ss.sql_id\n   AND (\n     (m.owner <> '' AND lower(m.owner) = lower(s.owner) AND lower(m.object) = lower(s.object_name))\n     OR\n     (m.owner = ''  AND lower(m.object) = lower(s.object_name))\n   )\n  GROUP BY lower(m.owner), lower(m.object)\n)\nSELECT\n  ts.obj_type                           AS \"Type\",\n  ts.owner || '.' || ts.object_name     AS \"Segment\",\n  ts.severity                           AS \"Severity Score\",\n  COALESCE(sm.meta_summary, '—')        AS \"Object Metadata\",\n  COALESCE(sm.analyzed_label, '—')      AS \"Last Analyzed\",\n  COALESCE(swc.implied_waits, '—')      AS \"Implied Wait Classes\",\n  COALESCE(ss.sql_ids, '— not in text map —') AS \"Referencing SQLs (this snap range)\",\n  ts.phys_reads   AS \"Phys Reads\",\n  ts.log_reads    AS \"Logical Reads\",\n  ts.buf_busy     AS \"Buf Busy Waits\",\n  ts.row_locks    AS \"Row Lock Waits\",\n  ts.tbl_scans    AS \"Table Scans\",\n  ts.gc_busy      AS \"GC Busy\"\nFROM top_segs ts\nLEFT JOIN seg_meta sm\n       ON lower(sm.owner) = lower(ts.owner)\n      AND lower(sm.object) = lower(ts.object_name)\nLEFT JOIN seg_wait_class swc\n       ON lower(swc.owner) = lower(ts.owner)\n      AND lower(swc.object_name) = lower(ts.object_name)\n      AND swc.obj_type = ts.obj_type\nLEFT JOIN seg_sqls ss\n       ON lower(ss.owner) = lower(ts.owner)\n      AND lower(ss.object_name) = lower(ts.object_name)\nWHERE '${dbname}' != '' AND '${start_snap}' != '' AND '${end_snap}' != ''\nORDER BY ts.severity DESC;",
-          "refId": "A"
+          "rawSql": "-- Panel 2: Top Segments → Implied Wait Classes + SQLs\n-- SQL references filtered to selected snap range\nWITH params AS (\n  SELECT\n    split_part('${start_snap}',' - ',1)::int AS s_snap,\n    split_part('${end_snap}',' - ',1)::int   AS e_snap,\n    '${dbname}'   AS dbname,\n    '${instance}' AS instance\n),\ntop_segs AS (\n  SELECT\n    s.owner, s.object_name, s.obj_type,\n    ROUND(AVG(s.severity_score)::numeric, 2)              AS severity,\n    ROUND(SUM(COALESCE(s.physical_reads,0))::numeric,0)   AS phys_reads,\n    ROUND(SUM(COALESCE(s.logical_reads,0))::numeric,0)    AS log_reads,\n    ROUND(SUM(COALESCE(s.buffer_busy_waits,0))::numeric,0)AS buf_busy,\n    ROUND(SUM(COALESCE(s.row_lock_waits,0))::numeric,0)   AS row_locks,\n    ROUND(SUM(COALESCE(s.physical_writes,0))::numeric,0)  AS phys_writes,\n    ROUND(SUM(COALESCE(s.gc_buffer_busy,0))::numeric,0)   AS gc_busy,\n    ROUND(SUM(COALESCE(s.table_scans,0))::numeric,0)      AS tbl_scans\n  FROM awr_segment_summary_mv s\n  JOIN params p ON p.dbname = s.dbname AND p.instance = s.instance\n  WHERE s.begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n  GROUP BY s.owner, s.object_name, s.obj_type\n  ORDER BY AVG(s.severity_score) DESC\n  LIMIT 15\n),\nseg_meta AS (\n  SELECT\n    UPPER(m.owner) AS owner, UPPER(m.object_name) AS object_name,\n    m.object_type, m.num_rows, m.blevel, m.clustering_factor,\n    m.index_type, m.partitioned, m.last_analyzed,\n    CASE\n      WHEN UPPER(m.object_type) LIKE 'INDEX%'\n        THEN 'BLVL=' || COALESCE(m.blevel::text,'?') ||\n             CASE WHEN m.blevel > 4 THEN ' ⚠BLVL-HIGH' ELSE '' END ||\n             CASE WHEN m.clustering_factor IS NOT NULL AND m.num_rows > 0\n                       AND (m.clustering_factor::numeric/m.num_rows) > 0.5\n                  THEN ' CF=' || ROUND(m.clustering_factor::numeric/m.num_rows,2)::text || ' ⚠CF-POOR'\n                  WHEN m.clustering_factor IS NOT NULL AND m.num_rows > 0\n                  THEN ' CF=' || ROUND(m.clustering_factor::numeric/m.num_rows,2)::text\n                  ELSE '' END ||\n             COALESCE(' ' || NULLIF(m.index_type,'NORMAL'),'')\n      WHEN UPPER(m.object_type) LIKE 'TABLE%'\n        THEN 'rows=' || TO_CHAR(COALESCE(m.num_rows,0),'FM999,999,999') ||\n             CASE WHEN m.partitioned='YES' THEN ' PART' ELSE '' END\n      ELSE COALESCE(m.object_type,'')\n    END AS meta_summary,\n    CASE WHEN m.last_analyzed IS NOT NULL\n              AND (NOW() - m.last_analyzed) > INTERVAL '30 days'\n         THEN '⚠ STALE (' || to_char(m.last_analyzed,'DD-Mon-YY') || ')'\n         ELSE to_char(m.last_analyzed,'DD-Mon-YY')\n    END AS analyzed_label\n  FROM awr_object_metadata m\n  WHERE lower(m.dbname) = lower((SELECT dbname FROM params))\n),\nseg_wait_class AS (\n  SELECT owner, object_name, obj_type,\n    string_agg(wait_label, ', ' ORDER BY metric_val DESC) AS implied_waits\n  FROM (\n    SELECT owner, object_name, obj_type,\n           'User I/O (phys_reads=' || phys_reads::text || ')' AS wait_label,\n           phys_reads AS metric_val\n    FROM top_segs WHERE phys_reads > 0\n    UNION ALL\n    SELECT owner, object_name, obj_type,\n           'Concurrency (buf_busy=' || buf_busy::text || ')' AS wait_label,\n           buf_busy AS metric_val\n    FROM top_segs WHERE buf_busy > 0\n    UNION ALL\n    SELECT owner, object_name, obj_type,\n           'Application (row_locks=' || row_locks::text || ')' AS wait_label,\n           row_locks AS metric_val\n    FROM top_segs WHERE row_locks > 0\n    UNION ALL\n    SELECT owner, object_name, obj_type,\n           'Cluster (gc_busy=' || gc_busy::text || ')' AS wait_label,\n           gc_busy AS metric_val\n    FROM top_segs WHERE gc_busy > 0\n    UNION ALL\n    SELECT owner, object_name, obj_type,\n           'User I/O/scans (tbl_scans=' || tbl_scans::text || ')' AS wait_label,\n           tbl_scans AS metric_val\n    FROM top_segs WHERE tbl_scans > 0\n  ) x\n  GROUP BY owner, object_name, obj_type\n),\n-- SQL IDs filtered to the selected snap range\nsnaps_sqls AS (\n  SELECT DISTINCT lower(sql_id) AS sql_id\n  FROM awr_sql_summary_mv\n  WHERE dbname   = (SELECT dbname   FROM params)\n    AND instance = (SELECT instance FROM params)\n    AND begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n),\nseg_sqls AS (\n  SELECT\n    lower(m.owner) AS owner,\n    lower(m.object) AS object_name,\n    string_agg(DISTINCT m.sql_id, ', ' ORDER BY m.sql_id) AS sql_ids\n  FROM top_segs s\n  -- Only SQL IDs active in the selected snap range\n  JOIN snaps_sqls ss ON TRUE\n  JOIN awr_sql_object_map_mv m\n    ON lower(m.sql_id) = ss.sql_id\n   AND (\n     (m.owner <> '' AND lower(m.owner) = lower(s.owner) AND lower(m.object) = lower(s.object_name))\n     OR\n     (m.owner = ''  AND lower(m.object) = lower(s.object_name))\n   )\n  GROUP BY lower(m.owner), lower(m.object)\n)\nSELECT\n  ts.obj_type                           AS \"Type\",\n  ts.owner || '.' || ts.object_name     AS \"Segment\",\n  ts.severity                           AS \"Severity Score\",\n  COALESCE(sm.meta_summary, '—')        AS \"Object Metadata\",\n  COALESCE(sm.analyzed_label, '—')      AS \"Last Analyzed\",\n  COALESCE(swc.implied_waits, '—')      AS \"Implied Wait Classes\",\n  COALESCE(ss.sql_ids, '— not in text map —') AS \"Referencing SQLs (this snap range)\",\n  ts.phys_reads   AS \"Phys Reads\",\n  ts.log_reads    AS \"Logical Reads\",\n  ts.buf_busy     AS \"Buf Busy Waits\",\n  ts.row_locks    AS \"Row Lock Waits\",\n  ts.tbl_scans    AS \"Table Scans\",\n  ts.gc_busy      AS \"GC Busy\"\nFROM top_segs ts\nLEFT JOIN seg_meta sm\n       ON lower(sm.owner) = lower(ts.owner)\n      AND lower(sm.object_name) = lower(ts.object_name)\nLEFT JOIN seg_wait_class swc\n       ON lower(swc.owner) = lower(ts.owner)\n      AND lower(swc.object_name) = lower(ts.object_name)\n      AND swc.obj_type = ts.obj_type\nLEFT JOIN seg_sqls ss\n       ON lower(ss.owner) = lower(ts.owner)\n      AND lower(ss.object_name) = lower(ts.object_name)\nWHERE '${dbname}' != '' AND '${start_snap}' != '' AND '${end_snap}' != ''\nORDER BY ts.severity DESC;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
+      "title": "📦 Top Segments — Wait Class Correlation · Metadata · SQL References",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 43
+      },
+      "id": 25,
+      "panels": [],
+      "title": "💻 Panel 3 — Top SQL (by severity) → Referenced Segments + Snap Range Wait Context",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${ds}"
       },
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
-            "inspect": false,
-            "minWidth": 80,
-            "wrap": true
-          },
           "color": {
             "mode": "thresholds"
           },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto",
+              "wrapText": false
+            },
+            "filterable": true,
+            "inspect": false,
+            "minWidth": 80
+          },
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "yellow",
@@ -664,10 +926,6 @@
               {
                 "id": "custom.width",
                 "value": 500
-              },
-              {
-                "id": "custom.wrap",
-                "value": true
               }
             ]
           },
@@ -680,10 +938,6 @@
               {
                 "id": "custom.width",
                 "value": 300
-              },
-              {
-                "id": "custom.wrap",
-                "value": true
               }
             ]
           },
@@ -696,10 +950,6 @@
               {
                 "id": "custom.width",
                 "value": 350
-              },
-              {
-                "id": "custom.wrap",
-                "value": true
               }
             ]
           },
@@ -712,10 +962,6 @@
               {
                 "id": "custom.width",
                 "value": 320
-              },
-              {
-                "id": "custom.wrap",
-                "value": true
               }
             ]
           },
@@ -799,8 +1045,7 @@
                   "mode": "absolute",
                   "steps": [
                     {
-                      "color": "green",
-                      "value": null
+                      "color": "green"
                     },
                     {
                       "color": "yellow",
@@ -837,286 +1082,75 @@
           }
         ]
       },
-      "transformations": [],
-      "transparent": false
-    },
-    {
-      "id": 25,
-      "type": "row",
-      "title": "💻 Panel 3 — Top SQL (by severity) → Referenced Segments + Snap Range Wait Context",
       "gridPos": {
-        "h": 1,
+        "h": 13,
         "w": 24,
         "x": 0,
-        "y": 56
+        "y": 44
       },
-      "collapsed": false,
-      "panels": []
-    },
-    {
       "id": 26,
-      "type": "table",
-      "title": "💻 Top SQL — Segment References · Performance Metrics · Wait Context",
-      "gridPos": {
-        "h": 14,
-        "w": 24,
-        "x": 0,
-        "y": 57
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
       },
-      "datasource": {
-        "type": "postgres",
-        "uid": "${ds}"
-      },
+      "pluginVersion": "12.0.2",
       "targets": [
         {
           "datasource": {
             "type": "postgres",
             "uid": "${ds}"
           },
+          "editorMode": "code",
           "format": "table",
           "rawQuery": true,
           "rawSql": "-- Panel 3: Top SQL → Referenced Segments + Wait Context\n-- Top 3 waits shown as snap-range context (not per-SQL causation)\nWITH params AS (\n  SELECT\n    split_part('${start_snap}',' - ',1)::int AS s_snap,\n    split_part('${end_snap}',' - ',1)::int   AS e_snap,\n    '${dbname}'   AS dbname,\n    '${instance}' AS instance\n),\ntop_sql AS (\n  SELECT\n    lower(s.sql_id)                                      AS sql_id,\n    ROUND(AVG(s.severity_score)::numeric, 2)             AS severity,\n    ROUND(SUM(s.elapsed_time_per_exec_s)::numeric, 2)    AS total_elapsed_s,\n    ROUND(AVG(s.elapsed_time_per_exec_s)::numeric, 4)    AS avg_elapsed_s,\n    ROUND(SUM(s.cpu_per_exec_s)::numeric, 2)             AS total_cpu_s,\n    ROUND(SUM(s.disk_reads_per_exec)::numeric, 0)        AS disk_reads,\n    ROUND(SUM(s.buffer_gets_per_exec)::numeric, 0)       AS buffer_gets,\n    SUM(s.executions)                                    AS executions,\n    ROUND(SUM(s.parse_calls)::numeric, 0)                AS parse_calls\n  FROM awr_sql_summary_mv s\n  JOIN params p ON p.dbname = s.dbname AND p.instance = s.instance\n  WHERE s.begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n  GROUP BY lower(s.sql_id)\n  ORDER BY AVG(s.severity_score) DESC\n  LIMIT 10\n),\n-- Segments from text map (requires awr_sql_object_map_mv to be populated)\nsql_segs AS (\n  SELECT\n    lower(m.sql_id) AS sql_id,\n    string_agg(\n      CASE WHEN m.owner <> '' THEN m.owner || '.' ELSE '' END || m.object ||\n      COALESCE((\n        SELECT\n          CASE\n            WHEN UPPER(om.object_type) LIKE 'INDEX%'\n              THEN ' [idx BLVL=' || COALESCE(om.blevel::text,'?') ||\n                   CASE WHEN om.blevel > 4 THEN ' ⚠HIGH' ELSE '' END || ']'\n            WHEN UPPER(om.object_type) LIKE 'TABLE%'\n              THEN ' [tbl rows=' || TO_CHAR(COALESCE(om.num_rows,0),'FM999,999,999') || ']'\n            ELSE ''\n          END\n        FROM awr_object_metadata om\n        WHERE UPPER(om.dbname) = UPPER((SELECT dbname FROM params))\n          AND (m.owner = '' OR UPPER(om.owner) = UPPER(m.owner))\n          AND UPPER(om.object_name) = UPPER(m.object)\n        LIMIT 1\n      ), ''),\n      E'\\n' ORDER BY m.object\n    ) AS segments\n  FROM awr_sql_object_map_mv m\n  WHERE lower(m.sql_id) IN (SELECT sql_id FROM top_sql)\n  GROUP BY lower(m.sql_id)\n),\n-- Top 3 foreground waits for this snap range\n-- Shown as context — not per-SQL causation (AWR does not link waits to specific SQL)\ntop3_waits AS (\n  SELECT string_agg(\n    event || ' (' || pct::text || '% DB time)',\n    ' | ' ORDER BY rn\n  ) AS txt\n  FROM (\n    SELECT\n      w.event,\n      ROUND(AVG(w.pct_time)::numeric,1) AS pct,\n      ROW_NUMBER() OVER (ORDER BY AVG(w.pct_time) DESC) AS rn\n    FROM awr_wait_summary_mv w\n    JOIN params p ON p.dbname=w.dbname AND p.instance=w.instance\n    WHERE w.begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n      AND w.wait_scope = 'Foreground'\n    GROUP BY w.event\n    ORDER BY AVG(w.pct_time) DESC\n    LIMIT 3\n  ) t\n  WHERE rn <= 3\n)\nSELECT\n  ts.sql_id                                                AS \"SQL ID\",\n  ts.severity                                              AS \"Severity Score\",\n  ts.total_elapsed_s                                       AS \"Total Elapsed (s)\",\n  ts.avg_elapsed_s                                         AS \"Avg Elapsed/Exec (s)\",\n  ts.total_cpu_s                                           AS \"Total CPU (s)\",\n  ts.disk_reads                                            AS \"Disk Reads\",\n  ts.buffer_gets                                           AS \"Buffer Gets\",\n  ts.executions                                            AS \"Executions\",\n  ts.parse_calls                                           AS \"Parse Calls\",\n  COALESCE(ss.segments, '— not in text map —')             AS \"Segments Referenced\",\n  (SELECT txt FROM top3_waits)                             AS \"Top 3 Waits (snap range — not per-SQL)\"\nFROM top_sql ts\nLEFT JOIN sql_segs ss ON ss.sql_id = ts.sql_id\nWHERE '${dbname}' != '' AND '${start_snap}' != '' AND '${end_snap}' != ''\nORDER BY ts.severity DESC;",
-          "refId": "A"
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
-            "inspect": false,
-            "minWidth": 80,
-            "wrap": true
-          },
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 5
-              },
-              {
-                "color": "red",
-                "value": 8
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Correlated Segments / Advisory"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 500
-              },
-              {
-                "id": "custom.wrap",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Implied Wait Classes"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 300
-              },
-              {
-                "id": "custom.wrap",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Segments Referenced"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 350
-              },
-              {
-                "id": "custom.wrap",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Top 3 Foreground Waits (snap range context)"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 320
-              },
-              {
-                "id": "custom.wrap",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Object Metadata"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 200
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Referencing SQLs"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 220
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Correlation Basis"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 160
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Severity Score"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-background"
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 110
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "% DB Time"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-background"
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 90
-              },
-              {
-                "id": "custom.align",
-                "value": "right"
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": null
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 5
-                    },
-                    {
-                      "color": "orange",
-                      "value": 15
-                    },
-                    {
-                      "color": "red",
-                      "value": 25
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "^(Phys Reads|Logical Reads|Buf Busy Waits|Row Lock Waits|Table Scans|GC Busy|Disk Reads|Buffer Gets|Executions|Parse Calls|Total Elapsed.*|Avg Elapsed.*|Total CPU.*|Total Waits|Avg Wait.*)$"
-            },
-            "properties": [
-              {
-                "id": "custom.align",
-                "value": "right"
-              },
-              {
-                "id": "custom.width",
-                "value": 110
-              }
-            ]
-          }
-        ]
-      },
-      "transformations": [],
-      "transparent": false
+      "title": "💻 Top SQL — Segment References · Performance Metrics · Wait Context",
+      "type": "table"
     }
+  ],
+  "preload": false,
+  "refresh": "",
+  "schemaVersion": 41,
+  "tags": [
+    "awr",
+    "correlation",
+    "v2",
+    "intelligence"
   ],
   "templating": {
     "list": [
       {
         "current": {
-          "text": "http://192.168.1.218:8000",
-          "value": "http://192.168.1.218:8000"
+          "text": "http://192.168.1.9:8000",
+          "value": "http://192.168.1.9:8000"
         },
         "description": "Base URL for Portal URL — change to server IP for intranet access",
         "hide": 2,
@@ -1125,17 +1159,17 @@
         "options": [
           {
             "selected": true,
-            "text": "http://192.168.1.218:8000",
-            "value": "http://192.168.1.218:8000"
+            "text": "http://192.168.1.9:8000",
+            "value": "http://192.168.1.9:8000"
           }
         ],
-        "query": "http://192.168.1.218:8000",
+        "query": "http://192.168.1.9:8000",
         "type": "textbox"
       },
       {
         "current": {
-          "text": "http://192.168.1.218:3000",
-          "value": "http://192.168.1.218:3000"
+          "text": "http://192.168.1.9:3000",
+          "value": "http://192.168.1.9:3000"
         },
         "description": "Base URL for Grafana URL — change to server IP for intranet access",
         "hide": 2,
@@ -1144,11 +1178,11 @@
         "options": [
           {
             "selected": true,
-            "text": "http://192.168.1.218:3000",
-            "value": "http://192.168.1.218:3000"
+            "text": "http://192.168.1.9:3000",
+            "value": "http://192.168.1.9:3000"
           }
         ],
-        "query": "http://192.168.1.218:3000",
+        "query": "http://192.168.1.9:3000",
         "type": "textbox"
       },
       {
@@ -1238,22 +1272,15 @@
       }
     ]
   },
-  "annotations": {
-    "list": [
-      {
-        "builtIn": 1,
-        "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
-        },
-        "enable": true,
-        "hide": true,
-        "name": "Annotations & Alerts",
-        "type": "dashboard"
-      }
-    ]
+  "time": {
+    "from": "now-7d",
+    "to": "now"
   },
-  "links": [],
-  "preload": false,
-  "editable": true
+  "timepicker": {
+    "hidden": true
+  },
+  "timezone": "Asia/Kolkata",
+  "title": "AWR Intelligence v2 — Correlation (AI Mode)",
+  "uid": "awr-intelligence-ai-v2",
+  "version": 51
 }
