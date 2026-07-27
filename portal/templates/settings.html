@@ -796,6 +796,9 @@
             <option value="30" {% if cfg.metadata_refresh_days=='30' %}selected{% endif %}>Monthly (30 days)</option>
           </select>
         </div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Admin Reset PIN</div>
             <div class="toggle-sub">Used for password reset on the Forgot Password page.</div>
           </div>
           <input class="s-input" id="admin_reset_pin"
@@ -803,6 +806,9 @@
                  style="width:160px;text-align:center"
                  placeholder="AWR@2024">
         </div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Session Timeout</div>
             <div class="toggle-sub">Auto-logout after inactivity.</div>
           </div>
           <select class="s-select" id="session_timeout_mins" style="width:160px">
