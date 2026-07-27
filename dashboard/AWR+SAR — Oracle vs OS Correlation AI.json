@@ -582,6 +582,14 @@
                 "value": {
                   "fill": "dash"
                 }
+              },
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": false,
+                  "viz": false
+                }
               }
             ]
           },
