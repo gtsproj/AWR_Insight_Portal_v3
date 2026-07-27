@@ -857,7 +857,7 @@
       },
       "id": 25,
       "panels": [],
-      "title": "💻 Panel 3 — Top SQL (by severity) → Referenced Segments + Snap Range Wait Context",
+      "title": "💻 Panel 3 — Top SQL (by severity) → Referenced Segments",
       "type": "row"
     },
     {
@@ -932,18 +932,6 @@
               {
                 "id": "custom.width",
                 "value": 350
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Top 3 Foreground Waits (snap range context)"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 320
               }
             ]
           },
@@ -1092,11 +1080,11 @@
           },
           "format": "table",
           "rawQuery": true,
-          "rawSql": "-- Panel 3: Top SQL → Referenced Segments + Wait Context\n-- Top 3 waits shown as snap-range context (not per-SQL causation)\nWITH params AS (\n  SELECT\n    split_part('${start_snap}',' - ',1)::int AS s_snap,\n    split_part('${end_snap}',' - ',1)::int   AS e_snap,\n    '${dbname}'   AS dbname,\n    '${instance}' AS instance\n),\ntop_sql AS (\n  SELECT\n    lower(s.sql_id)                                      AS sql_id,\n    ROUND(AVG(s.severity_score)::numeric, 2)             AS severity,\n    ROUND(SUM(s.elapsed_time_per_exec_s)::numeric, 2)    AS total_elapsed_s,\n    ROUND(AVG(s.elapsed_time_per_exec_s)::numeric, 4)    AS avg_elapsed_s,\n    ROUND(SUM(s.cpu_per_exec_s)::numeric, 2)             AS total_cpu_s,\n    ROUND(SUM(s.disk_reads_per_exec)::numeric, 0)        AS disk_reads,\n    ROUND(SUM(s.buffer_gets_per_exec)::numeric, 0)       AS buffer_gets,\n    SUM(s.executions)                                    AS executions,\n    ROUND(SUM(s.parse_calls)::numeric, 0)                AS parse_calls\n  FROM awr_sql_summary_mv s\n  JOIN params p ON p.dbname = s.dbname AND p.instance = s.instance\n  WHERE s.begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n  GROUP BY lower(s.sql_id)\n  ORDER BY AVG(s.severity_score) DESC\n  LIMIT 10\n),\n-- Segments from text map (requires awr_sql_object_map_mv to be populated)\nsql_segs AS (\n  SELECT\n    lower(m.sql_id) AS sql_id,\n    string_agg(\n      CASE WHEN m.owner <> '' THEN m.owner || '.' ELSE '' END || m.object ||\n      COALESCE((\n        SELECT\n          CASE\n            WHEN UPPER(om.object_type) LIKE 'INDEX%'\n              THEN ' [idx BLVL=' || COALESCE(om.blevel::text,'?') ||\n                   CASE WHEN om.blevel > 4 THEN ' ⚠HIGH' ELSE '' END || ']'\n            WHEN UPPER(om.object_type) LIKE 'TABLE%'\n              THEN ' [tbl rows=' || TO_CHAR(COALESCE(om.num_rows,0),'FM999,999,999') || ']'\n            ELSE ''\n          END\n        FROM awr_object_metadata om\n        WHERE UPPER(om.dbname) = UPPER((SELECT dbname FROM params))\n          AND (m.owner = '' OR UPPER(om.owner) = UPPER(m.owner))\n          AND UPPER(om.object_name) = UPPER(m.object)\n        LIMIT 1\n      ), ''),\n      E'\\n' ORDER BY m.object\n    ) AS segments\n  FROM awr_sql_object_map_mv m\n  WHERE lower(m.sql_id) IN (SELECT sql_id FROM top_sql)\n  GROUP BY lower(m.sql_id)\n),\n-- Top 3 foreground waits for this snap range\n-- Shown as context — not per-SQL causation (AWR does not link waits to specific SQL)\ntop3_waits AS (\n  SELECT string_agg(\n    event || ' (' || pct::text || '% DB time)',\n    ' | ' ORDER BY rn\n  ) AS txt\n  FROM (\n    SELECT\n      w.event,\n      ROUND(AVG(w.pct_time)::numeric,1) AS pct,\n      ROW_NUMBER() OVER (ORDER BY AVG(w.pct_time) DESC) AS rn\n    FROM awr_wait_summary_mv w\n    JOIN params p ON p.dbname=w.dbname AND p.instance=w.instance\n    WHERE w.begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n      AND w.wait_scope = 'Foreground'\n    GROUP BY w.event\n    ORDER BY AVG(w.pct_time) DESC\n    LIMIT 3\n  ) t\n  WHERE rn <= 3\n)\nSELECT\n  ts.sql_id                                                AS \"SQL ID\",\n  ts.severity                                              AS \"Severity Score\",\n  ts.total_elapsed_s                                       AS \"Total Elapsed (s)\",\n  ts.avg_elapsed_s                                         AS \"Avg Elapsed/Exec (s)\",\n  ts.total_cpu_s                                           AS \"Total CPU (s)\",\n  ts.disk_reads                                            AS \"Disk Reads\",\n  ts.buffer_gets                                           AS \"Buffer Gets\",\n  ts.executions                                            AS \"Executions\",\n  ts.parse_calls                                           AS \"Parse Calls\",\n  COALESCE(ss.segments, '— not in text map —')             AS \"Segments Referenced\",\n  (SELECT txt FROM top3_waits)                             AS \"Top 3 Waits (snap range — not per-SQL)\"\nFROM top_sql ts\nLEFT JOIN sql_segs ss ON ss.sql_id = ts.sql_id\nWHERE '${dbname}' != '' AND '${start_snap}' != '' AND '${end_snap}' != ''\nORDER BY ts.severity DESC;",
+          "rawSql": "-- Panel 3: Top SQL → Referenced Segments\n-- Top SQL by severity with segments extracted from SQL text\nWITH params AS (\n  SELECT\n    split_part('${start_snap}',' - ',1)::int AS s_snap,\n    split_part('${end_snap}',' - ',1)::int   AS e_snap,\n    '${dbname}'   AS dbname,\n    '${instance}' AS instance\n),\ntop_sql AS (\n  SELECT\n    lower(s.sql_id)                                      AS sql_id,\n    ROUND(AVG(s.severity_score)::numeric, 2)             AS severity,\n    ROUND(SUM(s.elapsed_time_per_exec_s)::numeric, 2)    AS total_elapsed_s,\n    ROUND(AVG(s.elapsed_time_per_exec_s)::numeric, 4)    AS avg_elapsed_s,\n    ROUND(SUM(s.cpu_per_exec_s)::numeric, 2)             AS total_cpu_s,\n    ROUND(SUM(s.disk_reads_per_exec)::numeric, 0)        AS disk_reads,\n    ROUND(SUM(s.buffer_gets_per_exec)::numeric, 0)       AS buffer_gets,\n    SUM(s.executions)                                    AS executions,\n    ROUND(SUM(s.parse_calls)::numeric, 0)                AS parse_calls\n  FROM awr_sql_summary_mv s\n  JOIN params p ON p.dbname = s.dbname AND p.instance = s.instance\n  WHERE s.begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n  GROUP BY lower(s.sql_id)\n  ORDER BY AVG(s.severity_score) DESC\n  LIMIT 10\n)\n',\n    ' | ' ORDER BY rn\n  ) AS txt\n  FROM (\n    SELECT\n      w.event,\n      ROUND(AVG(w.pct_time)::numeric,1) AS pct,\n      ROW_NUMBER() OVER (ORDER BY AVG(w.pct_time) DESC) AS rn\n    FROM awr_wait_summary_mv w\n    JOIN params p ON p.dbname=w.dbname AND p.instance=w.instance\n    WHERE w.begin_snap BETWEEN (SELECT s_snap FROM params) AND (SELECT e_snap FROM params)\n      AND w.wait_scope = 'Foreground'\n    GROUP BY w.event\n    ORDER BY AVG(w.pct_time) DESC\n    LIMIT 3\n  ) t\n  WHERE rn <= 3\n)\nSELECT\n  ts.sql_id                                                AS \"SQL ID\",\n  ts.severity                                              AS \"Severity Score\",\n  ts.total_elapsed_s                                       AS \"Total Elapsed (s)\",\n  ts.avg_elapsed_s                                         AS \"Avg Elapsed/Exec (s)\",\n  ts.total_cpu_s                                           AS \"Total CPU (s)\",\n  ts.disk_reads                                            AS \"Disk Reads\",\n  ts.buffer_gets                                           AS \"Buffer Gets\",\n  ts.executions                                            AS \"Executions\",\n  ts.parse_calls                                           AS \"Parse Calls\",\n  COALESCE(ss.segments, '— not in text map —')             AS \"Segments Referenced\"\nFROM top_sql ts\nLEFT JOIN sql_segs ss ON ss.sql_id = ts.sql_id\nWHERE '${dbname}' != '' AND '${start_snap}' != '' AND '${end_snap}' != ''\nORDER BY ts.severity DESC;",
           "refId": "A"
         }
       ],
-      "title": "💻 Top SQL — Segment References · Performance Metrics · Wait Context",
+      "title": "💻 Top SQL — Segment References · Performance Metrics",
       "type": "table"
     },
     {
