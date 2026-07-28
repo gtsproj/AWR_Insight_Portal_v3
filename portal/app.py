@@ -60,12 +60,110 @@ app = FastAPI(
     version="1.0.0"
 )
 
+def _oracle_awr_scheduler():
+    """
+    Background thread — runs for the lifetime of the portal process.
+    Checks every 5 minutes whether any Oracle connection is due for
+    AWR generation based on its snap_interval_hrs setting.
+
+    Logic per connection:
+      - snap_interval_hrs == 0  → manual only, never auto-run
+      - last_run_at is None     → never run yet, run immediately
+      - now - last_run_at >= snap_interval_hrs * 60 minutes → run
+    """
+    import time as _time
+    from datetime import date as _date, datetime as _dt
+
+    _sched_log = logging.getLogger('oracle_awr_scheduler')
+    _sched_log.info('Oracle AWR scheduler started — checking every 5 minutes')
+
+    # Get awr_reports dir from settings
+    try:
+        import yaml as _yaml
+        with open(os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')) as f:
+            _settings = _yaml.safe_load(f)
+        awr_dir = _settings.get('portal', {}).get('awr_reports_dir', 'awr_reports')
+        if not os.path.isabs(awr_dir):
+            awr_dir = os.path.join(_PROJECT_ROOT, awr_dir)
+        os.makedirs(awr_dir, exist_ok=True)
+    except Exception as e:
+        _sched_log.error(f'Could not read awr_reports_dir from settings: {e}')
+        awr_dir = os.path.join(_PROJECT_ROOT, 'awr_reports')
+        os.makedirs(awr_dir, exist_ok=True)
+
+    while True:
+        try:
+            from modules.oracle_awr_fetcher import (
+                get_all_connections, fetch_awrs_for_date
+            )
+            connections = get_all_connections()
+            enabled = [c for c in connections
+                       if c.get('enabled') and float(c.get('snap_interval_hrs', 0)) > 0]
+
+            now = _dt.now()
+
+            for c in enabled:
+                try:
+                    interval_hrs  = float(c.get('snap_interval_hrs', 1))
+                    interval_mins = interval_hrs * 60
+                    last_run      = c.get('last_run_at')  # already string or None
+
+                    if last_run:
+                        # Parse back to datetime
+                        try:
+                            last_run_dt = _dt.strptime(last_run, '%Y-%m-%d %H:%M:%S')
+                        except (ValueError, TypeError):
+                            last_run_dt = None
+                    else:
+                        last_run_dt = None
+
+                    elapsed_mins = (
+                        (now - last_run_dt).total_seconds() / 60
+                        if last_run_dt else float('inf')
+                    )
+
+                    if elapsed_mins >= interval_mins:
+                        _sched_log.info(
+                            f"Scheduler: running AWR for {c['db_name']} "
+                            f"(interval={interval_hrs}h, "
+                            f"elapsed={elapsed_mins:.0f}m)"
+                        )
+                        result = fetch_awrs_for_date(
+                            c['id'], _date.today(), awr_dir
+                        )
+                        ok  = result.get('reports_generated', 0)
+                        err = result.get('errors', 0)
+                        _sched_log.info(
+                            f"Scheduler: {c['db_name']} → "
+                            f"{ok} report(s) generated, {err} error(s)"
+                        )
+                    else:
+                        next_run_mins = interval_mins - elapsed_mins
+                        _sched_log.debug(
+                            f"Scheduler: {c['db_name']} not due "
+                            f"(next run in {next_run_mins:.0f}m)"
+                        )
+
+                except Exception as e:
+                    _sched_log.error(
+                        f"Scheduler: error for {c.get('db_name','?')}: {e}"
+                    )
+
+        except Exception as e:
+            _sched_log.error(f'Scheduler loop error: {e}')
+
+        # Check every 5 minutes
+        _time.sleep(300)
+
+
 @app.on_event("startup")
 async def on_startup():
     """On portal start — auto-patch Grafana dashboard URLs from portal_config."""
     import asyncio
     # Run in background so startup isn't delayed
     asyncio.create_task(asyncio.to_thread(_auto_patch_grafana_dashboards))
+    # Start Oracle AWR auto-generation scheduler
+    asyncio.create_task(asyncio.to_thread(_oracle_awr_scheduler))
 
 # Static files and templates
 _static_dir    = os.path.join(_PORTAL_DIR, "static")
