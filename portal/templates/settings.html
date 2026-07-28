@@ -1447,7 +1447,7 @@ async function saveOracleConn() {
     service_name:     document.getElementById('oc_service_name').value.trim(),
     username:         document.getElementById('oc_username').value.trim(),
     password:         document.getElementById('oc_password').value,
-    snap_interval_hrs:parseInt(document.getElementById('oc_snap_interval_hrs').value) || 1,
+    snap_interval_hrs:parseFloat(document.getElementById('oc_snap_interval_hrs').value) || 1,
     enabled:          document.getElementById('oc_enabled').checked,
   };
   if (!body.db_name || !body.host || !body.service_name || !body.username) {
