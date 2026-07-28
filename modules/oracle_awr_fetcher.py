@@ -97,10 +97,11 @@ def get_all_connections() -> list:
             rows = []
             for row in cur.fetchall():
                 d = dict(zip(cols, row))
-                # Convert datetime objects to strings for JSON serialisation
-                for k in ('last_run_at', 'added_at'):
-                    if d.get(k) is not None:
-                        d[k] = d[k].strftime('%Y-%m-%d %H:%M:%S')
+                for k, v in d.items():
+                    if hasattr(v, 'strftime'):          # datetime → string
+                        d[k] = v.strftime('%Y-%m-%d %H:%M:%S')
+                    elif hasattr(v, 'quantize'):        # Decimal → float
+                        d[k] = float(v)
                 rows.append(d)
             return rows
     finally:
