@@ -324,31 +324,147 @@
           </div>
         </div>
         <div id="awr-db-cfg" style="display:none">
-          <div class="s-row">
-            <div class="s-field">
-              <label class="s-label">Oracle DB Host</label>
-              <input class="s-input" id="awr_db_host" value="{{ cfg.awr_db_host }}" placeholder="192.168.1.10">
+          <!-- ── Oracle Direct AWR Connection Manager ────────────────── -->
+          <div class="s-card-title" style="margin-top:16px">Oracle Database Connections</div>
+          <p style="font-size:12px;color:var(--text2);margin:4px 0 12px">
+            Configure one connection per Oracle database. The portal will connect via sqlplus,
+            query available snapshots, and generate AWR HTML reports automatically.
+            Reports are saved to <code>awr_reports\&lt;DBNAME&gt;\</code> and parsed by the queue processor.
+          </p>
+
+          <!-- Connection table -->
+          <div id="oracle-conn-table-wrap" style="margin-bottom:16px">
+            <table class="s-table" id="oracle-conn-table" style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr style="background:var(--card2)">
+                  <th style="padding:6px 8px;text-align:left">DB Name</th>
+                  <th style="padding:6px 8px;text-align:left">Host:Port / Service</th>
+                  <th style="padding:6px 8px;text-align:left">User</th>
+                  <th style="padding:6px 8px;text-align:left">Interval</th>
+                  <th style="padding:6px 8px;text-align:left">Enabled</th>
+                  <th style="padding:6px 8px;text-align:left">Last Run</th>
+                  <th style="padding:6px 8px;text-align:left">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="oracle-conn-tbody">
+                <tr><td colspan="7" style="padding:12px;color:var(--text2);text-align:center">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Add / Edit form -->
+          <div id="oracle-conn-form" style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:12px" id="oracle-form-title">➕ Add Oracle Connection</div>
+            <input type="hidden" id="oc_edit_id" value="">
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">DB Name <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="oc_db_name" placeholder="MERC" style="text-transform:uppercase">
+              </div>
+              <div class="s-field">
+                <label class="s-label">Display Name</label>
+                <input class="s-input" id="oc_display_name" placeholder="Production MERC">
+              </div>
             </div>
-            <div class="s-field">
-              <label class="s-label">Port</label>
-              <input class="s-input" id="awr_db_port" value="{{ cfg.awr_db_port }}" placeholder="1521">
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Host <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="oc_host" placeholder="192.168.1.10">
+              </div>
+              <div class="s-field">
+                <label class="s-label">Port</label>
+                <input class="s-input" id="oc_port" placeholder="1521" value="1521" type="number">
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Service Name <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="oc_service_name" placeholder="MERC or MERC.domain.com">
+              </div>
+              <div class="s-field">
+                <label class="s-label">Username <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="oc_username" placeholder="awrportal">
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Password <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="oc_password" type="password" placeholder="(enter to set or change)">
+              </div>
+              <div class="s-field">
+                <label class="s-label">Snap Interval (hrs)</label>
+                <select class="s-select" id="oc_snap_interval_hrs">
+                  <option value="0">Manual only</option>
+                  <option value="1" selected>Every 1 hour</option>
+                  <option value="2">Every 2 hours</option>
+                  <option value="4">Every 4 hours</option>
+                  <option value="8">Every 8 hours</option>
+                  <option value="24">Daily</option>
+                </select>
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">sqlplus Path</label>
+                <input class="s-input" id="oc_sqlplus_path" placeholder="sqlplus  (or full path: C:\oracle\bin\sqlplus.exe)">
+              </div>
+              <div class="s-field">
+                <label class="s-label">ORACLE_HOME</label>
+                <input class="s-input" id="oc_oracle_home" placeholder="C:\oracle\product\19.0.0\client_1">
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+              <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+                <input type="checkbox" id="oc_enabled" checked> Enabled
+              </label>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="s-btn s-btn-primary" onclick="saveOracleConn()" style="min-width:100px">💾 Save</button>
+              <button class="s-btn" onclick="clearOracleConnForm()" style="min-width:80px">✖ Cancel</button>
+              <span id="oracle-conn-save-msg" style="font-size:12px;align-self:center"></span>
             </div>
           </div>
-          <div class="s-row">
-            <div class="s-field">
-              <label class="s-label">Service Name</label>
-              <input class="s-input" id="awr_db_service" value="{{ cfg.awr_db_service }}" placeholder="ORCL">
+
+          <!-- Generate AWR panel -->
+          <div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:16px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:12px">📄 Generate AWR Reports</div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Database</label>
+                <select class="s-select" id="oc_gen_conn_id">
+                  <option value="">All enabled databases</option>
+                </select>
+              </div>
+              <div class="s-field">
+                <label class="s-label">Date</label>
+                <input class="s-input" type="date" id="oc_gen_date">
+              </div>
             </div>
-            <div class="s-field">
-              <label class="s-label">Username</label>
-              <input class="s-input" id="awr_db_user" value="{{ cfg.awr_db_user }}" placeholder="awrreader">
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Start from Snap ID (optional)</label>
+                <input class="s-input" id="oc_gen_begin_snap" placeholder="Leave blank = all snaps on date" type="number">
+              </div>
+              <div class="s-field" style="align-self:flex-end">
+                <button class="s-btn" onclick="fetchSnapsForGenDate()" style="margin-bottom:2px">🔍 Preview Snaps</button>
+              </div>
             </div>
+            <div id="oc-snap-preview" style="font-size:11px;color:var(--text2);margin:4px 0 8px;display:none"></div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="s-btn s-btn-primary" onclick="generateAWRReports()">⚡ Generate AWR Reports</button>
+              <span id="oc-gen-msg" style="font-size:12px;align-self:center"></span>
+            </div>
+            <div id="oc-gen-results" style="margin-top:12px;font-size:12px;display:none"></div>
           </div>
-          <div class="s-row">
-            <div class="s-field">
-              <label class="s-label">Password</label>
-              <input class="s-input" id="awr_db_password" type="password" value="{{ cfg.awr_db_password }}">
-            </div>
+
+          <!-- Required Oracle privileges info box -->
+          <div style="background:#0c2340;border:1px solid #1e4d7a;border-left:3px solid #3b82f6;border-radius:6px;padding:10px 14px;margin-top:14px;font-size:11px;color:#93c5fd">
+            <div style="font-weight:600;margin-bottom:6px">ℹ️ Required Oracle Privileges for awrportal user</div>
+            <code style="display:block;white-space:pre;font-size:10px;color:#bfdbfe;line-height:1.6">GRANT CONNECT TO awrportal;
+GRANT SELECT ON DBA_HIST_SNAPSHOT TO awrportal;
+GRANT SELECT ON DBA_HIST_DATABASE_INSTANCE TO awrportal;
+GRANT EXECUTE ON DBMS_WORKLOAD_REPOSITORY TO awrportal;
+GRANT SELECT ANY DICTIONARY TO awrportal;  -- needed by awrrpti.sql</code>
           </div>
         </div>
       </div>
@@ -1210,6 +1326,257 @@ function toggleAwrSource(val) {
   document.getElementById('awr-local-cfg').style.display   = val === 'local'     ? '' : 'none';
   document.getElementById('awr-network-cfg').style.display = val === 'network'   ? '' : 'none';
   document.getElementById('awr-db-cfg').style.display      = val === 'direct_db' ? '' : 'none';
+  if (val === 'direct_db') loadOracleConnections();
+}
+
+// ── Oracle Connection Manager ─────────────────────────────────────────────────
+let _oracleConns = [];
+
+async function loadOracleConnections() {
+  try {
+    const res = await fetch('/api/oracle-connections');
+    const data = await res.json();
+    _oracleConns = data.connections || [];
+    renderOracleConnTable();
+    populateGenDropdown();
+  } catch(e) {
+    console.error('loadOracleConnections:', e);
+  }
+}
+
+function renderOracleConnTable() {
+  const tbody = document.getElementById('oracle-conn-tbody');
+  if (!_oracleConns.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="padding:12px;color:var(--text2);text-align:center">No connections configured yet. Add one below.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = _oracleConns.map(c => {
+    const lastRun = c.last_run_at ? new Date(c.last_run_at).toLocaleString() : '—';
+    const interval = c.snap_interval_hrs == 0 ? 'Manual' : `Every ${c.snap_interval_hrs}h`;
+    const enabled = c.enabled
+      ? '<span style="color:#10b981;font-size:11px">✅ Yes</span>'
+      : '<span style="color:#6b7280;font-size:11px">⬜ No</span>';
+    return `<tr style="border-top:1px solid var(--border)">
+      <td style="padding:6px 8px;font-weight:600">${c.db_name}</td>
+      <td style="padding:6px 8px;font-size:11px">${c.host}:${c.port} / ${c.service_name}</td>
+      <td style="padding:6px 8px">${c.username}</td>
+      <td style="padding:6px 8px;font-size:11px">${interval}</td>
+      <td style="padding:6px 8px">${enabled}</td>
+      <td style="padding:6px 8px;font-size:11px">${lastRun}</td>
+      <td style="padding:6px 8px">
+        <button class="s-btn" style="padding:2px 8px;font-size:11px" onclick="editOracleConn(${c.id})">✏️</button>
+        <button class="s-btn" style="padding:2px 8px;font-size:11px;margin-left:4px" onclick="testOracleConn(${c.id},this)">🔌</button>
+        <button class="s-btn" style="padding:2px 8px;font-size:11px;margin-left:4px;color:#ef4444" onclick="deleteOracleConn(${c.id},'${c.db_name}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function populateGenDropdown() {
+  const sel = document.getElementById('oc_gen_conn_id');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All enabled databases</option>';
+  _oracleConns.filter(c => c.enabled).forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = `${c.db_name}${c.display_name && c.display_name !== c.db_name ? ' — ' + c.display_name : ''}`;
+    sel.appendChild(opt);
+  });
+  if (cur) sel.value = cur;
+
+  // Set default date to today
+  const d = document.getElementById('oc_gen_date');
+  if (!d.value) d.value = new Date().toISOString().slice(0,10);
+}
+
+function clearOracleConnForm() {
+  document.getElementById('oc_edit_id').value = '';
+  ['oc_db_name','oc_display_name','oc_host','oc_port','oc_service_name',
+   'oc_username','oc_password','oc_sqlplus_path','oc_oracle_home'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = id === 'oc_port' ? '1521' : '';
+  });
+  document.getElementById('oc_snap_interval_hrs').value = '1';
+  document.getElementById('oc_enabled').checked = true;
+  document.getElementById('oracle-form-title').textContent = '➕ Add Oracle Connection';
+  document.getElementById('oracle-conn-save-msg').textContent = '';
+}
+
+function editOracleConn(id) {
+  const c = _oracleConns.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('oc_edit_id').value = id;
+  document.getElementById('oc_db_name').value = c.db_name;
+  document.getElementById('oc_display_name').value = c.display_name || '';
+  document.getElementById('oc_host').value = c.host;
+  document.getElementById('oc_port').value = c.port;
+  document.getElementById('oc_service_name').value = c.service_name;
+  document.getElementById('oc_username').value = c.username;
+  document.getElementById('oc_password').value = '';  // never pre-fill password
+  document.getElementById('oc_sqlplus_path').value = c.sqlplus_path || '';
+  document.getElementById('oc_oracle_home').value = c.oracle_home || '';
+  document.getElementById('oc_snap_interval_hrs').value = String(c.snap_interval_hrs || 1);
+  document.getElementById('oc_enabled').checked = !!c.enabled;
+  document.getElementById('oracle-form-title').textContent = `✏️ Edit: ${c.db_name}`;
+  document.getElementById('oc_db_name').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+async function saveOracleConn() {
+  const msg = document.getElementById('oracle-conn-save-msg');
+  msg.textContent = 'Saving…';
+  const body = {
+    db_name:          document.getElementById('oc_db_name').value.trim().toUpperCase(),
+    display_name:     document.getElementById('oc_display_name').value.trim(),
+    host:             document.getElementById('oc_host').value.trim(),
+    port:             parseInt(document.getElementById('oc_port').value) || 1521,
+    service_name:     document.getElementById('oc_service_name').value.trim(),
+    username:         document.getElementById('oc_username').value.trim(),
+    password:         document.getElementById('oc_password').value,
+    sqlplus_path:     document.getElementById('oc_sqlplus_path').value.trim(),
+    oracle_home:      document.getElementById('oc_oracle_home').value.trim(),
+    snap_interval_hrs:parseInt(document.getElementById('oc_snap_interval_hrs').value) || 1,
+    enabled:          document.getElementById('oc_enabled').checked,
+  };
+  if (!body.db_name || !body.host || !body.service_name || !body.username) {
+    msg.textContent = '❌ DB Name, Host, Service Name and Username are required';
+    msg.style.color = '#ef4444';
+    return;
+  }
+  try {
+    const res  = await fetch('/api/oracle-connections', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.ok) {
+      msg.textContent = '✅ Saved';
+      msg.style.color = '#10b981';
+      clearOracleConnForm();
+      await loadOracleConnections();
+    } else {
+      msg.textContent = '❌ ' + (data.error || 'Save failed');
+      msg.style.color = '#ef4444';
+    }
+  } catch(e) {
+    msg.textContent = '❌ ' + e.message;
+    msg.style.color = '#ef4444';
+  }
+}
+
+async function deleteOracleConn(id, dbName) {
+  if (!confirm(`Remove Oracle connection for ${dbName}?`)) return;
+  await fetch(`/api/oracle-connections/${id}`, {method:'DELETE'});
+  await loadOracleConnections();
+}
+
+async function testOracleConn(id, btn) {
+  const orig = btn.textContent;
+  btn.textContent = '…';
+  btn.disabled = true;
+  try {
+    const res  = await fetch(`/api/oracle-connections/${id}/test`, {method:'POST'});
+    const data = await res.json();
+    alert(data.ok
+      ? `✅ ${data.message}`
+      : `❌ ${data.message}`);
+  } catch(e) {
+    alert('❌ Test failed: ' + e.message);
+  } finally {
+    btn.textContent = orig;
+    btn.disabled = false;
+  }
+}
+
+async function fetchSnapsForGenDate() {
+  const connId = document.getElementById('oc_gen_conn_id').value;
+  const date   = document.getElementById('oc_gen_date').value;
+  const preview = document.getElementById('oc-snap-preview');
+  if (!connId) { preview.style.display='none'; return; }
+  if (!date) { alert('Select a date first'); return; }
+  preview.style.display = '';
+  preview.textContent = 'Fetching snaps…';
+  try {
+    const res  = await fetch(`/api/oracle-connections/${connId}/snaps?snap_date=${date}`);
+    const data = await res.json();
+    if (!data.ok) { preview.textContent = '❌ ' + data.error; return; }
+    if (!data.snaps.length) { preview.textContent = 'No snaps found for this date.'; return; }
+    const snaps = data.snaps;
+    preview.innerHTML = `<strong>${snaps.length} snap(s) found.</strong> `
+      + snaps.map(s => `Snap ${s.snap_id}: ${s.begin_interval_time} → ${s.end_interval_time}`).join(' | ');
+    // Pre-fill begin_snap with the first snap on date
+    if (snaps.length) {
+      document.getElementById('oc_gen_begin_snap').placeholder = `e.g. ${snaps[0].snap_id} (first snap)`;
+    }
+  } catch(e) {
+    preview.textContent = '❌ ' + e.message;
+  }
+}
+
+async function generateAWRReports() {
+  const connId    = document.getElementById('oc_gen_conn_id').value || null;
+  const date      = document.getElementById('oc_gen_date').value;
+  const beginSnap = document.getElementById('oc_gen_begin_snap').value;
+  const msg       = document.getElementById('oc-gen-msg');
+  const results   = document.getElementById('oc-gen-results');
+
+  if (!date) { alert('Select a date'); return; }
+  msg.textContent = '⏳ Generating AWR reports… (this may take a few minutes)';
+  msg.style.color = '#f59e0b';
+  results.style.display = 'none';
+
+  try {
+    const body = {
+      conn_id: connId ? parseInt(connId) : null,
+      snap_date: date,
+      begin_snap_override: beginSnap ? parseInt(beginSnap) : null
+    };
+    const res  = await fetch('/api/oracle-connections/generate-awrs', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+
+    if (!data.ok) {
+      msg.textContent = '❌ ' + (data.error || 'Generation failed');
+      msg.style.color = '#ef4444';
+      return;
+    }
+
+    // Show summary
+    if (data.results) {
+      // Multiple DBs
+      const total = data.total_reports_generated || 0;
+      const errs  = data.total_errors || 0;
+      msg.textContent = `✅ ${total} report(s) generated across ${data.databases_processed} DB(s). ${errs ? errs + ' error(s).' : ''}`;
+      msg.style.color = errs ? '#f59e0b' : '#10b981';
+      results.style.display = '';
+      results.innerHTML = data.results.map(r =>
+        `<div style="margin-bottom:6px"><strong>${r.db_name}</strong>: `
+        + (r.reports_generated || 0) + ' reports generated'
+        + (r.errors ? `, ${r.errors} error(s)` : '')
+        + (r.message ? ` — ${r.message}` : '') + '</div>'
+      ).join('');
+    } else {
+      // Single DB
+      const ok  = data.reports_generated || 0;
+      const err = data.errors || 0;
+      msg.textContent = `✅ ${ok} report(s) generated for ${data.db_name}. ${err ? err + ' error(s).' : ''}`;
+      msg.style.color = err ? '#f59e0b' : '#10b981';
+      if (data.reports && data.reports.length) {
+        results.style.display = '';
+        results.innerHTML = data.reports.map(r =>
+          `<div style="margin-bottom:4px">`
+          + (r.ok ? '✅' : '❌')
+          + ` Snap ${r.begin_snap}→${r.end_snap} (${r.begin_time.slice(11,16)} → ${r.end_time.slice(11,16)})`
+          + (r.error ? ` — ${r.error}` : '')
+          + '</div>'
+        ).join('');
+      }
+    }
+  } catch(e) {
+    msg.textContent = '❌ ' + e.message;
+    msg.style.color = '#ef4444';
+  }
 }
 function toggleSarSource(val) {
   document.getElementById('sar-local-cfg').style.display = val === 'local' ? '' : 'none';

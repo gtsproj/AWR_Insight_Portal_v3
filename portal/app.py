@@ -3146,6 +3146,157 @@ async def api_ai_history(dbname: str = "", limit: int = 50):
         conn.close()
 
 
+# ══════════════════════════════════════════════════════════════════════
+# ORACLE DIRECT AWR CONNECTION API
+# ══════════════════════════════════════════════════════════════════════
+
+@app.get("/api/oracle-connections")
+async def api_get_oracle_connections(request: Request):
+    """List all configured Oracle AWR connections."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.oracle_awr_fetcher import get_all_connections
+        conns = get_all_connections()
+        # Don't return passwords
+        for c in conns:
+            c.pop('password_enc', None)
+            c.pop('password', None)
+        return JSONResponse({"ok": True, "connections": conns})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/oracle-connections")
+async def api_save_oracle_connection(request: Request):
+    """Add or update an Oracle AWR connection."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        body = await request.json()
+        session = _get_session(request)
+        from modules.oracle_awr_fetcher import save_connection
+        result = save_connection(body, added_by=session.get("username", "admin"))
+        return JSONResponse(result, status_code=200 if result["ok"] else 400)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.delete("/api/oracle-connections/{conn_id}")
+async def api_delete_oracle_connection(conn_id: int, request: Request):
+    """Delete an Oracle AWR connection."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.oracle_awr_fetcher import delete_connection
+        result = delete_connection(conn_id)
+        return JSONResponse(result)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/oracle-connections/{conn_id}/test")
+async def api_test_oracle_connection(conn_id: int, request: Request):
+    """Test connectivity for an Oracle AWR connection."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.oracle_awr_fetcher import get_connection_by_id, test_connection
+        cfg = get_connection_by_id(conn_id)
+        if not cfg:
+            return JSONResponse({"ok": False, "message": "Connection not found"}, status_code=404)
+        result = test_connection(cfg)
+        return JSONResponse(result)
+    except Exception as e:
+        return JSONResponse({"ok": False, "message": str(e)}, status_code=500)
+
+
+@app.get("/api/oracle-connections/{conn_id}/snaps")
+async def api_get_oracle_snaps(conn_id: int, request: Request,
+                                snap_date: str = None):
+    """
+    Get available snap IDs for a given date from Oracle DBA_HIST_SNAPSHOT.
+    snap_date: YYYY-MM-DD (defaults to today)
+    """
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from datetime import date as dt_date
+        from modules.oracle_awr_fetcher import get_connection_by_id, get_snaps_for_date
+        cfg = get_connection_by_id(conn_id)
+        if not cfg:
+            return JSONResponse({"ok": False, "error": "Connection not found"}, status_code=404)
+        if snap_date:
+            try:
+                target_date = dt_date.fromisoformat(snap_date)
+            except ValueError:
+                return JSONResponse({"ok": False, "error": "Invalid date format"}, status_code=400)
+        else:
+            target_date = dt_date.today()
+        snaps = get_snaps_for_date(cfg, target_date)
+        return JSONResponse({"ok": True, "snaps": snaps, "count": len(snaps)})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/oracle-connections/generate-awrs")
+async def api_generate_awrs(request: Request):
+    """
+    Generate AWR reports for one or all Oracle connections for a given date.
+    Body: { conn_id: int|null, snap_date: "YYYY-MM-DD", begin_snap_override: int|null }
+    If conn_id is null, generates for ALL enabled connections.
+    """
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        body = await request.json()
+        conn_id       = body.get("conn_id")  # None = all
+        snap_date_str = body.get("snap_date", "")
+        begin_snap_override = body.get("begin_snap_override")
+
+        from datetime import date as dt_date
+        from modules.oracle_awr_fetcher import (
+            fetch_awrs_for_date, fetch_awrs_all_dbs
+        )
+        import yaml, os
+
+        # Get awr_reports dir from settings.yaml
+        settings_path = os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')
+        with open(settings_path) as f:
+            settings = yaml.safe_load(f)
+        awr_dir = settings.get('portal', {}).get('awr_reports_dir', 'awr_reports')
+        if not os.path.isabs(awr_dir):
+            awr_dir = os.path.join(_PROJECT_ROOT, awr_dir)
+        os.makedirs(awr_dir, exist_ok=True)
+
+        if snap_date_str:
+            try:
+                target_date = dt_date.fromisoformat(snap_date_str)
+            except ValueError:
+                return JSONResponse({"ok": False, "error": "Invalid date"}, status_code=400)
+        else:
+            target_date = dt_date.today()
+
+        if conn_id:
+            result = fetch_awrs_for_date(
+                int(conn_id), target_date, awr_dir, begin_snap_override
+            )
+            return JSONResponse(result)
+        else:
+            results = fetch_awrs_all_dbs(target_date, awr_dir)
+            total_ok  = sum(r.get('reports_generated', 0) for r in results)
+            total_err = sum(r.get('errors', 0) for r in results)
+            return JSONResponse({
+                "ok": True,
+                "databases_processed": len(results),
+                "total_reports_generated": total_ok,
+                "total_errors": total_err,
+                "results": results
+            })
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
 # ── run ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     import uvicorn
