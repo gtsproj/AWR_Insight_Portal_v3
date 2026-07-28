@@ -88,7 +88,7 @@ def get_all_connections() -> list:
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT id, db_name, display_name, host, port, service_name,
-                       username, sqlplus_path, oracle_home, snap_interval_hrs,
+                       username, snap_interval_hrs,
                        enabled, last_run_at, last_snap_id, added_at, added_by
                 FROM awr_oracle_connections
                 ORDER BY db_name
@@ -106,7 +106,7 @@ def get_connection_by_id(conn_id: int) -> Optional[dict]:
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT id, db_name, display_name, host, port, service_name,
-                       username, password_enc, sqlplus_path, oracle_home,
+                       username, password_enc,
                        snap_interval_hrs, enabled, last_run_at, last_snap_id
                 FROM awr_oracle_connections
                 WHERE id = %s
@@ -129,8 +129,6 @@ def save_connection(data: dict, added_by: str = 'admin') -> dict:
     service_name      = (data.get('service_name') or '').strip()
     username          = (data.get('username') or '').strip()
     password          = (data.get('password') or '').strip()
-    sqlplus_path      = (data.get('sqlplus_path') or '').strip()
-    oracle_home       = (data.get('oracle_home') or '').strip()
     snap_interval_hrs = int(data.get('snap_interval_hrs') or 1)
     enabled           = bool(data.get('enabled', True))
 
@@ -165,9 +163,8 @@ def save_connection(data: dict, added_by: str = 'admin') -> dict:
             cur.execute("""
                 INSERT INTO awr_oracle_connections
                     (db_name, display_name, host, port, service_name, username,
-                     password_enc, sqlplus_path, oracle_home, snap_interval_hrs,
-                     enabled, added_by)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                     password_enc, snap_interval_hrs, enabled, added_by)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 ON CONFLICT (db_name) DO UPDATE SET
                     display_name       = EXCLUDED.display_name,
                     host               = EXCLUDED.host,
@@ -178,15 +175,12 @@ def save_connection(data: dict, added_by: str = 'admin') -> dict:
                         WHEN EXCLUDED.password_enc != ''
                         THEN EXCLUDED.password_enc
                         ELSE awr_oracle_connections.password_enc END,
-                    sqlplus_path       = EXCLUDED.sqlplus_path,
-                    oracle_home        = EXCLUDED.oracle_home,
                     snap_interval_hrs  = EXCLUDED.snap_interval_hrs,
                     enabled            = EXCLUDED.enabled,
                     added_by           = EXCLUDED.added_by
                 RETURNING id
             """, (db_name, display_name, host, port, service_name, username,
-                  password_enc, sqlplus_path, oracle_home, snap_interval_hrs,
-                  enabled, added_by))
+                  password_enc, snap_interval_hrs, enabled, added_by))
             new_id = cur.fetchone()[0]
         conn.commit()
         return {'ok': True, 'id': new_id}

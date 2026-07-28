@@ -403,16 +403,7 @@
                 </select>
               </div>
             </div>
-            <div class="s-row">
-              <div class="s-field">
-                <label class="s-label">sqlplus Path</label>
-                <input class="s-input" id="oc_sqlplus_path" placeholder="sqlplus  (or full path: C:\oracle\bin\sqlplus.exe)">
-              </div>
-              <div class="s-field">
-                <label class="s-label">ORACLE_HOME</label>
-                <input class="s-input" id="oc_oracle_home" placeholder="C:\oracle\product\19.0.0\client_1">
-              </div>
-            </div>
+
             <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
               <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
                 <input type="checkbox" id="oc_enabled" checked> Enabled
@@ -1397,7 +1388,7 @@ function populateGenDropdown() {
 function clearOracleConnForm() {
   document.getElementById('oc_edit_id').value = '';
   ['oc_db_name','oc_display_name','oc_host','oc_port','oc_service_name',
-   'oc_username','oc_password','oc_sqlplus_path','oc_oracle_home'].forEach(id => {
+   'oc_username','oc_password'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = id === 'oc_port' ? '1521' : '';
   });
@@ -1418,8 +1409,6 @@ function editOracleConn(id) {
   document.getElementById('oc_service_name').value = c.service_name;
   document.getElementById('oc_username').value = c.username;
   document.getElementById('oc_password').value = '';  // never pre-fill password
-  document.getElementById('oc_sqlplus_path').value = c.sqlplus_path || '';
-  document.getElementById('oc_oracle_home').value = c.oracle_home || '';
   document.getElementById('oc_snap_interval_hrs').value = String(c.snap_interval_hrs || 1);
   document.getElementById('oc_enabled').checked = !!c.enabled;
   document.getElementById('oracle-form-title').textContent = `✏️ Edit: ${c.db_name}`;
@@ -1437,8 +1426,6 @@ async function saveOracleConn() {
     service_name:     document.getElementById('oc_service_name').value.trim(),
     username:         document.getElementById('oc_username').value.trim(),
     password:         document.getElementById('oc_password').value,
-    sqlplus_path:     document.getElementById('oc_sqlplus_path').value.trim(),
-    oracle_home:      document.getElementById('oc_oracle_home').value.trim(),
     snap_interval_hrs:parseInt(document.getElementById('oc_snap_interval_hrs').value) || 1,
     enabled:          document.getElementById('oc_enabled').checked,
   };

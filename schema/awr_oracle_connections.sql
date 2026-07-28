@@ -12,8 +12,6 @@ CREATE TABLE IF NOT EXISTS awr_oracle_connections (
     service_name    TEXT NOT NULL,           -- Oracle service name (not SID)
     username        TEXT NOT NULL,
     password_enc    TEXT NOT NULL,           -- base64 obfuscated (not true encryption)
-    sqlplus_path    TEXT DEFAULT 'sqlplus',  -- full path to sqlplus.exe or just 'sqlplus'
-    oracle_home     TEXT,                    -- ORACLE_HOME for awrrpti.sql location
     snap_interval_hrs INTEGER DEFAULT 1,     -- generate report every N hours (0 = manual only)
     enabled         BOOLEAN DEFAULT TRUE,
     last_run_at     TIMESTAMP,
