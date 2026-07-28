@@ -73,8 +73,9 @@ def _oracle_awr_scheduler():
     """
     import time as _time
     from datetime import date as _date, datetime as _dt
+    from logger_utils import get_logger as _get_logger
 
-    _sched_log = logging.getLogger('oracle_awr_scheduler')
+    _sched_log = _get_logger('oracle_awr_scheduler')
     _sched_log.info('Oracle AWR scheduler started — checking every 5 minutes')
 
     # Get awr_reports dir from settings
@@ -106,10 +107,9 @@ def _oracle_awr_scheduler():
                 try:
                     interval_hrs  = float(c.get('snap_interval_hrs', 1))
                     interval_mins = interval_hrs * 60
-                    last_run      = c.get('last_run_at')  # already string or None
+                    last_run      = c.get('last_run_at')  # string or None
 
                     if last_run:
-                        # Parse back to datetime
                         try:
                             last_run_dt = _dt.strptime(last_run, '%Y-%m-%d %H:%M:%S')
                         except (ValueError, TypeError):
@@ -152,18 +152,25 @@ def _oracle_awr_scheduler():
         except Exception as e:
             _sched_log.error(f'Scheduler loop error: {e}')
 
-        # Check every 5 minutes
-        _time.sleep(300)
+        _time.sleep(300)  # check every 5 minutes
 
 
 @app.on_event("startup")
 async def on_startup():
     """On portal start — auto-patch Grafana dashboard URLs from portal_config."""
     import asyncio
+    import threading
     # Run in background so startup isn't delayed
     asyncio.create_task(asyncio.to_thread(_auto_patch_grafana_dashboards))
-    # Start Oracle AWR auto-generation scheduler
-    asyncio.create_task(asyncio.to_thread(_oracle_awr_scheduler))
+    # Start Oracle AWR auto-generation scheduler as a daemon thread
+    # (daemon=True means it exits automatically when the portal process exits)
+    _sched_thread = threading.Thread(
+        target=_oracle_awr_scheduler,
+        name='OracleAWRScheduler',
+        daemon=True
+    )
+    _sched_thread.start()
+    logger.info('Oracle AWR scheduler thread started')
 
 # Static files and templates
 _static_dir    = os.path.join(_PORTAL_DIR, "static")
