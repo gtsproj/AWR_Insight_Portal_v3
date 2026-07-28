@@ -459,12 +459,17 @@
 
           <!-- Required Oracle privileges info box -->
           <div style="background:#0c2340;border:1px solid #1e4d7a;border-left:3px solid #3b82f6;border-radius:6px;padding:10px 14px;margin-top:14px;font-size:11px;color:#93c5fd">
-            <div style="font-weight:600;margin-bottom:6px">ℹ️ Required Oracle Privileges for awrportal user</div>
-            <code style="display:block;white-space:pre;font-size:10px;color:#bfdbfe;line-height:1.6">GRANT CONNECT TO awrportal;
-GRANT SELECT ON DBA_HIST_SNAPSHOT TO awrportal;
-GRANT SELECT ON DBA_HIST_DATABASE_INSTANCE TO awrportal;
-GRANT EXECUTE ON DBMS_WORKLOAD_REPOSITORY TO awrportal;
-GRANT SELECT ANY DICTIONARY TO awrportal;  -- needed by awrrpti.sql</code>
+            <div style="font-weight:600;margin-bottom:6px">ℹ️ Required Oracle Privileges — no DBA role needed</div>
+            <code style="display:block;white-space:pre;font-size:10px;color:#bfdbfe;line-height:1.8">-- Run on Oracle as SYSDBA:
+CREATE USER awrportal IDENTIFIED BY "YourPassword123";
+GRANT CREATE SESSION        TO awrportal;
+GRANT SELECT_CATALOG_ROLE   TO awrportal;   -- read-only DBA_HIST_* access, no data access
+GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
+            <div style="margin-top:8px;color:#7dd3fc;font-size:10px">
+              SELECT_CATALOG_ROLE grants read-only access to all DBA_* and V$ views needed by AWR report generation.
+              It does NOT grant access to application table data and is NOT the DBA role.
+              Uses oracledb thin mode — no Oracle Client installation required on the portal server.
+            </div>
           </div>
         </div>
       </div>
