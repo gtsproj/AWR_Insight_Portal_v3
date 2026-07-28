@@ -2585,17 +2585,80 @@ async def api_metadata_upload(request: Request,
 
     content_bytes = await csv_file.read()
     text = content_bytes.decode("utf-8", errors="replace")
-    reader = csv.DictReader(io.StringIO(text), delimiter="|")
+
+    # ── Pre-clean: remove sqlplus noise lines before CSV parsing ────────────
+    # sqlplus VERIFY, SPOOL, PROMPT, blank lines, and SET output
+    # can appear in the spool file and break csv.DictReader
+    clean_lines = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        # Skip empty lines and known sqlplus output patterns
+        if not stripped:
+            continue
+        if stripped.startswith(('old ', 'new ', 'PROMPT', 'SPOOL',
+                                 'SET ', 'DEFINE ', 'SP2-', 'ORA-',
+                                 'ERROR', '====', '----')):
+            continue
+        clean_lines.append(stripped)
+
+    if not clean_lines:
+        return JSONResponse({"ok": False, "message": "File appears empty after cleaning",
+                             "inserted": 0, "errors": 0})
+
+    clean_text = '\n'.join(clean_lines)
+    reader = csv.DictReader(io.StringIO(clean_text), delimiter="|")
+
+    # Validate header
+    expected_cols = {'dbname', 'owner', 'object_name', 'object_type'}
+    if not reader.fieldnames or not expected_cols.issubset(
+            {f.strip().lower() for f in reader.fieldnames}):
+        return JSONResponse({
+            "ok": False,
+            "message": f"Invalid CSV header. Expected columns: {expected_cols}. "
+                       f"Got: {reader.fieldnames}",
+            "inserted": 0, "errors": 0
+        })
+
+    def clean(val):
+        """Strip whitespace and return None for empty strings."""
+        if val is None:
+            return None
+        v = str(val).strip()
+        return v if v else None
+
+    def clean_int(val):
+        """Strip and convert to int, return None if empty or non-numeric."""
+        v = clean(val)
+        if v is None:
+            return None
+        try:
+            return int(float(v))
+        except (ValueError, TypeError):
+            return None
 
     inserted = 0
     updated  = 0
     errors   = 0
+    error_log = []
 
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
-            for row in reader:
+            for row_num, row in enumerate(reader, start=2):
                 try:
+                    # Strip all field names and values
+                    row = {k.strip().lower(): v for k, v in row.items() if k}
+
+                    row_dbname    = dbname or clean(row.get("dbname", ""))
+                    row_owner     = clean(row.get("owner", ""))
+                    row_obj_name  = clean(row.get("object_name", ""))
+                    row_obj_type  = clean(row.get("object_type", ""))
+
+                    # Skip rows missing mandatory fields
+                    if not row_owner or not row_obj_name or not row_obj_type:
+                        errors += 1
+                        continue
+
                     cur.execute("""
                         INSERT INTO awr_object_metadata
                           (dbname, owner, object_name, object_type,
@@ -2620,41 +2683,47 @@ async def api_metadata_upload(request: Request,
                           partition_count    = EXCLUDED.partition_count,
                           uploaded_at        = NOW()
                     """, (
-                        dbname or row.get("dbname",""),
-                        row.get("owner",""),
-                        row.get("object_name",""),
-                        row.get("object_type",""),
-                        row.get("num_rows") or None,
-                        row.get("blocks") or None,
-                        row.get("avg_row_len") or None,
-                        row.get("last_analyzed") or None,
-                        row.get("partitioned") or None,
-                        row.get("compression") or None,
-                        row.get("index_type") or None,
-                        row.get("uniqueness") or None,
-                        row.get("blevel") or None,
-                        row.get("leaf_blocks") or None,
-                        row.get("distinct_keys") or None,
-                        row.get("clustering_factor") or None,
-                        row.get("status") or None,
-                        row.get("index_columns") or None,
-                        row.get("partition_type") or None,
-                        row.get("partition_count") or None,
+                        row_dbname,
+                        row_owner,
+                        row_obj_name,
+                        row_obj_type,
+                        clean_int(row.get("num_rows")),
+                        clean_int(row.get("blocks")),
+                        clean_int(row.get("avg_row_len")),
+                        clean(row.get("last_analyzed")),
+                        clean(row.get("partitioned")),
+                        clean(row.get("compression")),
+                        clean(row.get("index_type")),
+                        clean(row.get("uniqueness")),
+                        clean_int(row.get("blevel")),
+                        clean_int(row.get("leaf_blocks")),
+                        clean_int(row.get("distinct_keys")),
+                        clean_int(row.get("clustering_factor")),
+                        clean(row.get("status")),
+                        clean(row.get("index_columns")),
+                        clean(row.get("partition_type")),
+                        clean_int(row.get("partition_count")),
                     ))
                     inserted += 1
                 except Exception as e:
                     errors += 1
-                    logger.debug(f"Metadata row error: {e}")
+                    err_detail = f"Row {row_num}: {e}"
+                    error_log.append(err_detail)
+                    logger.debug(f"Metadata row error: {err_detail}")
         conn.commit()
     finally:
         conn.close()
 
-    return JSONResponse({
+    result = {
         "ok": True,
         "inserted": inserted,
         "errors": errors,
         "message": f"Processed {inserted} objects ({errors} errors)",
-    })
+    }
+    # Include first 10 errors in response for immediate visibility
+    if error_log:
+        result["error_details"] = error_log[:10]
+    return JSONResponse(result)
 
 
 @app.get("/api/metadata/refresh-status")
