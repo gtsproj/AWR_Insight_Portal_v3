@@ -27,3 +27,33 @@ COMMENT ON TABLE awr_oracle_connections IS
 
 CREATE INDEX IF NOT EXISTS idx_oracle_conn_enabled
     ON awr_oracle_connections (enabled, db_name);
+
+-- ============================================================
+-- Failed snap pairs — retry queue for AWR generation failures
+-- ============================================================
+CREATE TABLE IF NOT EXISTS awr_oracle_failed_snaps (
+    id              SERIAL PRIMARY KEY,
+    conn_id         INTEGER NOT NULL REFERENCES awr_oracle_connections(id) ON DELETE CASCADE,
+    db_name         TEXT NOT NULL,
+    snap_date       DATE NOT NULL,
+    begin_snap      INTEGER NOT NULL,
+    end_snap        INTEGER NOT NULL,
+    dbid            BIGINT,
+    instance_number INTEGER,
+    error_msg       TEXT,
+    retry_count     INTEGER DEFAULT 0,
+    max_retries     INTEGER DEFAULT 3,
+    first_failed_at TIMESTAMP DEFAULT NOW(),
+    last_tried_at   TIMESTAMP DEFAULT NOW(),
+    resolved        BOOLEAN DEFAULT FALSE,
+    CONSTRAINT uq_failed_snap UNIQUE (conn_id, begin_snap, end_snap)
+);
+
+COMMENT ON TABLE awr_oracle_failed_snaps IS
+    'Retry queue for AWR report generation failures. '
+    'Scheduler retries each failed pair up to max_retries times. '
+    'Resolved = TRUE once successfully generated or max retries exceeded.';
+
+CREATE INDEX IF NOT EXISTS idx_failed_snaps_pending
+    ON awr_oracle_failed_snaps (conn_id, resolved, retry_count)
+    WHERE resolved = FALSE;

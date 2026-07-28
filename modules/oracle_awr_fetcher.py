@@ -458,6 +458,143 @@ def generate_awr_report(cfg: dict,
             pass
 
 
+# ── Retry queue helpers ───────────────────────────────────────────────────────
+def _record_failure(conn_id: int, db_name: str, snap_date: date,
+                    begin_snap: int, end_snap: int,
+                    dbid: int, instance_number: int, error_msg: str):
+    """Write a failed snap pair to the retry queue."""
+    pg = _pg()
+    try:
+        with pg.cursor() as cur:
+            cur.execute("""
+                INSERT INTO awr_oracle_failed_snaps
+                    (conn_id, db_name, snap_date, begin_snap, end_snap,
+                     dbid, instance_number, error_msg,
+                     retry_count, first_failed_at, last_tried_at, resolved)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s, 1, NOW(), NOW(), FALSE)
+                ON CONFLICT (conn_id, begin_snap, end_snap) DO UPDATE SET
+                    error_msg    = EXCLUDED.error_msg,
+                    retry_count  = awr_oracle_failed_snaps.retry_count + 1,
+                    last_tried_at = NOW(),
+                    resolved     = FALSE
+            """, (conn_id, db_name, snap_date, begin_snap, end_snap,
+                  dbid, instance_number, (error_msg or '')[:500]))
+        pg.commit()
+    except Exception as e:
+        logger.error(f'_record_failure: {e}')
+    finally:
+        pg.close()
+
+
+def _mark_resolved(conn_id: int, begin_snap: int, end_snap: int):
+    """Mark a previously failed snap pair as resolved."""
+    pg = _pg()
+    try:
+        with pg.cursor() as cur:
+            cur.execute("""
+                UPDATE awr_oracle_failed_snaps
+                SET resolved = TRUE, last_tried_at = NOW()
+                WHERE conn_id = %s AND begin_snap = %s AND end_snap = %s
+            """, (conn_id, begin_snap, end_snap))
+        pg.commit()
+    except Exception as e:
+        logger.error(f'_mark_resolved: {e}')
+    finally:
+        pg.close()
+
+
+def retry_failed_snaps(conn_id: int, awr_reports_dir: str) -> dict:
+    """
+    Retry all unresolved failed snap pairs for a connection
+    that haven't exceeded max_retries.
+    Called by the scheduler before processing new snaps.
+    Returns {retried, recovered, still_failing}.
+    """
+    cfg = get_connection_by_id(conn_id)
+    if not cfg:
+        return {'retried': 0, 'recovered': 0, 'still_failing': 0}
+
+    pg = _pg()
+    try:
+        with pg.cursor() as cur:
+            cur.execute("""
+                SELECT id, snap_date, begin_snap, end_snap,
+                       dbid, instance_number, retry_count, max_retries
+                FROM awr_oracle_failed_snaps
+                WHERE conn_id = %s
+                  AND resolved = FALSE
+                  AND retry_count < max_retries
+                ORDER BY snap_date, begin_snap
+            """, (conn_id,))
+            cols = [d[0] for d in cur.description]
+            pending = [dict(zip(cols, row)) for row in cur.fetchall()]
+    finally:
+        pg.close()
+
+    if not pending:
+        return {'retried': 0, 'recovered': 0, 'still_failing': 0}
+
+    logger.info(f'Retrying {len(pending)} failed snap pair(s) for {cfg["db_name"]}')
+
+    recovered = 0
+    still_failing = 0
+
+    for p in pending:
+        result = generate_awr_report(
+            cfg,
+            p['dbid'], p['instance_number'],
+            p['begin_snap'], p['end_snap'],
+            awr_reports_dir
+        )
+        if result['ok']:
+            _mark_resolved(conn_id, p['begin_snap'], p['end_snap'])
+            recovered += 1
+            logger.info(
+                f"Retry succeeded: {cfg['db_name']} "
+                f"snaps {p['begin_snap']}→{p['end_snap']}"
+            )
+        else:
+            _record_failure(
+                conn_id, cfg['db_name'], p['snap_date'],
+                p['begin_snap'], p['end_snap'],
+                p['dbid'], p['instance_number'],
+                result.get('error', '')
+            )
+            still_failing += 1
+            logger.warning(
+                f"Retry failed ({p['retry_count']+1}/{p['max_retries']}): "
+                f"{cfg['db_name']} snaps {p['begin_snap']}→{p['end_snap']}: "
+                f"{result.get('error','')[:100]}"
+            )
+
+    # Mark permanently abandoned ones (exceeded max_retries)
+    pg = _pg()
+    try:
+        with pg.cursor() as cur:
+            cur.execute("""
+                UPDATE awr_oracle_failed_snaps
+                SET resolved = TRUE
+                WHERE conn_id = %s
+                  AND resolved = FALSE
+                  AND retry_count >= max_retries
+            """, (conn_id,))
+            abandoned = cur.rowcount
+        pg.commit()
+        if abandoned:
+            logger.warning(
+                f'{cfg["db_name"]}: {abandoned} snap pair(s) abandoned '
+                f'after max retries exceeded'
+            )
+    finally:
+        pg.close()
+
+    return {
+        'retried': len(pending),
+        'recovered': recovered,
+        'still_failing': still_failing
+    }
+
+
 # ── Full workflow: one database, one date ─────────────────────────────────────
 def fetch_awrs_for_date(conn_id: int, snap_date: date,
                         awr_reports_dir: str,
@@ -467,8 +604,9 @@ def fetch_awrs_for_date(conn_id: int, snap_date: date,
       1. Load connection config
       2. Query snaps for snap_date from 00:00 onwards
       3. Generate AWR report for each consecutive snap pair
-      4. Update last_run_at and last_snap_id in awr_oracle_connections
-      5. Return summary
+      4. Record failures in awr_oracle_failed_snaps for retry
+      5. Update last_run_at and last_snap_id in awr_oracle_connections
+      6. Return summary
 
     begin_snap_override: only process snaps >= this ID (skip already done).
     """
@@ -534,6 +672,16 @@ def fetch_awrs_for_date(conn_id: int, snap_date: date,
         })
         if result['ok']:
             last_ok_snap = e['snap_id']
+            # If this pair previously failed, mark it resolved
+            _mark_resolved(conn_id, b['snap_id'], e['snap_id'])
+        else:
+            # Record failure for retry on next scheduler run
+            _record_failure(
+                conn_id, db_name, snap_date,
+                b['snap_id'], e['snap_id'],
+                dbid, instance_number,
+                result.get('error', '')
+            )
 
     # Step 4: update tracking columns
     if last_ok_snap:
@@ -557,6 +705,10 @@ def fetch_awrs_for_date(conn_id: int, snap_date: date,
         f'{db_name}: {ok_count} reports generated '
         f'({total_mb:.1f} MB), {err_count} errors'
     )
+    if err_count:
+        logger.warning(
+            f'{db_name}: {err_count} failed snap pair(s) queued for retry'
+        )
 
     return {
         'ok':                True,

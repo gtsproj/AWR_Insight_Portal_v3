@@ -128,6 +128,21 @@ def _oracle_awr_scheduler():
                             f"(interval={interval_hrs}h, "
                             f"elapsed={elapsed_mins:.0f}m)"
                         )
+                        # First: retry any previously failed snap pairs
+                        retry_result = fetch_awrs_for_date.__module__ and None
+                        try:
+                            from modules.oracle_awr_fetcher import retry_failed_snaps
+                            retry_result = retry_failed_snaps(c['id'], awr_dir)
+                            if retry_result['retried'] > 0:
+                                _sched_log.info(
+                                    f"Scheduler retry: {c['db_name']} → "
+                                    f"{retry_result['recovered']} recovered, "
+                                    f"{retry_result['still_failing']} still failing"
+                                )
+                        except Exception as re:
+                            _sched_log.error(f"Scheduler retry error: {re}")
+
+                        # Then: generate new reports for today
                         result = fetch_awrs_for_date(
                             c['id'], _date.today(), awr_dir
                         )
