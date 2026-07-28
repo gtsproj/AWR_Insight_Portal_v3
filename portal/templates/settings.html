@@ -327,8 +327,10 @@
           <!-- ── Oracle Direct AWR Connection Manager ────────────────── -->
           <div class="s-card-title" style="margin-top:16px">Oracle Database Connections</div>
           <p style="font-size:12px;color:var(--text2);margin:4px 0 12px">
-            Configure one connection per Oracle database. The portal will connect via sqlplus,
-            query available snapshots, and generate AWR HTML reports automatically.
+            Configure one connection per Oracle database. The portal connects directly
+            via the <strong>oracledb</strong> Python package (no Oracle Client or sqlplus needed).
+            Snapshots are queried from <code>DBA_HIST_SNAPSHOT</code> and AWR reports are generated
+            by calling <code>DBMS_WORKLOAD_REPOSITORY.AWR_REPORT_HTML</code> directly.
             Reports are saved to <code>awr_reports\&lt;DBNAME&gt;\</code> and parsed by the queue processor.
           </p>
 
@@ -1332,11 +1334,27 @@ let _oracleConns = [];
 async function loadOracleConnections() {
   try {
     const res = await fetch('/api/oracle-connections');
+    if (!res.ok) {
+      const txt = await res.text();
+      document.getElementById('oracle-conn-tbody').innerHTML =
+        `<tr><td colspan="7" style="padding:12px;color:#ef4444;text-align:center">
+          API error ${res.status}: ${txt.slice(0,200)}</td></tr>`;
+      return;
+    }
     const data = await res.json();
+    if (!data.ok) {
+      document.getElementById('oracle-conn-tbody').innerHTML =
+        `<tr><td colspan="7" style="padding:12px;color:#ef4444;text-align:center">
+          Error: ${data.error}</td></tr>`;
+      return;
+    }
     _oracleConns = data.connections || [];
     renderOracleConnTable();
     populateGenDropdown();
   } catch(e) {
+    document.getElementById('oracle-conn-tbody').innerHTML =
+      `<tr><td colspan="7" style="padding:12px;color:#ef4444;text-align:center">
+        Failed to load: ${e.message}</td></tr>`;
     console.error('loadOracleConnections:', e);
   }
 }
@@ -1579,6 +1597,11 @@ function toggleSarSource(val) {
 }
 // Init on load
 toggleAwrSource(document.getElementById('awr_source_type')?.value);
+// If direct_db was already selected when page loaded, connections are loaded
+// by toggleAwrSource above. But also call explicitly to handle any race condition.
+if (document.getElementById('awr_source_type')?.value === 'direct_db') {
+  loadOracleConnections();
+}
 toggleSarSource(document.getElementById('sar_source_type')?.value);
 
 // ── Save section ──────────────────────────────────────────────────────

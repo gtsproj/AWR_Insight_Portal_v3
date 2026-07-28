@@ -94,7 +94,15 @@ def get_all_connections() -> list:
                 ORDER BY db_name
             """)
             cols = [d[0] for d in cur.description]
-            return [dict(zip(cols, row)) for row in cur.fetchall()]
+            rows = []
+            for row in cur.fetchall():
+                d = dict(zip(cols, row))
+                # Convert datetime objects to strings for JSON serialisation
+                for k in ('last_run_at', 'added_at'):
+                    if d.get(k) is not None:
+                        d[k] = d[k].strftime('%Y-%m-%d %H:%M:%S')
+                rows.append(d)
+            return rows
     finally:
         conn.close()
 
