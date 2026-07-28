@@ -129,7 +129,7 @@ def save_connection(data: dict, added_by: str = 'admin') -> dict:
     service_name      = (data.get('service_name') or '').strip()
     username          = (data.get('username') or '').strip()
     password          = (data.get('password') or '').strip()
-    snap_interval_hrs = int(data.get('snap_interval_hrs') or 1)
+    snap_interval_hrs = float(data.get('snap_interval_hrs') or 1)
     enabled           = bool(data.get('enabled', True))
 
     if not db_name:

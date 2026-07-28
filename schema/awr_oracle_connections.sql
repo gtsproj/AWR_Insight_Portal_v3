@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS awr_oracle_connections (
     service_name    TEXT NOT NULL,           -- Oracle service name (not SID)
     username        TEXT NOT NULL,
     password_enc    TEXT NOT NULL,           -- base64 obfuscated (not true encryption)
-    snap_interval_hrs INTEGER DEFAULT 1,     -- generate report every N hours (0 = manual only)
+    snap_interval_hrs NUMERIC(4,1) DEFAULT 1,  -- generate every N hours (0=manual, 0.5=30min)
     enabled         BOOLEAN DEFAULT TRUE,
     last_run_at     TIMESTAMP,
     last_snap_id    INTEGER,                 -- last begin_snap processed

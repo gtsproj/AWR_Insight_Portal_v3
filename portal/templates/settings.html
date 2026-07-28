@@ -395,6 +395,7 @@
                 <label class="s-label">Snap Interval (hrs)</label>
                 <select class="s-select" id="oc_snap_interval_hrs">
                   <option value="0">Manual only</option>
+                  <option value="0.5">Every 30 minutes</option>
                   <option value="1" selected>Every 1 hour</option>
                   <option value="2">Every 2 hours</option>
                   <option value="4">Every 4 hours</option>
@@ -1348,7 +1349,9 @@ function renderOracleConnTable() {
   }
   tbody.innerHTML = _oracleConns.map(c => {
     const lastRun = c.last_run_at ? new Date(c.last_run_at).toLocaleString() : '—';
-    const interval = c.snap_interval_hrs == 0 ? 'Manual' : `Every ${c.snap_interval_hrs}h`;
+    const interval = c.snap_interval_hrs == 0 ? 'Manual'
+      : c.snap_interval_hrs == 0.5 ? 'Every 30 min'
+      : `Every ${c.snap_interval_hrs}h`;
     const enabled = c.enabled
       ? '<span style="color:#10b981;font-size:11px">✅ Yes</span>'
       : '<span style="color:#6b7280;font-size:11px">⬜ No</span>';
