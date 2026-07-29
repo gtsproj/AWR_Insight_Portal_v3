@@ -499,28 +499,34 @@ def _generate_system_recommendations(by_id: dict) -> list:
                     max_hourly = v
                     busy_hour  = h
 
-        if max_hourly > 10:
+        if max_hourly > 25:
             recs.append({
                 'severity':       'Critical',
                 'category':       'Redo Log Switches',
                 'section':        'Hourly Log Switches (Last 7 Days)',
                 'finding':        f'Peak log switches: {max_hourly} switches in one hour (hour {busy_hour}). '
-                                  f'More than 6 switches/hour indicates redo logs are too small.',
+                                  f'More than 25 switches/hour indicates redo logs are critically undersized.',
                 'recommendation': (
                     f'Redo logs are switching {max_hourly} times per hour at peak. '
                     'This causes "log file switch completion" and "log file switch (checkpoint incomplete)" waits. '
-                    'Increase redo log size significantly — target less than 4 switches per hour. '
-                    'Calculate: if peak throughput is X MB/hour, each log should be at least X/4 MB.'
+                    'Increase redo log size significantly — target less than 10 switches per hour. '
+                    'Calculate: if peak redo generation is X MB/hour, each log should be at least X/10 MB.'
                 ),
                 'command': None
             })
-        elif max_hourly > 4:
+        elif max_hourly > 10:
             recs.append({
                 'severity':       'Warning',
                 'category':       'Redo Log Switches',
                 'section':        'Hourly Log Switches (Last 7 Days)',
-                'finding':        f'Peak log switches: {max_hourly} switches/hour. Oracle recommendation is < 4 switches/hour.',
-                'recommendation': 'Monitor and consider increasing redo log size if peak switches continue to exceed 4/hour.',
+                'finding':        f'Peak log switches: {max_hourly} switches/hour. '
+                                  f'Consider increasing redo log size if this is causing performance impact.',
+                'recommendation': (
+                    'More than 10 switches/hour may indicate redo logs are undersized for peak workload. '
+                    'Monitor for "log file switch" wait events. '
+                    'Balance redo log size against recovery time — larger logs mean longer instance recovery. '
+                    'A practical target is 10–25 switches/hour for OLTP systems.'
+                ),
                 'command': None
             })
 
@@ -626,16 +632,17 @@ def _generate_system_recommendations(by_id: dict) -> list:
             except ValueError:
                 num_rows = 0
 
-            if size_mb > 1024 and partitioned == 'NO':
+            if size_mb > 10240 and partitioned == 'NO':
                 obj = f"{row.get('owner','')}.{row.get('table_name','')}"
                 recs.append({
-                    'severity':       'Alert' if size_mb > 10240 else 'Warning',
+                    'severity':       'Critical' if size_mb > 51200 else 'Alert',
                     'category':       'Partitioning',
                     'section':        'Large Tables (Top 30 by Size)',
-                    'finding':        f'Table {obj}: {size_mb:.0f} MB, '
-                                      f'{row.get("num_rows","?")} rows — not partitioned.',
+                    'finding':        f'Table {obj}: {size_mb/1024:.1f} GB, '
+                                      f'{row.get("num_rows","?")} rows — not partitioned. '
+                                      f'Tables over 10 GB are strong candidates for partitioning.',
                     'recommendation': (
-                        f'Table {obj} ({size_mb:.0f} MB) is a candidate for partitioning. '
+                        f'Table {obj} ({size_mb/1024:.1f} GB) is a strong candidate for partitioning. '
                         'Benefits: partition pruning eliminates I/O for date-range queries, '
                         'partition-level statistics and maintenance, parallel query improvement. '
                         'Recommended strategy: '
