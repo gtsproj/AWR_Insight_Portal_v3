@@ -68,11 +68,15 @@ def _oracle_awr_scheduler():
 
     Logic per connection:
       - snap_interval_hrs == 0  → manual only, never auto-run
-      - last_run_at is None     → never run yet, run immediately
+      - last_run_at is None     → never run yet, run today immediately
       - now - last_run_at >= snap_interval_hrs * 60 minutes → run
+
+    If last_run_at was on a previous date (e.g. machine slept overnight,
+    IP changed, or service was stopped), the scheduler generates reports
+    for ALL missed dates from last_run_at.date() through today.
     """
     import time as _time
-    from datetime import date as _date, datetime as _dt
+    from datetime import date as _date, datetime as _dt, timedelta as _td
     from logger_utils import get_logger as _get_logger
 
     _sched_log = _get_logger('oracle_awr_scheduler')
@@ -95,13 +99,14 @@ def _oracle_awr_scheduler():
     while True:
         try:
             from modules.oracle_awr_fetcher import (
-                get_all_connections, fetch_awrs_for_date
+                get_all_connections, fetch_awrs_for_date, retry_failed_snaps
             )
             connections = get_all_connections()
             enabled = [c for c in connections
                        if c.get('enabled') and float(c.get('snap_interval_hrs', 0)) > 0]
 
             now = _dt.now()
+            today = _date.today()
 
             for c in enabled:
                 try:
@@ -122,51 +127,88 @@ def _oracle_awr_scheduler():
                         if last_run_dt else float('inf')
                     )
 
-                    if elapsed_mins >= interval_mins:
-                        _sched_log.info(
-                            f"Scheduler: running AWR for {c['db_name']} "
-                            f"(interval={interval_hrs}h, "
-                            f"elapsed={elapsed_mins:.0f}m)"
-                        )
-                        # First: retry any previously failed snap pairs
-                        retry_result = fetch_awrs_for_date.__module__ and None
-                        try:
-                            from modules.oracle_awr_fetcher import retry_failed_snaps
-                            retry_result = retry_failed_snaps(c['id'], awr_dir)
-                            if retry_result['retried'] > 0:
-                                _sched_log.info(
-                                    f"Scheduler retry: {c['db_name']} → "
-                                    f"{retry_result['recovered']} recovered, "
-                                    f"{retry_result['still_failing']} still failing"
-                                )
-                        except Exception as re:
-                            _sched_log.error(f"Scheduler retry error: {re}")
-
-                        # Then: generate new reports for today
-                        result = fetch_awrs_for_date(
-                            c['id'], _date.today(), awr_dir
-                        )
-                        ok  = result.get('reports_generated', 0)
-                        err = result.get('errors', 0)
-                        _sched_log.info(
-                            f"Scheduler: {c['db_name']} → "
-                            f"{ok} report(s) generated, {err} error(s)"
-                        )
-                    else:
+                    if elapsed_mins < interval_mins:
                         next_run_mins = interval_mins - elapsed_mins
                         _sched_log.debug(
                             f"Scheduler: {c['db_name']} not due "
                             f"(next run in {next_run_mins:.0f}m)"
                         )
+                        continue
+
+                    # ── Determine which dates to process ──────────────────
+                    # If last_run was on a previous date, catch up all missed dates
+                    dates_to_process = []
+                    if last_run_dt and last_run_dt.date() < today:
+                        # Generate for each missed date from day after last run to today
+                        missed_date = last_run_dt.date() + _td(days=1)
+                        while missed_date <= today:
+                            dates_to_process.append(missed_date)
+                            missed_date += _td(days=1)
+                        _sched_log.info(
+                            f"Scheduler: {c['db_name']} catching up "
+                            f"{len(dates_to_process)} missed date(s) "
+                            f"(last run: {last_run_dt.date()})"
+                        )
+                    else:
+                        dates_to_process = [today]
+
+                    # ── Retry previously failed snap pairs first ───────────
+                    try:
+                        retry_result = retry_failed_snaps(c['id'], awr_dir)
+                        if retry_result['retried'] > 0:
+                            _sched_log.info(
+                                f"Scheduler retry: {c['db_name']} → "
+                                f"{retry_result['recovered']} recovered, "
+                                f"{retry_result['still_failing']} still failing"
+                            )
+                    except Exception as re_err:
+                        _sched_log.error(f"Scheduler retry error [{c['db_name']}]: {re_err}")
+
+                    # ── Generate reports for each date ─────────────────────
+                    for snap_date in dates_to_process:
+                        _sched_log.info(
+                            f"Scheduler: generating AWR for {c['db_name']} "
+                            f"date={snap_date} "
+                            f"(interval={interval_hrs}h, elapsed={elapsed_mins:.0f}m)"
+                        )
+                        try:
+                            result = fetch_awrs_for_date(
+                                c['id'], snap_date, awr_dir
+                            )
+                            ok  = result.get('reports_generated', 0)
+                            err = result.get('errors', 0)
+                            msg = result.get('message', '')
+                            _sched_log.info(
+                                f"Scheduler: {c['db_name']} {snap_date} → "
+                                f"{ok} report(s) generated"
+                                f"{', ' + str(err) + ' error(s)' if err else ''}"
+                                f"{' — ' + msg if msg else ''}"
+                            )
+                            if not result.get('ok') and result.get('error'):
+                                _sched_log.error(
+                                    f"Scheduler: {c['db_name']} {snap_date} failed: "
+                                    f"{result['error']} "
+                                    f"[{c['host']}:{c['port']}/{c['service_name']}]"
+                                )
+                        except Exception as gen_err:
+                            _sched_log.error(
+                                f"Scheduler: generate error for {c['db_name']} "
+                                f"{snap_date} "
+                                f"[{c['host']}:{c['port']}/{c['service_name']}]: "
+                                f"{gen_err}"
+                            )
 
                 except Exception as e:
                     _sched_log.error(
-                        f"Scheduler: error for {c.get('db_name','?')}: {e}"
+                        f"Scheduler: error processing {c.get('db_name','?')} "
+                        f"[{c.get('host','?')}:{c.get('port','?')}"
+                        f"/{c.get('service_name','?')}]: {e}"
                     )
 
         except Exception as e:
             _sched_log.error(f'Scheduler loop error: {e}')
 
+        _time.sleep(300)  # check every 5 minutes
         _time.sleep(300)  # check every 5 minutes
 
 
@@ -783,6 +825,34 @@ async def home(request: Request):
         context={"stats": stats, "page": "home",
                  "is_admin": _is_admin(request),
                  "ai_mode": cfg.get("ai_mode","rules"),
+                 **_url_context(request)})
+
+
+@app.get("/plsql-performance", response_class=HTMLResponse)
+async def plsql_performance_page(request: Request):
+    """PL/SQL Performance Analysis — live Oracle query page."""
+    if not _check_login(request):
+        return RedirectResponse("/login?next=/plsql-performance", status_code=303)
+    from modules.oracle_awr_fetcher import get_all_connections
+    connections = [c for c in get_all_connections() if c.get('enabled')]
+    return templates.TemplateResponse(request, "plsql_performance.html",
+        context={"page": "plsql_performance",
+                 "connections": connections,
+                 "is_admin": _is_admin(request),
+                 **_url_context(request)})
+
+
+@app.get("/system-study", response_class=HTMLResponse)
+async def system_study_page(request: Request):
+    """Database System Study — live Oracle query page."""
+    if not _check_login(request):
+        return RedirectResponse("/login?next=/system-study", status_code=303)
+    from modules.oracle_awr_fetcher import get_all_connections
+    connections = [c for c in get_all_connections() if c.get('enabled')]
+    return templates.TemplateResponse(request, "system_study.html",
+        context={"page": "system_study",
+                 "connections": connections,
+                 "is_admin": _is_admin(request),
                  **_url_context(request)})
 
 

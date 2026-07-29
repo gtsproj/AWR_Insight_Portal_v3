@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+{% block title %} — Database System Study{% endblock %}
+{% block content %}
+<div style="max-width:1200px;margin:0 auto">
+
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+    <div style="font-size:1.3rem;font-weight:700">🔬 Database System Study</div>
+    <div style="font-size:11px;color:var(--text2);padding:3px 8px;background:var(--surface);
+                border:1px solid var(--border);border-radius:4px">Live Oracle Query</div>
+  </div>
+
+  <div style="font-size:12px;color:var(--text2);margin-bottom:16px;padding:8px 12px;
+              background:var(--surface);border:1px solid var(--border);border-radius:6px;
+              border-left:3px solid var(--accent)">
+    Comprehensive live database health check across 15 sections. Generates actionable
+    recommendations for controlfile multiplexing, redo log sizing, ASM migration,
+    and table/index partitioning. Run on demand — data is always current.
+  </div>
+
+  <!-- Controls -->
+  <div style="display:grid;grid-template-columns:1fr 2fr auto;gap:10px;
+              margin-bottom:16px;align-items:end;background:var(--surface);
+              border:1px solid var(--border);border-radius:8px;padding:14px">
+    <div>
+      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">Oracle Connection</label>
+      <select id="ss_conn_id" style="width:100%;padding:6px 8px;border-radius:5px;
+              background:var(--bg);border:1px solid var(--border);color:var(--text);font-size:12px">
+        <option value="">— select database —</option>
+        {% for c in connections %}
+        <option value="{{ c.id }}">{{ c.db_name }}{% if c.display_name and c.display_name != c.db_name %} — {{ c.display_name }}{% endif %}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">Sections</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap" id="section_toggles">
+        <label style="font-size:11px;cursor:pointer;display:flex;align-items:center;gap:3px">
+          <input type="checkbox" id="all_sections" checked onchange="toggleAllSections(this.checked)"> All sections
+        </label>
+      </div>
+    </div>
+    <div>
+      <button onclick="runSystemStudy()" id="ss_run_btn"
+              style="padding:8px 18px;background:var(--accent);color:#fff;border:none;
+                     border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;
+                     white-space:nowrap">
+        🔬 Run System Study
+      </button>
+    </div>
+  </div>
+
+  <div id="ss_status" style="display:none;font-size:12px;margin-bottom:12px;
+       padding:8px 12px;border-radius:6px"></div>
+
+  <!-- Recommendations summary -->
+  <div id="ss_recs_section" style="display:none;margin-bottom:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:13px;font-weight:700">💡 Recommendations</div>
+      <div id="ss_recs_count" style="font-size:11px;color:var(--text2)"></div>
+    </div>
+    <div id="ss_recs_container"></div>
+  </div>
+
+  <!-- Sections accordion -->
+  <div id="ss_sections_container"></div>
+
+</div>
+
+<script>
+const SECTIONS_META = [
+  {id:'server_info',       name:'Server CPU & Memory'},
+  {id:'db_config',         name:'Database Configuration'},
+  {id:'db_size',           name:'Database Size & Growth'},
+  {id:'controlfiles',      name:'Controlfile Information'},
+  {id:'redo_logs',         name:'Online Redo Log Information'},
+  {id:'log_switches',      name:'Hourly Log Switches (Last 7 Days)'},
+  {id:'tablespaces',       name:'Tablespace Information'},
+  {id:'asm_diskgroups',    name:'ASM Disk Groups'},
+  {id:'db_files_location', name:'Database Files Location'},
+  {id:'large_tables',      name:'Large Tables (Top 30)'},
+  {id:'large_indexes',     name:'Large Indexes (Top 30)'},
+  {id:'invalid_objects',   name:'Invalid Objects'},
+  {id:'db_links',          name:'Database Links'},
+  {id:'redo_wait_events',  name:'Redo Wait Events (AWR)'},
+  {id:'patch_level',       name:'Database Patch Level'},
+];
+
+const SEV_COLOR = {Critical:'#ef4444', Alert:'#f59e0b', Warning:'#3b82f6'};
+const SEV_ICON  = {Critical:'🔴', Alert:'🟡', Warning:'🔵'};
+
+// Build section checkboxes
+(function() {
+  const wrap = document.getElementById('section_toggles');
+  SECTIONS_META.forEach(s => {
+    const lbl = document.createElement('label');
+    lbl.style.cssText = 'font-size:11px;cursor:pointer;display:flex;align-items:center;gap:3px';
+    lbl.innerHTML = `<input type="checkbox" class="sec_chk" value="${s.id}" checked> ${s.name}`;
+    wrap.appendChild(lbl);
+  });
+})();
+
+function toggleAllSections(checked) {
+  document.querySelectorAll('.sec_chk').forEach(c => c.checked = checked);
+}
+
+function getSelectedSections() {
+  const checked = [...document.querySelectorAll('.sec_chk:checked')].map(c => c.value);
+  return checked.length === SECTIONS_META.length ? null : checked;
+}
+
+async function runSystemStudy() {
+  const conn_id = document.getElementById('ss_conn_id').value;
+  const btn     = document.getElementById('ss_run_btn');
+  const status  = document.getElementById('ss_status');
+
+  if (!conn_id) { showSSMsg('Select an Oracle connection first', 'err'); return; }
+
+  const sections = getSelectedSections();
+  btn.disabled = true;
+  btn.textContent = '⏳ Running…';
+  showSSMsg('Connecting to Oracle and running system study queries…', 'info');
+  document.getElementById('ss_sections_container').innerHTML = '';
+  document.getElementById('ss_recs_section').style.display = 'none';
+
+  try {
+    const res  = await fetch('/api/oracle/system-study', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({conn_id: parseInt(conn_id), sections})
+    });
+    const data = await res.json();
+
+    if (!data.ok) {
+      showSSMsg('❌ ' + (data.error || 'System study failed'), 'err');
+      return;
+    }
+
+    const recs  = data.recommendations || [];
+    const secs  = data.sections || [];
+    const okSec = secs.filter(s => s.ok && s.rows.length).length;
+
+    showSSMsg(
+      `✅ System study complete for ${data.db_name} — `
+      + `${okSec}/${secs.length} sections, ${recs.length} recommendation(s)`,
+      'ok'
+    );
+
+    renderSSRecommendations(recs);
+    renderSSSections(secs);
+
+  } catch(e) {
+    showSSMsg('❌ ' + e.message, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🔬 Run System Study';
+  }
+}
+
+function showSSMsg(text, type) {
+  const el = document.getElementById('ss_status');
+  el.style.display = '';
+  el.textContent = text;
+  el.style.background = type === 'err' ? '#3f1a1a' : type === 'ok' ? '#0f2e1f' : '#1a2540';
+  el.style.color = type === 'err' ? '#fca5a5' : type === 'ok' ? '#6ee7b7' : '#93c5fd';
+  el.style.border = `1px solid ${type === 'err' ? '#7f1d1d' : type === 'ok' ? '#064e3b' : '#1e3a5f'}`;
+}
+
+function renderSSRecommendations(recs) {
+  const section   = document.getElementById('ss_recs_section');
+  const container = document.getElementById('ss_recs_container');
+  const count_el  = document.getElementById('ss_recs_count');
+
+  if (!recs.length) { section.style.display = 'none'; return; }
+  section.style.display = '';
+
+  const counts = recs.reduce((acc, r) => {
+    acc[r.severity] = (acc[r.severity] || 0) + 1;
+    return acc;
+  }, {});
+  count_el.innerHTML = Object.entries(counts).map(([sev, n]) =>
+    `<span style="color:${SEV_COLOR[sev]};margin-right:10px">${SEV_ICON[sev]} ${sev}: ${n}</span>`
+  ).join('');
+
+  // Sort: Critical first
+  const order = {Critical: 0, Alert: 1, Warning: 2};
+  const sorted = [...recs].sort((a, b) =>
+    (order[a.severity] ?? 9) - (order[b.severity] ?? 9));
+
+  container.innerHTML = sorted.map(r => `
+    <div style="margin-bottom:10px;padding:10px 14px;border-radius:6px;
+                background:var(--surface);border:1px solid var(--border);
+                border-left:3px solid ${SEV_COLOR[r.severity] || '#888'}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+        <span>${SEV_ICON[r.severity] || '⚪'}</span>
+        <span style="font-size:12px;font-weight:700;color:${SEV_COLOR[r.severity] || '#888'}">${r.severity}</span>
+        <span style="font-size:11px;color:var(--text2);padding:1px 7px;background:var(--bg);
+                     border:1px solid var(--border);border-radius:3px">${r.category}</span>
+        <span style="font-size:11px;color:var(--text2)">→ ${r.section}</span>
+      </div>
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px">${r.finding}</div>
+      <div style="font-size:11.5px;color:var(--text);margin-bottom:${r.command ? '8px' : '0'}">${r.recommendation}</div>
+      ${r.command ? `
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;
+                    padding:6px 10px;font-family:monospace;font-size:10.5px;
+                    color:var(--accent);white-space:pre-wrap">${escHtml(r.command)}</div>` : ''}
+    </div>`).join('');
+}
+
+function renderSSSections(sections) {
+  const container = document.getElementById('ss_sections_container');
+  container.innerHTML = `<div style="font-size:13px;font-weight:700;margin-bottom:10px">
+    📋 Section Details</div>`;
+
+  sections.forEach((s, i) => {
+    const hasData = s.ok && s.rows && s.rows.length;
+    const errMsg  = !s.ok ? s.error : (!hasData ? 'No data returned' : '');
+
+    const div = document.createElement('div');
+    div.style.cssText = `margin-bottom:8px;border:1px solid var(--border);border-radius:6px;overflow:hidden`;
+    div.innerHTML = `
+      <div onclick="toggleSection('sec_${i}')"
+           style="display:flex;justify-content:space-between;align-items:center;
+                  padding:8px 12px;cursor:pointer;background:var(--surface);
+                  user-select:none">
+        <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px">
+          <span>${hasData ? '✅' : errMsg ? '❌' : '⬜'}</span>
+          ${s.name}
+          ${hasData ? `<span style="font-size:10px;color:var(--text2);padding:1px 6px;
+            background:var(--bg);border:1px solid var(--border);border-radius:3px">
+            ${s.rows.length} rows</span>` : ''}
+        </div>
+        <span id="arrow_sec_${i}" style="font-size:12px;color:var(--text2)">▼</span>
+      </div>
+      <div id="sec_${i}" style="display:none;padding:10px 12px;overflow-x:auto">
+        ${hasData
+          ? renderSSTable(s.columns, s.rows)
+          : `<div style="font-size:11px;color:${s.ok ? 'var(--text2)' : '#fca5a5'}">
+               ${errMsg || 'No data'}</div>`
+        }
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+function toggleSection(id) {
+  const el = document.getElementById(id);
+  const i  = id.replace('sec_','');
+  const arrow = document.getElementById('arrow_sec_' + i);
+  const open  = el.style.display === 'none';
+  el.style.display = open ? '' : 'none';
+  arrow.textContent = open ? '▲' : '▼';
+}
+
+function renderSSTable(cols, rows) {
+  if (!cols || !rows.length) return '<div style="font-size:11px;color:var(--text2)">No data</div>';
+  const header = cols.map(c =>
+    `<th style="padding:4px 8px;text-align:left;font-size:11px;white-space:nowrap;
+      background:var(--surface2,#1c2333)">${c}</th>`).join('');
+  const body = rows.map(row =>
+    `<tr>${cols.map(c => {
+      const v = row[c];
+      const fmt = v === null || v === undefined ? '—'
+                : typeof v === 'number' ? v.toLocaleString()
+                : String(v);
+      // Highlight high values
+      const isHighPct = (c === 'used_pct' || c === 'used_pct') && parseFloat(fmt) > 85;
+      return `<td style="padding:3px 8px;font-size:11px;border-top:1px solid var(--border);
+              ${isHighPct ? 'color:#ef4444;font-weight:700' : ''}">${escHtml(fmt)}</td>`;
+    }).join('')}</tr>`).join('');
+  return `<table style="width:100%;border-collapse:collapse">
+    <thead><tr>${header}</tr></thead>
+    <tbody>${body}</tbody>
+  </table>`;
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+</script>
+{% endblock %}
