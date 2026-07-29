@@ -320,9 +320,10 @@ def run_system_study(conn_id: int, sections: list = None,
         params = {}
         if needs_snap:
             if not begin_time or not end_time:
+                # No time range — add placeholder so section appears in output
                 query_defs.append({
                     'name': s['id'], 'description': s['name'],
-                    'sql': "SELECT 'Begin/End time required for this section' note FROM DUAL",
+                    'sql': "SELECT 'Select a Begin/End time range above to run this section' AS note FROM DUAL",
                     'params': {}
                 })
                 continue

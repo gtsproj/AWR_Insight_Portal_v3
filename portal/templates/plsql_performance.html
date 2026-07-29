@@ -196,26 +196,40 @@ function renderResults(results) {
   if (!results.length) { section.style.display = 'none'; return; }
   section.style.display = '';
 
-  const ICONS = {top_cpu:'🔥', top_elapsed:'⏱️', top_cluster:'🔗', top_io:'💿'};
+  const ICONS = {
+    top_cpu:'🔥', top_elapsed:'⏱️', top_cluster:'🔗', top_io:'💿',
+    loop_detector:'🔄', proc_dashboard:'📋', multi_plan:'🔀', missing_fk_index:'🔑'
+  };
 
-  tabs.innerHTML = results.map((r, i) => `
-    <button onclick="switchTab(${i})" id="tab_${i}"
+  tabs.innerHTML = results.map((r, i) => {
+    const dot = !r.ok ? ' ❌' : r.row_count > 0 ? '' : ' ⬜';
+    return `<button onclick="switchTab(${i})" id="tab_${i}"
             style="padding:5px 12px;border-radius:5px;cursor:pointer;font-size:12px;
                    border:1px solid var(--border);background:${i===0?'var(--accent)':'var(--surface)'};
                    color:${i===0?'#fff':'var(--text)'}">
       ${ICONS[r.id] || '📊'} ${r.name}
-      <span style="margin-left:5px;font-size:10px;opacity:0.7">${r.row_count || 0} rows</span>
-    </button>`).join('');
+      <span style="margin-left:5px;font-size:10px;opacity:0.7">${r.row_count||0} rows${dot}</span>
+    </button>`;
+  }).join('');
 
   panels.innerHTML = results.map((r, i) => `
     <div id="panel_${i}" style="display:${i===0?'':'none'}">
       <div style="font-size:11px;color:var(--text2);margin-bottom:8px">${r.description || ''}</div>
       ${!r.ok
         ? `<div style="color:#fca5a5;padding:10px;background:#3f1a1a;border-radius:6px">
-             ❌ ${r.error}</div>`
+             ❌ Query error: ${r.error || 'unknown'}
+             <div style="margin-top:6px;font-size:10px;opacity:0.8">
+             Ensure SELECT_CATALOG_ROLE is granted and the time range contains AWR snapshots.</div></div>`
         : !r.rows.length
           ? `<div style="color:var(--text2);padding:12px;text-align:center">
-               No data returned for this time range.</div>`
+               ${r.id==='loop_detector'
+                 ? 'No loop anti-patterns detected — no SQL called 1000+ times with < 10ms avg in this range.'
+                 : r.id==='missing_fk_index'
+                   ? 'No missing FK indexes found — all FK constraints have supporting indexes. ✅'
+                   : r.id==='multi_plan'
+                     ? 'No SQL statements with multiple plan hash values in this time range.'
+                     : 'No data returned for this time range.'}
+             </div>`
           : renderTable(r.columns, r.rows, r.metric)
       }
     </div>`).join('');
