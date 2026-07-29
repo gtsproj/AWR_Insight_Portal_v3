@@ -144,7 +144,7 @@ def save_connection(data: dict, added_by: str = 'admin') -> dict:
     if not db_name:
         return {'ok': False, 'error': 'db_name is required'}
     if not host:
-        return {'ok': False, 'error': 'host is required'}
+        return {'ok': False, 'error': 'hostname is required'}
     if not service_name:
         return {'ok': False, 'error': 'service_name is required'}
     if not username:

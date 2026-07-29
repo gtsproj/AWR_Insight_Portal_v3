@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS awr_oracle_connections (
     id              SERIAL PRIMARY KEY,
     db_name         TEXT NOT NULL,           -- matches awr_db_master.db_name
     display_name    TEXT,                    -- friendly label shown in UI
-    host            TEXT NOT NULL,
+    host            TEXT NOT NULL,           -- DB server hostname or RAC SCAN hostname (not IP)
     port            INTEGER DEFAULT 1521,
     service_name    TEXT NOT NULL,           -- Oracle service name (not SID)
     username        TEXT NOT NULL,
