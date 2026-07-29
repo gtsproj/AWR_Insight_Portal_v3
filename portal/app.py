@@ -3486,6 +3486,88 @@ async def api_generate_awrs(request: Request):
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
 
 
+# ══════════════════════════════════════════════════════════════════════
+# PLSQL PERFORMANCE ANALYSIS API
+# ══════════════════════════════════════════════════════════════════════
+
+@app.post("/api/oracle/plsql-performance")
+async def api_plsql_performance(request: Request):
+    """
+    Run PL/SQL performance analysis on Oracle live data.
+    Body: {conn_id, begin_time, end_time, query_ids (optional)}
+    begin_time / end_time: 'YYYY-MM-DD HH24:MI' format
+    """
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        body = await request.json()
+        conn_id    = int(body.get('conn_id', 0))
+        begin_time = body.get('begin_time', '').strip()
+        end_time   = body.get('end_time', '').strip()
+        query_ids  = body.get('query_ids')  # None = all
+
+        if not conn_id or not begin_time or not end_time:
+            return JSONResponse({
+                'ok': False,
+                'error': 'conn_id, begin_time and end_time are required'
+            }, status_code=400)
+
+        from modules.plsql_performance import run_plsql_analysis
+        result = run_plsql_analysis(conn_id, begin_time, end_time, query_ids)
+        return JSONResponse(result)
+    except Exception as e:
+        return JSONResponse({'ok': False, 'error': str(e)}, status_code=500)
+
+
+# ══════════════════════════════════════════════════════════════════════
+# DATABASE SYSTEM STUDY API
+# ══════════════════════════════════════════════════════════════════════
+
+@app.post("/api/oracle/system-study")
+async def api_system_study(request: Request):
+    """
+    Run database system study — live Oracle queries + recommendations.
+    Body: {conn_id, sections (optional list of section IDs)}
+    """
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        body = await request.json()
+        conn_id  = int(body.get('conn_id', 0))
+        sections = body.get('sections')  # None = all
+
+        if not conn_id:
+            return JSONResponse({'ok': False, 'error': 'conn_id is required'},
+                                status_code=400)
+
+        from modules.system_study import run_system_study
+        result = run_system_study(conn_id, sections)
+        return JSONResponse(result)
+    except Exception as e:
+        return JSONResponse({'ok': False, 'error': str(e)}, status_code=500)
+
+
+@app.get("/api/oracle/system-study/sections")
+async def api_system_study_sections(request: Request):
+    """Return the list of available system study section IDs and names."""
+    from modules.system_study import SECTIONS
+    return JSONResponse({
+        'ok': True,
+        'sections': [{'id': s['id'], 'name': s['name']} for s in SECTIONS]
+    })
+
+
+@app.get("/api/oracle/plsql-performance/queries")
+async def api_plsql_queries(request: Request):
+    """Return the list of available PL/SQL performance query IDs and names."""
+    from modules.plsql_performance import QUERIES
+    return JSONResponse({
+        'ok': True,
+        'queries': [{'id': q['id'], 'name': q['name'],
+                     'description': q['description']} for q in QUERIES]
+    })
+
+
 # ── run ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     import uvicorn
