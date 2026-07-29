@@ -831,8 +831,6 @@ async def home(request: Request):
 @app.get("/plsql-performance", response_class=HTMLResponse)
 async def plsql_performance_page(request: Request):
     """PL/SQL Performance Analysis — live Oracle query page."""
-    if not _check_login(request):
-        return RedirectResponse("/login?next=/plsql-performance", status_code=303)
     from modules.oracle_awr_fetcher import get_all_connections
     connections = [c for c in get_all_connections() if c.get('enabled')]
     return templates.TemplateResponse(request, "plsql_performance.html",
@@ -845,8 +843,6 @@ async def plsql_performance_page(request: Request):
 @app.get("/system-study", response_class=HTMLResponse)
 async def system_study_page(request: Request):
     """Database System Study — live Oracle query page."""
-    if not _check_login(request):
-        return RedirectResponse("/login?next=/system-study", status_code=303)
     from modules.oracle_awr_fetcher import get_all_connections
     connections = [c for c in get_all_connections() if c.get('enabled')]
     return templates.TemplateResponse(request, "system_study.html",
