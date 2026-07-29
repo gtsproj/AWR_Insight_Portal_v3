@@ -298,11 +298,12 @@ SECTIONS = [
 ]
 
 
-def run_system_study(conn_id: int, sections: list = None) -> dict:
+def run_system_study(conn_id: int, sections: list = None,
+                     begin_time: str = None, end_time: str = None) -> dict:
     """
     Run system study queries and generate recommendations.
-    sections: list of section IDs to run (None = all)
-    Returns {ok, db_name, sections: [...], recommendations: [...]}
+    sections: list of section IDs to run (None = all).
+    begin_time / end_time: YYYY-MM-DD HH24:MI for snap-range sections.
     """
     from modules.oracle_awr_fetcher import get_connection_by_id
     from modules.oracle_live_query import run_queries
@@ -311,25 +312,32 @@ def run_system_study(conn_id: int, sections: list = None) -> dict:
     if not cfg:
         return {'ok': False, 'error': f'Connection {conn_id} not found'}
 
-    active = SECTIONS if not sections else \
-        [s for s in SECTIONS if s['id'] in sections]
+    active = SECTIONS if not sections else         [s for s in SECTIONS if s['id'] in sections]
 
-    query_defs = [{'name': s['id'], 'description': s['name'],
-                   'sql': s['sql']} for s in active]
+    query_defs = []
+    for s in active:
+        needs_snap = s.get('snap_range', False)
+        params = {}
+        if needs_snap:
+            if not begin_time or not end_time:
+                query_defs.append({
+                    'name': s['id'], 'description': s['name'],
+                    'sql': "SELECT 'Begin/End time required for this section' note FROM DUAL",
+                    'params': {}
+                })
+                continue
+            params = {'begin_time': begin_time, 'end_time': end_time}
+        query_defs.append({'name': s['id'], 'description': s['name'],
+                           'sql': s['sql'], 'params': params})
 
     raw = run_queries(cfg, query_defs)
 
-    # Index results by section id
     by_id = {r['name']: r for r in raw}
     result_sections = []
     for s in active:
-        r = by_id.get(s['id'], {'ok': False, 'error': 'not run',
-                                 'rows': [], 'columns': []})
-        result_sections.append({
-            'id':    s['id'],
-            'name':  s['name'],
-            **r
-        })
+        r = by_id.get(s['id'], {'ok': False, 'error': 'not run', 'rows': [], 'columns': []})
+        result_sections.append({'id': s['id'], 'name': s['name'],
+                                'snap_range': s.get('snap_range', False), **r})
 
     recommendations = _generate_system_recommendations(by_id)
 
@@ -737,3 +745,378 @@ def _generate_system_recommendations(by_id: dict) -> list:
             })
 
     return recs
+
+
+# ── Additional sections from scripts1.zip ────────────────────────────────────
+# Appended to SECTIONS list at module load
+_EXTRA_SECTIONS = [
+    # ── Snap-range based (Group B) ────────────────────────────────────────────
+    {
+        'id': 'hot_blocks',
+        'name': 'Hot Block Detection (Cluster Waits by Object)',
+        'snap_range': True,
+        'sql': """
+            WITH snap_range AS (
+                SELECT snap_id FROM dba_hist_snapshot
+                WHERE begin_interval_time BETWEEN
+                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
+                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+            )
+            SELECT o.owner, o.object_name, o.object_type,
+                   COUNT(*) cluster_samples
+            FROM dba_hist_active_sess_history a
+            JOIN snap_range s ON s.snap_id = a.snap_id
+            JOIN dba_objects o ON o.object_id = a.current_obj#
+            WHERE a.wait_class = 'Cluster'
+            GROUP BY o.owner, o.object_name, o.object_type
+            ORDER BY cluster_samples DESC
+            FETCH FIRST 20 ROWS ONLY
+        """
+    },
+    {
+        'id': 'hot_indexes',
+        'name': 'Hot Indexes (Cluster Waits)',
+        'snap_range': True,
+        'sql': """
+            WITH snap_range AS (
+                SELECT snap_id FROM dba_hist_snapshot
+                WHERE begin_interval_time BETWEEN
+                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
+                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+            )
+            SELECT o.owner, o.object_name index_name,
+                   COUNT(*) cluster_samples
+            FROM dba_hist_active_sess_history a
+            JOIN snap_range s ON s.snap_id = a.snap_id
+            JOIN dba_objects o ON o.object_id = a.current_obj#
+            WHERE a.wait_class = 'Cluster'
+              AND o.object_type = 'INDEX'
+            GROUP BY o.owner, o.object_name
+            ORDER BY cluster_samples DESC
+            FETCH FIRST 20 ROWS ONLY
+        """
+    },
+    {
+        'id': 'reverse_key_candidates',
+        'name': 'Hot Index — Reverse Key Candidates',
+        'snap_range': True,
+        'sql': """
+            WITH snap_range AS (
+                SELECT snap_id FROM dba_hist_snapshot
+                WHERE begin_interval_time BETWEEN
+                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
+                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+            ),
+            hot_indexes AS (
+                SELECT o.object_id, o.owner, o.object_name,
+                       COUNT(*) cluster_samples
+                FROM dba_hist_active_sess_history a
+                JOIN snap_range s ON s.snap_id = a.snap_id
+                JOIN dba_objects o ON o.object_id = a.current_obj#
+                WHERE a.wait_class = 'Cluster'
+                  AND o.object_type = 'INDEX'
+                GROUP BY o.object_id, o.owner, o.object_name
+                HAVING COUNT(*) > 100
+            )
+            SELECT h.owner, h.object_name index_name,
+                   h.cluster_samples,
+                   ic.table_name,
+                   ic.column_name leading_column,
+                   i.index_type,
+                   NVL(i.reverse,'N') is_reverse,
+                   CASE
+                       WHEN i.index_type = 'NORMAL'
+                        AND ic.column_position = 1
+                        AND ic.column_name LIKE '%ID%'
+                       THEN '*** REVERSE KEY CANDIDATE ***'
+                       ELSE 'Review'
+                   END recommendation
+            FROM hot_indexes h
+            JOIN dba_indexes i ON i.owner = h.owner AND i.index_name = h.object_name
+            JOIN dba_ind_columns ic ON ic.owner = h.owner
+              AND ic.index_name = h.object_name AND ic.column_position = 1
+            ORDER BY h.cluster_samples DESC
+        """
+    },
+    {
+        'id': 'hot_tables_cluster',
+        'name': 'Hot Tables — Cluster Waits',
+        'snap_range': True,
+        'sql': """
+            WITH snap_range AS (
+                SELECT snap_id FROM dba_hist_snapshot
+                WHERE begin_interval_time BETWEEN
+                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
+                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+            )
+            SELECT o.owner, o.object_name, o.object_type,
+                   COUNT(*) cluster_samples
+            FROM dba_hist_active_sess_history a
+            JOIN snap_range s ON s.snap_id = a.snap_id
+            JOIN dba_objects o ON o.object_id = a.current_obj#
+            WHERE a.wait_class = 'Cluster'
+              AND o.object_type = 'TABLE'
+            GROUP BY o.owner, o.object_name, o.object_type
+            ORDER BY cluster_samples DESC
+            FETCH FIRST 20 ROWS ONLY
+        """
+    },
+    {
+        'id': 'gc_event_breakdown',
+        'name': 'GC Event Breakdown (Top SQL per GC Event)',
+        'snap_range': True,
+        'sql': """
+            WITH snap_range AS (
+                SELECT snap_id FROM dba_hist_snapshot
+                WHERE begin_interval_time BETWEEN
+                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
+                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+            )
+            SELECT * FROM (
+                SELECT a.sql_id, a.event,
+                       COUNT(*) samples,
+                       ROW_NUMBER() OVER (
+                           PARTITION BY a.event ORDER BY COUNT(*) DESC
+                       ) rn
+                FROM dba_hist_active_sess_history a
+                JOIN snap_range s ON s.snap_id = a.snap_id
+                WHERE a.wait_class = 'Cluster'
+                  AND a.event IN (
+                      'gc current block busy','gc current block 2-way',
+                      'gc current block 3-way','gc cr block busy',
+                      'gc cr block 2-way','gc cr block 3-way'
+                  )
+                GROUP BY a.sql_id, a.event
+            ) WHERE rn <= 10
+            ORDER BY event, samples DESC
+        """
+    },
+    {
+        'id': 'gc_severity',
+        'name': 'GC Event Severity Summary',
+        'snap_range': True,
+        'sql': """
+            WITH snap_range AS (
+                SELECT snap_id FROM dba_hist_snapshot
+                WHERE begin_interval_time BETWEEN
+                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
+                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+            )
+            SELECT event,
+                   COUNT(*) samples,
+                   ROUND(COUNT(*)/SUM(COUNT(*)) OVER()*100,2) pct
+            FROM dba_hist_active_sess_history a
+            JOIN snap_range s ON s.snap_id = a.snap_id
+            WHERE a.wait_class = 'Cluster'
+            GROUP BY event
+            ORDER BY samples DESC
+        """
+    },
+    {
+        'id': 'rac_skew',
+        'name': 'RAC Load Skew by SQL and Instance',
+        'snap_range': True,
+        'sql': """
+            WITH snap_range AS (
+                SELECT snap_id FROM dba_hist_snapshot
+                WHERE begin_interval_time BETWEEN
+                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
+                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+            )
+            SELECT a.sql_id, a.instance_number, COUNT(*) samples
+            FROM dba_hist_active_sess_history a
+            JOIN snap_range s ON s.snap_id = a.snap_id
+            WHERE a.sql_id IS NOT NULL
+            GROUP BY a.sql_id, a.instance_number
+            ORDER BY a.sql_id, samples DESC
+            FETCH FIRST 50 ROWS ONLY
+        """
+    },
+    {
+        'id': 'instance_wise_objects',
+        'name': 'Cluster Waits by Object and Instance',
+        'snap_range': True,
+        'sql': """
+            WITH snap_range AS (
+                SELECT snap_id FROM dba_hist_snapshot
+                WHERE begin_interval_time BETWEEN
+                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
+                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+            )
+            SELECT o.owner, o.object_name, a.instance_number,
+                   COUNT(*) samples
+            FROM dba_hist_active_sess_history a
+            JOIN snap_range s ON s.snap_id = a.snap_id
+            JOIN dba_objects o ON o.object_id = a.current_obj#
+            WHERE a.wait_class = 'Cluster'
+            GROUP BY o.owner, o.object_name, a.instance_number
+            ORDER BY o.owner, o.object_name, samples DESC
+            FETCH FIRST 50 ROWS ONLY
+        """
+    },
+    {
+        'id': 'pk_hot_sequence',
+        'name': 'Hot PK Indexes Driven by Sequence',
+        'snap_range': True,
+        'sql': """
+            WITH snap_range AS (
+                SELECT snap_id FROM dba_hist_snapshot
+                WHERE begin_interval_time BETWEEN
+                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
+                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+            ),
+            hot_indexes AS (
+                SELECT o.owner, o.object_name, COUNT(*) cluster_samples
+                FROM dba_hist_active_sess_history a
+                JOIN snap_range s ON s.snap_id = a.snap_id
+                JOIN dba_objects o ON o.object_id = a.current_obj#
+                WHERE a.wait_class = 'Cluster' AND o.object_type = 'INDEX'
+                GROUP BY o.owner, o.object_name
+                HAVING COUNT(*) > 100
+            ),
+            pk_indexes AS (
+                SELECT c.owner, c.table_name, c.constraint_name,
+                       i.index_name, ic.column_name
+                FROM dba_constraints c
+                JOIN dba_indexes i ON c.owner = i.owner
+                  AND c.constraint_name = i.index_name
+                JOIN dba_ind_columns ic ON i.owner = ic.owner
+                  AND i.index_name = ic.index_name AND ic.column_position = 1
+                WHERE c.constraint_type = 'P'
+            )
+            SELECT h.owner, h.object_name index_name,
+                   h.cluster_samples, p.table_name, p.column_name leading_column,
+                   'LIKELY SEQUENCE-BASED HOT PK — consider REVERSE KEY or HASH partitioning'
+                       recommendation
+            FROM hot_indexes h
+            JOIN pk_indexes p ON p.owner = h.owner AND p.index_name = h.object_name
+            ORDER BY h.cluster_samples DESC
+        """
+    },
+    {
+        'id': 'hot_objects_recommendation',
+        'name': 'Hot Objects — Reverse/Hash Partition Candidates',
+        'snap_range': True,
+        'sql': """
+            WITH snap_range AS (
+                SELECT snap_id FROM dba_hist_snapshot
+                WHERE begin_interval_time BETWEEN
+                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
+                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+            ),
+            hot_objects AS (
+                SELECT o.owner, o.object_name, o.object_type,
+                       COUNT(*) cluster_samples
+                FROM dba_hist_active_sess_history a
+                JOIN snap_range s ON s.snap_id = a.snap_id
+                JOIN dba_objects o ON o.object_id = a.current_obj#
+                WHERE a.wait_class = 'Cluster'
+                GROUP BY o.owner, o.object_name, o.object_type
+                HAVING COUNT(*) > 200
+            )
+            SELECT h.owner, h.object_name, h.object_type,
+                   h.cluster_samples,
+                   CASE
+                       WHEN h.object_type = 'INDEX' THEN 'CHECK REVERSE INDEX'
+                       WHEN h.object_type = 'TABLE' THEN 'CHECK HASH PARTITIONING'
+                       ELSE 'REVIEW'
+                   END recommendation
+            FROM hot_objects h
+            ORDER BY h.cluster_samples DESC
+        """
+    },
+    # ── No snap range (Group C) ────────────────────────────────────────────────
+    {
+        'id': 'service_imbalance',
+        'name': 'Service Load Imbalance (RAC)',
+        'snap_range': False,
+        'sql': """
+            SELECT s.name service_name, a.instance_number,
+                   COUNT(*) samples
+            FROM dba_hist_active_sess_history a
+            JOIN dba_services s ON a.service_hash = s.name_hash
+            GROUP BY s.name, a.instance_number
+            ORDER BY s.name, samples DESC
+            FETCH FIRST 50 ROWS ONLY
+        """
+    },
+    {
+        'id': 'block_ping_by_sql',
+        'name': 'Block Ping by SQL (Top Cluster Wait SQLs)',
+        'snap_range': False,
+        'sql': """
+            SELECT sql_id,
+                   ROUND(SUM(clwait_delta)/1e6,2) cluster_sec
+            FROM dba_hist_sqlstat
+            GROUP BY sql_id
+            ORDER BY cluster_sec DESC
+            FETCH FIRST 20 ROWS ONLY
+        """
+    },
+    {
+        'id': 'object_level_ping',
+        'name': 'Object Level Block Ping (Full History)',
+        'snap_range': False,
+        'sql': """
+            SELECT o.owner, o.object_name, COUNT(*) cluster_samples
+            FROM dba_hist_active_sess_history a
+            JOIN dba_objects o ON o.object_id = a.current_obj#
+            WHERE a.wait_class = 'Cluster'
+            GROUP BY o.owner, o.object_name
+            ORDER BY cluster_samples DESC
+            FETCH FIRST 20 ROWS ONLY
+        """
+    },
+    {
+        'id': 'instance_level_ping',
+        'name': 'Instance Level Cluster Wait Distribution',
+        'snap_range': False,
+        'sql': """
+            SELECT instance_number, COUNT(*) samples
+            FROM dba_hist_active_sess_history
+            WHERE wait_class = 'Cluster'
+            GROUP BY instance_number
+            ORDER BY samples DESC
+        """
+    },
+    {
+        'id': 'grd_remaster_stats',
+        'name': 'GRD Remaster Statistics (RAC only)',
+        'snap_range': False,
+        'sql': """
+            SELECT name, SUM(value) total_value
+            FROM gv$sysstat
+            WHERE name LIKE 'gc%master%'
+            GROUP BY name
+            ORDER BY total_value DESC
+        """
+    },
+    {
+        'id': 'ges_tm_remaster',
+        'name': 'GES TM Resource Remastering (RAC only)',
+        'snap_range': False,
+        'sql': """
+            SELECT inst_id, resource_name, master_node,
+                   total_requests, total_waits
+            FROM gv$ges_resource
+            WHERE resource_name LIKE 'TM-%'
+            ORDER BY total_requests DESC
+            FETCH FIRST 20 ROWS ONLY
+        """
+    },
+    {
+        'id': 'ges_tx_remaster',
+        'name': 'GES TX Block Mastering (RAC only)',
+        'snap_range': False,
+        'sql': """
+            SELECT inst_id, resource_name, master_node, total_requests
+            FROM gv$ges_resource
+            WHERE resource_name LIKE 'TX-%'
+            ORDER BY total_requests DESC
+            FETCH FIRST 20 ROWS ONLY
+        """
+    },
+]
+
+# Append to main SECTIONS list
+SECTIONS.extend(_EXTRA_SECTIONS)

@@ -18,7 +18,7 @@
   </div>
 
   <!-- Controls -->
-  <div style="display:grid;grid-template-columns:1fr 2fr auto;gap:10px;
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 2fr auto;gap:10px;
               margin-bottom:16px;align-items:end;background:var(--surface);
               border:1px solid var(--border);border-radius:8px;padding:14px">
     <div>
@@ -30,6 +30,20 @@
         <option value="{{ c.id }}">{{ c.db_name }}{% if c.display_name and c.display_name != c.db_name %} — {{ c.display_name }}{% endif %}</option>
         {% endfor %}
       </select>
+    </div>
+    <div>
+      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">
+        Begin Time <span style="color:var(--text2);font-weight:normal">(snap-range sections)</span>
+      </label>
+      <input type="datetime-local" id="ss_begin_time"
+             style="width:100%;padding:6px 8px;border-radius:5px;background:var(--bg);
+                    border:1px solid var(--border);color:var(--text);font-size:12px">
+    </div>
+    <div>
+      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">End Time</label>
+      <input type="datetime-local" id="ss_end_time"
+             style="width:100%;padding:6px 8px;border-radius:5px;background:var(--bg);
+                    border:1px solid var(--border);color:var(--text);font-size:12px">
     </div>
     <div>
       <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">Sections</label>
@@ -68,25 +82,53 @@
 
 <script>
 const SECTIONS_META = [
-  {id:'server_info',       name:'Server CPU & Memory'},
-  {id:'db_config',         name:'Database Configuration'},
-  {id:'db_size',           name:'Database Size & Growth'},
-  {id:'controlfiles',      name:'Controlfile Information'},
-  {id:'redo_logs',         name:'Online Redo Log Information'},
-  {id:'log_switches',      name:'Hourly Log Switches (Last 7 Days)'},
-  {id:'tablespaces',       name:'Tablespace Information'},
-  {id:'asm_diskgroups',    name:'ASM Disk Groups'},
-  {id:'db_files_location', name:'Database Files Location'},
-  {id:'large_tables',      name:'Large Tables (Top 30)'},
-  {id:'large_indexes',     name:'Large Indexes (Top 30)'},
-  {id:'invalid_objects',   name:'Invalid Objects'},
-  {id:'db_links',          name:'Database Links'},
-  {id:'redo_wait_events',  name:'Redo Wait Events (AWR)'},
-  {id:'patch_level',       name:'Database Patch Level'},
+  {id:'server_info',              name:'Server CPU & Memory',                    snap:false},
+  {id:'db_config',                name:'Database Configuration',                 snap:false},
+  {id:'db_size',                  name:'Database Size & Growth',                 snap:false},
+  {id:'controlfiles',             name:'Controlfile Information',                snap:false},
+  {id:'redo_logs',                name:'Online Redo Log Information',            snap:false},
+  {id:'log_switches',             name:'Hourly Log Switches (Last 7 Days)',      snap:false},
+  {id:'tablespaces',              name:'Tablespace Information',                 snap:false},
+  {id:'asm_diskgroups',           name:'ASM Disk Groups',                        snap:false},
+  {id:'db_files_location',        name:'Database Files Location',                snap:false},
+  {id:'large_tables',             name:'Large Tables (Top 30)',                  snap:false},
+  {id:'large_indexes',            name:'Large Indexes (Top 30)',                 snap:false},
+  {id:'invalid_objects',          name:'Invalid Objects',                        snap:false},
+  {id:'db_links',                 name:'Database Links',                         snap:false},
+  {id:'redo_wait_events',         name:'Redo Wait Events (AWR)',                 snap:false},
+  {id:'patch_level',              name:'Database Patch Level',                   snap:false},
+  // Snap-range sections
+  {id:'hot_blocks',               name:'Hot Block Detection',                    snap:true},
+  {id:'hot_indexes',              name:'Hot Indexes (Cluster Waits)',            snap:true},
+  {id:'reverse_key_candidates',   name:'Hot Index — Reverse Key Candidates',     snap:true},
+  {id:'hot_tables_cluster',       name:'Hot Tables — Cluster Waits',             snap:true},
+  {id:'gc_event_breakdown',       name:'GC Event Breakdown',                     snap:true},
+  {id:'gc_severity',              name:'GC Event Severity Summary',              snap:true},
+  {id:'rac_skew',                 name:'RAC Load Skew by SQL & Instance',        snap:true},
+  {id:'instance_wise_objects',    name:'Cluster Waits by Object & Instance',     snap:true},
+  {id:'pk_hot_sequence',          name:'Hot PK Indexes — Sequence Driven',       snap:true},
+  {id:'hot_objects_recommendation',name:'Hot Objects — Reverse/Hash Candidates', snap:true},
+  // No snap-range
+  {id:'service_imbalance',        name:'Service Load Imbalance (RAC)',           snap:false},
+  {id:'block_ping_by_sql',        name:'Block Ping by SQL',                      snap:false},
+  {id:'object_level_ping',        name:'Object Level Block Ping',                snap:false},
+  {id:'instance_level_ping',      name:'Instance Level Cluster Wait',            snap:false},
+  {id:'grd_remaster_stats',       name:'GRD Remaster Statistics (RAC)',          snap:false},
+  {id:'ges_tm_remaster',          name:'GES TM Resource Remastering (RAC)',      snap:false},
+  {id:'ges_tx_remaster',          name:'GES TX Block Mastering (RAC)',           snap:false},
 ];
 
 const SEV_COLOR = {Critical:'#ef4444', Alert:'#f59e0b', Warning:'#3b82f6'};
 const SEV_ICON  = {Critical:'🔴', Alert:'🟡', Warning:'🔵'};
+
+// Set default times
+(function() {
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0);
+  const fmt = d => d.toISOString().slice(0,16);
+  document.getElementById('ss_begin_time').value = fmt(todayStart);
+  document.getElementById('ss_end_time').value   = fmt(now);
+})();
 
 // Build section checkboxes
 (function() {
@@ -94,7 +136,11 @@ const SEV_ICON  = {Critical:'🔴', Alert:'🟡', Warning:'🔵'};
   SECTIONS_META.forEach(s => {
     const lbl = document.createElement('label');
     lbl.style.cssText = 'font-size:11px;cursor:pointer;display:flex;align-items:center;gap:3px';
-    lbl.innerHTML = `<input type="checkbox" class="sec_chk" value="${s.id}" checked> ${s.name}`;
+    const snapBadge = s.snap
+      ? ' <span style="font-size:9px;color:var(--accent);border:1px solid var(--accent);'
+        + 'border-radius:2px;padding:0 3px">snap</span>'
+      : '';
+    lbl.innerHTML = `<input type="checkbox" class="sec_chk" value="${s.id}" checked> ${s.name}${snapBadge}`;
     wrap.appendChild(lbl);
   });
 })();
@@ -115,7 +161,11 @@ async function runSystemStudy() {
 
   if (!conn_id) { showSSMsg('Select an Oracle connection first', 'err'); return; }
 
-  const sections = getSelectedSections();
+  const sections    = getSelectedSections();
+  const begin_raw   = document.getElementById('ss_begin_time').value;
+  const end_raw     = document.getElementById('ss_end_time').value;
+  const begin_time  = begin_raw ? begin_raw.replace('T',' ') : null;
+  const end_time    = end_raw   ? end_raw.replace('T',' ')   : null;
   btn.disabled = true;
   btn.textContent = '⏳ Running…';
   showSSMsg('Connecting to Oracle and running system study queries…', 'info');
@@ -126,7 +176,7 @@ async function runSystemStudy() {
     const res  = await fetch('/api/oracle/system-study', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({conn_id: parseInt(conn_id), sections})
+      body: JSON.stringify({conn_id: parseInt(conn_id), sections, begin_time, end_time})
     });
     const data = await res.json();
 

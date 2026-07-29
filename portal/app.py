@@ -3593,21 +3593,23 @@ async def api_plsql_performance(request: Request):
 async def api_system_study(request: Request):
     """
     Run database system study — live Oracle queries + recommendations.
-    Body: {conn_id, sections (optional list of section IDs)}
+    Body: {conn_id, sections (optional), begin_time, end_time (for snap-range sections)}
     """
     if not _is_admin(request):
         raise HTTPException(403, "Admin access required")
     try:
-        body = await request.json()
-        conn_id  = int(body.get('conn_id', 0))
-        sections = body.get('sections')  # None = all
+        body       = await request.json()
+        conn_id    = int(body.get('conn_id', 0))
+        sections   = body.get('sections')
+        begin_time = body.get('begin_time', '').strip() or None
+        end_time   = body.get('end_time', '').strip() or None
 
         if not conn_id:
             return JSONResponse({'ok': False, 'error': 'conn_id is required'},
                                 status_code=400)
 
         from modules.system_study import run_system_study
-        result = run_system_study(conn_id, sections)
+        result = run_system_study(conn_id, sections, begin_time, end_time)
         return JSONResponse(result)
     except Exception as e:
         return JSONResponse({'ok': False, 'error': str(e)}, status_code=500)
