@@ -92,7 +92,7 @@ grafana:
   # Admin credentials — used by auto-patch to re-import dashboards
   # into Grafana internal DB after IP change. Match your Grafana admin account.
   admin_user:     "admin"
-  admin_password: "admin"
+  admin_password: "admin@123"
   # Dashboard JSON folder — project dashboard/ dir, NOT Grafana install path.
   # bulk_import.py reads from here; patch_grafana_urls.py patches here.
   dashboard_dir:  "dashboard"
@@ -107,3 +107,8 @@ alerting:
     smtp_port: 25
     from:      "awrparser@company.com"
     to:        []
+
+
+portal:
+  awr_archive_retain_days: 7   # set to 7 for minimal, 90 for longer history
+  sar_archive_retain_days: 7
