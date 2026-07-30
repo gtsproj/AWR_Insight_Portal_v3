@@ -60,20 +60,45 @@ app = FastAPI(
     version="1.0.0"
 )
 
+def _cleanup_archive(archive_dir: str, retain_days: int,
+                     extensions: tuple = ('.html', '.txt')) -> int:
+    """
+    Delete files older than retain_days from archive_dir (recursively).
+    Only files with the given extensions are deleted.
+    Returns count of deleted files.
+    """
+    import shutil as _shutil
+    from datetime import datetime as _dt, timedelta as _td
+
+    if not os.path.isdir(archive_dir):
+        return 0
+
+    cutoff  = _dt.now() - _td(days=retain_days)
+    deleted = 0
+
+    for root, dirs, files in os.walk(archive_dir):
+        for fname in files:
+            if not fname.lower().endswith(extensions):
+                continue
+            fpath = os.path.join(root, fname)
+            try:
+                mtime = _dt.fromtimestamp(os.path.getmtime(fpath))
+                if mtime < cutoff:
+                    os.unlink(fpath)
+                    deleted += 1
+            except Exception:
+                pass
+    return deleted
+
+
 def _oracle_awr_scheduler():
     """
     Background thread — runs for the lifetime of the portal process.
     Checks every 5 minutes whether any Oracle connection is due for
     AWR generation based on its snap_interval_hrs setting.
 
-    Logic per connection:
-      - snap_interval_hrs == 0  → manual only, never auto-run
-      - last_run_at is None     → never run yet, run today immediately
-      - now - last_run_at >= snap_interval_hrs * 60 minutes → run
-
-    If last_run_at was on a previous date (e.g. machine slept overnight,
-    IP changed, or service was stopped), the scheduler generates reports
-    for ALL missed dates from last_run_at.date() through today.
+    Also runs a daily cleanup of the AWR archive folder, removing
+    HTML reports older than awr_archive_retain_days (default 30).
     """
     import time as _time
     from datetime import date as _date, datetime as _dt, timedelta as _td
@@ -82,7 +107,7 @@ def _oracle_awr_scheduler():
     _sched_log = _get_logger('oracle_awr_scheduler')
     _sched_log.info('Oracle AWR scheduler started — checking every 5 minutes')
 
-    # Get awr_reports dir from settings
+    # Get awr_reports dir and archive settings from settings.yaml
     try:
         import yaml as _yaml
         with open(os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')) as f:
@@ -91,10 +116,144 @@ def _oracle_awr_scheduler():
         if not os.path.isabs(awr_dir):
             awr_dir = os.path.join(_PROJECT_ROOT, awr_dir)
         os.makedirs(awr_dir, exist_ok=True)
+        awr_archive = os.path.join(_PROJECT_ROOT, 'archive')
+        awr_retain  = int(_settings.get('portal', {}).get(
+                          'awr_archive_retain_days', 30))
     except Exception as e:
-        _sched_log.error(f'Could not read awr_reports_dir from settings: {e}')
-        awr_dir = os.path.join(_PROJECT_ROOT, 'awr_reports')
+        _sched_log.error(f'Could not read settings: {e}')
+        awr_dir     = os.path.join(_PROJECT_ROOT, 'awr_reports')
+        awr_archive = os.path.join(_PROJECT_ROOT, 'archive')
+        awr_retain  = 30
         os.makedirs(awr_dir, exist_ok=True)
+
+    last_cleanup_date = None   # track daily cleanup
+
+    while True:
+        try:
+            from modules.oracle_awr_fetcher import (
+                get_all_connections, fetch_awrs_for_date, retry_failed_snaps
+            )
+            connections = get_all_connections()
+            enabled = [c for c in connections
+                       if c.get('enabled') and float(c.get('snap_interval_hrs', 0)) > 0]
+
+            now = _dt.now()
+            today = _date.today()
+
+            for c in enabled:
+                try:
+                    interval_hrs  = float(c.get('snap_interval_hrs', 1))
+                    interval_mins = interval_hrs * 60
+                    last_run      = c.get('last_run_at')  # string or None
+
+                    if last_run:
+                        try:
+                            last_run_dt = _dt.strptime(last_run, '%Y-%m-%d %H:%M:%S')
+                        except (ValueError, TypeError):
+                            last_run_dt = None
+                    else:
+                        last_run_dt = None
+
+                    elapsed_mins = (
+                        (now - last_run_dt).total_seconds() / 60
+                        if last_run_dt else float('inf')
+                    )
+
+                    if elapsed_mins < interval_mins:
+                        next_run_mins = interval_mins - elapsed_mins
+                        _sched_log.debug(
+                            f"Scheduler: {c['db_name']} not due "
+                            f"(next run in {next_run_mins:.0f}m)"
+                        )
+                        continue
+
+                    # ── Determine which dates to process ──────────────────
+                    dates_to_process = []
+                    if last_run_dt and last_run_dt.date() < today:
+                        missed_date = last_run_dt.date() + _td(days=1)
+                        while missed_date <= today:
+                            dates_to_process.append(missed_date)
+                            missed_date += _td(days=1)
+                        _sched_log.info(
+                            f"Scheduler: {c['db_name']} catching up "
+                            f"{len(dates_to_process)} missed date(s) "
+                            f"(last run: {last_run_dt.date()})"
+                        )
+                    else:
+                        dates_to_process = [today]
+
+                    # ── Retry previously failed snap pairs first ───────────
+                    try:
+                        retry_result = retry_failed_snaps(c['id'], awr_dir)
+                        if retry_result['retried'] > 0:
+                            _sched_log.info(
+                                f"Scheduler retry: {c['db_name']} → "
+                                f"{retry_result['recovered']} recovered, "
+                                f"{retry_result['still_failing']} still failing"
+                            )
+                    except Exception as re_err:
+                        _sched_log.error(f"Scheduler retry error [{c['db_name']}]: {re_err}")
+
+                    # ── Generate reports for each date ─────────────────────
+                    for snap_date in dates_to_process:
+                        _sched_log.info(
+                            f"Scheduler: generating AWR for {c['db_name']} "
+                            f"date={snap_date} "
+                            f"(interval={interval_hrs}h, elapsed={elapsed_mins:.0f}m)"
+                        )
+                        try:
+                            result = fetch_awrs_for_date(
+                                c['id'], snap_date, awr_dir
+                            )
+                            ok  = result.get('reports_generated', 0)
+                            err = result.get('errors', 0)
+                            msg = result.get('message', '')
+                            _sched_log.info(
+                                f"Scheduler: {c['db_name']} {snap_date} → "
+                                f"{ok} report(s) generated"
+                                f"{', ' + str(err) + ' error(s)' if err else ''}"
+                                f"{' — ' + msg if msg else ''}"
+                            )
+                            if not result.get('ok') and result.get('error'):
+                                _sched_log.error(
+                                    f"Scheduler: {c['db_name']} {snap_date} failed: "
+                                    f"{result['error']} "
+                                    f"[{c['host']}:{c['port']}/{c['service_name']}]"
+                                )
+                        except Exception as gen_err:
+                            _sched_log.error(
+                                f"Scheduler: generate error for {c['db_name']} "
+                                f"{snap_date} "
+                                f"[{c['host']}:{c['port']}/{c['service_name']}]: "
+                                f"{gen_err}"
+                            )
+
+                except Exception as e:
+                    _sched_log.error(
+                        f"Scheduler: error processing {c.get('db_name','?')} "
+                        f"[{c.get('host','?')}:{c.get('port','?')}"
+                        f"/{c.get('service_name','?')}]: {e}"
+                    )
+
+            # ── Daily AWR archive cleanup ───────────────────────────────────
+            today = _date.today()
+            if last_cleanup_date != today:
+                try:
+                    deleted = _cleanup_archive(awr_archive, awr_retain,
+                                               extensions=('.html',))
+                    if deleted:
+                        _sched_log.info(
+                            f'AWR archive cleanup: {deleted} file(s) deleted '
+                            f'(retain={awr_retain} days)'
+                        )
+                    last_cleanup_date = today
+                except Exception as e:
+                    _sched_log.error(f'AWR archive cleanup error: {e}')
+
+        except Exception as e:
+            _sched_log.error(f'Scheduler loop error: {e}')
+
+        _time.sleep(300)  # check every 5 minutes
 
     while True:
         try:
@@ -225,7 +384,7 @@ def _sar_ssh_scheduler():
     was stopped (overnight, IP change, server sleep etc.).
 
     Also runs a daily archive cleanup to remove SAR text files
-    older than 30 days from sar_archive\.
+    older than 30 days from sar_archive.
     """
     import time as _time
     from datetime import datetime as _dt, date as _date
@@ -265,7 +424,7 @@ def _sar_ssh_scheduler():
     while True:
         try:
             from modules.sar_ssh_fetcher import (
-                get_all_connections, pull_sar_files, cleanup_sar_archive
+                get_all_connections, pull_sar_files
             )
 
             connections = get_all_connections()
@@ -331,11 +490,12 @@ def _sar_ssh_scheduler():
             today = now.date()
             if last_cleanup_date != today:
                 try:
-                    result = cleanup_sar_archive(sar_archive, retain_days)
-                    if result['deleted']:
+                    deleted = _cleanup_archive(sar_archive, retain_days,
+                                               extensions=('.txt', '.sar'))
+                    if deleted:
                         _log.info(
-                            f'SAR archive cleanup: {result["deleted"]} file(s) '
-                            f'deleted (retain={retain_days} days)'
+                            f'SAR archive cleanup: {deleted} file(s) deleted '
+                            f'(retain={retain_days} days)'
                         )
                     last_cleanup_date = today
                 except Exception as e:
