@@ -3863,26 +3863,27 @@ async def api_generate_awrs(request: Request):
 async def api_plsql_performance(request: Request):
     """
     Run PL/SQL performance analysis on Oracle live data.
-    Body: {conn_id, begin_time, end_time, query_ids (optional)}
-    begin_time / end_time: 'YYYY-MM-DD HH24:MI' format
+    Body: {conn_id, begin_snap, end_snap, query_ids (optional)}
     """
     if not _is_admin(request):
         raise HTTPException(403, "Admin access required")
     try:
-        body = await request.json()
+        body       = await request.json()
         conn_id    = int(body.get('conn_id', 0))
-        begin_time = body.get('begin_time', '').strip()
-        end_time   = body.get('end_time', '').strip()
-        query_ids  = body.get('query_ids')  # None = all
+        begin_snap = body.get('begin_snap')
+        end_snap   = body.get('end_snap')
+        query_ids  = body.get('query_ids')
 
-        if not conn_id or not begin_time or not end_time:
+        if not conn_id or not begin_snap or not end_snap:
             return JSONResponse({
                 'ok': False,
-                'error': 'conn_id, begin_time and end_time are required'
+                'error': 'conn_id, begin_snap and end_snap are required'
             }, status_code=400)
 
         from modules.plsql_performance import run_plsql_analysis
-        result = run_plsql_analysis(conn_id, begin_time, end_time, query_ids)
+        result = run_plsql_analysis(
+            conn_id, int(begin_snap), int(end_snap), query_ids
+        )
         return JSONResponse(result)
     except Exception as e:
         return JSONResponse({'ok': False, 'error': str(e)}, status_code=500)
@@ -3896,23 +3897,27 @@ async def api_plsql_performance(request: Request):
 async def api_system_study(request: Request):
     """
     Run database system study — live Oracle queries + recommendations.
-    Body: {conn_id, sections (optional), begin_time, end_time (for snap-range sections)}
+    Body: {conn_id, sections (optional), begin_snap, end_snap (for snap-range sections)}
     """
     if not _is_admin(request):
         raise HTTPException(403, "Admin access required")
     try:
-        body       = await request.json()
-        conn_id    = int(body.get('conn_id', 0))
-        sections   = body.get('sections')
-        begin_time = body.get('begin_time', '').strip() or None
-        end_time   = body.get('end_time', '').strip() or None
+        body        = await request.json()
+        conn_id     = int(body.get('conn_id', 0))
+        sections    = body.get('sections')
+        begin_snap  = body.get('begin_snap')
+        end_snap    = body.get('end_snap')
 
         if not conn_id:
             return JSONResponse({'ok': False, 'error': 'conn_id is required'},
                                 status_code=400)
 
         from modules.system_study import run_system_study
-        result = run_system_study(conn_id, sections, begin_time, end_time)
+        result = run_system_study(
+            conn_id, sections,
+            begin_snap=int(begin_snap) if begin_snap else None,
+            end_snap=int(end_snap) if end_snap else None
+        )
         return JSONResponse(result)
     except Exception as e:
         return JSONResponse({'ok': False, 'error': str(e)}, status_code=500)

@@ -23,9 +23,7 @@ _SNAP_CTE = """
 WITH snap_range AS (
     SELECT snap_id
     FROM   dba_hist_snapshot
-    WHERE  begin_interval_time BETWEEN
-               TO_TIMESTAMP(:begin_time, 'YYYY-MM-DD HH24:MI')
-           AND TO_TIMESTAMP(:end_time,   'YYYY-MM-DD HH24:MI')
+    WHERE  snap_id BETWEEN :begin_snap AND :end_snap
 ),
 app_schemas AS (
     SELECT username FROM dba_users WHERE oracle_maintained = 'N'
@@ -353,11 +351,11 @@ ORDER  BY c.owner, c.table_name
 
 
 def run_plsql_analysis(conn_id: int,
-                       begin_time: str, end_time: str,
+                       begin_snap: int, end_snap: int,
                        query_ids: list = None) -> dict:
     """
     Run PL/SQL performance queries for the given time range.
-    begin_time / end_time: 'YYYY-MM-DD HH24:MI' format.
+    begin_snap / end_snap: integer snap IDs.
     query_ids: subset to run (None = all).
     """
     from modules.oracle_awr_fetcher import get_connection_by_id
@@ -377,7 +375,7 @@ def run_plsql_analysis(conn_id: int,
     for q in active:
         sql = q['sql']()
         params = {} if q['id'] in NO_SNAP_PARAMS else \
-                 {'begin_time': begin_time, 'end_time': end_time}
+                 {'begin_snap': begin_snap, 'end_snap': end_snap}
         query_defs.append({
             'name':        q['id'],
             'description': q['description'],
@@ -402,8 +400,8 @@ def run_plsql_analysis(conn_id: int,
     return {
         'ok':              True,
         'db_name':         cfg['db_name'],
-        'begin_time':      begin_time,
-        'end_time':        end_time,
+        'begin_snap':      begin_snap,
+        'end_snap':        end_snap,
         'results':         results,
         'recommendations': recommendations,
         'error':           None

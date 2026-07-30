@@ -1,76 +1,82 @@
 {% extends "base.html" %}
 {% block title %} — Database System Study{% endblock %}
 {% block content %}
-<div style="max-width:1200px;margin:0 auto">
+<div style="max-width:1400px;margin:0 auto">
 
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
     <div style="font-size:1.3rem;font-weight:700">🔬 Database System Study</div>
     <div style="font-size:11px;color:var(--text2);padding:3px 8px;background:var(--surface);
                 border:1px solid var(--border);border-radius:4px">Live Oracle Query</div>
   </div>
 
-  <div style="font-size:12px;color:var(--text2);margin-bottom:16px;padding:8px 12px;
+  <div style="font-size:12px;color:var(--text2);margin-bottom:14px;padding:8px 12px;
               background:var(--surface);border:1px solid var(--border);border-radius:6px;
               border-left:3px solid var(--accent)">
-    Comprehensive live database health check across 31 sections.
-    Sections marked <span style="font-size:10px;color:var(--accent);border:1px solid var(--accent);
-    border-radius:2px;padding:0 4px;margin:0 2px">snap</span>
-    require a <strong>Begin/End time range</strong> to query
-    <code>DBA_HIST_ACTIVE_SESS_HISTORY</code> and snapshot data.
-    All other sections run against live dictionary views (no time range needed).
+    31-section live database health check. Sections marked
+    <span style="font-size:10px;color:var(--accent);border:1px solid var(--accent);
+      border-radius:2px;padding:0 3px">snap</span>
+    require <strong>Begin/End Snap</strong> to query ASH history.
+    All other sections run against live dictionary views instantly.
   </div>
 
   <!-- Controls -->
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 2fr auto;gap:10px;
-              margin-bottom:16px;align-items:end;background:var(--surface);
-              border:1px solid var(--border);border-radius:8px;padding:14px">
+  <div style="display:grid;grid-template-columns:200px 180px 180px 1fr auto;
+              gap:8px;margin-bottom:14px;align-items:end;background:var(--surface);
+              border:1px solid var(--border);border-radius:8px;padding:12px">
     <div>
-      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">Oracle Connection</label>
-      <select id="ss_conn_id" style="width:100%;padding:6px 8px;border-radius:5px;
-              background:var(--bg);border:1px solid var(--border);color:var(--text);font-size:12px">
-        <option value="">— select database —</option>
+      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">Oracle Connection</label>
+      <select id="ss_conn_id" onchange="loadSSSnaps()" style="width:100%;padding:5px 7px;
+              border-radius:4px;background:var(--bg);border:1px solid var(--border);
+              color:var(--text);font-size:12px">
+        <option value="">— select —</option>
         {% for c in connections %}
         <option value="{{ c.id }}">{{ c.db_name }}{% if c.display_name and c.display_name != c.db_name %} — {{ c.display_name }}{% endif %}</option>
         {% endfor %}
       </select>
     </div>
     <div>
-      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">
-        Begin Time <span style="color:var(--text2);font-weight:normal">(snap-range sections)</span>
+      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">
+        Begin Snap <span style="color:var(--text2);font-weight:normal;font-size:10px">(snap sections)</span>
       </label>
-      <input type="datetime-local" id="ss_begin_time"
-             style="width:100%;padding:6px 8px;border-radius:5px;background:var(--bg);
-                    border:1px solid var(--border);color:var(--text);font-size:12px">
+      <select id="ss_begin_snap" style="width:100%;padding:5px 7px;border-radius:4px;
+              background:var(--bg);border:1px solid var(--border);color:var(--text);font-size:12px">
+        <option value="">— load snaps —</option>
+      </select>
     </div>
     <div>
-      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">End Time</label>
-      <input type="datetime-local" id="ss_end_time"
-             style="width:100%;padding:6px 8px;border-radius:5px;background:var(--bg);
-                    border:1px solid var(--border);color:var(--text);font-size:12px">
+      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">End Snap</label>
+      <select id="ss_end_snap" style="width:100%;padding:5px 7px;border-radius:4px;
+              background:var(--bg);border:1px solid var(--border);color:var(--text);font-size:12px">
+        <option value="">— load snaps —</option>
+      </select>
     </div>
     <div>
-      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">Sections</label>
-      <div style="display:flex;gap:6px;flex-wrap:wrap" id="section_toggles">
-        <label style="font-size:11px;cursor:pointer;display:flex;align-items:center;gap:3px">
-          <input type="checkbox" id="all_sections" checked onchange="toggleAllSections(this.checked)"> All sections
+      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">
+        Snap Date &nbsp;
+        <input type="date" id="ss_snap_date" onchange="loadSSSnaps()"
+               style="padding:3px 6px;border-radius:4px;background:var(--bg);
+                      border:1px solid var(--border);color:var(--text);font-size:11px">
+      </label>
+      <!-- Section checkboxes -->
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px" id="ss_section_toggles">
+        <label style="font-size:10px;cursor:pointer;display:flex;align-items:center;gap:2px">
+          <input type="checkbox" id="ss_all_sections" checked onchange="toggleAllSS(this.checked)"> All sections
         </label>
       </div>
     </div>
     <div>
       <button onclick="runSystemStudy()" id="ss_run_btn"
-              style="padding:8px 18px;background:var(--accent);color:#fff;border:none;
+              style="padding:7px 16px;background:var(--accent);color:#fff;border:none;
                      border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;
-                     white-space:nowrap">
-        🔬 Run System Study
-      </button>
+                     white-space:nowrap">🔬 Run</button>
     </div>
   </div>
 
-  <div id="ss_status" style="display:none;font-size:12px;margin-bottom:12px;
+  <div id="ss_status" style="display:none;font-size:12px;margin-bottom:10px;
        padding:8px 12px;border-radius:6px"></div>
 
-  <!-- Recommendations summary -->
-  <div id="ss_recs_section" style="display:none;margin-bottom:20px">
+  <!-- Recommendations -->
+  <div id="ss_recs_section" style="display:none;margin-bottom:16px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
       <div style="font-size:13px;font-weight:700">💡 Recommendations</div>
       <div id="ss_recs_count" style="font-size:11px;color:var(--text2)"></div>
@@ -78,270 +84,242 @@
     <div id="ss_recs_container"></div>
   </div>
 
-  <!-- Sections accordion -->
+  <!-- Sections — horizontal card grid -->
   <div id="ss_sections_container"></div>
 
 </div>
 
 <script>
-const SECTIONS_META = [
-  {id:'server_info',              name:'Server CPU & Memory',                    snap:false},
-  {id:'db_config',                name:'Database Configuration',                 snap:false},
-  {id:'db_size',                  name:'Database Size & Growth',                 snap:false},
-  {id:'controlfiles',             name:'Controlfile Information',                snap:false},
-  {id:'redo_logs',                name:'Online Redo Log Information',            snap:false},
-  {id:'log_switches',             name:'Hourly Log Switches (Last 7 Days)',      snap:false},
-  {id:'tablespaces',              name:'Tablespace Information',                 snap:false},
-  {id:'asm_diskgroups',           name:'ASM Disk Groups',                        snap:false},
-  {id:'db_files_location',        name:'Database Files Location',                snap:false},
-  {id:'large_tables',             name:'Large Tables (Top 30)',                  snap:false},
-  {id:'large_indexes',            name:'Large Indexes (Top 30)',                 snap:false},
-  {id:'invalid_objects',          name:'Invalid Objects',                        snap:false},
-  {id:'db_links',                 name:'Database Links',                         snap:false},
-  {id:'redo_wait_events',         name:'Redo Wait Events (AWR)',                 snap:false},
-  {id:'patch_level',              name:'Database Patch Level',                   snap:false},
-  // Snap-range sections
-  {id:'hot_blocks',               name:'Hot Block Detection',                    snap:true},
-  {id:'hot_indexes',              name:'Hot Indexes (Cluster Waits)',            snap:true},
-  {id:'reverse_key_candidates',   name:'Hot Index — Reverse Key Candidates',     snap:true},
-  {id:'hot_tables_cluster',       name:'Hot Tables — Cluster Waits',             snap:true},
-  {id:'gc_event_breakdown',       name:'GC Event Breakdown',                     snap:true},
-  {id:'gc_severity',              name:'GC Event Severity Summary',              snap:true},
-  {id:'rac_skew',                 name:'RAC Load Skew by SQL & Instance',        snap:true},
-  {id:'instance_wise_objects',    name:'Cluster Waits by Object & Instance',     snap:true},
-  {id:'pk_hot_sequence',          name:'Hot PK Indexes — Sequence Driven',       snap:true},
-  {id:'hot_objects_recommendation',name:'Hot Objects — Reverse/Hash Candidates', snap:true},
-  // No snap-range
-  {id:'service_imbalance',        name:'Service Load Imbalance (RAC)',           snap:false},
-  {id:'block_ping_by_sql',        name:'Block Ping by SQL',                      snap:false},
-  {id:'object_level_ping',        name:'Object Level Block Ping',                snap:false},
-  {id:'instance_level_ping',      name:'Instance Level Cluster Wait',            snap:false},
-  {id:'grd_remaster_stats',       name:'GRD Remaster Statistics (RAC)',          snap:false},
-  {id:'ges_tm_remaster',          name:'GES TM Resource Remastering (RAC)',      snap:false},
-  {id:'ges_tx_remaster',          name:'GES TX Block Mastering (RAC)',           snap:false},
+const SS_SECTIONS_META = [
+  {id:'server_info',              name:'Server CPU & Memory',          snap:false},
+  {id:'db_config',                name:'Database Configuration',       snap:false},
+  {id:'db_size',                  name:'Database Size & Growth',       snap:false},
+  {id:'controlfiles',             name:'Controlfile Information',      snap:false},
+  {id:'redo_logs',                name:'Online Redo Log Information',  snap:false},
+  {id:'log_switches',             name:'Hourly Log Switches (7 Days)', snap:false},
+  {id:'tablespaces',              name:'Tablespace Information',       snap:false},
+  {id:'asm_diskgroups',           name:'ASM Disk Groups',              snap:false},
+  {id:'db_files_location',        name:'Database Files Location',      snap:false},
+  {id:'large_tables',             name:'Large Tables (Top 30)',        snap:false},
+  {id:'large_indexes',            name:'Large Indexes (Top 30)',       snap:false},
+  {id:'invalid_objects',          name:'Invalid Objects',              snap:false},
+  {id:'db_links',                 name:'Database Links',               snap:false},
+  {id:'redo_wait_events',         name:'Redo Wait Events',             snap:false},
+  {id:'patch_level',              name:'Patch Level',                  snap:false},
+  {id:'hot_blocks',               name:'Hot Block Detection',          snap:true},
+  {id:'hot_indexes',              name:'Hot Indexes — Cluster',        snap:true},
+  {id:'reverse_key_candidates',   name:'Reverse Key Candidates',       snap:true},
+  {id:'hot_tables_cluster',       name:'Hot Tables — Cluster',         snap:true},
+  {id:'gc_event_breakdown',       name:'GC Event Breakdown',           snap:true},
+  {id:'gc_severity',              name:'GC Event Severity',            snap:true},
+  {id:'rac_skew',                 name:'RAC Load Skew',                snap:true},
+  {id:'instance_wise_objects',    name:'Cluster by Object & Instance', snap:true},
+  {id:'pk_hot_sequence',          name:'Hot PK — Sequence Driven',     snap:true},
+  {id:'hot_objects_recommendation',name:'Hot Objects Recommendations', snap:true},
+  {id:'service_imbalance',        name:'Service Load Imbalance (RAC)', snap:false},
+  {id:'block_ping_by_sql',        name:'Block Ping by SQL',            snap:false},
+  {id:'object_level_ping',        name:'Object Level Ping',            snap:false},
+  {id:'instance_level_ping',      name:'Instance Level Cluster',       snap:false},
+  {id:'grd_remaster_stats',       name:'GRD Remaster Stats (RAC)',     snap:false},
+  {id:'ges_tm_remaster',          name:'GES TM Remaster (RAC)',        snap:false},
+  {id:'ges_tx_remaster',          name:'GES TX Mastering (RAC)',       snap:false},
 ];
 
-const SEV_COLOR = {Critical:'#ef4444', Alert:'#f59e0b', Warning:'#3b82f6'};
-const SEV_ICON  = {Critical:'🔴', Alert:'🟡', Warning:'🔵'};
+const SEV_COLOR={Critical:'#ef4444',Alert:'#f59e0b',Warning:'#3b82f6'};
+const SEV_ICON ={Critical:'🔴',Alert:'🟡',Warning:'🔵'};
 
-// Set default times
-(function() {
-  const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0);
-  const fmt = d => d.toISOString().slice(0,16);
-  document.getElementById('ss_begin_time').value = fmt(todayStart);
-  document.getElementById('ss_end_time').value   = fmt(now);
-})();
+// Set default date
+document.getElementById('ss_snap_date').value = new Date().toISOString().slice(0,10);
 
 // Build section checkboxes
-(function() {
-  const wrap = document.getElementById('section_toggles');
-  SECTIONS_META.forEach(s => {
-    const lbl = document.createElement('label');
-    lbl.style.cssText = 'font-size:11px;cursor:pointer;display:flex;align-items:center;gap:3px';
-    const snapBadge = s.snap
-      ? ' <span style="font-size:9px;color:var(--accent);border:1px solid var(--accent);'
-        + 'border-radius:2px;padding:0 3px">snap</span>'
-      : '';
-    lbl.innerHTML = `<input type="checkbox" class="sec_chk" value="${s.id}" checked> ${s.name}${snapBadge}`;
+(function(){
+  const wrap=document.getElementById('ss_section_toggles');
+  SS_SECTIONS_META.forEach(s=>{
+    const lbl=document.createElement('label');
+    lbl.style.cssText='font-size:10px;cursor:pointer;display:flex;align-items:center;gap:2px';
+    const snapBadge=s.snap?` <span style="font-size:9px;color:var(--accent);
+      border:1px solid var(--accent);border-radius:2px;padding:0 2px">snap</span>`:'';
+    lbl.innerHTML=`<input type="checkbox" class="ss_chk" value="${s.id}" checked> ${s.name}${snapBadge}`;
     wrap.appendChild(lbl);
   });
 })();
 
-function toggleAllSections(checked) {
-  document.querySelectorAll('.sec_chk').forEach(c => c.checked = checked);
+function toggleAllSS(v){ document.querySelectorAll('.ss_chk').forEach(c=>c.checked=v); }
+
+function getSelectedSections(){
+  const ch=[...document.querySelectorAll('.ss_chk:checked')].map(c=>c.value);
+  return ch.length===SS_SECTIONS_META.length?null:ch;
 }
 
-function getSelectedSections() {
-  const checked = [...document.querySelectorAll('.sec_chk:checked')].map(c => c.value);
-  return checked.length === SECTIONS_META.length ? null : checked;
-}
-
-async function runSystemStudy() {
-  const conn_id = document.getElementById('ss_conn_id').value;
-  const btn     = document.getElementById('ss_run_btn');
-  const status  = document.getElementById('ss_status');
-
-  if (!conn_id) { showSSMsg('Select an Oracle connection first', 'err'); return; }
-
-  const sections    = getSelectedSections();
-  const begin_raw   = document.getElementById('ss_begin_time').value;
-  const end_raw     = document.getElementById('ss_end_time').value;
-  const begin_time  = begin_raw ? begin_raw.replace('T',' ') : null;
-  const end_time    = end_raw   ? end_raw.replace('T',' ')   : null;
-  btn.disabled = true;
-  btn.textContent = '⏳ Running…';
-  showSSMsg('Connecting to Oracle and running system study queries…', 'info');
-  document.getElementById('ss_sections_container').innerHTML = '';
-  document.getElementById('ss_recs_section').style.display = 'none';
-
+async function loadSSSnaps(){
+  const connId=document.getElementById('ss_conn_id').value;
+  const date  =document.getElementById('ss_snap_date').value;
+  if (!connId) return;
+  const url=`/api/oracle-connections/${connId}/snaps`+(date?`?snap_date=${date}`:'');
   try {
-    const res  = await fetch('/api/oracle/system-study', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({conn_id: parseInt(conn_id), sections, begin_time, end_time})
+    const res=await fetch(url); const data=await res.json();
+    const snaps=data.snaps||[];
+    const bs=document.getElementById('ss_begin_snap');
+    const es=document.getElementById('ss_end_snap');
+    bs.innerHTML='<option value="">— begin snap —</option>';
+    es.innerHTML='<option value="">— end snap —</option>';
+    snaps.forEach(s=>{
+      const lbl=`${s.snap_id} (${s.begin_time?s.begin_time.slice(11,16):''})`;
+      bs.appendChild(new Option(lbl,s.snap_id));
+      es.appendChild(new Option(lbl,s.snap_id));
     });
-    const data = await res.json();
-
-    if (!data.ok) {
-      showSSMsg('❌ ' + (data.error || 'System study failed'), 'err');
-      return;
+    if (snaps.length>=2){
+      bs.value=snaps[0].snap_id;
+      es.value=snaps[snaps.length-1].snap_id;
     }
+  } catch(e){ console.error('loadSSSnaps:',e); }
+}
 
-    const recs  = data.recommendations || [];
-    const secs  = data.sections || [];
-    const okSec = secs.filter(s => s.ok && s.rows.length).length;
-
-    showSSMsg(
-      `✅ System study complete for ${data.db_name} — `
-      + `${okSec}/${secs.length} sections, ${recs.length} recommendation(s)`,
-      'ok'
-    );
-
-    renderSSRecommendations(recs);
+async function runSystemStudy(){
+  const connId     =document.getElementById('ss_conn_id').value;
+  const begin_snap =document.getElementById('ss_begin_snap').value;
+  const end_snap   =document.getElementById('ss_end_snap').value;
+  const btn        =document.getElementById('ss_run_btn');
+  if (!connId){ showSSMsg('Select an Oracle connection','err'); return; }
+  const sections=getSelectedSections();
+  btn.disabled=true; btn.textContent='⏳';
+  showSSMsg('Running…','info');
+  document.getElementById('ss_sections_container').innerHTML='';
+  document.getElementById('ss_recs_section').style.display='none';
+  try {
+    const res=await fetch('/api/oracle/system-study',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({conn_id:parseInt(connId),sections,
+        begin_snap:begin_snap?parseInt(begin_snap):null,
+        end_snap:end_snap?parseInt(end_snap):null})
+    });
+    const data=await res.json();
+    if (!data.ok){ showSSMsg('❌ '+(data.error||'Failed'),'err'); return; }
+    const recs=data.recommendations||[];
+    const secs=data.sections||[];
+    const okSec=secs.filter(s=>s.ok&&s.rows&&s.rows.length>0&&!isPlaceholder(s)).length;
+    showSSMsg(`✅ ${data.db_name} — ${okSec}/${secs.length} sections, ${recs.length} recommendation(s)`,'ok');
+    renderSSRecs(recs);
     renderSSSections(secs);
-
-  } catch(e) {
-    showSSMsg('❌ ' + e.message, 'err');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '🔬 Run System Study';
-  }
+  } catch(e){ showSSMsg('❌ '+e.message,'err'); }
+  finally{ btn.disabled=false; btn.textContent='🔬 Run'; }
 }
 
-function showSSMsg(text, type) {
-  const el = document.getElementById('ss_status');
-  el.style.display = '';
-  el.textContent = text;
-  el.style.background = type === 'err' ? '#3f1a1a' : type === 'ok' ? '#0f2e1f' : '#1a2540';
-  el.style.color = type === 'err' ? '#fca5a5' : type === 'ok' ? '#6ee7b7' : '#93c5fd';
-  el.style.border = `1px solid ${type === 'err' ? '#7f1d1d' : type === 'ok' ? '#064e3b' : '#1e3a5f'}`;
+function isPlaceholder(s){
+  return s.ok&&s.rows&&s.rows.length===1&&s.rows[0].note&&
+         s.rows[0].note.includes('Snap');
 }
 
-function renderSSRecommendations(recs) {
-  const section   = document.getElementById('ss_recs_section');
-  const container = document.getElementById('ss_recs_container');
-  const count_el  = document.getElementById('ss_recs_count');
+function showSSMsg(t,type){
+  const el=document.getElementById('ss_status'); el.style.display='';
+  el.textContent=t;
+  el.style.background=type==='err'?'#3f1a1a':type==='ok'?'#0f2e1f':'#1a2540';
+  el.style.color=type==='err'?'#fca5a5':type==='ok'?'#6ee7b7':'#93c5fd';
+  el.style.border=`1px solid ${type==='err'?'#7f1d1d':type==='ok'?'#064e3b':'#1e3a5f'}`;
+}
 
-  if (!recs.length) { section.style.display = 'none'; return; }
-  section.style.display = '';
-
-  const counts = recs.reduce((acc, r) => {
-    acc[r.severity] = (acc[r.severity] || 0) + 1;
-    return acc;
-  }, {});
-  count_el.innerHTML = Object.entries(counts).map(([sev, n]) =>
-    `<span style="color:${SEV_COLOR[sev]};margin-right:10px">${SEV_ICON[sev]} ${sev}: ${n}</span>`
+function renderSSRecs(recs){
+  const sec=document.getElementById('ss_recs_section');
+  const cnt=document.getElementById('ss_recs_count');
+  const con=document.getElementById('ss_recs_container');
+  if (!recs.length){sec.style.display='none';return;}
+  sec.style.display='';
+  const counts=recs.reduce((a,r)=>{a[r.severity]=(a[r.severity]||0)+1;return a},{});
+  cnt.innerHTML=Object.entries(counts).map(([sev,n])=>
+    `<span style="color:${SEV_COLOR[sev]};margin-right:8px">${SEV_ICON[sev]} ${sev}: ${n}</span>`
   ).join('');
-
-  // Sort: Critical first
-  const order = {Critical: 0, Alert: 1, Warning: 2};
-  const sorted = [...recs].sort((a, b) =>
-    (order[a.severity] ?? 9) - (order[b.severity] ?? 9));
-
-  container.innerHTML = sorted.map(r => `
-    <div style="margin-bottom:10px;padding:10px 14px;border-radius:6px;
+  const sorted=[...recs].sort((a,b)=>({Critical:0,Alert:1,Warning:2}[a.severity]||9)-({Critical:0,Alert:1,Warning:2}[b.severity]||9));
+  con.innerHTML=sorted.map(r=>`
+    <div style="margin-bottom:8px;padding:9px 12px;border-radius:6px;
                 background:var(--surface);border:1px solid var(--border);
-                border-left:3px solid ${SEV_COLOR[r.severity] || '#888'}">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
-        <span>${SEV_ICON[r.severity] || '⚪'}</span>
-        <span style="font-size:12px;font-weight:700;color:${SEV_COLOR[r.severity] || '#888'}">${r.severity}</span>
-        <span style="font-size:11px;color:var(--text2);padding:1px 7px;background:var(--bg);
+                border-left:3px solid ${SEV_COLOR[r.severity]||'#888'}">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-wrap:wrap">
+        <span>${SEV_ICON[r.severity]||'⚪'}</span>
+        <span style="font-size:11px;font-weight:700;color:${SEV_COLOR[r.severity]||'#888'}">${r.severity}</span>
+        <span style="font-size:10px;color:var(--text2);padding:1px 6px;background:var(--bg);
                      border:1px solid var(--border);border-radius:3px">${r.category}</span>
-        <span style="font-size:11px;color:var(--text2)">→ ${r.section}</span>
+        <span style="font-size:10px;color:var(--text2)">→ ${r.section}</span>
       </div>
-      <div style="font-size:11.5px;color:var(--text2);margin-bottom:6px">${r.finding}</div>
-      <div style="font-size:11.5px;color:var(--text);margin-bottom:${r.command ? '8px' : '0'}">${r.recommendation}</div>
-      ${r.command ? `
-        <div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;
-                    padding:6px 10px;font-family:monospace;font-size:10.5px;
-                    color:var(--accent);white-space:pre-wrap">${escHtml(r.command)}</div>` : ''}
+      <div style="font-size:11px;color:var(--text2);margin-bottom:4px">${r.finding}</div>
+      <div style="font-size:11px;color:var(--text);margin-bottom:${r.command?'6px':'0'}">${r.recommendation}</div>
+      ${r.command?`<div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;
+          padding:5px 8px;font-family:monospace;font-size:10px;color:var(--accent);
+          white-space:pre-wrap">${escHtml(r.command)}</div>`:''}
     </div>`).join('');
 }
 
-function renderSSSections(sections) {
-  const container = document.getElementById('ss_sections_container');
-  container.innerHTML = `<div style="font-size:13px;font-weight:700;margin-bottom:10px">
-    📋 Section Details</div>`;
+function renderSSSections(sections){
+  const container=document.getElementById('ss_sections_container');
+  container.innerHTML=`<div style="font-size:12px;font-weight:700;margin-bottom:10px">📋 Section Details</div>`;
 
-  sections.forEach((s, i) => {
-    const hasData    = s.ok && s.rows && s.rows.length;
-    const isPlaceholder = s.ok && s.rows && s.rows.length === 1
-                          && s.rows[0].note && s.rows[0].note.includes('Begin/End time');
-    const errMsg     = !s.ok ? s.error : '';
-    const snapBadge  = s.snap_range
-      ? ` <span style="font-size:9px;color:var(--accent);border:1px solid var(--accent);
-          border-radius:2px;padding:0 3px;margin-left:4px">snap</span>` : '';
+  // Render sections as a horizontal card grid — 2 columns on wide screens
+  const grid=document.createElement('div');
+  grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(580px,1fr));gap:8px';
 
-    const div = document.createElement('div');
-    div.style.cssText = `margin-bottom:8px;border:1px solid var(--border);border-radius:6px;overflow:hidden`;
-    div.innerHTML = `
-      <div onclick="toggleSection('sec_${i}')"
-           style="display:flex;justify-content:space-between;align-items:center;
-                  padding:8px 12px;cursor:pointer;background:var(--surface);
-                  user-select:none">
-        <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px">
-          <span>${isPlaceholder ? '⏰' : hasData ? '✅' : errMsg ? '❌' : '⬜'}</span>
-          ${s.name}${snapBadge}
-          ${hasData && !isPlaceholder ? `<span style="font-size:10px;color:var(--text2);padding:1px 6px;
-            background:var(--bg);border:1px solid var(--border);border-radius:3px">
-            ${s.rows.length} rows</span>` : ''}
-          ${isPlaceholder ? `<span style="font-size:10px;color:#f59e0b">Set begin/end time to run</span>` : ''}
+  sections.forEach((s,i)=>{
+    const hasData  =s.ok&&s.rows&&s.rows.length>0&&!isPlaceholder(s);
+    const isPh     =isPlaceholder(s);
+    const errMsg   =!s.ok?s.error:'';
+    const snapBadge=s.snap_range
+      ?` <span style="font-size:9px;color:var(--accent);border:1px solid var(--accent);
+          border-radius:2px;padding:0 3px;margin-left:4px">snap</span>`:'';
+
+    const card=document.createElement('div');
+    card.style.cssText='border:1px solid var(--border);border-radius:6px;overflow:hidden;min-width:0';
+    card.innerHTML=`
+      <div onclick="toggleSec('sc_${i}')" style="display:flex;justify-content:space-between;
+           align-items:center;padding:7px 10px;cursor:pointer;background:var(--surface);
+           user-select:none">
+        <div style="font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px;
+                    min-width:0;overflow:hidden">
+          <span style="flex-shrink:0">${isPh?'⏰':hasData?'✅':errMsg?'❌':'⬜'}</span>
+          <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}</span>
+          ${snapBadge}
+          ${hasData?`<span style="font-size:9px;color:var(--text2);padding:1px 5px;
+            background:var(--bg);border:1px solid var(--border);border-radius:3px;flex-shrink:0">
+            ${s.rows.length} rows</span>`:''}
+          ${isPh?`<span style="font-size:10px;color:#f59e0b;flex-shrink:0">Set snaps above</span>`:''}
         </div>
-        <span id="arrow_sec_${i}" style="font-size:12px;color:var(--text2)">▼</span>
+        <span id="arr_sc_${i}" style="font-size:11px;color:var(--text2);flex-shrink:0;margin-left:6px">▼</span>
       </div>
-      <div id="sec_${i}" style="display:none;padding:10px 12px;overflow-x:auto">
-        ${isPlaceholder
-          ? `<div style="font-size:11px;color:#f59e0b;padding:8px;background:var(--surface);
-               border-radius:4px">
-               ⏰ This section requires a Begin/End time range.
-               Set the datetime controls above and run again.</div>`
-          : hasData
-            ? renderSSTable(s.columns, s.rows)
-            : `<div style="font-size:11px;color:${s.ok ? 'var(--text2)' : '#fca5a5'}">
-               ${errMsg || 'No data returned'}</div>`
+      <div id="sc_${i}" style="display:none;padding:8px 10px;overflow-x:auto;max-height:400px;overflow-y:auto">
+        ${isPh
+          ?`<div style="font-size:11px;color:#f59e0b">
+               ⏰ Select Begin/End Snap above to query this section.</div>`
+          :hasData
+            ?renderSSTable(s.columns,s.rows)
+            :`<div style="font-size:11px;color:${s.ok?'var(--text2)':'#fca5a5'}">
+               ${errMsg||'No data returned'}</div>`
         }
       </div>`;
-    container.appendChild(div);
+    grid.appendChild(card);
   });
+  container.appendChild(grid);
 }
 
-function toggleSection(id) {
-  const el = document.getElementById(id);
-  const i  = id.replace('sec_','');
-  const arrow = document.getElementById('arrow_sec_' + i);
-  const open  = el.style.display === 'none';
-  el.style.display = open ? '' : 'none';
-  arrow.textContent = open ? '▲' : '▼';
+function toggleSec(id){
+  const el=document.getElementById(id);
+  const i=id.replace('sc_','');
+  const arr=document.getElementById('arr_sc_'+i);
+  const open=el.style.display==='none';
+  el.style.display=open?'':'none';
+  arr.textContent=open?'▲':'▼';
 }
 
-function renderSSTable(cols, rows) {
-  if (!cols || !rows.length) return '<div style="font-size:11px;color:var(--text2)">No data</div>';
-  const header = cols.map(c =>
-    `<th style="padding:4px 8px;text-align:left;font-size:11px;white-space:nowrap;
-      background:var(--surface2,#1c2333)">${c}</th>`).join('');
-  const body = rows.map(row =>
-    `<tr>${cols.map(c => {
-      const v = row[c];
-      const fmt = v === null || v === undefined ? '—'
-                : typeof v === 'number' ? v.toLocaleString()
-                : String(v);
-      // Highlight high values
-      const isHighPct = (c === 'used_pct' || c === 'used_pct') && parseFloat(fmt) > 85;
-      return `<td style="padding:3px 8px;font-size:11px;border-top:1px solid var(--border);
-              ${isHighPct ? 'color:#ef4444;font-weight:700' : ''}">${escHtml(fmt)}</td>`;
-    }).join('')}</tr>`).join('');
-  return `<table style="width:100%;border-collapse:collapse">
-    <thead><tr>${header}</tr></thead>
-    <tbody>${body}</tbody>
-  </table>`;
+function renderSSTable(cols,rows){
+  if (!cols||!rows.length) return '<div style="font-size:11px;color:var(--text2)">No data</div>';
+  const hdr=cols.map(c=>`<th style="padding:3px 7px;text-align:left;font-size:10px;
+    white-space:nowrap;background:var(--surface2,#1c2333)">${c}</th>`).join('');
+  const body=rows.map(row=>`<tr>${cols.map(c=>{
+    const v=row[c]; const fmt=v==null?'—':typeof v==='number'?v.toLocaleString():String(v);
+    const hi=(c==='used_pct'||c==='used_pct')&&parseFloat(fmt)>85;
+    return `<td style="padding:2px 7px;font-size:11px;border-top:1px solid var(--border);
+      ${hi?'color:#ef4444;font-weight:700':''}">${escHtml(fmt)}</td>`;
+  }).join('')}</tr>`).join('');
+  return `<table style="width:100%;border-collapse:collapse;min-width:400px">
+    <thead><tr>${hdr}</tr></thead><tbody>${body}</tbody></table>`;
 }
 
-function escHtml(s) {
-  return String(s)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;');
-}
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
 {% endblock %}

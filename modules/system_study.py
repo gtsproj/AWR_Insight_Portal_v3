@@ -21,12 +21,12 @@ SECTIONS = [
         'name': 'Server CPU & Memory',
         'sql': """
             SELECT i.host_name,
-                   i.platform_name,
+                   d.platform_name,
                    (SELECT MAX(value) FROM v$osstat WHERE stat_name='NUM_CPUS')        cpus,
                    (SELECT MAX(value) FROM v$osstat WHERE stat_name='NUM_CPU_CORES')   cores,
                    ROUND((SELECT MAX(value) FROM v$osstat
                           WHERE stat_name='PHYSICAL_MEMORY_BYTES')/1073741824, 2)      memory_gb
-            FROM   v$instance i
+            FROM   v$instance i, v$database d
         """
     },
     {
@@ -47,21 +47,17 @@ SECTIONS = [
         'name': 'Database Size & Growth',
         'sql': """
             SELECT
-                ROUND(SUM(CASE WHEN file_type='DATA'  THEN size_mb END),2) data_mb,
-                ROUND(SUM(CASE WHEN file_type='TEMP'  THEN size_mb END),2) temp_mb,
-                ROUND(SUM(CASE WHEN file_type='REDO'  THEN size_mb END),2) redo_mb,
-                ROUND(SUM(size_mb),2) total_mb,
-                ROUND((SUM(CASE WHEN file_type='DATA' THEN size_mb END) -
-                       (SELECT SUM(bytes)/1048576 FROM dba_free_space)),2) used_mb,
-                ROUND(((SUM(CASE WHEN file_type='DATA' THEN size_mb END) -
-                        (SELECT SUM(bytes)/1048576 FROM dba_free_space)) /
-                       NULLIF(SUM(CASE WHEN file_type='DATA' THEN size_mb END),0))*100,2) used_pct
+                data_mb, temp_mb, redo_mb,
+                ROUND(data_mb + NVL(temp_mb,0) + NVL(redo_mb,0), 2) total_mb,
+                ROUND(data_mb - free_mb, 2) used_mb,
+                ROUND((data_mb - free_mb) / NULLIF(data_mb,0) * 100, 2) used_pct
             FROM (
-                SELECT SUM(bytes)/1048576 size_mb, 'DATA' file_type FROM dba_data_files
-                UNION ALL
-                SELECT NVL(SUM(bytes)/1048576,0), 'TEMP' FROM dba_temp_files
-                UNION ALL
-                SELECT SUM(bytes)/1048576*MAX(members), 'REDO' FROM v$log
+                SELECT
+                    (SELECT ROUND(SUM(bytes)/1048576,2) FROM dba_data_files)  data_mb,
+                    (SELECT ROUND(NVL(SUM(bytes),0)/1048576,2) FROM dba_temp_files) temp_mb,
+                    (SELECT ROUND(SUM(bytes)/1048576*MAX(members),2) FROM v$log)   redo_mb,
+                    (SELECT ROUND(SUM(bytes)/1048576,2) FROM dba_free_space)   free_mb
+                FROM dual
             )
         """
     },
@@ -194,7 +190,7 @@ SECTIONS = [
                    ROUND(blocks * 8192 / 1048576, 2)        size_mb,
                    partitioned,
                    TO_CHAR(last_analyzed,'DD-MON-YY HH24:MI') last_analyzed,
-                   CASE WHEN (NOW() - last_analyzed) > INTERVAL '30 days'
+                   CASE WHEN last_analyzed < SYSDATE - 30
                         THEN 'STALE' ELSE 'OK' END          stats_status
             FROM   dba_tables
             WHERE  owner NOT IN (
@@ -299,11 +295,11 @@ SECTIONS = [
 
 
 def run_system_study(conn_id: int, sections: list = None,
-                     begin_time: str = None, end_time: str = None) -> dict:
+                     begin_snap: int = None, end_snap: int = None) -> dict:
     """
     Run system study queries and generate recommendations.
     sections: list of section IDs to run (None = all).
-    begin_time / end_time: YYYY-MM-DD HH24:MI for snap-range sections.
+    begin_snap / end_snap: integer snap IDs for snap-range sections.
     """
     from modules.oracle_awr_fetcher import get_connection_by_id
     from modules.oracle_live_query import run_queries
@@ -319,15 +315,15 @@ def run_system_study(conn_id: int, sections: list = None,
         needs_snap = s.get('snap_range', False)
         params = {}
         if needs_snap:
-            if not begin_time or not end_time:
+            if not begin_snap or not end_snap:
                 # No time range — add placeholder so section appears in output
                 query_defs.append({
                     'name': s['id'], 'description': s['name'],
-                    'sql': "SELECT 'Select a Begin/End time range above to run this section' AS note FROM DUAL",
+                    'sql': "SELECT 'Select Begin/End Snap above to run this section' AS note FROM DUAL",
                     'params': {}
                 })
                 continue
-            params = {'begin_time': begin_time, 'end_time': end_time}
+            params = {'begin_snap': begin_snap, 'end_snap': end_snap}
         query_defs.append({'name': s['id'], 'description': s['name'],
                            'sql': s['sql'], 'params': params})
 
@@ -759,9 +755,7 @@ _EXTRA_SECTIONS = [
         'sql': """
             WITH snap_range AS (
                 SELECT snap_id FROM dba_hist_snapshot
-                WHERE begin_interval_time BETWEEN
-                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
-                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+                WHERE snap_id BETWEEN :begin_snap AND :end_snap
             )
             SELECT o.owner, o.object_name, o.object_type,
                    COUNT(*) cluster_samples
@@ -781,9 +775,7 @@ _EXTRA_SECTIONS = [
         'sql': """
             WITH snap_range AS (
                 SELECT snap_id FROM dba_hist_snapshot
-                WHERE begin_interval_time BETWEEN
-                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
-                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+                WHERE snap_id BETWEEN :begin_snap AND :end_snap
             )
             SELECT o.owner, o.object_name index_name,
                    COUNT(*) cluster_samples
@@ -804,9 +796,7 @@ _EXTRA_SECTIONS = [
         'sql': """
             WITH snap_range AS (
                 SELECT snap_id FROM dba_hist_snapshot
-                WHERE begin_interval_time BETWEEN
-                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
-                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+                WHERE snap_id BETWEEN :begin_snap AND :end_snap
             ),
             hot_indexes AS (
                 SELECT o.object_id, o.owner, o.object_name,
@@ -834,7 +824,7 @@ _EXTRA_SECTIONS = [
                    END recommendation
             FROM hot_indexes h
             JOIN dba_indexes i ON i.owner = h.owner AND i.index_name = h.object_name
-            JOIN dba_ind_columns ic ON ic.owner = h.owner
+            JOIN dba_ind_columns ic ON ic.index_owner = h.owner
               AND ic.index_name = h.object_name AND ic.column_position = 1
             ORDER BY h.cluster_samples DESC
         """
@@ -846,9 +836,7 @@ _EXTRA_SECTIONS = [
         'sql': """
             WITH snap_range AS (
                 SELECT snap_id FROM dba_hist_snapshot
-                WHERE begin_interval_time BETWEEN
-                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
-                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+                WHERE snap_id BETWEEN :begin_snap AND :end_snap
             )
             SELECT o.owner, o.object_name, o.object_type,
                    COUNT(*) cluster_samples
@@ -869,9 +857,7 @@ _EXTRA_SECTIONS = [
         'sql': """
             WITH snap_range AS (
                 SELECT snap_id FROM dba_hist_snapshot
-                WHERE begin_interval_time BETWEEN
-                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
-                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+                WHERE snap_id BETWEEN :begin_snap AND :end_snap
             )
             SELECT * FROM (
                 SELECT a.sql_id, a.event,
@@ -899,9 +885,7 @@ _EXTRA_SECTIONS = [
         'sql': """
             WITH snap_range AS (
                 SELECT snap_id FROM dba_hist_snapshot
-                WHERE begin_interval_time BETWEEN
-                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
-                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+                WHERE snap_id BETWEEN :begin_snap AND :end_snap
             )
             SELECT event,
                    COUNT(*) samples,
@@ -920,9 +904,7 @@ _EXTRA_SECTIONS = [
         'sql': """
             WITH snap_range AS (
                 SELECT snap_id FROM dba_hist_snapshot
-                WHERE begin_interval_time BETWEEN
-                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
-                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+                WHERE snap_id BETWEEN :begin_snap AND :end_snap
             )
             SELECT a.sql_id, a.instance_number, COUNT(*) samples
             FROM dba_hist_active_sess_history a
@@ -940,9 +922,7 @@ _EXTRA_SECTIONS = [
         'sql': """
             WITH snap_range AS (
                 SELECT snap_id FROM dba_hist_snapshot
-                WHERE begin_interval_time BETWEEN
-                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
-                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+                WHERE snap_id BETWEEN :begin_snap AND :end_snap
             )
             SELECT o.owner, o.object_name, a.instance_number,
                    COUNT(*) samples
@@ -962,9 +942,7 @@ _EXTRA_SECTIONS = [
         'sql': """
             WITH snap_range AS (
                 SELECT snap_id FROM dba_hist_snapshot
-                WHERE begin_interval_time BETWEEN
-                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
-                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+                WHERE snap_id BETWEEN :begin_snap AND :end_snap
             ),
             hot_indexes AS (
                 SELECT o.owner, o.object_name, COUNT(*) cluster_samples
@@ -981,7 +959,7 @@ _EXTRA_SECTIONS = [
                 FROM dba_constraints c
                 JOIN dba_indexes i ON c.owner = i.owner
                   AND c.constraint_name = i.index_name
-                JOIN dba_ind_columns ic ON i.owner = ic.owner
+                JOIN dba_ind_columns ic ON i.owner = ic.index_owner
                   AND i.index_name = ic.index_name AND ic.column_position = 1
                 WHERE c.constraint_type = 'P'
             )
@@ -1001,9 +979,7 @@ _EXTRA_SECTIONS = [
         'sql': """
             WITH snap_range AS (
                 SELECT snap_id FROM dba_hist_snapshot
-                WHERE begin_interval_time BETWEEN
-                    TO_TIMESTAMP(:begin_time,'YYYY-MM-DD HH24:MI')
-                AND TO_TIMESTAMP(:end_time,'YYYY-MM-DD HH24:MI')
+                WHERE snap_id BETWEEN :begin_snap AND :end_snap
             ),
             hot_objects AS (
                 SELECT o.owner, o.object_name, o.object_type,
@@ -1097,11 +1073,9 @@ _EXTRA_SECTIONS = [
         'name': 'GES TM Resource Remastering (RAC only)',
         'snap_range': False,
         'sql': """
-            SELECT inst_id, resource_name, master_node,
-                   total_requests, total_waits
+            SELECT inst_id, resource_name, master_node
             FROM gv$ges_resource
             WHERE resource_name LIKE 'TM-%'
-            ORDER BY total_requests DESC
             FETCH FIRST 20 ROWS ONLY
         """
     },
@@ -1110,10 +1084,9 @@ _EXTRA_SECTIONS = [
         'name': 'GES TX Block Mastering (RAC only)',
         'snap_range': False,
         'sql': """
-            SELECT inst_id, resource_name, master_node, total_requests
+            SELECT inst_id, resource_name, master_node
             FROM gv$ges_resource
             WHERE resource_name LIKE 'TX-%'
-            ORDER BY total_requests DESC
             FETCH FIRST 20 ROWS ONLY
         """
     },
