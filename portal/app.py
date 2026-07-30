@@ -3791,7 +3791,10 @@ async def api_get_oracle_snaps(conn_id: int, request: Request,
                 return JSONResponse({"ok": False, "error": "Invalid date format"}, status_code=400)
         else:
             target_date = dt_date.today()
-        snaps = get_snaps_for_date(cfg, target_date)
+        result = get_snaps_for_date(cfg, target_date)
+        if not result.get('ok'):
+            return JSONResponse({"ok": False, "error": result.get('error', 'Failed to fetch snaps')}, status_code=500)
+        snaps = result.get('snaps', [])
         return JSONResponse({"ok": True, "snaps": snaps, "count": len(snaps)})
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)

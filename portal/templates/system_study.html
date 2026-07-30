@@ -3,13 +3,13 @@
 {% block content %}
 <div style="max-width:1400px;margin:0 auto">
 
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
     <div style="font-size:1.3rem;font-weight:700">🔬 Database System Study</div>
     <div style="font-size:11px;color:var(--text2);padding:3px 8px;background:var(--surface);
                 border:1px solid var(--border);border-radius:4px">Live Oracle Query</div>
   </div>
 
-  <div style="font-size:12px;color:var(--text2);margin-bottom:14px;padding:8px 12px;
+  <div style="font-size:12px;color:var(--text2);margin-bottom:12px;padding:8px 12px;
               background:var(--surface);border:1px solid var(--border);border-radius:6px;
               border-left:3px solid var(--accent)">
     31-section live database health check. Sections marked
@@ -19,56 +19,66 @@
     All other sections run against live dictionary views instantly.
   </div>
 
-  <!-- Controls -->
-  <div style="display:grid;grid-template-columns:200px 180px 180px 1fr auto;
-              gap:8px;margin-bottom:14px;align-items:end;background:var(--surface);
-              border:1px solid var(--border);border-radius:8px;padding:12px">
-    <div>
-      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">Oracle Connection</label>
-      <select id="ss_conn_id" onchange="loadSSSnaps()" style="width:100%;padding:5px 7px;
-              border-radius:4px;background:var(--bg);border:1px solid var(--border);
-              color:var(--text);font-size:12px">
-        <option value="">— select —</option>
-        {% for c in connections %}
-        <option value="{{ c.id }}">{{ c.db_name }}{% if c.display_name and c.display_name != c.db_name %} — {{ c.display_name }}{% endif %}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div>
-      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">
-        Begin Snap <span style="color:var(--text2);font-weight:normal;font-size:10px">(snap sections)</span>
-      </label>
-      <select id="ss_begin_snap" style="width:100%;padding:5px 7px;border-radius:4px;
-              background:var(--bg);border:1px solid var(--border);color:var(--text);font-size:12px">
-        <option value="">— load snaps —</option>
-      </select>
-    </div>
-    <div>
-      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">End Snap</label>
-      <select id="ss_end_snap" style="width:100%;padding:5px 7px;border-radius:4px;
-              background:var(--bg);border:1px solid var(--border);color:var(--text);font-size:12px">
-        <option value="">— load snaps —</option>
-      </select>
-    </div>
-    <div>
-      <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">
-        Snap Date &nbsp;
+  <!-- Row 1: Controls -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;
+              padding:12px;margin-bottom:10px">
+
+    <!-- Connection + Snaps row -->
+    <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">
+      <div style="min-width:180px;flex:1 1 180px">
+        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">Oracle Connection</label>
+        <select id="ss_conn_id" onchange="loadSSSnaps()" style="width:100%;padding:5px 7px;
+                border-radius:4px;background:var(--bg);border:1px solid var(--border);
+                color:var(--text);font-size:12px">
+          <option value="">— select —</option>
+          {% for c in connections %}
+          <option value="{{ c.id }}">{{ c.db_name }}{% if c.display_name and c.display_name != c.db_name %} — {{ c.display_name }}{% endif %}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div style="min-width:120px;flex:0 0 auto">
+        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">Snap Date</label>
         <input type="date" id="ss_snap_date" onchange="loadSSSnaps()"
-               style="padding:3px 6px;border-radius:4px;background:var(--bg);
-                      border:1px solid var(--border);color:var(--text);font-size:11px">
-      </label>
-      <!-- Section checkboxes -->
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px" id="ss_section_toggles">
-        <label style="font-size:10px;cursor:pointer;display:flex;align-items:center;gap:2px">
-          <input type="checkbox" id="ss_all_sections" checked onchange="toggleAllSS(this.checked)"> All sections
+               style="width:100%;padding:5px 7px;border-radius:4px;background:var(--bg);
+                      border:1px solid var(--border);color:var(--text);font-size:12px">
+      </div>
+      <div style="min-width:160px;flex:1 1 160px">
+        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">
+          Begin Snap <span style="font-size:9px;color:var(--accent);border:1px solid var(--accent);
+          border-radius:2px;padding:0 2px">snap sections only</span>
         </label>
+        <select id="ss_begin_snap" style="width:100%;padding:5px 7px;border-radius:4px;
+                background:var(--bg);border:1px solid var(--border);color:var(--text);font-size:12px">
+          <option value="">— begin snap —</option>
+        </select>
+      </div>
+      <div style="min-width:160px;flex:1 1 160px">
+        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">End Snap</label>
+        <select id="ss_end_snap" style="width:100%;padding:5px 7px;border-radius:4px;
+                background:var(--bg);border:1px solid var(--border);color:var(--text);font-size:12px">
+          <option value="">— end snap —</option>
+        </select>
+      </div>
+      <div style="flex:0 0 auto">
+        <button onclick="runSystemStudy()" id="ss_run_btn"
+                style="padding:7px 20px;background:var(--accent);color:#fff;border:none;
+                       border-radius:5px;cursor:pointer;font-size:12px;font-weight:600">
+          🔬 Run
+        </button>
       </div>
     </div>
-    <div>
-      <button onclick="runSystemStudy()" id="ss_run_btn"
-              style="padding:7px 16px;background:var(--accent);color:#fff;border:none;
-                     border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;
-                     white-space:nowrap">🔬 Run</button>
+
+    <!-- Section checkboxes row — full width, horizontal wrap -->
+    <div style="border-top:1px solid var(--border);padding-top:8px">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+        <label style="font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;
+                      gap:3px;white-space:nowrap;color:var(--text);margin-right:4px">
+          <input type="checkbox" id="ss_all_sections" checked onchange="toggleAllSS(this.checked)">
+          All sections
+        </label>
+        <div style="width:1px;height:14px;background:var(--border);margin:0 4px"></div>
+        <div id="ss_section_toggles" style="display:flex;gap:5px;flex-wrap:wrap"></div>
+      </div>
     </div>
   </div>
 
@@ -76,20 +86,23 @@
        padding:8px 12px;border-radius:6px"></div>
 
   <!-- Recommendations -->
-  <div id="ss_recs_section" style="display:none;margin-bottom:16px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+  <div id="ss_recs_section" style="display:none;margin-bottom:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
       <div style="font-size:13px;font-weight:700">💡 Recommendations</div>
       <div id="ss_recs_count" style="font-size:11px;color:var(--text2)"></div>
     </div>
     <div id="ss_recs_container"></div>
   </div>
 
-  <!-- Sections — horizontal card grid -->
+  <!-- Sections — single column stacked -->
   <div id="ss_sections_container"></div>
 
 </div>
 
 <script>
+// Set default date to today
+document.getElementById('ss_snap_date').value = new Date().toISOString().slice(0,10);
+
 const SS_SECTIONS_META = [
   {id:'server_info',              name:'Server CPU & Memory',          snap:false},
   {id:'db_config',                name:'Database Configuration',       snap:false},
@@ -128,15 +141,12 @@ const SS_SECTIONS_META = [
 const SEV_COLOR={Critical:'#ef4444',Alert:'#f59e0b',Warning:'#3b82f6'};
 const SEV_ICON ={Critical:'🔴',Alert:'🟡',Warning:'🔵'};
 
-// Set default date
-document.getElementById('ss_snap_date').value = new Date().toISOString().slice(0,10);
-
 // Build section checkboxes
 (function(){
   const wrap=document.getElementById('ss_section_toggles');
   SS_SECTIONS_META.forEach(s=>{
     const lbl=document.createElement('label');
-    lbl.style.cssText='font-size:10px;cursor:pointer;display:flex;align-items:center;gap:2px';
+    lbl.style.cssText='font-size:11px;cursor:pointer;display:flex;align-items:center;gap:2px;white-space:nowrap';
     const snapBadge=s.snap?` <span style="font-size:9px;color:var(--accent);
       border:1px solid var(--accent);border-radius:2px;padding:0 2px">snap</span>`:'';
     lbl.innerHTML=`<input type="checkbox" class="ss_chk" value="${s.id}" checked> ${s.name}${snapBadge}`;
@@ -155,35 +165,47 @@ async function loadSSSnaps(){
   const connId=document.getElementById('ss_conn_id').value;
   const date  =document.getElementById('ss_snap_date').value;
   if (!connId) return;
+
+  const bs=document.getElementById('ss_begin_snap');
+  const es=document.getElementById('ss_end_snap');
+  bs.innerHTML='<option value="">Loading…</option>';
+  es.innerHTML='<option value="">Loading…</option>';
+
   const url=`/api/oracle-connections/${connId}/snaps`+(date?`?snap_date=${date}`:'');
   try {
-    const res=await fetch(url); const data=await res.json();
-    const snaps=data.snaps||[];
-    const bs=document.getElementById('ss_begin_snap');
-    const es=document.getElementById('ss_end_snap');
+    const res=await fetch(url);
+    const data=await res.json();
     bs.innerHTML='<option value="">— begin snap —</option>';
     es.innerHTML='<option value="">— end snap —</option>';
-    snaps.forEach(s=>{
-      const lbl=`${s.snap_id} (${s.begin_time?s.begin_time.slice(11,16):''})`;
-      bs.appendChild(new Option(lbl,s.snap_id));
-      es.appendChild(new Option(lbl,s.snap_id));
-    });
-    if (snaps.length>=2){
-      bs.value=snaps[0].snap_id;
-      es.value=snaps[snaps.length-1].snap_id;
+    if (!data.ok || !data.snaps || !data.snaps.length) {
+      bs.innerHTML='<option value="">No snaps for this date</option>';
+      es.innerHTML='<option value="">No snaps for this date</option>';
+      return;
     }
-  } catch(e){ console.error('loadSSSnaps:',e); }
+    data.snaps.forEach(s=>{
+      const lbl=`${s.snap_id}  ${s.begin_time?'('+s.begin_time.slice(11,16)+')':''}`;
+      bs.appendChild(new Option(lbl, s.snap_id));
+      es.appendChild(new Option(lbl, s.snap_id));
+    });
+    // Auto-select first and last
+    bs.value=data.snaps[0].snap_id;
+    es.value=data.snaps[data.snaps.length-1].snap_id;
+  } catch(e){
+    bs.innerHTML='<option value="">Error loading snaps</option>';
+    es.innerHTML='<option value="">Error loading snaps</option>';
+    console.error('loadSSSnaps:',e);
+  }
 }
 
 async function runSystemStudy(){
-  const connId     =document.getElementById('ss_conn_id').value;
-  const begin_snap =document.getElementById('ss_begin_snap').value;
-  const end_snap   =document.getElementById('ss_end_snap').value;
-  const btn        =document.getElementById('ss_run_btn');
+  const connId    =document.getElementById('ss_conn_id').value;
+  const begin_snap=document.getElementById('ss_begin_snap').value;
+  const end_snap  =document.getElementById('ss_end_snap').value;
+  const btn       =document.getElementById('ss_run_btn');
   if (!connId){ showSSMsg('Select an Oracle connection','err'); return; }
   const sections=getSelectedSections();
   btn.disabled=true; btn.textContent='⏳';
-  showSSMsg('Running…','info');
+  showSSMsg('Running system study queries…','info');
   document.getElementById('ss_sections_container').innerHTML='';
   document.getElementById('ss_recs_section').style.display='none';
   try {
@@ -198,7 +220,8 @@ async function runSystemStudy(){
     const recs=data.recommendations||[];
     const secs=data.sections||[];
     const okSec=secs.filter(s=>s.ok&&s.rows&&s.rows.length>0&&!isPlaceholder(s)).length;
-    showSSMsg(`✅ ${data.db_name} — ${okSec}/${secs.length} sections, ${recs.length} recommendation(s)`,'ok');
+    const snapInfo=begin_snap&&end_snap?` | snaps ${begin_snap}→${end_snap}`:'';
+    showSSMsg(`✅ ${data.db_name}${snapInfo} — ${okSec}/${secs.length} sections, ${recs.length} recommendation(s)`,'ok');
     renderSSRecs(recs);
     renderSSSections(secs);
   } catch(e){ showSSMsg('❌ '+e.message,'err'); }
@@ -206,8 +229,8 @@ async function runSystemStudy(){
 }
 
 function isPlaceholder(s){
-  return s.ok&&s.rows&&s.rows.length===1&&s.rows[0].note&&
-         s.rows[0].note.includes('Snap');
+  return s.ok&&s.rows&&s.rows.length===1&&s.rows[0]&&
+         String(Object.values(s.rows[0])[0]||'').includes('Snap');
 }
 
 function showSSMsg(t,type){
@@ -250,51 +273,44 @@ function renderSSRecs(recs){
 
 function renderSSSections(sections){
   const container=document.getElementById('ss_sections_container');
-  container.innerHTML=`<div style="font-size:12px;font-weight:700;margin-bottom:10px">📋 Section Details</div>`;
-
-  // Render sections as a horizontal card grid — 2 columns on wide screens
-  const grid=document.createElement('div');
-  grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(580px,1fr));gap:8px';
+  container.innerHTML=`<div style="font-size:12px;font-weight:700;margin-bottom:8px">📋 Section Details</div>`;
 
   sections.forEach((s,i)=>{
-    const hasData  =s.ok&&s.rows&&s.rows.length>0&&!isPlaceholder(s);
-    const isPh     =isPlaceholder(s);
-    const errMsg   =!s.ok?s.error:'';
+    const hasData =s.ok&&s.rows&&s.rows.length>0&&!isPlaceholder(s);
+    const isPh    =isPlaceholder(s);
+    const errMsg  =!s.ok?s.error:'';
     const snapBadge=s.snap_range
       ?` <span style="font-size:9px;color:var(--accent);border:1px solid var(--accent);
           border-radius:2px;padding:0 3px;margin-left:4px">snap</span>`:'';
 
     const card=document.createElement('div');
-    card.style.cssText='border:1px solid var(--border);border-radius:6px;overflow:hidden;min-width:0';
+    card.style.cssText='border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:6px';
     card.innerHTML=`
-      <div onclick="toggleSec('sc_${i}')" style="display:flex;justify-content:space-between;
-           align-items:center;padding:7px 10px;cursor:pointer;background:var(--surface);
-           user-select:none">
-        <div style="font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px;
-                    min-width:0;overflow:hidden">
-          <span style="flex-shrink:0">${isPh?'⏰':hasData?'✅':errMsg?'❌':'⬜'}</span>
-          <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}</span>
-          ${snapBadge}
-          ${hasData?`<span style="font-size:9px;color:var(--text2);padding:1px 5px;
-            background:var(--bg);border:1px solid var(--border);border-radius:3px;flex-shrink:0">
+      <div onclick="toggleSec('sc_${i}')"
+           style="display:flex;justify-content:space-between;align-items:center;
+                  padding:7px 12px;cursor:pointer;background:var(--surface);user-select:none">
+        <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px">
+          <span>${isPh?'⏰':hasData?'✅':errMsg?'❌':'⬜'}</span>
+          ${s.name}${snapBadge}
+          ${hasData?`<span style="font-size:10px;color:var(--text2);padding:1px 6px;
+            background:var(--bg);border:1px solid var(--border);border-radius:3px">
             ${s.rows.length} rows</span>`:''}
-          ${isPh?`<span style="font-size:10px;color:#f59e0b;flex-shrink:0">Set snaps above</span>`:''}
+          ${isPh?`<span style="font-size:10px;color:#f59e0b">Select Begin/End Snap to run</span>`:''}
         </div>
-        <span id="arr_sc_${i}" style="font-size:11px;color:var(--text2);flex-shrink:0;margin-left:6px">▼</span>
+        <span id="arr_sc_${i}" style="font-size:11px;color:var(--text2)">▼</span>
       </div>
-      <div id="sc_${i}" style="display:none;padding:8px 10px;overflow-x:auto;max-height:400px;overflow-y:auto">
+      <div id="sc_${i}" style="display:none;padding:10px 12px;overflow-x:auto">
         ${isPh
-          ?`<div style="font-size:11px;color:#f59e0b">
-               ⏰ Select Begin/End Snap above to query this section.</div>`
+          ?`<div style="font-size:11px;color:#f59e0b;padding:6px">
+               ⏰ Select Begin/End Snap above and run again to populate this section.</div>`
           :hasData
             ?renderSSTable(s.columns,s.rows)
-            :`<div style="font-size:11px;color:${s.ok?'var(--text2)':'#fca5a5'}">
-               ${errMsg||'No data returned'}</div>`
+            :`<div style="font-size:11px;color:${s.ok?'var(--text2)':'#fca5a5'};padding:6px">
+               ${errMsg||'No data returned for this section.'}</div>`
         }
       </div>`;
-    grid.appendChild(card);
+    container.appendChild(card);
   });
-  container.appendChild(grid);
 }
 
 function toggleSec(id){
@@ -308,15 +324,15 @@ function toggleSec(id){
 
 function renderSSTable(cols,rows){
   if (!cols||!rows.length) return '<div style="font-size:11px;color:var(--text2)">No data</div>';
-  const hdr=cols.map(c=>`<th style="padding:3px 7px;text-align:left;font-size:10px;
+  const hdr=cols.map(c=>`<th style="padding:4px 8px;text-align:left;font-size:11px;
     white-space:nowrap;background:var(--surface2,#1c2333)">${c}</th>`).join('');
   const body=rows.map(row=>`<tr>${cols.map(c=>{
     const v=row[c]; const fmt=v==null?'—':typeof v==='number'?v.toLocaleString():String(v);
-    const hi=(c==='used_pct'||c==='used_pct')&&parseFloat(fmt)>85;
-    return `<td style="padding:2px 7px;font-size:11px;border-top:1px solid var(--border);
+    const hi=c==='used_pct'&&parseFloat(fmt)>85;
+    return `<td style="padding:3px 8px;font-size:11px;border-top:1px solid var(--border);
       ${hi?'color:#ef4444;font-weight:700':''}">${escHtml(fmt)}</td>`;
   }).join('')}</tr>`).join('');
-  return `<table style="width:100%;border-collapse:collapse;min-width:400px">
+  return `<table style="width:100%;border-collapse:collapse">
     <thead><tr>${hdr}</tr></thead><tbody>${body}</tbody></table>`;
 }
 

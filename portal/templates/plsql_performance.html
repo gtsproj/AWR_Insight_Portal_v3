@@ -109,24 +109,32 @@ async function loadSnaps() {
   if (!connId) return;
   const url = `/api/oracle-connections/${connId}/snaps` + (date ? `?snap_date=${date}` : '');
   try {
-    const res  = await fetch(url);
-    const data = await res.json();
-    _snaps = data.snaps || [];
     const bs = document.getElementById('begin_snap');
     const es = document.getElementById('end_snap');
+    bs.innerHTML = '<option value="">Loading…</option>';
+    es.innerHTML = '<option value="">Loading…</option>';
+    const res  = await fetch(url);
+    const data = await res.json();
     bs.innerHTML = '<option value="">— begin snap —</option>';
     es.innerHTML = '<option value="">— end snap —</option>';
+    if (!data.ok || !data.snaps || !data.snaps.length) {
+      bs.innerHTML = '<option value="">No snaps for this date</option>';
+      es.innerHTML = '<option value="">No snaps for this date</option>';
+      return;
+    }
+    _snaps = data.snaps;
     _snaps.forEach(s => {
-      const label = `${s.snap_id} (${s.begin_time ? s.begin_time.slice(11,16) : ''})`;
+      const label = `${s.snap_id}  ${s.begin_time ? '(' + s.begin_time.slice(11,16) + ')' : ''}`;
       bs.appendChild(new Option(label, s.snap_id));
       es.appendChild(new Option(label, s.snap_id));
     });
-    // Auto-select first and last
-    if (_snaps.length >= 2) {
-      bs.value = _snaps[0].snap_id;
-      es.value = _snaps[_snaps.length-1].snap_id;
-    }
-  } catch(e) { console.error('loadSnaps:', e); }
+    bs.value = _snaps[0].snap_id;
+    es.value = _snaps[_snaps.length-1].snap_id;
+  } catch(e) {
+    document.getElementById('begin_snap').innerHTML = '<option value="">Error</option>';
+    document.getElementById('end_snap').innerHTML   = '<option value="">Error</option>';
+    console.error('loadSnaps:', e);
+  }
 }
 
 async function runAnalysis() {
