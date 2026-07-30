@@ -1,4 +1,4 @@
-# Run from C:\AWR_Insight_Portal_v2\
+# Run from C:\AWR_Insight_Portal_v3\
 # py write_sar_master_parser.py
 import os
 

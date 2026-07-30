@@ -1,4 +1,4 @@
-# Run from C:\AWR_Insight_Portal_v2\
+# Run from C:\AWR_Insight_Portal_v3\
 # py clear_cache.py
 import os, shutil
 

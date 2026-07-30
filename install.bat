@@ -1,6 +1,6 @@
 @echo off
 REM ============================================================
-REM AWR Insight Portal v2 — Installation Bundle
+REM AWR Insight Portal v3 — Installation Bundle
 REM Avekshaa Technologies
 REM
 REM Run as Administrator from the project folder:
@@ -14,7 +14,7 @@ set "LOG_FILE=%INSTALL_DIR%\install_log.txt"
 set "ERRORS=0"
 
 echo ============================================================
-echo  AWR Insight Portal v2 — Installation
+echo  AWR Insight Portal v3 — Installation
 echo  Avekshaa Technologies
 echo  %DATE% %TIME%
 echo ============================================================

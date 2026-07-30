@@ -1,6 +1,6 @@
 import sys
-sys.path.insert(0, 'C:\\AWR_Insight_Portal_v2')
-sys.path.insert(0, 'C:\\AWR_Insight_Portal_v2\\common')
+sys.path.insert(0, 'C:\\AWR_Insight_Portal_v3')
+sys.path.insert(0, 'C:\\AWR_Insight_Portal_v3\\common')
 try:
     import portal.app
     print('OK')

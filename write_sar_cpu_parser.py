@@ -1,4 +1,4 @@
-# Run this from C:\AWR_Insight_Portal_v2\
+# Run this from C:\AWR_Insight_Portal_v3\
 # py write_sar_cpu_parser.py
 # This writes sar_cpu_parser.py v4 directly to the correct location
 

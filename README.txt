@@ -5,7 +5,7 @@ Oracle AWR & SAR performance analysis — Python + PostgreSQL + Grafana.
 ## Folder Structure
 
 ```
-AWR_Insight_Portal_v2/
+AWR_Insight_Portal_v3/
 │
 ├── _backup/                          ← Original files before v2 changes
 │   ├── root_scripts/                 ← awr_watcher.py, master_parser.py, watcher.py

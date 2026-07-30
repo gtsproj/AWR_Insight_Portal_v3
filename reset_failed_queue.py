@@ -1,7 +1,7 @@
 # reset_failed_queue.py
 import os, json, glob
 
-queues_dir = r"C:\AWR_Insight_Portal_v2\queues"
+queues_dir = r"C:\AWR_Insight_Portal_v3\queues"
 
 for qfile in glob.glob(os.path.join(queues_dir, "queue_*.json")):
     with open(qfile, encoding="utf-8") as f:

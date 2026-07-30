@@ -6,7 +6,7 @@ Patches all AWR Insight Portal Grafana dashboard JSON files to replace
 hardcoded localhost URLs with the actual server IP address.
 
 Usage:
-  py patch_grafana_urls.py --dir C:\\AWR_Insight_Portal_v2\\portal\\static
+  py patch_grafana_urls.py --dir C:\\AWR_Insight_Portal_v3\\portal\\static
   py patch_grafana_urls.py --dir portal\\static --portal-port 8000 --grafana-port 3000
 
 The server IP is auto-detected from the network interface.

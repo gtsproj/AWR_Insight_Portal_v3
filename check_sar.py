@@ -1,7 +1,7 @@
 import sys
 
 # Check sa02_text.txt content
-filepath = r'C:\AWR_Insight_Portal_v2\sar_reports\TCLFSLPRDDB1\sa02_text.txt'
+filepath = r'C:\AWR_Insight_Portal_v3\sar_reports\TCLFSLPRDDB1\sa02_text.txt'
 lines = open(filepath, errors='replace').readlines()
 
 print('TOTAL LINES:', len(lines))
@@ -30,8 +30,8 @@ else:
 
 print()
 print('PARSER VERSION CHECK:')
-sys.path.insert(0, r'C:\AWR_Insight_Portal_v2\common')
-sys.path.insert(0, r'C:\AWR_Insight_Portal_v2\modules\sar')
+sys.path.insert(0, r'C:\AWR_Insight_Portal_v3\common')
+sys.path.insert(0, r'C:\AWR_Insight_Portal_v3\modules\sar')
 import sar_cpu_parser
 print(f'  Loaded from: {sar_cpu_parser.__file__}')
 src = open(sar_cpu_parser.__file__, errors='replace').read()

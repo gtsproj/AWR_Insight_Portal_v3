@@ -1,4 +1,4 @@
-# Run from C:\AWR_Insight_Portal_v2\
+# Run from C:\AWR_Insight_Portal_v3\
 # py fix_sar_master_hostname.py
 # Fixes the regex bug causing UNKNOWN_HOST for 2-digit year SAR files
 

@@ -24,7 +24,8 @@
 setlocal EnableDelayedExpansion
 
 :: ── Configuration ────────────────────────────────────────────────────
-set PROJECT_DIR=C:\AWR_Insight_Portal_v2
+set PROJECT_DIR=%~dp0
+if "%PROJECT_DIR:~-1%"=="\" set PROJECT_DIR=%PROJECT_DIR:~0,-1%
 rem Change SERVICE_ACCOUNT if your Windows username is different from Admin
 set SERVICE_ACCOUNT=.\Admin
 rem Leave SERVICE_PASSWORD blank — set it manually in services.msc after install
@@ -93,7 +94,7 @@ call :remove_service AWRPortal
 "%NSSM%" set AWRPortal AppParameters "-m uvicorn portal.app:app --host 0.0.0.0 --port 8000"
 "%NSSM%" set AWRPortal AppDirectory  "%PROJECT_DIR%"
 "%NSSM%" set AWRPortal DisplayName   "AWR Insight Portal"
-"%NSSM%" set AWRPortal Description   "AWR Insight Portal v2 - Oracle Performance Analysis"
+"%NSSM%" set AWRPortal Description   "AWR Insight Portal v3 - Oracle Performance Analysis"
 "%NSSM%" set AWRPortal Start         SERVICE_AUTO_START
 "%NSSM%" set AWRPortal AppStdout     "%LOG_DIR%\portal_stdout.log"
 "%NSSM%" set AWRPortal AppStderr     "%LOG_DIR%\portal_stderr.log"
