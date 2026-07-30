@@ -212,6 +212,108 @@ def _oracle_awr_scheduler():
         _time.sleep(300)  # check every 5 minutes
 
 
+def _sar_ssh_scheduler():
+    """
+    Background thread — SAR SSH delta extraction scheduler.
+    Checks every 5 minutes whether any SAR SSH connection is due
+    for delta extraction based on pull_interval_hrs.
+
+    Extracts delta via: sar -A -s HH:MM:SS -e HH:MM:SS -f saDD
+    on the remote Linux server — no binary transfer, no WSL.
+
+    Catches up all missed intervals automatically if the service
+    was stopped (overnight, IP change, server sleep etc.).
+    """
+    import time as _time
+    from datetime import datetime as _dt
+    from logger_utils import get_logger as _get_logger
+
+    _log = _get_logger('sar_ssh_scheduler')
+    _log.info('SAR SSH scheduler started — checking every 5 minutes')
+
+    # Get sar_drop dir from settings
+    try:
+        import yaml as _yaml
+        with open(os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')) as f:
+            _settings = _yaml.safe_load(f)
+        sar_drop = _settings.get('portal', {}).get('sar_drop_dir', 'sar_drop')
+        if not os.path.isabs(sar_drop):
+            sar_drop = os.path.join(_PROJECT_ROOT, sar_drop)
+        os.makedirs(sar_drop, exist_ok=True)
+    except Exception as e:
+        _log.error(f'Could not read sar_drop_dir from settings: {e}')
+        sar_drop = os.path.join(_PROJECT_ROOT, 'sar_drop')
+        os.makedirs(sar_drop, exist_ok=True)
+
+    while True:
+        try:
+            from modules.sar_ssh_fetcher import get_all_connections, pull_sar_files
+
+            connections = get_all_connections()
+            enabled = [c for c in connections
+                       if c.get('enabled') and
+                       float(c.get('pull_interval_hrs') or 0) > 0]
+
+            now = _dt.now()
+
+            for c in enabled:
+                try:
+                    interval_hrs  = float(c.get('pull_interval_hrs') or 1)
+                    interval_mins = interval_hrs * 60
+                    last_pull     = c.get('last_pull_at')
+
+                    if last_pull:
+                        try:
+                            last_dt = _dt.strptime(last_pull, '%Y-%m-%d %H:%M:%S')
+                        except (ValueError, TypeError):
+                            last_dt = None
+                    else:
+                        last_dt = None
+
+                    elapsed_mins = (
+                        (now - last_dt).total_seconds() / 60
+                        if last_dt else float('inf')
+                    )
+
+                    if elapsed_mins < interval_mins:
+                        _log.debug(
+                            f"SAR scheduler: {c['hostname']} not due "
+                            f"(next in {interval_mins - elapsed_mins:.0f}m)"
+                        )
+                        continue
+
+                    _log.info(
+                        f"SAR scheduler: extracting delta for {c['hostname']} "
+                        f"(interval={interval_hrs}h, elapsed={elapsed_mins:.0f}m)"
+                    )
+
+                    result = pull_sar_files(c['id'], sar_drop)
+                    ok  = result.get('intervals_extracted', 0)
+                    err = result.get('errors', 0)
+                    _log.info(
+                        f"SAR scheduler: {c['hostname']} → "
+                        f"{ok} interval(s) extracted"
+                        + (f', {err} error(s)' if err else '')
+                    )
+                    if result.get('files'):
+                        _log.info(
+                            f"SAR scheduler: {c['hostname']} files: "
+                            + ', '.join(result['files'])
+                        )
+
+                except Exception as e:
+                    _log.error(
+                        f"SAR scheduler: error for "
+                        f"{c.get('hostname','?')} "
+                        f"[{c.get('ssh_host','?')}]: {e}"
+                    )
+
+        except Exception as e:
+            _log.error(f'SAR scheduler loop error: {e}')
+
+        _time.sleep(300)  # check every 5 minutes
+
+
 @app.on_event("startup")
 async def on_startup():
     """On portal start — auto-patch Grafana dashboard URLs from portal_config."""
@@ -220,7 +322,6 @@ async def on_startup():
     # Run in background so startup isn't delayed
     asyncio.create_task(asyncio.to_thread(_auto_patch_grafana_dashboards))
     # Start Oracle AWR auto-generation scheduler as a daemon thread
-    # (daemon=True means it exits automatically when the portal process exits)
     _sched_thread = threading.Thread(
         target=_oracle_awr_scheduler,
         name='OracleAWRScheduler',
@@ -228,6 +329,14 @@ async def on_startup():
     )
     _sched_thread.start()
     logger.info('Oracle AWR scheduler thread started')
+    # Start SAR SSH delta extraction scheduler as a daemon thread
+    _sar_thread = threading.Thread(
+        target=_sar_ssh_scheduler,
+        name='SARSSHScheduler',
+        daemon=True
+    )
+    _sar_thread.start()
+    logger.info('SAR SSH scheduler thread started')
 
 # Static files and templates
 _static_dir    = os.path.join(_PORTAL_DIR, "static")

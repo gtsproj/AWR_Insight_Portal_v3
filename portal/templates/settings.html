@@ -590,10 +590,12 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
                 <label class="s-label">Pull Interval</label>
                 <select class="s-select" id="sc_pull_interval_hrs">
                   <option value="0">Manual only</option>
-                  <option value="1">Every 1 hour</option>
+                  <option value="0.5">Every 30 minutes</option>
+                  <option value="1" selected>Every 1 hour</option>
+                  <option value="2">Every 2 hours</option>
                   <option value="4">Every 4 hours</option>
                   <option value="8">Every 8 hours</option>
-                  <option value="24" selected>Daily</option>
+                  <option value="24">Daily</option>
                 </select>
               </div>
               <div class="s-field" style="align-self:flex-end">
@@ -1802,7 +1804,7 @@ async function saveSarSshConn() {
     ssh_key_path:     document.getElementById('sc_ssh_key_path').value.trim(),
     password:         document.getElementById('sc_password').value,
     remote_sar_path:  document.getElementById('sc_remote_sar_path').value.trim() || '/var/log/sa',
-    pull_interval_hrs:parseFloat(document.getElementById('sc_pull_interval_hrs').value) || 24,
+    pull_interval_hrs:parseFloat(document.getElementById('sc_pull_interval_hrs').value) || 1,
     enabled:          document.getElementById('sc_enabled').checked,
   };
   if (!body.hostname || !body.ssh_host || !body.ssh_user) {
