@@ -3636,6 +3636,99 @@ async def api_plsql_queries(request: Request):
     })
 
 
+# ══════════════════════════════════════════════════════════════════════
+# SAR SSH CONNECTIONS API
+# ══════════════════════════════════════════════════════════════════════
+
+@app.get("/api/sar-ssh-connections")
+async def api_get_sar_ssh_connections(request: Request):
+    """List all configured SAR SSH connections (no passwords)."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.sar_ssh_fetcher import get_all_connections
+        return JSONResponse({"ok": True, "connections": get_all_connections()})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/sar-ssh-connections")
+async def api_save_sar_ssh_connection(request: Request):
+    """Add or update a SAR SSH connection."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        body = await request.json()
+        session = _get_session(request)
+        from modules.sar_ssh_fetcher import save_connection
+        result = save_connection(body, added_by=session.get("username", "admin"))
+        return JSONResponse(result, status_code=200 if result["ok"] else 400)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.delete("/api/sar-ssh-connections/{conn_id}")
+async def api_delete_sar_ssh_connection(conn_id: int, request: Request):
+    """Delete a SAR SSH connection."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.sar_ssh_fetcher import delete_connection
+        return JSONResponse(delete_connection(conn_id))
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/sar-ssh-connections/{conn_id}/test")
+async def api_test_sar_ssh_connection(conn_id: int, request: Request):
+    """Test SSH connectivity for a SAR connection."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.sar_ssh_fetcher import test_connection
+        return JSONResponse(test_connection(conn_id))
+    except Exception as e:
+        return JSONResponse({"ok": False, "message": str(e)}, status_code=500)
+
+
+@app.post("/api/sar-ssh-connections/pull")
+async def api_pull_sar_files(request: Request):
+    """
+    Pull SAR files from one or all SSH connections now.
+    Body: { conn_id: int|null }
+    """
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        body    = await request.json()
+        conn_id = body.get("conn_id")
+
+        import yaml as _yaml
+        settings_path = os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')
+        with open(settings_path) as f:
+            settings = _yaml.safe_load(f)
+        sar_drop = settings.get('portal', {}).get('sar_drop_dir', 'sar_drop')
+        if not os.path.isabs(sar_drop):
+            sar_drop = os.path.join(_PROJECT_ROOT, sar_drop)
+        os.makedirs(sar_drop, exist_ok=True)
+
+        from modules.sar_ssh_fetcher import pull_sar_files, pull_all_servers
+        if conn_id:
+            result = pull_sar_files(int(conn_id), sar_drop)
+            return JSONResponse(result)
+        else:
+            results = pull_all_servers(sar_drop)
+            total   = sum(r.get('files_pulled', 0) for r in results)
+            return JSONResponse({
+                "ok": True,
+                "servers_processed": len(results),
+                "total_files_pulled": total,
+                "results": results
+            })
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
 # ── run ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     import uvicorn

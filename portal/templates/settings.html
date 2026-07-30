@@ -510,32 +510,125 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
           </div>
         </div>
         <div id="sar-ssh-cfg" style="display:none">
-          <div class="s-row">
-            <div class="s-field">
-              <label class="s-label">SSH Host</label>
-              <input class="s-input" id="sar_ssh_host" value="{{ cfg.sar_ssh_host }}" placeholder="192.168.1.20">
+          <!-- ── SAR SSH Connection Manager ─────────────────────────────── -->
+          <div class="s-card-title" style="margin-top:16px">Linux Server SSH Connections</div>
+          <p style="font-size:12px;color:var(--text2);margin:4px 0 12px">
+            Configure one SSH connection per Linux server. The portal connects via SSH/SFTP
+            and pulls SAR binary files (sa01..sa31) to
+            <code>sar_drop\&lt;hostname&gt;\</code> automatically.
+            Uses <strong>paramiko</strong> — no WinSCP or extra tools needed.
+            Authentication via SSH key file (recommended) or password.
+          </p>
+
+          <!-- Connection table -->
+          <div style="margin-bottom:14px">
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr style="background:var(--card2)">
+                  <th style="padding:6px 8px;text-align:left">Hostname</th>
+                  <th style="padding:6px 8px;text-align:left">SSH Host:Port</th>
+                  <th style="padding:6px 8px;text-align:left">User</th>
+                  <th style="padding:6px 8px;text-align:left">Auth</th>
+                  <th style="padding:6px 8px;text-align:left">Interval</th>
+                  <th style="padding:6px 8px;text-align:left">Enabled</th>
+                  <th style="padding:6px 8px;text-align:left">Last Pull</th>
+                  <th style="padding:6px 8px;text-align:left">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="sar-ssh-tbody">
+                <tr><td colspan="8" style="padding:12px;color:var(--text2);text-align:center">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Add/Edit form -->
+          <div id="sar-ssh-form" style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px" id="sar-ssh-form-title">➕ Add SSH Connection</div>
+            <input type="hidden" id="sc_edit_id" value="">
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Hostname <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="sc_hostname" placeholder="dbserver01 (used as sar_drop sub-folder name)">
+              </div>
+              <div class="s-field">
+                <label class="s-label">Display Name</label>
+                <input class="s-input" id="sc_display_name" placeholder="Production App Server 1">
+              </div>
             </div>
-            <div class="s-field">
-              <label class="s-label">SSH Port</label>
-              <input class="s-input" id="sar_ssh_port" value="{{ cfg.sar_ssh_port }}" placeholder="22">
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">SSH Host <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="sc_ssh_host" placeholder="dbserver01.company.com or IP">
+              </div>
+              <div class="s-field">
+                <label class="s-label">SSH Port</label>
+                <input class="s-input" id="sc_ssh_port" placeholder="22" value="22" type="number">
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">SSH Username <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="sc_ssh_user" placeholder="oracle">
+              </div>
+              <div class="s-field">
+                <label class="s-label">Remote SAR Path</label>
+                <input class="s-input" id="sc_remote_sar_path" placeholder="/var/log/sa" value="/var/log/sa">
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">SSH Key File (recommended)</label>
+                <input class="s-input" id="sc_ssh_key_path" placeholder="C:\keys\id_rsa  (leave blank if using password)">
+              </div>
+              <div class="s-field">
+                <label class="s-label">Password (if no key file)</label>
+                <input class="s-input" id="sc_password" type="password" placeholder="(enter to set or change)">
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Pull Interval</label>
+                <select class="s-select" id="sc_pull_interval_hrs">
+                  <option value="0">Manual only</option>
+                  <option value="1">Every 1 hour</option>
+                  <option value="4">Every 4 hours</option>
+                  <option value="8">Every 8 hours</option>
+                  <option value="24" selected>Daily</option>
+                </select>
+              </div>
+              <div class="s-field" style="align-self:flex-end">
+                <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+                  <input type="checkbox" id="sc_enabled" checked> Enabled
+                </label>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="s-btn s-btn-primary" onclick="saveSarSshConn()">💾 Save</button>
+              <button class="s-btn" onclick="clearSarSshForm()">✖ Cancel</button>
+              <span id="sar-ssh-save-msg" style="font-size:12px;align-self:center"></span>
             </div>
           </div>
-          <div class="s-row">
-            <div class="s-field">
-              <label class="s-label">SSH Username</label>
-              <input class="s-input" id="sar_ssh_user" value="{{ cfg.sar_ssh_user }}" placeholder="oracle">
+
+          <!-- Pull Now panel -->
+          <div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px">📥 Pull SAR Files Now</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select class="s-select" id="sc_pull_conn_id" style="width:220px;font-size:12px">
+                <option value="">All enabled servers</option>
+              </select>
+              <button class="s-btn s-btn-primary" onclick="pullSarFiles()">⬇ Pull Now</button>
+              <span id="sar-pull-msg" style="font-size:12px;align-self:center"></span>
             </div>
-            <div class="s-field">
-              <label class="s-label">SSH Key Path</label>
-              <input class="s-input" id="sar_ssh_key_path" value="{{ cfg.sar_ssh_key_path }}"
-                     placeholder="C:\keys\id_rsa">
-            </div>
+            <div id="sar-pull-results" style="margin-top:10px;font-size:12px;display:none"></div>
           </div>
-          <div class="s-row">
-            <div class="s-field">
-              <label class="s-label">Remote SAR Path</label>
-              <input class="s-input" id="sar_ssh_remote_path" value="{{ cfg.sar_ssh_remote_path }}"
-                     placeholder="/var/log/sa">
+
+          <!-- paramiko info box -->
+          <div style="background:#0c2340;border:1px solid #1e4d7a;border-left:3px solid #3b82f6;border-radius:6px;padding:10px 14px;margin-top:12px;font-size:11px;color:#93c5fd">
+            <div style="font-weight:600;margin-bottom:4px">ℹ️ Prerequisites</div>
+            <code style="display:block;font-size:10px;color:#bfdbfe">pip install paramiko</code>
+            <div style="margin-top:6px;color:#7dd3fc">
+              For SSH key auth: generate a key pair on the portal server and copy the public key
+              to the Linux server's ~/.ssh/authorized_keys for the SSH user.
             </div>
           </div>
         </div>
@@ -1597,6 +1690,201 @@ async function generateAWRReports() {
 function toggleSarSource(val) {
   document.getElementById('sar-local-cfg').style.display = val === 'local' ? '' : 'none';
   document.getElementById('sar-ssh-cfg').style.display   = val === 'ssh'   ? '' : 'none';
+  if (val === 'ssh') loadSarSshConnections();
+}
+
+// ── SAR SSH Connection Manager ─────────────────────────────────────────────────
+let _sarSshConns = [];
+
+async function loadSarSshConnections() {
+  try {
+    const res  = await fetch('/api/sar-ssh-connections');
+    const data = await res.json();
+    if (!data.ok) {
+      document.getElementById('sar-ssh-tbody').innerHTML =
+        `<tr><td colspan="8" style="padding:12px;color:#ef4444;text-align:center">Error: ${data.error}</td></tr>`;
+      return;
+    }
+    _sarSshConns = data.connections || [];
+    renderSarSshTable();
+    populateSarPullDropdown();
+  } catch(e) {
+    document.getElementById('sar-ssh-tbody').innerHTML =
+      `<tr><td colspan="8" style="padding:12px;color:#ef4444;text-align:center">Failed to load: ${e.message}</td></tr>`;
+  }
+}
+
+function renderSarSshTable() {
+  const tbody = document.getElementById('sar-ssh-tbody');
+  if (!_sarSshConns.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="padding:12px;color:var(--text2);text-align:center">No connections configured yet. Add one below.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = _sarSshConns.map(c => {
+    const lastPull   = c.last_pull_at ? new Date(c.last_pull_at).toLocaleString() : '—';
+    const interval   = c.pull_interval_hrs == 0 ? 'Manual' : `Every ${c.pull_interval_hrs}h`;
+    const auth       = c.ssh_key_path ? '🔑 Key' : '🔒 Password';
+    const enabled    = c.enabled
+      ? '<span style="color:#10b981;font-size:11px">✅ Yes</span>'
+      : '<span style="color:#6b7280;font-size:11px">⬜ No</span>';
+    return `<tr style="border-top:1px solid var(--border)">
+      <td style="padding:6px 8px;font-weight:600">${c.hostname}</td>
+      <td style="padding:6px 8px;font-size:11px">${c.ssh_host}:${c.ssh_port}</td>
+      <td style="padding:6px 8px">${c.ssh_user}</td>
+      <td style="padding:6px 8px;font-size:11px">${auth}</td>
+      <td style="padding:6px 8px;font-size:11px">${interval}</td>
+      <td style="padding:6px 8px">${enabled}</td>
+      <td style="padding:6px 8px;font-size:11px">${lastPull}</td>
+      <td style="padding:6px 8px">
+        <button class="s-btn" style="padding:2px 8px;font-size:11px" onclick="editSarSshConn(${c.id})">✏️</button>
+        <button class="s-btn" style="padding:2px 8px;font-size:11px;margin-left:4px" onclick="testSarSshConn(${c.id},this)">🔌</button>
+        <button class="s-btn" style="padding:2px 8px;font-size:11px;margin-left:4px;color:#ef4444" onclick="deleteSarSshConn(${c.id},'${c.hostname}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function populateSarPullDropdown() {
+  const sel = document.getElementById('sc_pull_conn_id');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All enabled servers</option>';
+  _sarSshConns.filter(c => c.enabled).forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = `${c.hostname}${c.display_name && c.display_name !== c.hostname ? ' — ' + c.display_name : ''}`;
+    sel.appendChild(opt);
+  });
+  if (cur) sel.value = cur;
+}
+
+function clearSarSshForm() {
+  document.getElementById('sc_edit_id').value = '';
+  ['sc_hostname','sc_display_name','sc_ssh_host','sc_ssh_user',
+   'sc_ssh_key_path','sc_password','sc_remote_sar_path'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = id === 'sc_remote_sar_path' ? '/var/log/sa'
+                       : id === 'sc_ssh_port' ? '22' : '';
+  });
+  document.getElementById('sc_ssh_port').value = '22';
+  document.getElementById('sc_pull_interval_hrs').value = '24';
+  document.getElementById('sc_enabled').checked = true;
+  document.getElementById('sar-ssh-form-title').textContent = '➕ Add SSH Connection';
+  document.getElementById('sar-ssh-save-msg').textContent = '';
+}
+
+function editSarSshConn(id) {
+  const c = _sarSshConns.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('sc_edit_id').value     = id;
+  document.getElementById('sc_hostname').value     = c.hostname;
+  document.getElementById('sc_display_name').value = c.display_name || '';
+  document.getElementById('sc_ssh_host').value     = c.ssh_host;
+  document.getElementById('sc_ssh_port').value     = c.ssh_port;
+  document.getElementById('sc_ssh_user').value     = c.ssh_user;
+  document.getElementById('sc_ssh_key_path').value = c.ssh_key_path || '';
+  document.getElementById('sc_password').value     = '';  // never pre-fill
+  document.getElementById('sc_remote_sar_path').value = c.remote_sar_path || '/var/log/sa';
+  document.getElementById('sc_pull_interval_hrs').value = String(c.pull_interval_hrs ?? 24);
+  document.getElementById('sc_enabled').checked   = !!c.enabled;
+  document.getElementById('sar-ssh-form-title').textContent = `✏️ Edit: ${c.hostname}`;
+  document.getElementById('sc_hostname').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+async function saveSarSshConn() {
+  const msg = document.getElementById('sar-ssh-save-msg');
+  msg.textContent = 'Saving…';
+  const body = {
+    hostname:         document.getElementById('sc_hostname').value.trim(),
+    display_name:     document.getElementById('sc_display_name').value.trim(),
+    ssh_host:         document.getElementById('sc_ssh_host').value.trim(),
+    ssh_port:         parseInt(document.getElementById('sc_ssh_port').value) || 22,
+    ssh_user:         document.getElementById('sc_ssh_user').value.trim(),
+    ssh_key_path:     document.getElementById('sc_ssh_key_path').value.trim(),
+    password:         document.getElementById('sc_password').value,
+    remote_sar_path:  document.getElementById('sc_remote_sar_path').value.trim() || '/var/log/sa',
+    pull_interval_hrs:parseFloat(document.getElementById('sc_pull_interval_hrs').value) || 24,
+    enabled:          document.getElementById('sc_enabled').checked,
+  };
+  if (!body.hostname || !body.ssh_host || !body.ssh_user) {
+    msg.textContent = '❌ Hostname, SSH Host and SSH Username are required';
+    msg.style.color = '#ef4444'; return;
+  }
+  try {
+    const res  = await fetch('/api/sar-ssh-connections', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.ok) {
+      msg.textContent = '✅ Saved'; msg.style.color = '#10b981';
+      clearSarSshForm(); await loadSarSshConnections();
+    } else {
+      msg.textContent = '❌ ' + (data.error || 'Save failed');
+      msg.style.color = '#ef4444';
+    }
+  } catch(e) {
+    msg.textContent = '❌ ' + e.message; msg.style.color = '#ef4444';
+  }
+}
+
+async function deleteSarSshConn(id, hostname) {
+  if (!confirm(`Remove SSH connection for ${hostname}?`)) return;
+  await fetch(`/api/sar-ssh-connections/${id}`, {method:'DELETE'});
+  await loadSarSshConnections();
+}
+
+async function testSarSshConn(id, btn) {
+  const orig = btn.textContent; btn.textContent = '…'; btn.disabled = true;
+  try {
+    const res  = await fetch(`/api/sar-ssh-connections/${id}/test`, {method:'POST'});
+    const data = await res.json();
+    alert(data.ok ? `✅ ${data.message}` : `❌ ${data.message}`);
+  } catch(e) { alert('❌ Test failed: ' + e.message); }
+  finally { btn.textContent = orig; btn.disabled = false; }
+}
+
+async function pullSarFiles() {
+  const connId = document.getElementById('sc_pull_conn_id').value || null;
+  const msg    = document.getElementById('sar-pull-msg');
+  const res_el = document.getElementById('sar-pull-results');
+  msg.textContent = '⏳ Pulling SAR files…'; msg.style.color = '#f59e0b';
+  res_el.style.display = 'none';
+  try {
+    const res  = await fetch('/api/sar-ssh-connections/pull', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({conn_id: connId ? parseInt(connId) : null})
+    });
+    const data = await res.json();
+    if (!data.ok && !data.results) {
+      msg.textContent = '❌ ' + (data.error || 'Pull failed');
+      msg.style.color = '#ef4444'; return;
+    }
+    if (data.results) {
+      // Multi-server
+      const total = data.total_files_pulled || 0;
+      msg.textContent = `✅ ${total} file(s) pulled from ${data.servers_processed} server(s)`;
+      msg.style.color = '#10b981';
+      res_el.style.display = '';
+      res_el.innerHTML = data.results.map(r =>
+        `<div style="margin-bottom:4px">
+          ${r.ok ? '✅' : '❌'} <strong>${r.hostname}</strong>: `
+        + (r.ok ? `${r.files_pulled} file(s) pulled` + (r.file_list.length ? ` (${r.file_list.join(', ')})` : '')
+                : r.error)
+        + '</div>'
+      ).join('');
+    } else {
+      // Single server
+      const ok = data.files_pulled || 0;
+      msg.textContent = `✅ ${ok} file(s) pulled from ${data.hostname}`;
+      msg.style.color = '#10b981';
+      if (data.file_list && data.file_list.length) {
+        res_el.style.display = '';
+        res_el.innerHTML = `Files: ${data.file_list.join(', ')}`;
+      }
+    }
+  } catch(e) {
+    msg.textContent = '❌ ' + e.message; msg.style.color = '#ef4444';
+  }
 }
 // Init on load
 toggleAwrSource(document.getElementById('awr_source_type')?.value);
@@ -1606,6 +1894,9 @@ if (document.getElementById('awr_source_type')?.value === 'direct_db') {
   loadOracleConnections();
 }
 toggleSarSource(document.getElementById('sar_source_type')?.value);
+if (document.getElementById('sar_source_type')?.value === 'ssh') {
+  loadSarSshConnections();
+}
 
 // ── Save section ──────────────────────────────────────────────────────
 async function saveSection(section) {
@@ -1616,8 +1907,7 @@ async function saveSection(section) {
     anomaly: ['anomaly_z_threshold','anomaly_baseline_days','anomaly_min_samples'],
     awr_source: ['awr_source_type','awr_local_path','awr_network_path','awr_db_host',
                  'awr_db_port','awr_db_service','awr_db_user','awr_db_password'],
-    sar_source: ['sar_source_type','sar_tz_offset','sar_local_path','sar_ssh_host','sar_ssh_port',
-                 'sar_ssh_user','sar_ssh_key_path','sar_ssh_remote_path'],
+    sar_source: ['sar_source_type','sar_tz_offset','sar_local_path'],
     license: ['license_key','license_customer','license_db_count',
               'license_sar_count','license_expiry','ai_monthly_limit',
               'license_mac_override'],
