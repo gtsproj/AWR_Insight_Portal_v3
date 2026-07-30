@@ -814,9 +814,9 @@ _EXTRA_SECTIONS = [
                    ic.table_name,
                    ic.column_name leading_column,
                    i.index_type,
-                   NVL(i.reverse,'N') is_reverse,
+                   CASE WHEN i.index_type = 'NORMAL/REV' THEN 'YES' ELSE 'NO' END is_reverse,
                    CASE
-                       WHEN i.index_type = 'NORMAL'
+                       WHEN i.index_type IN ('NORMAL','NORMAL/REV')
                         AND ic.column_position = 1
                         AND ic.column_name LIKE '%ID%'
                        THEN '*** REVERSE KEY CANDIDATE ***'
