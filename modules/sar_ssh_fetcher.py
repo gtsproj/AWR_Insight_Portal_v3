@@ -613,6 +613,45 @@ def pull_sar_files(conn_id: int, sar_drop_dir: str) -> dict:
     }
 
 
+def cleanup_sar_archive(sar_archive_dir: str, retain_days: int = 30):
+    """
+    Delete SAR text files from sar_archive older than retain_days.
+    Called by the scheduler periodically to prevent unbounded growth.
+
+    With hourly pulls: 24 files/day/server × retain_days = files kept.
+    Default 30 days = 720 files per server retained.
+    Each file is ~50-100 KB so 30 days ≈ 35-70 MB per server.
+    """
+    if not os.path.isdir(sar_archive_dir):
+        return {'deleted': 0, 'errors': 0}
+
+    from datetime import datetime, timedelta
+    cutoff  = datetime.now() - timedelta(days=retain_days)
+    deleted = 0
+    errors  = 0
+
+    for hostname_dir in os.scandir(sar_archive_dir):
+        if not hostname_dir.is_dir():
+            continue
+        for entry in os.scandir(hostname_dir.path):
+            if not entry.name.endswith('.txt'):
+                continue
+            try:
+                mtime = datetime.fromtimestamp(entry.stat().st_mtime)
+                if mtime < cutoff:
+                    os.unlink(entry.path)
+                    deleted += 1
+            except Exception as e:
+                logger.warning(f'cleanup_sar_archive: could not delete '
+                               f'{entry.path}: {e}')
+                errors += 1
+
+    if deleted:
+        logger.info(f'SAR archive cleanup: deleted {deleted} file(s) '
+                    f'older than {retain_days} days')
+    return {'deleted': deleted, 'errors': errors}
+
+
 def pull_all_servers(sar_drop_dir: str) -> list:
     """Run pull_sar_files for all enabled SSH connections."""
     connections = get_all_connections()

@@ -223,31 +223,50 @@ def _sar_ssh_scheduler():
 
     Catches up all missed intervals automatically if the service
     was stopped (overnight, IP change, server sleep etc.).
+
+    Also runs a daily archive cleanup to remove SAR text files
+    older than 30 days from sar_archive\.
     """
     import time as _time
-    from datetime import datetime as _dt
+    from datetime import datetime as _dt, date as _date
     from logger_utils import get_logger as _get_logger
 
     _log = _get_logger('sar_ssh_scheduler')
     _log.info('SAR SSH scheduler started — checking every 5 minutes')
 
-    # Get sar_drop dir from settings
+    # Get sar_drop and sar_archive dirs from settings
     try:
         import yaml as _yaml
         with open(os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')) as f:
             _settings = _yaml.safe_load(f)
         sar_drop = _settings.get('portal', {}).get('sar_drop_dir', 'sar_drop')
+        sar_archive = _settings.get('portal', {}).get('sar_archive_directory',
+                                                        'sar_archive')
+        retain_days = int(_settings.get('portal', {}).get(
+                          'sar_archive_retain_days', 30))
+        for d in (sar_drop, sar_archive):
+            if not os.path.isabs(d):
+                d = os.path.join(_PROJECT_ROOT, d)
+            os.makedirs(d, exist_ok=True)
         if not os.path.isabs(sar_drop):
             sar_drop = os.path.join(_PROJECT_ROOT, sar_drop)
-        os.makedirs(sar_drop, exist_ok=True)
+        if not os.path.isabs(sar_archive):
+            sar_archive = os.path.join(_PROJECT_ROOT, sar_archive)
     except Exception as e:
-        _log.error(f'Could not read sar_drop_dir from settings: {e}')
-        sar_drop = os.path.join(_PROJECT_ROOT, 'sar_drop')
+        _log.error(f'Could not read settings: {e}')
+        sar_drop    = os.path.join(_PROJECT_ROOT, 'sar_drop')
+        sar_archive = os.path.join(_PROJECT_ROOT, 'sar_archive')
+        retain_days = 30
         os.makedirs(sar_drop, exist_ok=True)
+        os.makedirs(sar_archive, exist_ok=True)
+
+    last_cleanup_date = None   # track daily cleanup
 
     while True:
         try:
-            from modules.sar_ssh_fetcher import get_all_connections, pull_sar_files
+            from modules.sar_ssh_fetcher import (
+                get_all_connections, pull_sar_files, cleanup_sar_archive
+            )
 
             connections = get_all_connections()
             enabled = [c for c in connections
@@ -307,6 +326,20 @@ def _sar_ssh_scheduler():
                         f"{c.get('hostname','?')} "
                         f"[{c.get('ssh_host','?')}]: {e}"
                     )
+
+            # Daily archive cleanup — run once per day at first check after midnight
+            today = now.date()
+            if last_cleanup_date != today:
+                try:
+                    result = cleanup_sar_archive(sar_archive, retain_days)
+                    if result['deleted']:
+                        _log.info(
+                            f'SAR archive cleanup: {result["deleted"]} file(s) '
+                            f'deleted (retain={retain_days} days)'
+                        )
+                    last_cleanup_date = today
+                except Exception as e:
+                    _log.error(f'SAR archive cleanup error: {e}')
 
         except Exception as e:
             _log.error(f'SAR scheduler loop error: {e}')
