@@ -112,13 +112,16 @@ def _oracle_awr_scheduler():
         import yaml as _yaml
         with open(os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')) as f:
             _settings = _yaml.safe_load(f)
-        awr_dir = _settings.get('portal', {}).get('awr_reports_dir', 'awr_reports')
+        _paths  = _settings.get('paths', {})
+        _portal = _settings.get('portal', {})
+        awr_dir = _paths.get('watch_directory', 'awr_reports')
         if not os.path.isabs(awr_dir):
             awr_dir = os.path.join(_PROJECT_ROOT, awr_dir)
         os.makedirs(awr_dir, exist_ok=True)
-        awr_archive = os.path.join(_PROJECT_ROOT, 'archive')
-        awr_retain  = int(_settings.get('portal', {}).get(
-                          'awr_archive_retain_days', 30))
+        awr_archive_rel = _paths.get('archive_directory', 'archive')
+        awr_archive = (awr_archive_rel if os.path.isabs(awr_archive_rel)
+                       else os.path.join(_PROJECT_ROOT, awr_archive_rel))
+        awr_retain  = int(_portal.get('awr_archive_retain_days', 30))
     except Exception as e:
         _sched_log.error(f'Could not read settings: {e}')
         awr_dir     = os.path.join(_PROJECT_ROOT, 'awr_reports')
@@ -398,19 +401,17 @@ def _sar_ssh_scheduler():
         import yaml as _yaml
         with open(os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')) as f:
             _settings = _yaml.safe_load(f)
-        sar_drop = _settings.get('portal', {}).get('sar_drop_dir', 'sar_drop')
-        sar_archive = _settings.get('portal', {}).get('sar_archive_directory',
-                                                        'sar_archive')
-        retain_days = int(_settings.get('portal', {}).get(
-                          'sar_archive_retain_days', 30))
+        _paths  = _settings.get('paths', {})
+        _portal = _settings.get('portal', {})
+        sar_drop_rel    = _paths.get('sar_drop_directory', 'sar_drop')
+        sar_archive_rel = _paths.get('sar_archive_directory', 'sar_archive')
+        sar_drop    = (sar_drop_rel if os.path.isabs(sar_drop_rel)
+                       else os.path.join(_PROJECT_ROOT, sar_drop_rel))
+        sar_archive = (sar_archive_rel if os.path.isabs(sar_archive_rel)
+                       else os.path.join(_PROJECT_ROOT, sar_archive_rel))
+        retain_days = int(_portal.get('sar_archive_retain_days', 30))
         for d in (sar_drop, sar_archive):
-            if not os.path.isabs(d):
-                d = os.path.join(_PROJECT_ROOT, d)
             os.makedirs(d, exist_ok=True)
-        if not os.path.isabs(sar_drop):
-            sar_drop = os.path.join(_PROJECT_ROOT, sar_drop)
-        if not os.path.isabs(sar_archive):
-            sar_archive = os.path.join(_PROJECT_ROOT, sar_archive)
     except Exception as e:
         _log.error(f'Could not read settings: {e}')
         sar_drop    = os.path.join(_PROJECT_ROOT, 'sar_drop')
@@ -3821,7 +3822,7 @@ async def api_generate_awrs(request: Request):
         settings_path = os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')
         with open(settings_path) as f:
             settings = yaml.safe_load(f)
-        awr_dir = settings.get('portal', {}).get('awr_reports_dir', 'awr_reports')
+        awr_dir = settings.get('paths', {}).get('watch_directory', 'awr_reports')
         if not os.path.isabs(awr_dir):
             awr_dir = os.path.join(_PROJECT_ROOT, awr_dir)
         os.makedirs(awr_dir, exist_ok=True)
@@ -4009,7 +4010,7 @@ async def api_pull_sar_files(request: Request):
         settings_path = os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')
         with open(settings_path) as f:
             settings = _yaml.safe_load(f)
-        sar_drop = settings.get('portal', {}).get('sar_drop_dir', 'sar_drop')
+        sar_drop = settings.get('paths', {}).get('sar_drop_directory', 'sar_drop')
         if not os.path.isabs(sar_drop):
             sar_drop = os.path.join(_PROJECT_ROOT, sar_drop)
         os.makedirs(sar_drop, exist_ok=True)
