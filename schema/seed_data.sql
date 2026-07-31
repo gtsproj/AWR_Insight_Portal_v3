@@ -75,11 +75,11 @@ ON CONFLICT (key) DO NOTHING;
 \echo 'Seeding portal_users (admin / Admin@123)...'
 
 INSERT INTO portal_users
-    (username, full_name, password_hash, role, is_active, created_at, updated_at)
+    (username, full_name, password_hash, role, active, created_at)
 VALUES
     ('admin', 'Administrator',
-     '$2b$12$z2TiCv9tJShqtpC0xbt1V.s//T9GBcKU7XevHRl.ChQqdhOGih7l2',
-     'admin', TRUE, NOW(), NOW())
+     '$2b$12$N3D/1kazs5ykClXuv3eN3OJ86JCXBhxswEavQIccGB/4e.RH54AFS',
+     TRUE, NOW())
 ON CONFLICT (username) DO NOTHING;
 
 \echo '  portal_users: OK'
