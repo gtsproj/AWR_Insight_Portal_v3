@@ -1,0 +1,54 @@
+# ============================================================
+# DAR Portal v3 — Docker build exclusions
+# ============================================================
+
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info
+.eggs
+dist
+build
+*.egg
+
+# Runtime folders (mapped as Docker volumes)
+awr_reports/
+archive/
+sar_reports/
+sar_drop/
+sar_archive/
+queues/
+sar_queues/
+logs/
+
+# Development and test files
+*.log
+*.tmp
+check_sar.py
+debug_import.py
+write_sar_*.py
+write_sar_master*.py
+
+# Documentation
+Documentation/
+docs/
+
+# Environment files (contain secrets)
+.env
+*.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp

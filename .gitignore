@@ -1,0 +1,5 @@
+-e 
+# Docker secrets
+.env
+docker/ssh-keys/*
+!docker/ssh-keys/README.txt

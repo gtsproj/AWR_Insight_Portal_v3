@@ -1,0 +1,21 @@
+# ============================================================
+# Grafana auto-provisioning — PostgreSQL data source
+# Applied at Grafana startup — no manual configuration needed
+# ============================================================
+apiVersion: 1
+
+datasources:
+  - name: AWR_Parser_PG
+    type: postgres
+    uid: awrparser-pg
+    url: dar-postgres:5432
+    database: postgres
+    user: postgres
+    secureJsonData:
+      password: ${POSTGRES_PASSWORD}
+    jsonData:
+      sslmode: disable
+      postgresVersion: 1600
+      timescaledb: false
+    isDefault: true
+    editable: true
