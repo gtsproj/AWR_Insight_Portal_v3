@@ -17,13 +17,17 @@
 --                 portal_users    : 1 row  (admin / Admin@123)
 --                 awr_wait_event_master : 1918 rows (full Oracle
 --                   wait event catalog with correlation metadata)
---   Section 6 — Grant permissions to awr_owner role
+--   Section 6 — Grant permissions to DAR_PORTAL_USER role
 --   Section 7 — Verify installation
 --
--- ── BEFORE RUNNING ──────────────────────────────────────────
+-- ── RECOMMENDED: Use the interactive batch installer ────────
+--   install_dar_portal.bat
+--   (Prompts for all values, creates directories, runs this SQL)
+--
+-- ── ALTERNATIVE: Run this SQL directly ───────────────────────
 --   1. Create tablespace directories (mkdir)
---   2. Edit tablespace LOCATION paths (Section 2, ~line 80)
---   3. Edit schema owner password    (Section 3, ~line 130)
+--   2. Edit tablespace LOCATION paths in Section 2 below
+--   3. Edit DAR_PORTAL_USER password in Section 3 below
 --   4. Run: psql -U postgres -d postgres -f install_fresh.sql
 --
 -- ── AFTER RUNNING ───────────────────────────────────────────
@@ -45,85 +49,100 @@ SET search_path = public;
 
 
 -- ============================================================
--- SECTION 1: CONFIGURATION — READ BEFORE RUNNING
+-- SECTION 1: CONFIGURATION
 -- ============================================================
 --
--- Edit 3 things before running this script:
+-- RECOMMENDED: Use install_dar_portal.bat (Windows) which:
+--   • Prompts for all values interactively
+--   • Creates tablespace directories automatically
+--   • Substitutes paths and passwords before running this SQL
 --
--- ① Create tablespace directories on the filesystem:
---     Windows:
---       mkdir C:\PostgreSQL\tablespaces\awrparser
---       mkdir C:\PostgreSQL\tablespaces\awrparser_idx
---     Linux:
---       mkdir -p /opt/postgresql/tablespaces/awrparser
---       mkdir -p /opt/postgresql/tablespaces/awrparser_idx
---       chown postgres:postgres /opt/postgresql/tablespaces/awrparser*
+-- MANUAL SETUP (if running this SQL directly):
+--   ① Create tablespace directories first:
+--       Windows:
+--         mkdir C:\PostgreSQL\tablespaces\awrparser
+--         mkdir C:\PostgreSQL\tablespaces\awrparser_idx
+--       Linux:
+--         mkdir -p /opt/postgresql/tablespaces/awrparser
+--         mkdir -p /opt/postgresql/tablespaces/awrparser_idx
+--         chown postgres:postgres /opt/postgresql/tablespaces/awrparser*
 --
--- ② Edit the LOCATION paths in Section 2 below (~line 80)
+--   ② Edit the two LOCATION paths in Section 2 below
+--       Look for: -- ^^^ EDIT THIS PATH
 --
--- ③ Edit the PASSWORD in Section 3 below (~line 130)
+--   ③ Edit the DAR_PORTAL_USER password in Section 3 below
+--       Look for: -- ^^^ EDIT THIS PASSWORD
 --
--- If you do NOT want custom tablespaces, skip step ① and ②
--- and instead run before this script:
---   CREATE TABLESPACE awrparser     OWNER postgres LOCATION '<any_empty_dir>';
---   CREATE TABLESPACE awrparser_idx OWNER postgres LOCATION '<any_empty_dir>';
--- Or search-replace all TABLESPACE awrparser with TABLESPACE pg_default.
+--   ④ No-tablespace option: comment out the CREATE TABLESPACE
+--       statements and instead run:
+--         CREATE TABLESPACE awrparser     OWNER postgres LOCATION '<dir1>';
+--         CREATE TABLESPACE awrparser_idx OWNER postgres LOCATION '<dir2>';
+--       Or replace all TABLESPACE awrparser with TABLESPACE pg_default.
 -- ============================================================
 
 
 -- ============================================================
 -- SECTION 2: TABLESPACES
--- ── Edit the two LOCATION paths below ────────────────────────
+-- ── Tablespace LOCATION paths ───────────────────────────────
+-- If using install_dar_portal.bat: paths are substituted
+-- automatically — do not edit here.
+-- If running this SQL directly: edit the two LOCATION paths.
 -- ============================================================
 \echo 'Step 1/6: Creating tablespaces...'
 
--- Data tablespace: stores all AWR/SAR tables
--- EDIT: change the LOCATION path to match your environment
+-- Data tablespace: stores all AWR/SAR/multi-DB analysis tables
 CREATE TABLESPACE IF NOT EXISTS awrparser
     OWNER postgres
     LOCATION 'C:\PostgreSQL\tablespaces\awrparser';
-    -- ^^^ EDIT THIS PATH
+    -- ^^^ EDIT THIS PATH (or use install_dar_portal.bat for prompt)
 
--- Index tablespace: stores all indexes for optimal I/O separation
--- EDIT: change the LOCATION path to match your environment
+-- Index tablespace: stores all indexes (separate disk = better I/O)
 CREATE TABLESPACE IF NOT EXISTS awrparser_idx
     OWNER postgres
     LOCATION 'C:\PostgreSQL\tablespaces\awrparser_idx';
-    -- ^^^ EDIT THIS PATH
+    -- ^^^ EDIT THIS PATH (or use install_dar_portal.bat for prompt)
 
 \echo '  Tablespaces: done'
 
 
 -- ============================================================
 -- SECTION 3: SCHEMA OWNER ROLE
--- ── Edit the password placeholder below ──────────────────────
+-- ── DAR_PORTAL_USER — schema owner for all DAR Portal objects ──
+-- DAR = Database Analysis and Recommendations
+-- Designed to own objects across multiple DB platform modules:
+--   Oracle AWR, MS SQL Server, PostgreSQL, MySQL, MariaDB, etc.
+--
+-- If using install_dar_portal.bat: password is prompted and
+-- substituted automatically — do not edit here.
+-- If running this SQL directly: replace YourSecurePassword123.
 -- ============================================================
-\echo 'Step 2/6: Creating schema owner role (awr_owner)...'
+\echo 'Step 2/6: Creating schema owner DAR_PORTAL_USER...'
 
--- EDIT: replace YourSecurePassword123 with your chosen password
 DO $$
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'awr_owner') THEN
-        CREATE ROLE awr_owner LOGIN PASSWORD 'YourSecurePassword123';
-        -- ^^^ EDIT THIS PASSWORD
-        RAISE NOTICE 'Role awr_owner created';
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'DAR_PORTAL_USER') THEN
+        CREATE ROLE DAR_PORTAL_USER LOGIN PASSWORD 'YourSecurePassword123';
+        -- ^^^ EDIT THIS PASSWORD (or use install_dar_portal.bat for prompt)
+        RAISE NOTICE 'DAR_PORTAL_USER created successfully';
     ELSE
-        ALTER ROLE awr_owner PASSWORD 'YourSecurePassword123';
-        -- ^^^ EDIT THIS PASSWORD
-        RAISE NOTICE 'Role awr_owner updated';
+        ALTER ROLE DAR_PORTAL_USER PASSWORD 'YourSecurePassword123';
+        -- ^^^ EDIT THIS PASSWORD (or use install_dar_portal.bat for prompt)
+        RAISE NOTICE 'DAR_PORTAL_USER already exists — password updated';
     END IF;
 END $$;
 
--- Grant schema-level access to the owner role
-GRANT CONNECT ON DATABASE postgres TO awr_owner;
-GRANT CREATE  ON SCHEMA public     TO awr_owner;
-GRANT USAGE   ON SCHEMA public     TO awr_owner;
+-- Grant minimum required privileges to DAR_PORTAL_USER
+GRANT CONNECT  ON DATABASE postgres TO DAR_PORTAL_USER;
+GRANT CREATE   ON SCHEMA public     TO DAR_PORTAL_USER;
+GRANT USAGE    ON SCHEMA public     TO DAR_PORTAL_USER;
 
--- To use awr_owner instead of postgres as the portal DB user:
---   Edit config/settings.yaml: database.user = awr_owner
---                               database.password = <your password>
+-- To connect as DAR_PORTAL_USER instead of postgres:
+--   config/settings.yaml:
+--     database:
+--       user:     DAR_PORTAL_USER
+--       password: <password set above>
 
-\echo '  Schema owner role: done'
+\echo '  DAR_PORTAL_USER: done'
 
 
 -- ============================================================
@@ -4965,25 +4984,25 @@ ON CONFLICT (event) DO UPDATE SET
 -- GRANT OBJECT PERMISSIONS TO SCHEMA OWNER
 -- ============================================================
 -- Grants SELECT/INSERT/UPDATE/DELETE on all tables, USAGE on
--- sequences, and SELECT on MVs to the awr_owner role.
--- Update config/settings.yaml database.user = awr_owner to
+-- sequences, and SELECT on MVs to the DAR_PORTAL_USER role.
+-- Update config/settings.yaml database.user = DAR_PORTAL_USER to
 -- connect as the owner role instead of postgres.
 
-\echo 'Granting permissions to awr_owner...'
+\echo 'Granting permissions to DAR_PORTAL_USER...'
 
 DO $$
 DECLARE r RECORD;
 BEGIN
     FOR r IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' LOOP
-        EXECUTE format('GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE public.%I TO awr_owner', r.tablename);
+        EXECUTE format('GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE public.%I TO DAR_PORTAL_USER', r.tablename);
     END LOOP;
     FOR r IN SELECT sequencename FROM pg_sequences WHERE schemaname = 'public' LOOP
-        EXECUTE format('GRANT USAGE,SELECT ON SEQUENCE public.%I TO awr_owner', r.sequencename);
+        EXECUTE format('GRANT USAGE,SELECT ON SEQUENCE public.%I TO DAR_PORTAL_USER', r.sequencename);
     END LOOP;
     FOR r IN SELECT matviewname FROM pg_matviews WHERE schemaname = 'public' LOOP
-        EXECUTE format('GRANT SELECT ON TABLE public.%I TO awr_owner', r.matviewname);
+        EXECUTE format('GRANT SELECT ON TABLE public.%I TO DAR_PORTAL_USER', r.matviewname);
     END LOOP;
-    RAISE NOTICE 'Permissions granted to awr_owner';
+    RAISE NOTICE 'Permissions granted to DAR_PORTAL_USER';
 END $$;
 
 \echo '  Permissions: done'
