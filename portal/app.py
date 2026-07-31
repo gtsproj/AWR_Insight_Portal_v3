@@ -870,7 +870,7 @@ def _reimport_dashboards_to_grafana(grafana_url: str, cfg: dict) -> None:
 
 
 # Public routes — never require login
-_PUBLIC_PATHS = {"/login", "/logout", "/forgot-password", "/reset-password"}
+_PUBLIC_PATHS = {"/login", "/logout", "/forgot-password", "/reset-password", "/setup-password"}
 
 # Read-only API endpoints called automatically by the status bar and home
 # page on every load. These must remain accessible without a session even
@@ -2346,32 +2346,115 @@ async def login_post(request: Request,
             row = cur.fetchone()
         if not row or not row[2]:
             raise ValueError("Invalid username or password")
-        if not _verify_password(password, row[0]):
+
+        pwd_hash = row[0]
+
+        # ── First-time setup: password_hash='SETUP' means no password
+        # has been set yet.  Bypass password check and redirect to the
+        # set-password page so the admin creates a real password before
+        # entering the portal.
+        if pwd_hash == 'SETUP':
+            setup_token = secrets.token_hex(32)
+            _sessions[setup_token] = {
+                "username": username,
+                "role":     row[1],
+                "expires":  datetime.now() + timedelta(minutes=30),
+                "setup":    True,   # flag: must set password before anything else
+            }
+            resp = RedirectResponse("/setup-password", status_code=303)
+            resp.set_cookie("portal_session", setup_token, httponly=True,
+                            max_age=1800)
+            return resp
+
+        if not _verify_password(password, pwd_hash):
             raise ValueError("Invalid username or password")
+
         with conn.cursor() as cur:
-            cur.execute("UPDATE portal_users SET last_login=NOW() WHERE username=%s", (username,))
+            cur.execute("UPDATE portal_users SET last_login=NOW() WHERE username=%s",
+                        (username,))
         conn.commit()
     except ValueError as e:
         cfg = _get_config()
         return templates.TemplateResponse(request, "login.html",
             context={"error": str(e), "username": username,
                      "next": next_url,
-                     "ai_mode": cfg.get("ai_mode","rules")})
+                     "ai_mode": cfg.get("ai_mode", "rules")})
     finally:
         conn.close()
 
     token   = secrets.token_hex(32)
     cfg     = _get_config('access')
-    timeout = int(cfg.get('session_timeout_mins', 30))   # default 30 mins
+    timeout = int(cfg.get('session_timeout_mins', 30))
     expires = datetime.now() + timedelta(minutes=timeout) if timeout > 0 else None
     _sessions[token] = {"username": username, "role": row[1], "expires": expires}
 
-    # Invalidate login cache so middleware re-checks
     app.state._login_cache_ts = 0
 
     resp = RedirectResponse(next_url or "/", status_code=303)
     resp.set_cookie("portal_session", token, httponly=True,
                     max_age=timeout * 60 if timeout > 0 else None)
+    return resp
+
+
+@app.get("/setup-password", response_class=HTMLResponse)
+async def setup_password_page(request: Request):
+    """First-time password setup page — only reachable with a SETUP session."""
+    sess = _get_session(request)
+    if not sess or not sess.get("setup"):
+        return RedirectResponse("/login", status_code=303)
+    return templates.TemplateResponse(request, "setup_password.html",
+        context={"username": sess.get("username", "admin"), "error": None})
+
+
+@app.post("/setup-password", response_class=HTMLResponse)
+async def setup_password_post(request: Request,
+                               new_password:     str = Form(...),
+                               confirm_password: str = Form(...)):
+    """Save the first-time password and redirect into the portal."""
+    sess = _get_session(request)
+    if not sess or not sess.get("setup"):
+        return RedirectResponse("/login", status_code=303)
+
+    username = sess.get("username")
+    error    = None
+
+    if len(new_password) < 8:
+        error = "Password must be at least 8 characters."
+    elif new_password != confirm_password:
+        error = "Passwords do not match."
+
+    if error:
+        return templates.TemplateResponse(request, "setup_password.html",
+            context={"username": username, "error": error})
+
+    # Hash and save
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE portal_users
+                SET    password_hash = %s,
+                       last_login    = NOW()
+                WHERE  username = %s
+            """, (_hash_password(new_password), username))
+        conn.commit()
+    finally:
+        conn.close()
+
+    # Promote the session from setup -> full access
+    token = request.cookies.get("portal_session")
+    if token and token in _sessions:
+        _sessions[token].pop("setup", None)
+        cfg     = _get_config('access')
+        timeout = int(cfg.get('session_timeout_mins', 30))
+        _sessions[token]["expires"] = (
+            datetime.now() + timedelta(minutes=timeout) if timeout > 0 else None
+        )
+
+    app.state._login_cache_ts = 0
+    resp = RedirectResponse("/", status_code=303)
+    resp.set_cookie("portal_session", token, httponly=True,
+                    max_age=int(cfg.get('session_timeout_mins', 30)) * 60)
     return resp
 
 

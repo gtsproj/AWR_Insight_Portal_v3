@@ -1674,13 +1674,16 @@ ON CONFLICT (key) DO NOTHING;
 INSERT INTO portal_users
     (username, full_name, password_hash, role, active, created_at)
 VALUES
-    ('admin', 'Administrator',
-     '$2b$12$dBp784c.REpF8DPqAnAVwevDAgiHOiL4Fm8BIrxyc724HgKDyDWBm',
-     'admin', TRUE, NOW())
+    ('admin', 'Administrator', 'SETUP', 'admin', TRUE, NOW())
 ON CONFLICT (username) DO UPDATE
-    SET password_hash = EXCLUDED.password_hash,
-        role          = 'admin',
-        active        = TRUE;
+    SET password_hash = CASE
+            WHEN EXCLUDED.password_hash = 'SETUP'
+             AND portal_users.password_hash NOT LIKE '$2b$%'
+            THEN 'SETUP'
+            ELSE portal_users.password_hash
+        END,
+        role   = 'admin',
+        active = TRUE;
 
 \echo '  portal_users: done'
 
