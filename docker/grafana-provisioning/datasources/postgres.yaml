@@ -1,6 +1,8 @@
 # ============================================================
 # Grafana auto-provisioning — PostgreSQL data source
-# Applied at Grafana startup — no manual configuration needed
+# Applied at Grafana startup — no manual configuration needed.
+# The ${POSTGRES_PASSWORD} variable is passed from docker-compose.yml
+# via the POSTGRES_PASSWORD environment variable on the Grafana container.
 # ============================================================
 apiVersion: 1
 
@@ -12,7 +14,7 @@ datasources:
     database: postgres
     user: postgres
     secureJsonData:
-      password: ${POSTGRES_PASSWORD}
+      password: $POSTGRES_PASSWORD
     jsonData:
       sslmode: disable
       postgresVersion: 1600

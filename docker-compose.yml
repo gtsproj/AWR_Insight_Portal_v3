@@ -2,55 +2,64 @@
 # DAR Portal v3 — Docker Compose
 # Database Analysis and Recommendations Portal
 # Avekshaa Technologies
-# ============================================================
 #
-# Starts 3 containers:
-#   dar-postgres  : PostgreSQL 16 — stores all portal data
-#   dar-grafana   : Grafana 12 OSS — dashboards
-#   dar-portal    : DAR Portal Python app (port 8000)
+# ── PLATFORM NOTES ───────────────────────────────────────────
+# Windows: requires Docker Desktop with WSL2 backend enabled.
+#   Install: https://docs.docker.com/desktop/windows/install/
+#   Ensure "Use WSL 2 based engine" is ON in Docker Desktop
+#   Settings → General.
 #
-# Usage:
-#   docker-compose up -d --build    # first run
-#   docker-compose up -d            # subsequent starts
-#   docker-compose stop             # stop (data preserved)
-#   docker-compose logs dar-portal  # view portal logs
+# Linux: any Docker Engine + Docker Compose installation.
 #
-# Configuration: copy .env.example to .env and edit values
+# ── QUICK START ──────────────────────────────────────────────
+#   1. copy .env.example .env  (Windows: copy .env.example .env)
+#   2. Edit .env — change POSTGRES_PASSWORD and GRAFANA_PASSWORD
+#   3. docker-compose up -d --build
+#   4. docker-compose logs -f dar-portal     (watch startup)
+#   5. Open http://localhost:8000   login: admin / Admin@123
+#
+# ── OPERATIONS ───────────────────────────────────────────────
+#   docker-compose stop              stop (data preserved)
+#   docker-compose start             restart
+#   docker-compose up -d --build     upgrade to new version
+#   docker-compose logs dar-portal   view portal logs
+#   docker-compose ps                check service status
 # ============================================================
 
 version: '3.9'
 
 services:
 
-  # ── PostgreSQL ──────────────────────────────────────────────
+  # ── PostgreSQL 16 ───────────────────────────────────────────
   dar-postgres:
     image: postgres:16-alpine
     container_name: dar-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER:     postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMeNow123}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
       POSTGRES_DB:       postgres
       PGDATA:            /var/lib/postgresql/data/pgdata
     volumes:
-      # Persistent database data
+      # All portal data persists here across restarts and upgrades
       - dar_postgres_data:/var/lib/postgresql/data
-      # Schema installation scripts (run at first startup)
-      - ./schema:/docker-entrypoint-initdb.d/schema:ro
-      - ./docker/postgres-init.sh:/docker-entrypoint-initdb.d/01-init.sh:ro
+      # First-startup init: creates DAR_PORTAL_USER role
+      - ./docker/postgres-init.sh:/docker-entrypoint-initdb.d/01-dar-init.sh:ro
     ports:
-      # Expose PostgreSQL port for external connections and pgAdmin
-      # Remove this section in production if external access is not needed
+      # Expose for pgAdmin or direct psql access from host
+      # Comment out if external database access is not needed
       - "${POSTGRES_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 20s
     networks:
       - dar-network
 
-  # ── Grafana ─────────────────────────────────────────────────
+
+  # ── Grafana 12 OSS ──────────────────────────────────────────
   dar-grafana:
     image: grafana/grafana-oss:12.0.2
     container_name: dar-grafana
@@ -61,26 +70,27 @@ services:
     environment:
       GF_SERVER_HTTP_PORT:          3000
       GF_SECURITY_ADMIN_USER:       admin
-      GF_SECURITY_ADMIN_PASSWORD:   ${GRAFANA_PASSWORD:-admin}
+      GF_SECURITY_ADMIN_PASSWORD:   ${GRAFANA_PASSWORD:?GRAFANA_PASSWORD must be set in .env}
       GF_SECURITY_ALLOW_EMBEDDING:  "true"
       GF_AUTH_ANONYMOUS_ENABLED:    "false"
-      GF_INSTALL_PLUGINS:           ""
+      # Pass PostgreSQL password for datasource auto-provisioning
+      POSTGRES_PASSWORD:            ${POSTGRES_PASSWORD}
     volumes:
-      # Persistent Grafana data (dashboards, settings)
+      # Persistent Grafana state (dashboards saved in UI, plugins)
       - dar_grafana_data:/var/lib/grafana
-      # Auto-provision PostgreSQL data source
+      # Auto-provisions AWR_Parser_PG data source on first start
       - ./docker/grafana-provisioning:/etc/grafana/provisioning:ro
-      # Pre-built dashboards (imported at startup)
-      - ./dashboard:/etc/grafana/dashboards:ro
     ports:
       - "${GRAFANA_PORT:-3000}:3000"
     healthcheck:
       test: ["CMD-SHELL", "curl -sf http://localhost:3000/api/health || exit 1"]
       interval: 15s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
     networks:
       - dar-network
+
 
   # ── DAR Portal ──────────────────────────────────────────────
   dar-portal:
@@ -96,64 +106,77 @@ services:
       dar-grafana:
         condition: service_healthy
     environment:
-      # PostgreSQL connection (matches dar-postgres service)
+      # Database (connects to dar-postgres container)
       DAR_DB_HOST:       dar-postgres
       DAR_DB_PORT:       5432
       DAR_DB_NAME:       postgres
       DAR_DB_USER:       postgres
-      DAR_DB_PASSWORD:   ${POSTGRES_PASSWORD:-ChangeMeNow123}
-      # Grafana URL (internal container network)
+      DAR_DB_PASSWORD:   ${POSTGRES_PASSWORD}
+      # Grafana (internal container network URL)
       DAR_GRAFANA_URL:   http://dar-grafana:3000
       DAR_GRAFANA_USER:  admin
-      DAR_GRAFANA_PASS:  ${GRAFANA_PASSWORD:-admin}
-      # Portal external URL (used in email links and navigation)
+      DAR_GRAFANA_PASS:  ${GRAFANA_PASSWORD}
+      # Portal public URL (shown in navigation and links)
       DAR_PORTAL_URL:    ${DAR_PORTAL_URL:-http://localhost:8000}
       # Timezone for SAR timestamp parsing
       TZ:                ${TIMEZONE:-Asia/Kolkata}
     volumes:
-      # AWR HTML report drop folder (drop files here to parse)
+      # ── Persistent data volumes ──────────────────────────────
+      # Drop AWR HTML reports here to trigger parsing
       - dar_awr_reports:/app/awr_reports
-      # SAR text delta drop folder
+      # SAR text deltas dropped here by SSH scheduler
       - dar_sar_drop:/app/sar_drop
-      # AWR archive (auto-cleaned per awr_archive_retain_days)
+      # AWR HTML archive (auto-cleaned per awr_archive_retain_days)
       - dar_archive:/app/archive
-      # SAR archive (auto-cleaned per sar_archive_retain_days)
+      # SAR text archive (auto-cleaned per sar_archive_retain_days)
       - dar_sar_archive:/app/sar_archive
-      # Persistent logs
+      # Portal logs (persistent across restarts)
       - dar_logs:/app/logs
-      # Config (edit .env or map a custom settings.yaml here)
-      - ./config:/app/config:ro
-      # SSH keys for SAR server access (optional)
+      # ── Configuration ────────────────────────────────────────
+      # Bind-mount config folder so settings.yaml is editable
+      # on the host without rebuilding the image
+      - ./config:/app/config
+      # ── SSH keys for SAR connections (optional) ──────────────
+      # Place SSH private key files in docker/ssh-keys/
+      # Reference in Settings → SAR Source as /app/ssh-keys/<name>
       - ${SSH_KEYS_PATH:-./docker/ssh-keys}:/app/ssh-keys:ro
     ports:
       - "${PORTAL_PORT:-8000}:8000"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/health || exit 1"]
       interval: 30s
       timeout: 10s
-      start_period: 90s
+      start_period: 120s
       retries: 3
     networks:
       - dar-network
 
-# ── Named volumes (persistent data) ──────────────────────────
+
+# ── Named volumes ─────────────────────────────────────────────
+# These persist ALL portal data across container restarts,
+# upgrades, and docker-compose stop/start cycles.
+# NEVER run docker-compose down -v (destroys all data).
 volumes:
-  dar_postgres_data:
+  dar_postgres_data:   # PostgreSQL database files
     driver: local
-  dar_grafana_data:
+  dar_grafana_data:    # Grafana state and saved dashboards
     driver: local
-  dar_awr_reports:
+  dar_awr_reports:     # AWR HTML report drop folder
     driver: local
-  dar_sar_drop:
+  dar_sar_drop:        # SAR text delta drop folder
     driver: local
-  dar_archive:
+  dar_archive:         # Processed AWR archive
     driver: local
-  dar_sar_archive:
+  dar_sar_archive:     # Processed SAR archive
     driver: local
-  dar_logs:
+  dar_logs:            # Application logs
     driver: local
 
+
 # ── Internal network ──────────────────────────────────────────
+# All three containers communicate on this bridge network.
+# Container names (dar-postgres, dar-grafana) are DNS hostnames
+# within this network — used in environment variables above.
 networks:
   dar-network:
     driver: bridge
