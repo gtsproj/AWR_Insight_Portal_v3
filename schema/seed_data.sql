@@ -78,9 +78,12 @@ INSERT INTO portal_users
     (username, full_name, password_hash, role, active, created_at)
 VALUES
     ('admin', 'Administrator',
-     '$2b$12$N3D/1kazs5ykClXuv3eN3OJ86JCXBhxswEavQIccGB/4e.RH54AFS',
-     TRUE, NOW())
-ON CONFLICT (username) DO NOTHING;
+     '$2b$12$dBp784c.REpF8DPqAnAVwevDAgiHOiL4Fm8BIrxyc724HgKDyDWBm',
+     'admin', TRUE, NOW())
+ON CONFLICT (username) DO UPDATE
+    SET password_hash = EXCLUDED.password_hash,
+        role          = 'admin',
+        active        = TRUE;
 
 \echo '  portal_users: OK'
 
