@@ -2989,7 +2989,7 @@ INSERT INTO portal_users
 VALUES
     ('admin',
      'Administrator',
-     '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TiGniMDPbFMnb9h1TCcB8V2/.SvS',
+     '$2b$12$z2TiCv9tJShqtpC0xbt1V.s//T9GBcKU7XevHRl.ChQqdhOGih7l2',
      'admin', TRUE, NOW(), NOW())
 ON CONFLICT (username) DO NOTHING;
 
