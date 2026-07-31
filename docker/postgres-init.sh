@@ -17,6 +17,10 @@ BEGIN
         GRANT CONNECT ON DATABASE postgres TO DAR_PORTAL_USER;
         GRANT USAGE   ON SCHEMA public     TO DAR_PORTAL_USER;
         GRANT CREATE  ON SCHEMA public     TO DAR_PORTAL_USER;
+        -- Tablespace grants: without these, CREATE TABLE ... TABLESPACE awrparser
+        -- fails with "permission denied for tablespace awrparser"
+        GRANT CREATE ON TABLESPACE awrparser     TO DAR_PORTAL_USER;
+        GRANT CREATE ON TABLESPACE awrparser_idx TO DAR_PORTAL_USER;
         RAISE NOTICE 'DAR_PORTAL_USER created';
     ELSE
         RAISE NOTICE 'DAR_PORTAL_USER already exists';

@@ -102,6 +102,12 @@ CREATE TABLESPACE IF NOT EXISTS awrparser_idx
     LOCATION 'C:\PostgreSQL\tablespaces\awrparser_idx';
     -- ^^^ EDIT THIS PATH (or use install_dar_portal.bat for prompt)
 
+-- Grant DAR_PORTAL_USER permission to create objects in both tablespaces.
+-- Without this, CREATE TABLE ... TABLESPACE awrparser fails with:
+--   ERROR: permission denied for tablespace awrparser
+GRANT CREATE ON TABLESPACE awrparser     TO DAR_PORTAL_USER;
+GRANT CREATE ON TABLESPACE awrparser_idx TO DAR_PORTAL_USER;
+
 \echo '  Tablespaces: done'
 
 

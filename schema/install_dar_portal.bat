@@ -325,6 +325,16 @@ if !SQL_EXIT! EQU 0 (
     echo   Errors for already-existing objects are normal on re-run.
 )
 
+:: Ensure tablespace grants are applied even if tablespaces were pre-existing.
+:: GRANT CREATE ON TABLESPACE is not idempotent but is safe to re-run.
+echo.
+echo   Applying tablespace grants to DAR_PORTAL_USER...
+psql -h !PG_HOST! -p !PG_PORT! -U !PG_SUPERUSER! -d !PG_DB! -c ^
+    "GRANT CREATE ON TABLESPACE awrparser     TO DAR_PORTAL_USER;" >nul 2>&1
+psql -h !PG_HOST! -p !PG_PORT! -U !PG_SUPERUSER! -d !PG_DB! -c ^
+    "GRANT CREATE ON TABLESPACE awrparser_idx TO DAR_PORTAL_USER;" >nul 2>&1
+echo   Tablespace grants applied.
+
 
 :: ────────────────────────────────────────────────────────────
 :: DONE

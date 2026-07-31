@@ -600,7 +600,14 @@ def main():
     # ── Permissions ──────────────────────────────────────────────────────────
     lines.append(SECTION.format(title="PERMISSIONS"))
     lines.append("""\
--- Grant all table/sequence/MV permissions to DAR_PORTAL_USER:
+-- Tablespace grants: REQUIRED so DAR_PORTAL_USER can create tables
+-- in the awrparser and awrparser_idx tablespaces.
+-- Without these grants CREATE TABLE ... TABLESPACE awrparser returns:
+--   ERROR: permission denied for tablespace awrparser
+GRANT CREATE ON TABLESPACE awrparser     TO DAR_PORTAL_USER;
+GRANT CREATE ON TABLESPACE awrparser_idx TO DAR_PORTAL_USER;
+
+-- Table, sequence and MV object grants:
 DO $$
 DECLARE r RECORD;
 BEGIN
