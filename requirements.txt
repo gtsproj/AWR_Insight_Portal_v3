@@ -1,22 +1,45 @@
-# AWR Insight Portal v2 — Python dependencies
-# Install with: pip install -r requirements.txt
+# DAR Portal v3 — Python dependencies
+# Database Analysis and Recommendations Portal
+# Avekshaa Technologies
+#
+# Install: pip install -r requirements.txt
+#          pip install oracledb paramiko   (for direct Oracle + SSH SAR)
+#
+# Tested with Python 3.13.x
+# Minimum: Python 3.11  (match/case syntax used in some modules)
+#
+# IMPORTANT: Do NOT upgrade pandas to 3.x without testing.
+# pd.read_html() behaviour changed in pandas 2.x (requires io.StringIO wrapper).
+# All 58 parser calls are now wrapped correctly.
 
-beautifulsoup4>=4.12
-lxml>=5.0
-pandas>=2.0
-psycopg2-binary>=2.9
-watchdog>=4.0
-pyyaml>=6.0
-fastapi>=0.110
-uvicorn[standard]>=0.27
-python-multipart>=0.0.9
-jinja2>=3.1
+# ── Core parsing ───────────────────────────────────────────────────────
+beautifulsoup4>=4.12,<5.0
+lxml>=5.0,<6.0
+pandas>=2.0,<3.0
 
-# Optional: Oracle direct connection
-# oracledb>=2.0
+# ── Database ───────────────────────────────────────────────────────────
+psycopg2-binary>=2.9,<3.0
 
-# Optional: Oracle direct AWR generation (thin mode — no Oracle Client needed)
-oracledb>=2.0
+# ── File watching ──────────────────────────────────────────────────────
+watchdog>=4.0,<5.0
 
-# Optional: Anthropic cloud AI
-# anthropic>=0.20
+# ── Configuration ──────────────────────────────────────────────────────
+pyyaml>=6.0,<7.0
+
+# ── Web portal ─────────────────────────────────────────────────────────
+fastapi>=0.110,<1.0
+uvicorn[standard]>=0.27,<1.0
+python-multipart>=0.0.9,<1.0
+jinja2>=3.1,<4.0
+
+# ── Security ───────────────────────────────────────────────────────────
+bcrypt>=4.0,<5.0
+
+# ── Oracle direct connection (thin mode — no Oracle Client needed) ─────
+oracledb>=2.0,<3.0
+
+# ── SAR SSH delta extraction ───────────────────────────────────────────
+paramiko>=3.0,<4.0
+
+# ── Optional: Anthropic cloud AI ──────────────────────────────────────
+# anthropic>=0.20,<1.0

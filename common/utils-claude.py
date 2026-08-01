@@ -6,6 +6,7 @@ import hashlib
 import pandas as pd
 import warnings
 import math
+import io
  
 # suppress pandas FutureWarnings globally
 warnings.simplefilter(action="ignore", category=FutureWarning)
@@ -130,13 +131,13 @@ def extract_workload_repo_metadata(soup):
 
         # --- DB Name from first table ---
         if len(tables) > 0:
-            df = pd.read_html(str(tables[0]))[0]
+            df = pd.read_html(io.StringIO(str(tables[0])))[0]
             if not df.empty:
                 metadata["dbname"] = str(df.iloc[0, 0]).strip()
 
         # --- Instance & Inst Num from second table ---
         if len(tables) > 1:
-            df = pd.read_html(str(tables[1]))[0]
+            df = pd.read_html(io.StringIO(str(tables[1])))[0]
             if not df.empty:
                 metadata["instance"] = str(df.iloc[0, 0]).strip()
                 try:
@@ -146,7 +147,7 @@ def extract_workload_repo_metadata(soup):
 
         # --- Begin Snap & Snap Time from snapshot table (4th table) ---
         if len(tables) > 3:
-            df = pd.read_html(str(tables[3]))[0]
+            df = pd.read_html(io.StringIO(str(tables[3])))[0]
             for _, row in df.iterrows():
                 label = str(row[0]).strip().lower()
 
