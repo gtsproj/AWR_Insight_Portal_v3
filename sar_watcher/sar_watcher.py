@@ -110,46 +110,102 @@ def wsl_available() -> bool:
     """
     Check if WSL is available and working on this Windows machine.
 
-    Uses full path to wsl.exe to work correctly when called from a
-    Windows service (NSSM) which may not have the same PATH as an
-    interactive user session.
+    Two known failure modes when running as a Windows service (NSSM):
 
-    Retries up to 3 times with increasing timeout to handle WSL
-    initialisation delay after machine restart or service startup.
+    1. SysWOW64 redirect: 32-bit processes and some service contexts
+       that access C:/Windows/System32 get silently redirected to
+       C:/Windows/SysWOW64 which does NOT contain wsl.exe.
+       Fix: also try Sysnative (the 64-bit alias visible to 32-bit callers).
+
+    2. wsl echo ok fails under service accounts even when WSL works.
+       Fix: test with `wsl --status` or `wsl -l` which are more reliable
+       in non-interactive service sessions, and fall back to attempting
+       an actual `wsl bash -c "echo ok"` as a final check.
     """
     import shutil
 
-    # Full path first — more reliable from service context
-    wsl_exe = r"C:\Windows\System32\wsl.exe"
-    if not os.path.exists(wsl_exe):
-        # Fall back to PATH lookup
-        wsl_exe = shutil.which("wsl") or "wsl"
+    # Candidate paths in priority order:
+    #   System32   — works for 64-bit processes
+    #   Sysnative  — 64-bit alias accessible from 32-bit service processes
+    #   PATH       — fallback
+    candidates = [
+        r"C:\Windows\System32\wsl.exe",
+        r"C:\Windows\Sysnative\wsl.exe",   # 32-bit process → 64-bit System32
+    ]
+    path_wsl = shutil.which("wsl")
+    if path_wsl:
+        candidates.append(path_wsl)
 
+    wsl_exe = None
+    for c in candidates:
+        if os.path.exists(c):
+            wsl_exe = c
+            logger.debug(f"Found wsl.exe at: {c}")
+            break
+
+    if not wsl_exe:
+        logger.debug("wsl.exe not found in any candidate path — WSL not installed")
+        return False
+
+    # ── Test 1: wsl --status (works in service context, no distro needed) ──
+    # This succeeds as long as WSL is installed, even under a service account.
     for attempt, timeout in enumerate([10, 20, 30], 1):
         try:
             result = subprocess.run(
-                [wsl_exe, "echo", "ok"],
+                [wsl_exe, "--status"],
                 capture_output=True, text=True,
                 timeout=timeout,
-                creationflags=0x08000000 if os.name == 'nt' else 0  # CREATE_NO_WINDOW
+                creationflags=0x08000000 if os.name == "nt" else 0  # CREATE_NO_WINDOW
             )
-            if result.returncode == 0 and "ok" in result.stdout:
-                return True
-            # WSL returned non-zero — log stderr for diagnosis
-            if attempt == 1:
-                logger.debug(f"WSL check attempt {attempt}: rc={result.returncode} "
-                             f"stderr={result.stderr[:100]!r}")
+            # --status exits 0 and prints version info when WSL is working
+            if result.returncode == 0:
+                logger.debug(f"WSL --status OK (attempt {attempt})")
+                # ── Test 2: confirm a distro can actually run ──────────────
+                # wsl --status working doesn't guarantee a distro is runnable
+                try:
+                    r2 = subprocess.run(
+                        [wsl_exe, "bash", "-c", "echo ok"],
+                        capture_output=True, text=True,
+                        timeout=30,
+                        creationflags=0x08000000 if os.name == "nt" else 0
+                    )
+                    if r2.returncode == 0 and "ok" in r2.stdout:
+                        logger.debug("WSL bash echo test passed — WSL fully operational")
+                        return True
+                    else:
+                        # bash failed but WSL installed — try default shell
+                        r3 = subprocess.run(
+                            [wsl_exe, "-e", "sh", "-c", "echo ok"],
+                            capture_output=True, text=True,
+                            timeout=30,
+                            creationflags=0x08000000 if os.name == "nt" else 0
+                        )
+                        if r3.returncode == 0 and "ok" in r3.stdout:
+                            logger.debug("WSL sh echo test passed — WSL fully operational")
+                            return True
+                        logger.warning(
+                            f"WSL is installed and --status passes but shell test failed. "
+                            f"bash rc={r2.returncode} stderr={r2.stderr[:200]!r}"
+                        )
+                        # Still return True — WSL is present, conversion will be attempted
+                        return True
+                except Exception as e2:
+                    logger.warning(f"WSL shell test error: {e2} — treating WSL as available")
+                    return True   # --status passed; attempt conversion anyway
+
+            logger.debug(
+                f"WSL --status attempt {attempt}: rc={result.returncode} "
+                f"stderr={result.stderr[:150]!r}"
+            )
         except subprocess.TimeoutExpired:
-            logger.debug(f"WSL check attempt {attempt}: timed out after {timeout}s")
+            logger.debug(f"WSL --status attempt {attempt}: timed out after {timeout}s")
             if attempt < 3:
-                import time
-                time.sleep(2)
-        except FileNotFoundError:
-            logger.debug("wsl.exe not found — WSL not installed")
-            return False
+                time.sleep(3)
+            continue
         except Exception as e:
             logger.debug(f"WSL check attempt {attempt}: {e}")
 
+    logger.debug("WSL not available after 3 attempts")
     return False
 
 
@@ -176,10 +232,17 @@ def convert_binary_sar(binary_path: str, hostname: str) -> str | None:
     )
 
     logger.info(f"Converting binary SAR via WSL: {basename}")
-    wsl_exe = r"C:\Windows\System32\wsl.exe"
-    if not os.path.exists(wsl_exe):
-        import shutil
-        wsl_exe = shutil.which("wsl") or "wsl"
+    # Same candidate search as wsl_available() — handles Sysnative for 32-bit service
+    import shutil as _shutil
+    _candidates = [
+        r"C:\Windows\System32\wsl.exe",
+        r"C:\Windows\Sysnative\wsl.exe",
+    ]
+    _path_wsl = _shutil.which("wsl")
+    if _path_wsl:
+        _candidates.append(_path_wsl)
+    wsl_exe = next((c for c in _candidates if os.path.exists(c)),
+                   r"C:\Windows\System32\wsl.exe")
     try:
         result = subprocess.run(
             [wsl_exe, "bash", "-c", cmd],
