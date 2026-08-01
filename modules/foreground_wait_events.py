@@ -16,6 +16,7 @@ from db import get_db_connection
 from config_loader import load_config
 from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, sanitize_record
 from logger_utils import get_logger
+import io
 
 # --- Logging Setup ---
 LOG_DIR = os.path.join(os.path.dirname(__file__), "..", "logs")
@@ -63,7 +64,7 @@ def parse_foreground_wait_events(filepath):
         logger.warning("⚠️ Foreground Wait Events table not found.")
         return []
 
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
 
     for _, row in df.iterrows():
         rec = {

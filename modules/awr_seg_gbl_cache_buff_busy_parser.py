@@ -16,6 +16,7 @@ from db import get_db_connection
 from config_loader import load_config
 from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
 from logger_utils import get_logger
+import io
 
 # --- Logging Setup ---
 LOG_DIR = os.path.join(os.path.dirname(__file__), "..", "logs")
@@ -46,7 +47,7 @@ def parse_awr_seg_gbl_cache_buff_busy(filepath):
         logger.warning("⚠️ Segments by Global Cache Buffer Busy table not found.")
         return []
 
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
     logger.info(f"Found {len(df)} rows in Segments by Global Cache Buffer Busy section")
 
     if is_section_empty(df, "Global Cache Buffer Busy", "awr_seg_gbl_cache_buff_busy"):

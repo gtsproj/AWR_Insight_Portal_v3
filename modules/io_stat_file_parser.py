@@ -16,6 +16,7 @@ from db import get_db_connection
 from config_loader import load_config
 from utils import row_hash, extract_workload_repo_metadata, clean_number, is_section_empty, sanitize_record
 from logger_utils import get_logger
+import io
 
 # --- Logging Setup ---
 LOG_DIR = os.path.join(os.path.dirname(__file__), "..", "logs")
@@ -46,7 +47,7 @@ def parse_file_io_stats(filepath):
         logger.warning("⚠️ File IO Stats table not found.")
         return []
 
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
     logger.info(f"Found {len(df)} rows in File IO Stats section")
 
     if is_section_empty(df, "File IO Stats", "awr_file_io_stats"):

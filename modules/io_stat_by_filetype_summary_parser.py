@@ -16,6 +16,7 @@ from db import get_db_connection
 from config_loader import load_config
 from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, convert_to_thousand, convert_to_mb, is_section_empty, sanitize_record
 from logger_utils import get_logger
+import io
 
 # --- Logging Setup ---
 LOG_DIR = os.path.join(os.path.dirname(__file__), "..", "logs")
@@ -46,7 +47,7 @@ def parse_io_stat_by_filetype_summary(filepath):
         logger.warning("⚠️ IOStat by Filetype summary table not found.")
         return []
 
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
 
     if is_section_empty(df, "IOStat by Filetype summary", "awr_iostat_filetype"):
         sys.exit(0)  # Skip this section

@@ -18,6 +18,7 @@ from db import get_db_connection
 from config_loader import load_config
 from utils import row_hash, extract_workload_repo_metadata, clean_number, convert_to_ms, sanitize_record, get_col
 from logger_utils import get_logger
+import io
 
 
 
@@ -49,7 +50,7 @@ def parse_sga_target_advisory(filepath):
         logger.warning("⚠️ SGA Target Advisory table not found.")
         return []
 
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
 
     for _, row in df.iterrows():
         rec = {

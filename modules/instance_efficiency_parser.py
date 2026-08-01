@@ -17,6 +17,7 @@ from db import get_db_connection
 from config_loader import load_config
 from utils import row_hash, extract_workload_repo_metadata, clean_number
 from logger_utils import get_logger
+import io
 
 # ----------------- Logging -----------------
 log_dir = os.path.join(os.path.dirname(__file__), "..", "logs")
@@ -56,7 +57,7 @@ def parse_instance_efficiency(filepath):
         logger.warning("No table found under Instance Efficiency section.")
         return []
 
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(io.StringIO(str(table)))[0]
 
     records = []
     for _, row in df.iterrows():
