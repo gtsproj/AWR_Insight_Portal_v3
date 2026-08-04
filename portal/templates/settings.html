@@ -300,7 +300,7 @@
             <label class="s-label">AWR Source</label>
             <select class="s-select" id="awr_source_type" onchange="toggleAwrSource(this.value)">
               <option value="local" {% if cfg.awr_source_type=='local' %}selected{% endif %}>Local Folder (default)</option>
-              <option value="network" {% if cfg.awr_source_type=='network' %}selected{% endif %}>Network / UNC Path</option>
+              <option value="network" {% if cfg.awr_source_type=='network' %}selected{% endif %}>Network — UNC Path or SSH</option>
               <option value="direct_db" {% if cfg.awr_source_type=='direct_db' %}selected{% endif %}>Direct Oracle DB Connection</option>
             </select>
           </div>
@@ -315,12 +315,220 @@
           </div>
         </div>
         <div id="awr-network-cfg" style="display:none">
-          <div class="s-row">
-            <div class="s-field">
-              <label class="s-label">Network / UNC Path</label>
-              <input class="s-input" id="awr_network_path" value="{{ cfg.awr_network_path }}"
-                     placeholder="\\server\share\awr_reports">
+          <!-- ── AWR Remote Source Manager (two-tier) ────────────────────── -->
+          <p style="font-size:12px;color:var(--text2);margin:4px 0 12px">
+            Two-step setup: first add the <strong>remote server</strong> (its IP/host
+            and credentials — used for every database on it), then add one
+            <strong>database path</strong> per database (just a name and the
+            subfolder under that server holding its AWR reports). New
+            <code>*.html</code> reports are copied to
+            <code>awr_reports/&lt;DBNAME&gt;/</code> automatically and picked
+            up by the queue processor. Works for both Windows shares (UNC) and
+            Linux servers (SSH) — pick the connection type per server.
+          </p>
+
+          <!-- ── Tier 1: Remote Servers ──────────────────────────────────── -->
+          <div class="s-card-title" style="margin-top:16px">Remote Servers</div>
+          <div style="margin-bottom:14px">
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr style="background:var(--card2)">
+                  <th style="padding:6px 8px;text-align:left">Server</th>
+                  <th style="padding:6px 8px;text-align:left">Type</th>
+                  <th style="padding:6px 8px;text-align:left">Host</th>
+                  <th style="padding:6px 8px;text-align:left">User</th>
+                  <th style="padding:6px 8px;text-align:left">Enabled</th>
+                  <th style="padding:6px 8px;text-align:left">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="awr-srv-tbody">
+                <tr><td colspan="6" style="padding:12px;color:var(--text2);text-align:center">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="awr-srv-form" style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:20px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px" id="awr-srv-form-title">➕ Add Remote Server</div>
+            <input type="hidden" id="as_edit_id" value="">
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Display Name <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="as_display_name" placeholder="Prod AWR Share">
+              </div>
+              <div class="s-field">
+                <label class="s-label">Connection Type</label>
+                <select class="s-select" id="as_connection_type" onchange="toggleAwrServerType(this.value)">
+                  <option value="unc">UNC — Windows Share</option>
+                  <option value="ssh">SSH — Linux Server</option>
+                </select>
+              </div>
             </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Host <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="as_host" placeholder="dbserver01.company.com or IP">
+              </div>
+              <div class="s-field" id="as_ssh_port_field" style="display:none">
+                <label class="s-label">SSH Port</label>
+                <input class="s-input" id="as_ssh_port" placeholder="22" value="22" type="number">
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Root Path <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="as_root_path" placeholder="\\server\share\awr_reports  (or /opt/oracle/awr_reports for SSH)">
+              </div>
+            </div>
+            <div class="s-row" id="as_ssh_key_field" style="display:none">
+              <div class="s-field">
+                <label class="s-label">SSH Key File (recommended)</label>
+                <input class="s-input" id="as_ssh_key_path" placeholder="C:\keys\id_rsa  (leave blank if using password)">
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label" id="as_username_label">Username</label>
+                <input class="s-input" id="as_username" placeholder="leave blank to use the portal service account (UNC only)">
+              </div>
+              <div class="s-field">
+                <label class="s-label">Password</label>
+                <input class="s-input" id="as_password" type="password" placeholder="(enter to set or change)">
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+                  <input type="checkbox" id="as_auto_discover" checked onchange="toggleAwrAutoDiscover(this.checked)"> Auto-discover databases
+                </label>
+                <span style="font-size:.72rem;color:var(--text2);margin-top:2px">
+                  Log in once — every subfolder under Root Path is scanned automatically as a database.
+                  Turn off only if you need to list databases explicitly below.
+                </span>
+              </div>
+              <div class="s-field" id="as_interval_field">
+                <label class="s-label">Pull Interval</label>
+                <select class="s-select" id="as_pull_interval_hrs">
+                  <option value="0">Manual only</option>
+                  <option value="0.5">Every 30 minutes</option>
+                  <option value="1" selected>Every 1 hour</option>
+                  <option value="2">Every 2 hours</option>
+                  <option value="4">Every 4 hours</option>
+                  <option value="8">Every 8 hours</option>
+                  <option value="24">Daily</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+              <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+                <input type="checkbox" id="as_enabled" checked> Enabled
+              </label>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="s-btn s-btn-primary" onclick="saveAwrServer()">💾 Save Server</button>
+              <button class="s-btn" onclick="clearAwrServerForm()">✖ Cancel</button>
+              <span id="awr-srv-save-msg" style="font-size:12px;align-self:center"></span>
+            </div>
+          </div>
+
+          <!-- Pull Now panel — for auto-discover servers -->
+          <div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:20px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px">📥 Pull AWR Files Now (Auto-Discover Servers)</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select class="s-select" id="as_pull_server_id" style="width:220px;font-size:12px">
+                <option value="">All enabled auto-discover servers</option>
+              </select>
+              <button class="s-btn s-btn-primary" onclick="pullAwrServerNow()">⬇ Pull Now</button>
+              <span id="awr-srv-pull-msg" style="font-size:12px;align-self:center"></span>
+            </div>
+            <div id="awr-srv-pull-results" style="margin-top:10px;font-size:12px;display:none"></div>
+          </div>
+
+          <!-- ── Tier 2: Database Paths (optional override) ──────────────── -->
+          <div class="s-card-title">Database Paths <span style="font-size:11px;color:var(--text2);font-weight:400">(optional — only for overrides)</span></div>
+          <p style="font-size:12px;color:var(--text2);margin:4px 0 12px">
+            Leave this empty if a server has Auto-discover enabled — its databases are
+            found automatically. Add a row here only to rename a folder, give one
+            database its own pull interval, or when a server has Auto-discover turned off.
+          </p>
+          <div style="margin-bottom:14px">
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr style="background:var(--card2)">
+                  <th style="padding:6px 8px;text-align:left">DB Name</th>
+                  <th style="padding:6px 8px;text-align:left">Server</th>
+                  <th style="padding:6px 8px;text-align:left">Subpath</th>
+                  <th style="padding:6px 8px;text-align:left">Interval</th>
+                  <th style="padding:6px 8px;text-align:left">Enabled</th>
+                  <th style="padding:6px 8px;text-align:left">Last Pull</th>
+                  <th style="padding:6px 8px;text-align:left">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="awr-path-tbody">
+                <tr><td colspan="7" style="padding:12px;color:var(--text2);text-align:center">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="awr-path-form" style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px" id="awr-path-form-title">➕ Add Database Path</div>
+            <input type="hidden" id="ap_edit_id" value="">
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Server <span style="color:#ef4444">*</span></label>
+                <select class="s-select" id="ap_server_id"></select>
+              </div>
+              <div class="s-field">
+                <label class="s-label">DB Name <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="ap_db_name" placeholder="ORCL" style="text-transform:uppercase">
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Display Name</label>
+                <input class="s-input" id="ap_display_name" placeholder="Production ORCL">
+              </div>
+              <div class="s-field">
+                <label class="s-label">Remote Subpath <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="ap_remote_subpath" placeholder="ORCL  (subfolder under the server's root path)">
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Pull Interval</label>
+                <select class="s-select" id="ap_pull_interval_hrs">
+                  <option value="0">Manual only</option>
+                  <option value="0.5">Every 30 minutes</option>
+                  <option value="1" selected>Every 1 hour</option>
+                  <option value="2">Every 2 hours</option>
+                  <option value="4">Every 4 hours</option>
+                  <option value="8">Every 8 hours</option>
+                  <option value="24">Daily</option>
+                </select>
+              </div>
+              <div class="s-field" style="align-self:flex-end">
+                <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+                  <input type="checkbox" id="ap_enabled" checked> Enabled
+                </label>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="s-btn s-btn-primary" onclick="saveAwrPath()">💾 Save Path</button>
+              <button class="s-btn" onclick="clearAwrPathForm()">✖ Cancel</button>
+              <span id="awr-path-save-msg" style="font-size:12px;align-self:center"></span>
+            </div>
+          </div>
+
+          <!-- Pull Now panel -->
+          <div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px">📥 Pull AWR Files Now</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select class="s-select" id="ap_pull_path_id" style="width:220px;font-size:12px">
+                <option value="">All enabled databases</option>
+              </select>
+              <button class="s-btn s-btn-primary" onclick="pullAwrRemoteFiles()">⬇ Pull Now</button>
+              <span id="awr-path-pull-msg" style="font-size:12px;align-self:center"></span>
+            </div>
+            <div id="awr-path-pull-results" style="margin-top:10px;font-size:12px;display:none"></div>
           </div>
         </div>
         <div id="awr-db-cfg" style="display:none">
@@ -1424,7 +1632,411 @@ function toggleAwrSource(val) {
   document.getElementById('awr-network-cfg').style.display = val === 'network'   ? '' : 'none';
   document.getElementById('awr-db-cfg').style.display      = val === 'direct_db' ? '' : 'none';
   if (val === 'direct_db') loadOracleConnections();
+  if (val === 'network') { loadAwrServers(); loadAwrPaths(); }
 }
+
+function toggleAwrServerType(val) {
+  document.getElementById('as_ssh_port_field').style.display = val === 'ssh' ? '' : 'none';
+  document.getElementById('as_ssh_key_field').style.display  = val === 'ssh' ? '' : 'none';
+  document.getElementById('as_username_label').textContent   =
+    val === 'ssh' ? 'Username *' : 'Username';
+  document.getElementById('as_username').placeholder =
+    val === 'ssh' ? 'oracle' : 'leave blank to use the portal service account';
+}
+
+function toggleAwrAutoDiscover(checked) {
+  document.getElementById('as_interval_field').style.display = checked ? '' : 'none';
+}
+
+// ── AWR Remote Server Manager (Tier 1) ──────────────────────────────────────────
+let _awrServers = [];
+
+async function loadAwrServers() {
+  try {
+    const res  = await fetch('/api/awr-remote-servers');
+    const data = await res.json();
+    if (!data.ok) {
+      document.getElementById('awr-srv-tbody').innerHTML =
+        `<tr><td colspan="6" style="padding:12px;color:#ef4444;text-align:center">Error: ${data.error}</td></tr>`;
+      return;
+    }
+    _awrServers = data.servers || [];
+    renderAwrServerTable();
+    populateAwrPathServerDropdown();
+    populateAwrServerPullDropdown();
+  } catch(e) {
+    document.getElementById('awr-srv-tbody').innerHTML =
+      `<tr><td colspan="6" style="padding:12px;color:#ef4444;text-align:center">Failed to load: ${e.message}</td></tr>`;
+  }
+}
+
+function renderAwrServerTable() {
+  const tbody = document.getElementById('awr-srv-tbody');
+  if (!_awrServers.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="padding:12px;color:var(--text2);text-align:center">No servers configured yet. Add one below.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = _awrServers.map(s => {
+    const typeLabel = s.connection_type === 'ssh' ? '🐧 SSH' : '🪟 UNC';
+    const mode = s.auto_discover
+      ? `<span title="Every ${s.pull_interval_hrs == 0 ? 'manual' : s.pull_interval_hrs + 'h'}">🔍 Auto</span>`
+      : '📋 Manual paths';
+    const enabled = s.enabled
+      ? '<span style="color:#10b981;font-size:11px">✅ Yes</span>'
+      : '<span style="color:#6b7280;font-size:11px">⬜ No</span>';
+    return `<tr style="border-top:1px solid var(--border)">
+      <td style="padding:6px 8px;font-weight:600">${s.display_name}</td>
+      <td style="padding:6px 8px;font-size:11px">${typeLabel} · ${mode}</td>
+      <td style="padding:6px 8px;font-size:11px">${s.host}${s.connection_type === 'ssh' ? ':' + s.ssh_port : ''}</td>
+      <td style="padding:6px 8px">${s.username || '—'}</td>
+      <td style="padding:6px 8px">${enabled}</td>
+      <td style="padding:6px 8px">
+        <button class="s-btn" style="padding:2px 8px;font-size:11px" onclick="editAwrServer(${s.id})">✏️</button>
+        <button class="s-btn" style="padding:2px 8px;font-size:11px;margin-left:4px" onclick="testAwrServer(${s.id},this)">🔌</button>
+        <button class="s-btn" style="padding:2px 8px;font-size:11px;margin-left:4px;color:#ef4444" onclick="deleteAwrServer(${s.id},'${s.display_name}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function clearAwrServerForm() {
+  document.getElementById('as_edit_id').value = '';
+  ['as_display_name','as_host','as_root_path','as_ssh_key_path','as_username','as_password'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('as_connection_type').value = 'unc';
+  document.getElementById('as_ssh_port').value = '22';
+  document.getElementById('as_auto_discover').checked = true;
+  document.getElementById('as_pull_interval_hrs').value = '1';
+  document.getElementById('as_enabled').checked = true;
+  toggleAwrServerType('unc');
+  toggleAwrAutoDiscover(true);
+  document.getElementById('awr-srv-form-title').textContent = '➕ Add Remote Server';
+  document.getElementById('awr-srv-save-msg').textContent = '';
+}
+
+function editAwrServer(id) {
+  const s = _awrServers.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('as_edit_id').value          = id;
+  document.getElementById('as_display_name').value     = s.display_name;
+  document.getElementById('as_connection_type').value  = s.connection_type;
+  document.getElementById('as_host').value              = s.host;
+  document.getElementById('as_root_path').value         = s.root_path;
+  document.getElementById('as_ssh_port').value          = s.ssh_port || 22;
+  document.getElementById('as_ssh_key_path').value      = s.ssh_key_path || '';
+  document.getElementById('as_username').value          = s.username || '';
+  document.getElementById('as_password').value          = '';  // never pre-fill
+  document.getElementById('as_auto_discover').checked   = s.auto_discover !== false;
+  document.getElementById('as_pull_interval_hrs').value = String(s.pull_interval_hrs ?? 1);
+  document.getElementById('as_enabled').checked         = !!s.enabled;
+  toggleAwrServerType(s.connection_type);
+  toggleAwrAutoDiscover(s.auto_discover !== false);
+  document.getElementById('awr-srv-form-title').textContent = `✏️ Edit: ${s.display_name}`;
+  document.getElementById('as_display_name').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+async function saveAwrServer() {
+  const msg = document.getElementById('awr-srv-save-msg');
+  msg.textContent = 'Saving…';
+  const body = {
+    display_name:      document.getElementById('as_display_name').value.trim(),
+    connection_type:    document.getElementById('as_connection_type').value,
+    host:               document.getElementById('as_host').value.trim(),
+    root_path:          document.getElementById('as_root_path').value.trim(),
+    ssh_port:           parseInt(document.getElementById('as_ssh_port').value) || 22,
+    ssh_key_path:       document.getElementById('as_ssh_key_path').value.trim(),
+    username:           document.getElementById('as_username').value.trim(),
+    password:           document.getElementById('as_password').value,
+    auto_discover:      document.getElementById('as_auto_discover').checked,
+    pull_interval_hrs:  parseFloat(document.getElementById('as_pull_interval_hrs').value) || 1,
+    enabled:            document.getElementById('as_enabled').checked,
+  };
+  if (!body.display_name || !body.host || !body.root_path) {
+    msg.textContent = '❌ Display Name, Host and Root Path are required';
+    msg.style.color = '#ef4444'; return;
+  }
+  try {
+    const res  = await fetch('/api/awr-remote-servers', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.ok) {
+      msg.textContent = '✅ Saved'; msg.style.color = '#10b981';
+      clearAwrServerForm(); await loadAwrServers();
+    } else {
+      msg.textContent = '❌ ' + (data.error || 'Save failed');
+      msg.style.color = '#ef4444';
+    }
+  } catch(e) {
+    msg.textContent = '❌ ' + e.message; msg.style.color = '#ef4444';
+  }
+}
+
+async function deleteAwrServer(id, name) {
+  if (!confirm(`Remove server '${name}'? This also removes all its database paths.`)) return;
+  await fetch(`/api/awr-remote-servers/${id}`, {method:'DELETE'});
+  await loadAwrServers();
+  await loadAwrPaths();
+}
+
+async function testAwrServer(id, btn) {
+  const orig = btn.textContent; btn.textContent = '…'; btn.disabled = true;
+  try {
+    const res  = await fetch(`/api/awr-remote-servers/${id}/test`, {method:'POST'});
+    const data = await res.json();
+    alert(data.ok ? `✅ ${data.message}` : `❌ ${data.message}`);
+  } catch(e) { alert('❌ Test failed: ' + e.message); }
+  finally { btn.textContent = orig; btn.disabled = false; }
+}
+
+function populateAwrServerPullDropdown() {
+  const sel = document.getElementById('as_pull_server_id');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All enabled auto-discover servers</option>';
+  _awrServers.filter(s => s.enabled && s.auto_discover).forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.id;
+    opt.textContent = s.display_name;
+    sel.appendChild(opt);
+  });
+  if (cur) sel.value = cur;
+}
+
+async function pullAwrServerNow() {
+  const serverId = document.getElementById('as_pull_server_id').value || null;
+  const msg    = document.getElementById('awr-srv-pull-msg');
+  const res_el = document.getElementById('awr-srv-pull-results');
+  msg.textContent = '⏳ Scanning and pulling…'; msg.style.color = '#f59e0b';
+  res_el.style.display = 'none';
+  try {
+    const res  = await fetch('/api/awr-remote-servers/pull', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({server_id: serverId ? parseInt(serverId) : null})
+    });
+    const data = await res.json();
+    if (!data.ok && !data.results) {
+      msg.textContent = '❌ ' + (data.error || 'Pull failed');
+      msg.style.color = '#ef4444'; return;
+    }
+    if (data.results) {
+      // Multi-server
+      const totalFiles = data.total_files_pulled || 0;
+      const totalDbs   = data.total_databases_found || 0;
+      msg.textContent = `✅ ${totalFiles} file(s) pulled across ${totalDbs} database(s) from ${data.servers_processed} server(s)`;
+      msg.style.color = '#10b981';
+      res_el.style.display = '';
+      res_el.innerHTML = data.results.map(r => {
+        const dbLines = (r.results || []).map(dr =>
+          `&nbsp;&nbsp;${dr.ok ? '✅' : '❌'} ${dr.db_name}: ` +
+          (dr.ok ? `${dr.files_pulled} file(s)` : dr.error)
+        ).join('<br>');
+        return `<div style="margin-bottom:8px">
+          ${r.ok ? '✅' : '❌'} <strong>${r.server_name}</strong> — ${r.databases_found || 0} database(s) found<br>
+          ${dbLines}
+        </div>`;
+      }).join('');
+    } else {
+      // Single server
+      msg.textContent = `✅ ${data.databases_found || 0} database(s) scanned, ${data.files_pulled || 0} file(s) pulled from ${data.server_name}`;
+      msg.style.color = '#10b981';
+      if (data.results && data.results.length) {
+        res_el.style.display = '';
+        res_el.innerHTML = data.results.map(dr =>
+          `${dr.ok ? '✅' : '❌'} ${dr.db_name}: ` +
+          (dr.ok ? `${dr.files_pulled} file(s)` : dr.error)
+        ).join('<br>');
+      }
+    }
+  } catch(e) {
+    msg.textContent = '❌ ' + e.message; msg.style.color = '#ef4444';
+  }
+}
+
+// ── AWR Database Path Manager (Tier 2) ──────────────────────────────────────────
+let _awrPaths = [];
+
+function populateAwrPathServerDropdown() {
+  const sel = document.getElementById('ap_server_id');
+  const cur = sel.value;
+  sel.innerHTML = '';
+  _awrServers.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.id;
+    opt.textContent = `${s.display_name} (${s.connection_type === 'ssh' ? 'SSH' : 'UNC'})`;
+    sel.appendChild(opt);
+  });
+  if (cur) sel.value = cur;
+}
+
+async function loadAwrPaths() {
+  try {
+    const res  = await fetch('/api/awr-remote-db-paths');
+    const data = await res.json();
+    if (!data.ok) {
+      document.getElementById('awr-path-tbody').innerHTML =
+        `<tr><td colspan="7" style="padding:12px;color:#ef4444;text-align:center">Error: ${data.error}</td></tr>`;
+      return;
+    }
+    _awrPaths = data.paths || [];
+    renderAwrPathTable();
+    populateAwrPullDropdown();
+  } catch(e) {
+    document.getElementById('awr-path-tbody').innerHTML =
+      `<tr><td colspan="7" style="padding:12px;color:#ef4444;text-align:center">Failed to load: ${e.message}</td></tr>`;
+  }
+}
+
+function renderAwrPathTable() {
+  const tbody = document.getElementById('awr-path-tbody');
+  if (!_awrPaths.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="padding:12px;color:var(--text2);text-align:center">No database paths configured yet. Add a server above, then a path below.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = _awrPaths.map(p => {
+    const lastPull = p.last_pull_at ? new Date(p.last_pull_at).toLocaleString() : '—';
+    const interval = p.pull_interval_hrs == 0 ? 'Manual' : `Every ${p.pull_interval_hrs}h`;
+    const enabled  = p.enabled
+      ? '<span style="color:#10b981;font-size:11px">✅ Yes</span>'
+      : '<span style="color:#6b7280;font-size:11px">⬜ No</span>';
+    return `<tr style="border-top:1px solid var(--border)">
+      <td style="padding:6px 8px;font-weight:600">${p.db_name}</td>
+      <td style="padding:6px 8px;font-size:11px">${p.server_name}</td>
+      <td style="padding:6px 8px;font-size:11px">${p.remote_subpath}</td>
+      <td style="padding:6px 8px;font-size:11px">${interval}</td>
+      <td style="padding:6px 8px">${enabled}</td>
+      <td style="padding:6px 8px;font-size:11px">${lastPull}</td>
+      <td style="padding:6px 8px">
+        <button class="s-btn" style="padding:2px 8px;font-size:11px" onclick="editAwrPath(${p.id})">✏️</button>
+        <button class="s-btn" style="padding:2px 8px;font-size:11px;margin-left:4px;color:#ef4444" onclick="deleteAwrPath(${p.id},'${p.db_name}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function populateAwrPullDropdown() {
+  const sel = document.getElementById('ap_pull_path_id');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All enabled databases</option>';
+  _awrPaths.filter(p => p.enabled).forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `${p.db_name} (${p.server_name})`;
+    sel.appendChild(opt);
+  });
+  if (cur) sel.value = cur;
+}
+
+function clearAwrPathForm() {
+  document.getElementById('ap_edit_id').value = '';
+  ['ap_db_name','ap_display_name','ap_remote_subpath'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('ap_pull_interval_hrs').value = '1';
+  document.getElementById('ap_enabled').checked = true;
+  document.getElementById('awr-path-form-title').textContent = '➕ Add Database Path';
+  document.getElementById('awr-path-save-msg').textContent = '';
+}
+
+function editAwrPath(id) {
+  const p = _awrPaths.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('ap_edit_id').value           = id;
+  document.getElementById('ap_server_id').value         = p.server_id;
+  document.getElementById('ap_db_name').value            = p.db_name;
+  document.getElementById('ap_display_name').value       = p.display_name || '';
+  document.getElementById('ap_remote_subpath').value     = p.remote_subpath;
+  document.getElementById('ap_pull_interval_hrs').value  = String(p.pull_interval_hrs ?? 1);
+  document.getElementById('ap_enabled').checked          = !!p.enabled;
+  document.getElementById('awr-path-form-title').textContent = `✏️ Edit: ${p.db_name}`;
+  document.getElementById('ap_db_name').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+async function saveAwrPath() {
+  const msg = document.getElementById('awr-path-save-msg');
+  msg.textContent = 'Saving…';
+  const body = {
+    server_id:         parseInt(document.getElementById('ap_server_id').value) || null,
+    db_name:           document.getElementById('ap_db_name').value.trim(),
+    display_name:      document.getElementById('ap_display_name').value.trim(),
+    remote_subpath:    document.getElementById('ap_remote_subpath').value.trim(),
+    pull_interval_hrs: parseFloat(document.getElementById('ap_pull_interval_hrs').value) || 1,
+    enabled:           document.getElementById('ap_enabled').checked,
+  };
+  if (!body.server_id || !body.db_name || !body.remote_subpath) {
+    msg.textContent = '❌ Server, DB Name and Remote Subpath are required';
+    msg.style.color = '#ef4444'; return;
+  }
+  try {
+    const res  = await fetch('/api/awr-remote-db-paths', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.ok) {
+      msg.textContent = '✅ Saved'; msg.style.color = '#10b981';
+      clearAwrPathForm(); await loadAwrPaths();
+    } else {
+      msg.textContent = '❌ ' + (data.error || 'Save failed');
+      msg.style.color = '#ef4444';
+    }
+  } catch(e) {
+    msg.textContent = '❌ ' + e.message; msg.style.color = '#ef4444';
+  }
+}
+
+async function deleteAwrPath(id, dbName) {
+  if (!confirm(`Remove database path for ${dbName}?`)) return;
+  await fetch(`/api/awr-remote-db-paths/${id}`, {method:'DELETE'});
+  await loadAwrPaths();
+}
+
+async function pullAwrRemoteFiles() {
+  const pathId = document.getElementById('ap_pull_path_id').value || null;
+  const msg    = document.getElementById('awr-path-pull-msg');
+  const res_el = document.getElementById('awr-path-pull-results');
+  msg.textContent = '⏳ Pulling AWR files…'; msg.style.color = '#f59e0b';
+  res_el.style.display = 'none';
+  try {
+    const res  = await fetch('/api/awr-remote-db-paths/pull', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({path_id: pathId ? parseInt(pathId) : null})
+    });
+    const data = await res.json();
+    if (!data.ok && !data.results) {
+      msg.textContent = '❌ ' + (data.error || 'Pull failed');
+      msg.style.color = '#ef4444'; return;
+    }
+    if (data.results) {
+      // Multi-database
+      const total = data.total_files_pulled || 0;
+      msg.textContent = `✅ ${total} file(s) pulled from ${data.databases_processed} database(s)`;
+      msg.style.color = '#10b981';
+      res_el.style.display = '';
+      res_el.innerHTML = data.results.map(r =>
+        `<div style="margin-bottom:4px">
+          ${r.ok ? '✅' : '❌'} <strong>${r.db_name}</strong>: `
+        + (r.ok ? `${r.files_pulled} file(s) pulled` + (r.file_list.length ? ` (${r.file_list.join(', ')})` : '')
+                : r.error)
+        + '</div>'
+      ).join('');
+    } else {
+      // Single database
+      const ok = data.files_pulled || 0;
+      msg.textContent = `✅ ${ok} file(s) pulled from ${data.db_name}`;
+      msg.style.color = '#10b981';
+      if (data.file_list && data.file_list.length) {
+        res_el.style.display = '';
+        res_el.innerHTML = `Files: ${data.file_list.join(', ')}`;
+      }
+    }
+  } catch(e) {
+    msg.textContent = '❌ ' + e.message; msg.style.color = '#ef4444';
+  }
+}
+
 
 // ── Oracle Connection Manager ─────────────────────────────────────────────────
 let _oracleConns = [];
@@ -1890,10 +2502,14 @@ async function pullSarFiles() {
 }
 // Init on load
 toggleAwrSource(document.getElementById('awr_source_type')?.value);
-// If direct_db was already selected when page loaded, connections are loaded
-// by toggleAwrSource above. But also call explicitly to handle any race condition.
+// If direct_db/network was already selected when page loaded, connections are
+// loaded by toggleAwrSource above. But also call explicitly to handle any race condition.
 if (document.getElementById('awr_source_type')?.value === 'direct_db') {
   loadOracleConnections();
+}
+if (document.getElementById('awr_source_type')?.value === 'network') {
+  loadAwrServers();
+  loadAwrPaths();
 }
 toggleSarSource(document.getElementById('sar_source_type')?.value);
 if (document.getElementById('sar_source_type')?.value === 'ssh') {
@@ -1907,7 +2523,7 @@ async function saveSection(section) {
     ai: ['ai_mode','ai_local_url','ai_local_model','ai_cloud_provider',
          'ai_cloud_api_key','ai_cloud_model'],
     anomaly: ['anomaly_z_threshold','anomaly_baseline_days','anomaly_min_samples'],
-    awr_source: ['awr_source_type','awr_local_path','awr_network_path','awr_db_host',
+    awr_source: ['awr_source_type','awr_local_path','awr_db_host',
                  'awr_db_port','awr_db_service','awr_db_user','awr_db_password'],
     sar_source: ['sar_source_type','sar_tz_offset','sar_local_path'],
     license: ['license_key','license_customer','license_db_count',
