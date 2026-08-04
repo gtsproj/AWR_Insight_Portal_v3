@@ -40,8 +40,8 @@ echo     1. PostgreSQL connection details
 echo     2. Tablespace directory paths  ^(created automatically^)
 echo     3. DAR_PORTAL_USER password
 echo.
-echo   Then it will create all 80 tables, 88 indexes, 2 views,
-echo   11 materialized views, seed 1918 wait event rows and
+echo   Then it will create all 80 tables, 86 indexes, 2 views,
+echo   12 materialized views, seed 1918 wait event rows and
 echo   46 portal_config keys.
 echo.
 echo   Press Ctrl+C at any time to cancel.
@@ -370,12 +370,12 @@ echo        py bulk_import.py
 echo.
 echo   5. Open the portal:
 echo        http://localhost:8000
-echo        Login: admin / Admin@123
+echo        Login: admin  ^(enter any password — redirected to set-password page^)
 echo.
 echo   6. IMPORTANT — do these immediately after first login:
 echo        Settings ^> Access Control  ^(update URLs^)
 echo        Settings ^> License         ^(enter license key^)
-echo        Settings ^> Users           ^(change admin password^)
+echo        Settings ^> Users           ^(manage user accounts^)
 echo.
 echo ============================================================
 echo.
