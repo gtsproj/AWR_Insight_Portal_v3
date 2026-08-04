@@ -508,6 +508,156 @@ def _sar_ssh_scheduler():
         _time.sleep(300)  # check every 5 minutes
 
 
+def _awr_remote_scheduler():
+    """
+    Background thread — AWR remote source pull scheduler (two-tier:
+    servers + per-database paths).
+
+    For servers with auto_discover=TRUE (the primary/simple mode):
+    checks server.pull_interval_hrs, logs in ONCE, scans every
+    subfolder under root_path, and fetches new files from all of
+    them in that single session.
+
+    For servers with auto_discover=FALSE: falls back to the explicit
+    awr_remote_db_paths rows, checking each path's own
+    pull_interval_hrs (original per-database behaviour).
+
+    Fetches via UNC (net use) or SSH (paramiko SFTP) depending on
+    each server's connection_type. Mirrors _sar_ssh_scheduler above.
+    """
+    import time as _time
+    from datetime import datetime as _dt
+    from logger_utils import get_logger as _get_logger
+
+    _log = _get_logger('awr_remote_scheduler')
+    _log.info('AWR remote source scheduler started — checking every 5 minutes')
+
+    try:
+        import yaml as _yaml
+        with open(os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')) as f:
+            _settings = _yaml.safe_load(f)
+        awr_drop_rel = _settings.get('paths', {}).get('watch_directory', 'awr_reports')
+        awr_drop = (awr_drop_rel if os.path.isabs(awr_drop_rel)
+                    else os.path.join(_PROJECT_ROOT, awr_drop_rel))
+        os.makedirs(awr_drop, exist_ok=True)
+    except Exception as e:
+        _log.error(f'Could not read settings: {e}')
+        awr_drop = os.path.join(_PROJECT_ROOT, 'awr_reports')
+        os.makedirs(awr_drop, exist_ok=True)
+
+    def _due(interval_hrs, last_pull_str, now):
+        interval_mins = interval_hrs * 60
+        last_dt = None
+        if last_pull_str:
+            try:
+                last_dt = _dt.strptime(last_pull_str, '%Y-%m-%d %H:%M:%S')
+            except (ValueError, TypeError):
+                last_dt = None
+        elapsed_mins = (now - last_dt).total_seconds() / 60 if last_dt else float('inf')
+        return elapsed_mins >= interval_mins, interval_mins - elapsed_mins
+
+    while True:
+        try:
+            from modules.awr_remote_fetcher import (
+                get_all_servers, get_all_db_paths,
+                fetch_server_databases, fetch_new_files
+            )
+
+            now = _dt.now()
+
+            # ── Auto-discover servers: one login, scan all subfolders ──────
+            servers = get_all_servers()
+            auto_servers = [s for s in servers
+                             if s.get('enabled') and s.get('auto_discover') and
+                             float(s.get('pull_interval_hrs') or 0) > 0]
+
+            for s in auto_servers:
+                try:
+                    due, remaining_mins = _due(
+                        float(s.get('pull_interval_hrs') or 1),
+                        s.get('last_pull_at'), now
+                    )
+                    if not due:
+                        _log.debug(
+                            f"AWR remote scheduler: {s['display_name']} not due "
+                            f"(next in {remaining_mins:.0f}m)"
+                        )
+                        continue
+
+                    _log.info(
+                        f"AWR remote scheduler: auto-discovering databases on "
+                        f"{s['display_name']} via {s['connection_type']}"
+                    )
+
+                    result = fetch_server_databases(s['id'], awr_drop)
+                    if result.get('ok'):
+                        _log.info(
+                            f"AWR remote scheduler: {s['display_name']} → "
+                            f"{result.get('databases_found', 0)} database(s) scanned, "
+                            f"{result.get('files_pulled', 0)} file(s) pulled"
+                        )
+                    else:
+                        _log.error(
+                            f"AWR remote scheduler: {s['display_name']} failed — "
+                            f"{result.get('error')}"
+                        )
+
+                except Exception as e:
+                    _log.error(
+                        f"AWR remote scheduler: error for "
+                        f"{s.get('display_name','?')}: {e}"
+                    )
+
+            # ── Explicit per-database paths (auto_discover=FALSE servers) ──
+            paths = get_all_db_paths()
+            explicit = [p for p in paths
+                        if p.get('enabled') and p.get('server_enabled') and
+                        not p.get('auto_discover') and
+                        float(p.get('pull_interval_hrs') or 0) > 0]
+
+            for p in explicit:
+                try:
+                    due, remaining_mins = _due(
+                        float(p.get('pull_interval_hrs') or 1),
+                        p.get('last_pull_at'), now
+                    )
+                    if not due:
+                        _log.debug(
+                            f"AWR remote scheduler: {p['db_name']} not due "
+                            f"(next in {remaining_mins:.0f}m)"
+                        )
+                        continue
+
+                    _log.info(
+                        f"AWR remote scheduler: pulling for {p['db_name']} "
+                        f"via {p['connection_type']}"
+                    )
+
+                    result = fetch_new_files(p['id'], awr_drop)
+                    if result.get('ok'):
+                        _log.info(
+                            f"AWR remote scheduler: {p['db_name']} → "
+                            f"{result.get('files_pulled', 0)} file(s) pulled"
+                        )
+                    else:
+                        _log.error(
+                            f"AWR remote scheduler: {p['db_name']} failed — "
+                            f"{result.get('error')}"
+                        )
+
+                except Exception as e:
+                    _log.error(
+                        f"AWR remote scheduler: error for "
+                        f"{p.get('db_name','?')}: {e}"
+                    )
+
+        except Exception as e:
+            _log.error(f'AWR remote scheduler loop error: {e}')
+
+        _time.sleep(300)  # check every 5 minutes
+
+
+
 @app.on_event("startup")
 async def on_startup():
     """On portal start — auto-patch Grafana dashboard URLs from portal_config."""
@@ -531,6 +681,14 @@ async def on_startup():
     )
     _sar_thread.start()
     logger.info('SAR SSH scheduler thread started')
+    # Start AWR remote source pull scheduler as a daemon thread
+    _awr_remote_thread = threading.Thread(
+        target=_awr_remote_scheduler,
+        name='AWRRemoteScheduler',
+        daemon=True
+    )
+    _awr_remote_thread.start()
+    logger.info('AWR remote source scheduler thread started')
 
 # Static files and templates
 _static_dir    = os.path.join(_PORTAL_DIR, "static")
@@ -4116,6 +4274,182 @@ async def api_pull_sar_files(request: Request):
             return JSONResponse({
                 "ok": True,
                 "servers_processed": len(results),
+                "total_files_pulled": total,
+                "results": results
+            })
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+# ══════════════════════════════════════════════════════════════════════
+# AWR REMOTE SOURCES API
+# (two-tier: servers with shared credentials + per-database subpaths;
+#  supports both UNC/Windows and SSH/Linux; replaces single global
+#  awr_network_path setting; mirrors SAR SSH connections above)
+# ══════════════════════════════════════════════════════════════════════
+
+@app.get("/api/awr-remote-servers")
+async def api_get_awr_remote_servers(request: Request):
+    """List all configured AWR remote servers (no passwords)."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.awr_remote_fetcher import get_all_servers
+        return JSONResponse({"ok": True, "servers": get_all_servers()})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/awr-remote-servers")
+async def api_save_awr_remote_server(request: Request):
+    """Add or update an AWR remote server."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        body = await request.json()
+        session = _get_session(request)
+        from modules.awr_remote_fetcher import save_server
+        result = save_server(body, added_by=session.get("username", "admin"))
+        return JSONResponse(result, status_code=200 if result["ok"] else 400)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.delete("/api/awr-remote-servers/{server_id}")
+async def api_delete_awr_remote_server(server_id: int, request: Request):
+    """Delete an AWR remote server (cascades to its database paths)."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.awr_remote_fetcher import delete_server
+        return JSONResponse(delete_server(server_id))
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/awr-remote-servers/{server_id}/test")
+async def api_test_awr_remote_server(server_id: int, request: Request):
+    """Test connectivity to an AWR remote server (UNC or SSH)."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.awr_remote_fetcher import test_server
+        return JSONResponse(test_server(server_id))
+    except Exception as e:
+        return JSONResponse({"ok": False, "message": str(e)}, status_code=500)
+
+
+@app.post("/api/awr-remote-servers/pull")
+async def api_pull_awr_remote_servers(request: Request):
+    """
+    Auto-discover pull: log in once, scan every subfolder under a
+    server's root_path, fetch new files from all of them.
+    Body: { server_id: int|null }  (null = all enabled auto_discover servers)
+    """
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        body      = await request.json()
+        server_id = body.get("server_id")
+
+        import yaml as _yaml
+        settings_path = os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')
+        with open(settings_path) as f:
+            settings = _yaml.safe_load(f)
+        awr_drop = settings.get('paths', {}).get('watch_directory', 'awr_reports')
+        if not os.path.isabs(awr_drop):
+            awr_drop = os.path.join(_PROJECT_ROOT, awr_drop)
+        os.makedirs(awr_drop, exist_ok=True)
+
+        from modules.awr_remote_fetcher import fetch_server_databases, pull_all_auto_servers
+        if server_id:
+            result = fetch_server_databases(int(server_id), awr_drop)
+            return JSONResponse(result)
+        else:
+            results = pull_all_auto_servers(awr_drop)
+            total_dbs   = sum(r.get('databases_found', 0) for r in results)
+            total_files = sum(r.get('files_pulled', 0) for r in results)
+            return JSONResponse({
+                "ok": True,
+                "servers_processed": len(results),
+                "total_databases_found": total_dbs,
+                "total_files_pulled": total_files,
+                "results": results
+            })
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.get("/api/awr-remote-db-paths")
+async def api_get_awr_remote_db_paths(request: Request):
+    """List all AWR database paths, joined with their server info."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.awr_remote_fetcher import get_all_db_paths
+        return JSONResponse({"ok": True, "paths": get_all_db_paths()})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/awr-remote-db-paths")
+async def api_save_awr_remote_db_path(request: Request):
+    """Add or update an AWR database path under a remote server."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        body = await request.json()
+        session = _get_session(request)
+        from modules.awr_remote_fetcher import save_db_path
+        result = save_db_path(body, added_by=session.get("username", "admin"))
+        return JSONResponse(result, status_code=200 if result["ok"] else 400)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.delete("/api/awr-remote-db-paths/{path_id}")
+async def api_delete_awr_remote_db_path(path_id: int, request: Request):
+    """Delete an AWR database path."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.awr_remote_fetcher import delete_db_path
+        return JSONResponse(delete_db_path(path_id))
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/awr-remote-db-paths/pull")
+async def api_pull_awr_remote_files(request: Request):
+    """
+    Pull AWR HTML files from one or all database paths now.
+    Body: { path_id: int|null }
+    """
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        body    = await request.json()
+        path_id = body.get("path_id")
+
+        import yaml as _yaml
+        settings_path = os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')
+        with open(settings_path) as f:
+            settings = _yaml.safe_load(f)
+        awr_drop = settings.get('paths', {}).get('watch_directory', 'awr_reports')
+        if not os.path.isabs(awr_drop):
+            awr_drop = os.path.join(_PROJECT_ROOT, awr_drop)
+        os.makedirs(awr_drop, exist_ok=True)
+
+        from modules.awr_remote_fetcher import fetch_new_files, pull_all_paths
+        if path_id:
+            result = fetch_new_files(int(path_id), awr_drop)
+            return JSONResponse(result)
+        else:
+            results = pull_all_paths(awr_drop)
+            total   = sum(r.get('files_pulled', 0) for r in results)
+            return JSONResponse({
+                "ok": True,
+                "databases_processed": len(results),
                 "total_files_pulled": total,
                 "results": results
             })
