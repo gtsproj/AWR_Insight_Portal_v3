@@ -38,11 +38,11 @@ _LICENSE_SECRET = b"AWRInsightPortalV2_Avekshaa2026_SecretKey_DoNotShare"
 # All tiers include all three recommendation modes (Rules / Local AI / Cloud AI)
 # Differentiation is purely by DB instance count and SAR server count
 TIERS = {
-    "T15": {"name": "Trial 15 Days",   "db_limit": 2,  "sar_limit": 2,  "trial": True,  "days": 15},
-    "T30": {"name": "Trial 30 Days",   "db_limit": 2,  "sar_limit": 2,  "trial": True,  "days": 30},
-    "STD": {"name": "Standard",        "db_limit": 5,  "sar_limit": 5,  "trial": False, "days": 365},
-    "PRO": {"name": "Professional",    "db_limit": 15, "sar_limit": 15, "trial": False, "days": 365},
-    "ENT": {"name": "Enterprise",      "db_limit": -1, "sar_limit": -1, "trial": False, "days": 365},
+    "T15": {"name": "Trial 15 Days",   "db_limit": 2,  "sar_limit": 2,  "nmon_limit": 2,  "trial": True,  "days": 15},
+    "T30": {"name": "Trial 30 Days",   "db_limit": 2,  "sar_limit": 2,  "nmon_limit": 2,  "trial": True,  "days": 30},
+    "STD": {"name": "Standard",        "db_limit": 5,  "sar_limit": 5,  "nmon_limit": 5,  "trial": False, "days": 365},
+    "PRO": {"name": "Professional",    "db_limit": 15, "sar_limit": 15, "nmon_limit": 15, "trial": False, "days": 365},
+    "ENT": {"name": "Enterprise",      "db_limit": -1, "sar_limit": -1, "nmon_limit": -1, "trial": False, "days": 365},
 }
 
 # All tiers include all modes — customer owns Ollama and Cloud AI API keys
@@ -391,26 +391,29 @@ def generate_license_key(
     expiry_date: date,
     customer_id: str,
     customer_name: str,
+    nmon_count: int = 0,
 ) -> str:
     """
-    Generate a compact license key.
+    Generate a compact license key (v2 format — 17-byte payload).
 
-    Binary payload (16 bytes):
+    Binary payload (17 bytes):
       1 byte  — tier code
       6 bytes — MAC address octets
-      1 byte  — db_count  (max 255; 0 = unlimited for ENT)
-      1 byte  — sar_count (max 255; 0 = unlimited for ENT)
+      1 byte  — db_count   (max 255; 0 = unlimited for ENT)
+      1 byte  — sar_count  (max 255; 0 = unlimited for ENT)
+      1 byte  — nmon_count (max 255; 0 = unlimited for ENT)  ← NEW v2
       2 bytes — days since 2024-01-01 (expiry)
       3 bytes — customer_id hash (sha256 first 3 bytes)
       2 bytes — checksum (sum of above % 65536)
 
-    Output format: AVK-{TIER}-{22 base64url chars}
-    Total length: ~30 characters
+    v1 keys (16-byte payload, 22 base64 chars) are still validated;
+    they decode to nmon_count=0. v2 keys produce 23 base64 chars.
+
+    Output format: AVK-{TIER}-{23 base64url chars}
     """
     if tier not in _TIER_CODE:
         raise ValueError(f"Unknown tier: {tier}. Valid: {list(_TIER_CODE.keys())}")
 
-    # Normalise MAC → 6 bytes
     mac_clean = mac_address.replace("-", ":").upper()
     mac_bytes = bytes(int(x, 16) for x in mac_clean.split(":"))
     if len(mac_bytes) != 6:
@@ -420,27 +423,27 @@ def generate_license_key(
     if days < 0 or days > 65535:
         raise ValueError(f"Expiry date out of range: {expiry_date}")
 
-    db_val  = 0 if db_count == -1 else min(db_count, 255)
-    sar_val = 0 if sar_count == -1 else min(sar_count, 255)
+    db_val   = 0 if db_count   == -1 else min(db_count,   255)
+    sar_val  = 0 if sar_count  == -1 else min(sar_count,  255)
+    nmon_val = 0 if nmon_count == -1 else min(nmon_count, 255)
 
     cust_hash = hashlib.sha256(customer_id.encode()).digest()[:3]
 
-    # Pack 14-byte payload
+    # v2: 15-byte payload
     payload = struct.pack(
-        ">B6sBBH3s",
+        ">B6sBBBH3s",
         _TIER_CODE[tier],
         mac_bytes,
         db_val,
         sar_val,
+        nmon_val,
         days,
         cust_hash,
     )
 
-    # 2-byte checksum
     chk = sum(payload) & 0xFFFF
-    payload += struct.pack(">H", chk)  # 16 bytes total
+    payload += struct.pack(">H", chk)  # 17 bytes total
 
-    # XOR encrypt → base64url (no padding — 16 bytes = exactly 24 b64 chars, strip trailing ==)
     encrypted = _xor_crypt(payload, _LICENSE_SECRET)
     b64 = base64.urlsafe_b64encode(encrypted).decode().rstrip("=")
 
@@ -455,8 +458,9 @@ def validate_license_key(key: str) -> dict:
     empty = {
         "valid": False, "in_grace": False, "hard_expired": False,
         "tier": "", "tier_name": "", "is_trial": False,
-        "db_limit": 0, "sar_limit": 0, "expiry": None,
-        "days_left": -9999, "customer_id": "", "customer_name": "",
+        "db_limit": 0, "sar_limit": 0, "nmon_limit": 0,
+        "expiry": None, "days_left": -9999,
+        "customer_id": "", "customer_name": "",
         "issued": None, "mac_match": False, "error": "",
     }
 
@@ -489,17 +493,30 @@ def validate_license_key(key: str) -> dict:
     except Exception:
         return {**empty, "error": "Key structure invalid"}
 
+    # Detect format version by payload length
+    # v1: 16 bytes (14 payload + 2 checksum) → 22 stripped b64 chars
+    # v2: 17 bytes (15 payload + 2 checksum) → 23 stripped b64 chars
+    payload_body = payload[:-2]  # strip checksum
+    is_v2 = len(payload_body) == 15
+
     # Unpack
     try:
-        tier_code, mac_bytes, db_val, sar_val, days, cust_hash = \
-            struct.unpack(">B6sBBH3s", payload[:-2])
+        if is_v2:
+            tier_code, mac_bytes, db_val, sar_val, nmon_val, days, cust_hash = \
+                struct.unpack(">B6sBBBH3s", payload_body)
+        else:
+            # v1 key — no nmon_count
+            tier_code, mac_bytes, db_val, sar_val, days, cust_hash = \
+                struct.unpack(">B6sBBH3s", payload_body)
+            nmon_val = 0
     except Exception as e:
         return {**empty, "error": f"Key unpack failed: {e}"}
 
     # Resolve values
     key_mac    = ":".join(f"{b:02X}" for b in mac_bytes)
-    db_limit   = -1 if db_val == 0 else int(db_val)
-    sar_limit  = -1 if sar_val == 0 else int(sar_val)
+    db_limit   = -1 if db_val   == 0 else int(db_val)
+    sar_limit  = -1 if sar_val  == 0 else int(sar_val)
+    nmon_limit = -1 if nmon_val == 0 else int(nmon_val)
     expiry_dt  = _KEY_EPOCH + timedelta(days=int(days))
     today      = date.today()
     days_left  = (expiry_dt - today).days
@@ -526,9 +543,10 @@ def validate_license_key(key: str) -> dict:
         "is_trial":      tier_info.get("trial", False),
         "db_limit":      db_limit,
         "sar_limit":     sar_limit,
+        "nmon_limit":    nmon_limit,
         "expiry":        expiry_dt,
         "days_left":     days_left,
-        "customer_id":   "",   # not stored in compact format
+        "customer_id":   "",
         "customer_name": "",
         "issued":        "",
         "error": "" if valid else (
@@ -574,6 +592,8 @@ def count_licensed_units(conn) -> dict:
             db_rows = cur.fetchall()
             cur.execute("SELECT COUNT(DISTINCT hostname) FROM sar_cpu_stats")
             sar_count = cur.fetchone()[0] or 0
+            cur.execute("SELECT COUNT(DISTINCT hostname) FROM nmon_cpu_stats")
+            nmon_count = cur.fetchone()[0] or 0
     except Exception as e:
         logger.warning(f"count_licensed_units (awr_db_info): {e}")
         try:
@@ -582,12 +602,18 @@ def count_licensed_units(conn) -> dict:
                 db_simple = cur.fetchone()[0] or 0
                 cur.execute("SELECT COUNT(DISTINCT hostname) FROM sar_cpu_stats")
                 sar_count = cur.fetchone()[0] or 0
+                try:
+                    cur.execute("SELECT COUNT(DISTINCT hostname) FROM nmon_cpu_stats")
+                    nmon_count = cur.fetchone()[0] or 0
+                except Exception:
+                    nmon_count = 0
             return {"db_units": db_simple, "sar_units": sar_count,
+                    "nmon_units": nmon_count, "db_breakdown": [],
+                    "sar_breakdown": [], "pdb_free": 0, "pdb_charged": 0}
+        except Exception:
+            return {"db_units": 0, "sar_units": 0, "nmon_units": 0,
                     "db_breakdown": [], "sar_breakdown": [],
                     "pdb_free": 0, "pdb_charged": 0}
-        except Exception:
-            return {"db_units": 0, "sar_units": 0, "db_breakdown": [],
-                    "sar_breakdown": [], "pdb_free": 0, "pdb_charged": 0}
 
     db_units    = 0
     pdb_free    = 0
@@ -643,7 +669,7 @@ def count_licensed_units(conn) -> dict:
                            "pdb_count": len(pdbs), "pdb_free": free,
                            "pdb_charged": charged, "units": charged})
 
-    return {"db_units": db_units, "sar_units": sar_count,
+    return {"db_units": db_units, "sar_units": sar_count, "nmon_units": nmon_count,
             "db_breakdown": breakdown, "sar_breakdown": [],
             "pdb_free": pdb_free, "pdb_charged": pdb_charged}
 
@@ -678,7 +704,7 @@ def get_license_status(conn=None, config: dict = None) -> dict:
     key_info = validate_license_key(license_key)
 
     # Get usage
-    usage = {"db_units": 0, "sar_units": 0, "db_breakdown": [],
+    usage = {"db_units": 0, "sar_units": 0, "nmon_units": 0, "db_breakdown": [],
              "pdb_free": 0, "pdb_charged": 0}
     if conn:
         try:
@@ -690,88 +716,125 @@ def get_license_status(conn=None, config: dict = None) -> dict:
     hard_expired  = key_info.get("hard_expired", True)
     in_grace      = key_info.get("in_grace", False)
     mac_mismatch  = not key_info.get("mac_match", False) and bool(license_key)
-    db_limit      = key_info.get("db_limit", 0)
-    sar_limit     = key_info.get("sar_limit", 0)
+    db_limit      = key_info.get("db_limit",   0)
+    sar_limit     = key_info.get("sar_limit",  0)
+    nmon_limit    = key_info.get("nmon_limit", 0)
     db_used       = usage["db_units"]
     sar_used      = usage["sar_units"]
-    db_exceeded   = (db_limit != -1 and db_used > db_limit)
-    sar_exceeded  = (sar_limit != -1 and sar_used > sar_limit)
+    nmon_used     = usage.get("nmon_units", 0)
+    db_exceeded   = (db_limit   != -1 and db_used   > db_limit)
+    sar_exceeded  = (sar_limit  != -1 and sar_used  > sar_limit)
+    nmon_exceeded = (nmon_limit != -1 and nmon_used > nmon_limit)
     days_left     = key_info.get("days_left", -9999)
     expiry_warn   = (0 <= days_left <= 30)
 
+    # Determine license type: AWR+SAR / AWR+NMON / AWR+SAR+NMON
+    # sar_limit=0 means SAR not in this license (AWR+NMON or AWR-only)
+    # nmon_limit=0 means NMON not in this license (AWR+SAR or AWR-only)
+    sar_licensed  = (sar_limit  != 0)  # 0 = not licensed (not same as exceeded)
+    nmon_licensed = (nmon_limit != 0)
+
+    if sar_licensed and nmon_licensed:
+        license_type = "AWR+SAR+NMON"
+    elif sar_licensed:
+        license_type = "AWR+SAR"
+    elif nmon_licensed:
+        license_type = "AWR+NMON"
+    else:
+        license_type = "AWR"
+
     # Determine overall status
-    # Resource-specific flags default to the overall flag; only db_exceeded /
-    # sar_exceeded (below) narrow them to a single resource. Kept alongside
-    # the original allow_parse/allow_ai_new (unchanged) for callers that
-    # care which resource — AWR vs SAR — actually triggered the block.
     if not license_key:
         status = "no_key"
         status_msg = "No license key. The portal requires a license key to operate. Contact Avekshaa Technologies."
-        allow_parse      = False
-        allow_grafana    = False
-        allow_ai_new     = False
-        allow_ai_past    = False
-        allow_parse_awr  = False
-        allow_parse_sar  = False
-        allow_ai_new_awr = False
-        allow_ai_new_sar = False
+        allow_parse       = False
+        allow_grafana     = False
+        allow_ai_new      = False
+        allow_ai_past     = False
+        allow_parse_awr   = False
+        allow_parse_sar   = False
+        allow_parse_nmon  = False
+        allow_ai_new_awr  = False
+        allow_ai_new_sar  = False
+        allow_ai_new_nmon = False
     elif mac_mismatch:
         status = "mac_mismatch"
         status_msg = f"License not valid for this server (MAC mismatch). Contact Avekshaa to re-key for server MAC: {get_mac_address()}"
-        allow_parse   = False
-        allow_grafana = False
-        allow_ai_new  = False
-        allow_ai_past = False
-        allow_parse_awr  = False
-        allow_parse_sar  = False
-        allow_ai_new_awr = False
-        allow_ai_new_sar = False
+        allow_parse       = False
+        allow_grafana     = False
+        allow_ai_new      = False
+        allow_ai_past     = False
+        allow_parse_awr   = False
+        allow_parse_sar   = False
+        allow_parse_nmon  = False
+        allow_ai_new_awr  = False
+        allow_ai_new_sar  = False
+        allow_ai_new_nmon = False
     elif hard_expired:
         status = "expired"
         status_msg = f"License expired {abs(days_left)} days ago (grace period ended). Portal is in read-only mode. Contact Avekshaa to renew."
-        allow_parse   = False
-        allow_grafana = False
-        allow_ai_new  = False
-        allow_ai_past = True   # show past recommendations only
-        allow_parse_awr  = False
-        allow_parse_sar  = False
-        allow_ai_new_awr = False
-        allow_ai_new_sar = False
+        allow_parse       = False
+        allow_grafana     = False
+        allow_ai_new      = False
+        allow_ai_past     = True
+        allow_parse_awr   = False
+        allow_parse_sar   = False
+        allow_parse_nmon  = False
+        allow_ai_new_awr  = False
+        allow_ai_new_sar  = False
+        allow_ai_new_nmon = False
     elif in_grace:
         status = "grace"
         status_msg = f"License expired — {GRACE_DAYS + days_left} days of grace period remaining. Please renew urgently."
-        allow_parse   = True
-        allow_grafana = True
-        allow_ai_new  = True
-        allow_ai_past = True
-        allow_parse_awr  = True
-        allow_parse_sar  = True
-        allow_ai_new_awr = True
-        allow_ai_new_sar = True
+        allow_parse       = True
+        allow_grafana     = True
+        allow_ai_new      = True
+        allow_ai_past     = True
+        allow_parse_awr   = True
+        allow_parse_sar   = sar_licensed
+        allow_parse_nmon  = nmon_licensed
+        allow_ai_new_awr  = True
+        allow_ai_new_sar  = sar_licensed
+        allow_ai_new_nmon = nmon_licensed
     elif db_exceeded:
         status = "db_exceeded"
-        status_msg = f"DB limit exceeded: {db_used} instances in use, {db_limit} licensed. New AWR parsing blocked for unlicensed DBs. Upgrade your license."
-        allow_parse   = False   # enforced per-DB in queue processor
-        allow_grafana = True
-        allow_ai_new  = False
-        allow_ai_past = True
-        # Only the AWR (DB) resource is over limit — SAR is unaffected.
-        allow_parse_awr  = False
-        allow_parse_sar  = not sar_exceeded
-        allow_ai_new_awr = False
-        allow_ai_new_sar = not sar_exceeded
+        status_msg = f"DB limit exceeded: {db_used} instances in use, {db_limit} licensed. New AWR parsing blocked. Upgrade your license."
+        allow_parse       = False
+        allow_grafana     = True
+        allow_ai_new      = False
+        allow_ai_past     = True
+        allow_parse_awr   = False
+        allow_parse_sar   = sar_licensed and not sar_exceeded
+        allow_parse_nmon  = nmon_licensed and not nmon_exceeded
+        allow_ai_new_awr  = False
+        allow_ai_new_sar  = sar_licensed and not sar_exceeded
+        allow_ai_new_nmon = nmon_licensed and not nmon_exceeded
     elif sar_exceeded:
         status = "sar_exceeded"
         status_msg = f"SAR server limit exceeded: {sar_used} servers, {sar_limit} licensed. New SAR parsing blocked. Upgrade your license."
-        allow_parse   = False
-        allow_grafana = True
-        allow_ai_new  = False
-        allow_ai_past = True
-        # Only the SAR resource is over limit — AWR is unaffected.
-        allow_parse_awr  = True
-        allow_parse_sar  = False
-        allow_ai_new_awr = True
-        allow_ai_new_sar = False
+        allow_parse       = False
+        allow_grafana     = True
+        allow_ai_new      = False
+        allow_ai_past     = True
+        allow_parse_awr   = True
+        allow_parse_sar   = False
+        allow_parse_nmon  = nmon_licensed and not nmon_exceeded
+        allow_ai_new_awr  = True
+        allow_ai_new_sar  = False
+        allow_ai_new_nmon = nmon_licensed and not nmon_exceeded
+    elif nmon_exceeded:
+        status = "nmon_exceeded"
+        status_msg = f"NMON server limit exceeded: {nmon_used} servers, {nmon_limit} licensed. New NMON parsing blocked. Upgrade your license."
+        allow_parse       = False
+        allow_grafana     = True
+        allow_ai_new      = False
+        allow_ai_past     = True
+        allow_parse_awr   = True
+        allow_parse_sar   = sar_licensed
+        allow_parse_nmon  = False
+        allow_ai_new_awr  = True
+        allow_ai_new_sar  = sar_licensed
+        allow_ai_new_nmon = False
     else:
         status = "ok" if not expiry_warn else "expiry_warning"
         if key_info.get("is_trial"):
@@ -781,17 +844,21 @@ def get_license_status(conn=None, config: dict = None) -> dict:
         elif expiry_warn:
             status_msg = f"License expires in {days_left} days. Please renew with Avekshaa."
         else:
-            status_msg = (f"Licensed — {key_info.get('tier_name')} | "
+            sar_str  = f"{sar_used}/{sar_limit  if sar_limit  != -1 else '∞'}" if sar_licensed  else "0/0"
+            nmon_str = f"{nmon_used}/{nmon_limit if nmon_limit != -1 else '∞'}" if nmon_licensed else "0/0"
+            status_msg = (f"Licensed — {key_info.get('tier_name')} ({license_type}) | "
                          f"{db_used}/{db_limit if db_limit != -1 else '∞'} DBs | "
-                         f"{sar_used}/{sar_limit if sar_limit != -1 else '∞'} SAR servers")
-        allow_parse   = True
-        allow_grafana = True
-        allow_ai_new  = True
-        allow_ai_past = True
-        allow_parse_awr  = True
-        allow_parse_sar  = True
-        allow_ai_new_awr = True
-        allow_ai_new_sar = True
+                         f"{sar_str} SAR | {nmon_str} NMON")
+        allow_parse       = True
+        allow_grafana     = True
+        allow_ai_new      = True
+        allow_ai_past     = True
+        allow_parse_awr   = True
+        allow_parse_sar   = sar_licensed   # only if this license type includes SAR
+        allow_parse_nmon  = nmon_licensed  # only if this license type includes NMON
+        allow_ai_new_awr  = True
+        allow_ai_new_sar  = sar_licensed
+        allow_ai_new_nmon = nmon_licensed
 
     # Monthly AI usage
     monthly_ai = _get_monthly_ai_usage(conn)
@@ -816,10 +883,16 @@ def get_license_status(conn=None, config: dict = None) -> dict:
         # Limits
         "db_limit":         db_limit,
         "sar_limit":        sar_limit,
+        "nmon_limit":       nmon_limit,
         "db_used":          db_used,
         "sar_used":         sar_used,
+        "nmon_used":        nmon_used,
         "db_exceeded":      db_exceeded,
         "sar_exceeded":     sar_exceeded,
+        "nmon_exceeded":    nmon_exceeded,
+        "sar_licensed":     sar_licensed,
+        "nmon_licensed":    nmon_licensed,
+        "license_type":     license_type,
         "db_breakdown":     usage.get("db_breakdown", []),
         "pdb_free":         usage.get("pdb_free", 0),
         "pdb_charged":      usage.get("pdb_charged", 0),
@@ -828,12 +901,12 @@ def get_license_status(conn=None, config: dict = None) -> dict:
         "allow_grafana":    allow_grafana,
         "allow_ai_new":     allow_ai_new and not ai_cap_reached,
         "allow_ai_past":    allow_ai_past,
-        # Resource-specific enforcement flags (AWR vs SAR) — use these to
-        # avoid a SAR-only overage blocking AWR parsing/AI-recs, or vice versa.
         "allow_parse_awr":  allow_parse_awr,
         "allow_parse_sar":  allow_parse_sar,
-        "allow_ai_new_awr": allow_ai_new_awr and not ai_cap_reached,
-        "allow_ai_new_sar": allow_ai_new_sar and not ai_cap_reached,
+        "allow_parse_nmon": allow_parse_nmon,
+        "allow_ai_new_awr":  allow_ai_new_awr  and not ai_cap_reached,
+        "allow_ai_new_sar":  allow_ai_new_sar  and not ai_cap_reached,
+        "allow_ai_new_nmon": allow_ai_new_nmon and not ai_cap_reached,
         # AI usage
         "ai_monthly_used":  monthly_ai,
         "ai_monthly_limit": ai_monthly_limit,
@@ -844,7 +917,7 @@ def get_license_status(conn=None, config: dict = None) -> dict:
     }
 
     # Log significant events
-    _log_license_event(status, status_msg, db_used, sar_used)
+    _log_license_event(status, status_msg, db_used, sar_used, nmon_used)
 
     # Write tier back to portal_config so settings page can display it
     # Only update if key is valid and tier is known
@@ -879,9 +952,8 @@ def _get_monthly_ai_usage(conn) -> int:
         return 0
 
 
-def _log_license_event(status: str, message: str, db_used: int, sar_used: int):
+def _log_license_event(status: str, message: str, db_used: int, sar_used: int, nmon_used: int = 0):
     """Log license events to audit table (non-fatal)."""
-    # Only log warning/error states to avoid flooding
     if status in ("ok", "expiry_warning"):
         return
     try:
@@ -892,7 +964,7 @@ def _log_license_event(status: str, message: str, db_used: int, sar_used: int):
                 INSERT INTO awr_license_audit
                   (event_type, message, db_count, sar_count, event_time)
                 VALUES (%s, %s, %s, %s, NOW())
-            """, (status, message[:500], db_used, sar_used))
+            """, (status, message[:500], db_used, sar_used + nmon_used))
         conn.commit()
         conn.close()
     except Exception:
@@ -994,6 +1066,8 @@ if __name__ == "__main__":
     gen.add_argument("--mac",      required=True, help="Server MAC address")
     gen.add_argument("--db",       type=int, default=5)
     gen.add_argument("--sar",      type=int, default=5)
+    gen.add_argument("--nmon",     type=int, default=0,
+                     help="Licensed NMON server count (0=none, -1=unlimited)")
     gen.add_argument("--expiry",   required=True, help="YYYY-MM-DD")
     gen.add_argument("--customer", required=True, help="Customer ID (e.g. CUST001)")
     gen.add_argument("--name",     default="", help="Customer name")
@@ -1013,6 +1087,7 @@ if __name__ == "__main__":
             mac_address   = args.mac,
             db_count      = args.db,
             sar_count     = args.sar,
+            nmon_count    = args.nmon,
             expiry_date   = date.fromisoformat(args.expiry),
             customer_id   = args.customer,
             customer_name = args.name,
@@ -1020,13 +1095,14 @@ if __name__ == "__main__":
         print(f"\n{'='*60}")
         print(f"LICENSE KEY GENERATED")
         print(f"{'='*60}")
-        print(f"Key:      {key}")
-        print(f"Tier:     {TIERS[args.tier]['name']}")
-        print(f"MAC:      {args.mac}")
-        print(f"DB Limit: {args.db}")
-        print(f"SAR Limit:{args.sar}")
-        print(f"Expiry:   {args.expiry}")
-        print(f"Customer: {args.customer} ({args.name})")
+        print(f"Key:        {key}")
+        print(f"Tier:       {TIERS[args.tier]['name']}")
+        print(f"MAC:        {args.mac}")
+        print(f"DB Limit:   {args.db}")
+        print(f"SAR Limit:  {args.sar}")
+        print(f"NMON Limit: {args.nmon}")
+        print(f"Expiry:     {args.expiry}")
+        print(f"Customer:   {args.customer} ({args.name})")
         print(f"{'='*60}\n")
 
     elif args.cmd == "validate":
