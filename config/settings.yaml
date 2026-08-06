@@ -60,6 +60,10 @@ paths:
   sar_drop_directory:     "sar_drop"
   sar_queues_directory:   "sar_queues"
   sar_archive_directory:  "sar_archive"
+  nmon_drop_directory:    "nmon_drop"
+  nmon_queues_directory:  "nmon_queues"
+  nmon_archive_directory: "nmon_archive"
+  nmon_cache_directory:   "nmon_cache"   # SSH-pulled NMON files — NOT watched by NMONWatcher
 
 # ── Database type detection ───────────────────────────────────────────
 db_detection:
@@ -110,5 +114,26 @@ alerting:
 
 
 portal:
-  awr_archive_retain_days: 7   # set to 7 for minimal, 90 for longer history
-  sar_archive_retain_days: 7
+  awr_archive_retain_days:  7   # set to 7 for minimal, 90 for longer history
+  sar_archive_retain_days:  7
+  nmon_archive_retain_days: 7
+
+# ── Anomaly detection thresholds ─────────────────────────────────────────────
+# AWR thresholds (also serve as fallback for SAR/NMON if their sections are absent)
+anomaly:
+  z_threshold:   1.5
+  baseline_days: 90
+  min_samples:   3
+
+# SAR-specific thresholds (Linux) — override anomaly: values above if set
+anomaly_sar:
+  z_threshold:   1.5
+  baseline_days: 90
+  min_samples:   3
+
+# NMON-specific thresholds (IBM AIX) — AIX CPU/disk metrics can differ significantly
+# from Linux SAR counters; tune independently when a client has both environments
+anomaly_nmon:
+  z_threshold:   1.5   # raise to 2.0 if AIX base load is more variable
+  baseline_days: 90
+  min_samples:   3
