@@ -60,6 +60,7 @@ PORTAL_PREFIXES = (
     'portal_',
     'wait_event_',
     'remote_fetch_',
+    'nmon_',
 )
 
 # Exact names that don't match a prefix but are portal tables
@@ -650,8 +651,8 @@ END $$;
     print(f"    Views:               {len(views)}")
     print(f"    Materialized Views:  {len(mvs)}")
     print(f"    Indexes:             {idx_count}")
-    if not args.no_functions:
-        print(f"    Functions:           {len(funcs)}")
+    #if not args.no_functions:
+        #print(f"    Functions:           {len(funcs)}")
     print(f"\n    Output: {output}")
     print(f"\nTo recreate schema:")
     print(f"    psql -U postgres -d postgres -f {args.output}")

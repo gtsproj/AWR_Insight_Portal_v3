@@ -19,6 +19,7 @@ Restart all (full sequence):
 net stop AWRQueueProcessor
 net stop SARWatcher
 net stop AWRWatcher
+net stop NMONWatcher
 net stop AWRPortal
 net stop Grafana
 
@@ -26,6 +27,7 @@ py clear_cache.py
 
 net start Grafana
 net start AWRPortal
+net start NMONWatcher
 net start AWRWatcher
 net start SARWatcher
 net start AWRQueueProcessor

@@ -14,7 +14,8 @@
 ::   AWRPortal         - FastAPI portal (uvicorn on port 8000)
 ::   AWRWatcher        - AWR file watcher (monitors awr_reports\)
 ::   SARWatcher        - SAR file watcher (monitors sar_drop\)
-::   AWRQueueProcessor - Queue processor (AWR + SAR, 4 parallel workers)
+::   NMONWatcher       - NMON file watcher (monitors nmon_drop\)
+::   AWRQueueProcessor - Queue processor (AWR + SAR + NMON, parallel workers)
 ::
 :: USAGE:
 ::   install_services.bat          (install all services)
@@ -66,6 +67,7 @@ if /i "%1"=="remove" (
     call :remove_service AWRPortal
     call :remove_service AWRWatcher
     call :remove_service SARWatcher
+    call :remove_service NMONWatcher
     call :remove_service AWRQueueProcessor
     call :remove_service Grafana
     echo.
@@ -123,7 +125,7 @@ call :remove_service AWRWatcher
 echo    ✓ AWRWatcher installed
 
 :: ── 3. SAR Watcher ───────────────────────────────────────────────────
-echo [3/4] Installing SARWatcher service...
+echo [3/5] Installing SARWatcher service...
 call :remove_service SARWatcher
 
 "%NSSM%" install SARWatcher "%PYTHON%"
@@ -140,15 +142,33 @@ call :remove_service SARWatcher
 "%NSSM%" set SARWatcher ObjectName %SERVICE_ACCOUNT% %SERVICE_PASSWORD%
 echo    ✓ SARWatcher installed
 
-:: ── 4. Queue Processor ───────────────────────────────────────────────
-echo [4/4] Installing AWRQueueProcessor service...
+:: ── 4. NMON Watcher ──────────────────────────────────────────────────
+echo [4/5] Installing NMONWatcher service...
+call :remove_service NMONWatcher
+
+"%NSSM%" install NMONWatcher "%PYTHON%"
+"%NSSM%" set NMONWatcher AppParameters "nmon_watcher\nmon_watcher.py"
+"%NSSM%" set NMONWatcher AppDirectory  "%PROJECT_DIR%"
+"%NSSM%" set NMONWatcher DisplayName   "NMON File Watcher"
+"%NSSM%" set NMONWatcher Description   "Monitors nmon_drop folder and queues new NMON files (IBM AIX servers)"
+"%NSSM%" set NMONWatcher Start         SERVICE_AUTO_START
+"%NSSM%" set NMONWatcher AppStdout     "%LOG_DIR%\nmon_watcher_stdout.log"
+"%NSSM%" set NMONWatcher AppStderr     "%LOG_DIR%\nmon_watcher_stderr.log"
+"%NSSM%" set NMONWatcher AppRotateFiles 1
+"%NSSM%" set NMONWatcher AppRotateBytes 10485760
+"%NSSM%" set NMONWatcher AppRestartDelay 5000
+"%NSSM%" set NMONWatcher ObjectName %SERVICE_ACCOUNT% %SERVICE_PASSWORD%
+echo    ✓ NMONWatcher installed
+
+:: ── 5. Queue Processor ───────────────────────────────────────────────
+echo [5/5] Installing AWRQueueProcessor service...
 call :remove_service AWRQueueProcessor
 
 "%NSSM%" install AWRQueueProcessor "%PYTHON%"
-"%NSSM%" set AWRQueueProcessor AppParameters "queue_processor.py --daemon --workers 4 --sar-workers 2"
+"%NSSM%" set AWRQueueProcessor AppParameters "queue_processor.py --daemon --workers 4 --sar-workers 2 --nmon-workers 2"
 "%NSSM%" set AWRQueueProcessor AppDirectory  "%PROJECT_DIR%"
 "%NSSM%" set AWRQueueProcessor DisplayName   "AWR Queue Processor"
-"%NSSM%" set AWRQueueProcessor Description   "Processes AWR and SAR report queues in parallel"
+"%NSSM%" set AWRQueueProcessor Description   "Processes AWR, SAR and NMON report queues in parallel"
 "%NSSM%" set AWRQueueProcessor Start         SERVICE_AUTO_START
 "%NSSM%" set AWRQueueProcessor AppStdout     "%LOG_DIR%\queue_processor_stdout.log"
 "%NSSM%" set AWRQueueProcessor AppStderr     "%LOG_DIR%\queue_processor_stderr.log"
@@ -167,9 +187,9 @@ set GRAFANA_EXE=
 if exist "C:\Program Files\GrafanaLabs\grafana\bin\grafana-server.exe" (
     set GRAFANA_EXE=C:\Program Files\GrafanaLabs\grafana\bin\grafana-server.exe
     set GRAFANA_DIR=C:\Program Files\GrafanaLabs\grafana
-) else if exist "C:\grafana\bin\grafana-server.exe" (
-    set GRAFANA_EXE=C:\grafana\bin\grafana-server.exe
-    set GRAFANA_DIR=C:\grafana
+) else if exist "C:\AWR_Insight_Portal_v2\grafana-v12.0.2\bin\grafana-server.exe" (
+    set GRAFANA_EXE=C:\AWR_Insight_Portal_v2\grafana-v12.0.2\bin\grafana-server.exe
+    set GRAFANA_DIR=C:\AWR_Insight_Portal_v2\grafana-v12.0.2
 )
 
 if "%GRAFANA_EXE%"=="" (
@@ -196,6 +216,7 @@ echo Starting all services...
 net start AWRQueueProcessor
 net start AWRWatcher
 net start SARWatcher
+net start NMONWatcher
 net start AWRPortal
 if not "%GRAFANA_EXE%"=="" net start Grafana
 
@@ -206,7 +227,8 @@ echo.
 echo  AWRPortal         - http://localhost:8000
 echo  AWRWatcher        - monitoring awr_reports\
 echo  SARWatcher        - monitoring sar_drop\
-echo  AWRQueueProcessor - processing AWR + SAR queues (4 workers)
+echo  NMONWatcher       - monitoring nmon_drop\
+echo  AWRQueueProcessor - processing AWR + SAR + NMON queues (4+2+2 workers)
 if not "%GRAFANA_EXE%"=="" echo  Grafana           - http://localhost:3000
 echo.
 echo  IMPORTANT: Set service passwords in services.msc

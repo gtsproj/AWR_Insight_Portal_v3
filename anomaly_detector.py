@@ -36,6 +36,15 @@ Z_THRESHOLD   = float(_cfg.get("anomaly", {}).get("z_threshold",  1.5))
 BASELINE_DAYS = int(_cfg.get("anomaly",   {}).get("baseline_days", 90))
 MIN_SAMPLES   = int(_cfg.get("anomaly",   {}).get("min_samples",   3))
 
+# Per-source overrides — fall back to shared values if not set
+SAR_Z_THRESHOLD   = float(_cfg.get("anomaly_sar",  {}).get("z_threshold",  Z_THRESHOLD))
+SAR_BASELINE_DAYS = int(_cfg.get("anomaly_sar",    {}).get("baseline_days", BASELINE_DAYS))
+SAR_MIN_SAMPLES   = int(_cfg.get("anomaly_sar",    {}).get("min_samples",   MIN_SAMPLES))
+
+NMON_Z_THRESHOLD   = float(_cfg.get("anomaly_nmon", {}).get("z_threshold",  Z_THRESHOLD))
+NMON_BASELINE_DAYS = int(_cfg.get("anomaly_nmon",   {}).get("baseline_days", BASELINE_DAYS))
+NMON_MIN_SAMPLES   = int(_cfg.get("anomaly_nmon",   {}).get("min_samples",   MIN_SAMPLES))
+
 
 # ══════════════════════════════════════════════════════════════
 #  SCHEMA — two clean tables
@@ -89,13 +98,38 @@ CREATE INDEX IF NOT EXISTS idx_sar_anomaly_severity
 """
 
 
+_NMON_ANOMALY_SCHEMA = """
+CREATE TABLE IF NOT EXISTS nmon_anomalies (
+    id              SERIAL PRIMARY KEY,
+    hostname        TEXT        NOT NULL,
+    snap_time       TIMESTAMP   NOT NULL,
+    metric_source   TEXT        NOT NULL,
+    metric_name     TEXT        NOT NULL,
+    object_name     TEXT,
+    metric_value    NUMERIC,
+    baseline_mean   NUMERIC,
+    baseline_stddev NUMERIC,
+    z_score         NUMERIC,
+    severity        TEXT,
+    created_at      TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_nmon_anomaly
+        UNIQUE (hostname, snap_time, metric_source, metric_name, object_name)
+) TABLESPACE awrparser;
+CREATE INDEX IF NOT EXISTS idx_nmon_anomaly_host_time
+    ON nmon_anomalies (hostname, snap_time DESC, severity);
+CREATE INDEX IF NOT EXISTS idx_nmon_anomaly_severity
+    ON nmon_anomalies (severity, snap_time DESC);
+"""
+
+
 def ensure_schema(conn):
-    """Create both anomaly tables. Drops and recreates awr_anomalies on v2 migration."""
+    """Create all anomaly tables."""
     with conn.cursor() as cur:
         cur.execute(_AWR_ANOMALY_SCHEMA)
         cur.execute(_SAR_ANOMALY_SCHEMA)
+        cur.execute(_NMON_ANOMALY_SCHEMA)
     conn.commit()
-    logger.info("Anomaly schema v2 ensured (awr_anomalies + sar_anomalies)")
+    logger.info("Anomaly schema ensured (awr_anomalies + sar_anomalies + nmon_anomalies)")
 
 
 # ══════════════════════════════════════════════════════════════
@@ -107,11 +141,12 @@ def _zscore(value, mean, stddev):
     return (value - mean) / stddev
 
 
-def _severity(z):
+def _severity(z, z_threshold=None):
+    _t = z_threshold if z_threshold is not None else Z_THRESHOLD
     az = abs(z)
     if az >= 4.0: return "critical"
     if az >= 3.0: return "alert"
-    if az >= Z_THRESHOLD: return "warning"
+    if az >= _t:  return "warning"
     return None
 
 
@@ -302,12 +337,17 @@ def store_awr_anomalies(findings: list) -> int:
 #  SAR DETECTION — hostname + snap_time range
 # ══════════════════════════════════════════════════════════════
 def _detect_sar_table(conn, hostname, snap_time_from, snap_time_to,
-                      source, table, value_col, name_col) -> list:
+                      source, table, value_col, name_col,
+                      z_threshold=None, baseline_days=None, min_samples=None) -> list:
     """
-    Z-score detection for one SAR metric table.
-    Baseline = 30-day rolling average for this hostname before snap_time_from.
+    Z-score detection for one SAR (or NMON) metric table.
+    Baseline = rolling average for this hostname before snap_time_from.
     Current  = values between snap_time_from and snap_time_to.
+    Threshold params fall back to module-level SAR defaults if not supplied.
     """
+    _z    = z_threshold    if z_threshold    is not None else SAR_Z_THRESHOLD
+    _bd   = baseline_days  if baseline_days  is not None else SAR_BASELINE_DAYS
+    _ms   = min_samples    if min_samples    is not None else SAR_MIN_SAMPLES
     baseline_sql = f"""
         SELECT {name_col}           AS metric_name,
                AVG({value_col})    AS mean_val,
@@ -315,7 +355,7 @@ def _detect_sar_table(conn, hostname, snap_time_from, snap_time_to,
                COUNT(*)            AS sample_count
         FROM {table}
         WHERE hostname  = %(hostname)s
-          AND snap_time >= %(snap_time_from)s - INTERVAL '{BASELINE_DAYS} days'
+          AND snap_time >= %(snap_time_from)s - INTERVAL '{_bd} days'
           AND snap_time <  %(snap_time_from)s
         GROUP BY {name_col}
         HAVING COUNT(*) >= %(min_samples)s
@@ -344,7 +384,7 @@ def _detect_sar_table(conn, hostname, snap_time_from, snap_time_to,
         "hostname":       hostname,
         "snap_time_from": snap_time_from,
         "snap_time_to":   snap_time_to,
-        "min_samples":    MIN_SAMPLES,
+        "min_samples":    _ms,
     }
     try:
         with conn.cursor() as cur:
@@ -379,7 +419,7 @@ def _detect_sar_table(conn, hostname, snap_time_from, snap_time_to,
         mean   = float(base["mean_val"] or 0)
         stddev = float(base["std_val"]  or 0)
         z      = _zscore(val, mean, stddev)
-        sev    = _severity(z)
+        sev    = _severity(z, _z)
         if sev:
             findings.append({
                 "hostname":        hostname,
@@ -469,6 +509,97 @@ def store_sar_anomalies(findings: list) -> int:
 
 
 # ══════════════════════════════════════════════════════════════
+#  NMON ANOMALY DETECTION  (IBM AIX — nmon_* tables)
+# ══════════════════════════════════════════════════════════════
+
+def detect_nmon(hostname: str, snap_time_from, snap_time_to=None,
+                store: bool = False) -> list:
+    """
+    NMON anomaly detection — called by nmon_master_parser._run_nmon_anomaly_detection().
+    Uses NMON-specific thresholds (anomaly_nmon section in settings.yaml).
+    Stores findings to nmon_anomalies (separate from sar_anomalies).
+    Mirrors detect_sar() exactly, pointing at nmon_* tables.
+    """
+    if snap_time_to is None:
+        snap_time_to = snap_time_from + timedelta(hours=25)
+
+    conn = get_db_connection()
+
+    # One check per NMON section / key metric — mirrors sar_checks structure
+    nmon_checks = [
+        # (source_label,  table,                   value_col,    name_col)
+        ("nmon_cpu",     "nmon_cpu_stats",          "wait_pct",   "cpu"),
+        ("nmon_cpu_usr", "nmon_cpu_stats",          "busy_pct",   "cpu"),
+        ("nmon_mem",     "nmon_memory_stats",       "mem_used_pct", "hostname"),
+        ("nmon_swap",    "nmon_memory_stats",       "swap_used_pct", "hostname"),
+        ("nmon_disk",    "nmon_disk_stats",         "busy_pct",   "disk_name"),
+        ("nmon_diskrd",  "nmon_disk_stats",         "read_kbs",   "disk_name"),
+        ("nmon_net",     "nmon_network_stats",      "read_kbs",   "interface"),
+        ("nmon_runq",    "nmon_runqueue_stats",     "runq_sz",    "hostname"),
+        ("nmon_paging",  "nmon_paging_stats",       "pgsin_persec", "hostname"),
+    ]
+
+    all_findings = []
+    for source, table, value_col, name_col in nmon_checks:
+        # Check table exists before querying (NMON sections are optional)
+        try:
+            findings = _detect_sar_table(
+                conn, hostname, snap_time_from, snap_time_to,
+                source, table, value_col, name_col,
+                z_threshold    = NMON_Z_THRESHOLD,
+                baseline_days  = NMON_BASELINE_DAYS,
+                min_samples    = NMON_MIN_SAMPLES,
+            )
+            all_findings.extend(findings)
+            if findings:
+                logger.info(f"  [{source}] {len(findings)} NMON anomaly(ies) found")
+        except Exception as e:
+            logger.debug(f"NMON check [{source}/{table}] skipped: {e}")
+
+    conn.close()
+
+    if store and all_findings:
+        store_nmon_anomalies(all_findings)
+
+    logger.info(f"NMON anomaly detection complete for {hostname}: "
+                f"{len(all_findings)} finding(s)")
+    return all_findings
+
+
+def store_nmon_anomalies(findings: list) -> int:
+    """Persist NMON anomaly findings to nmon_anomalies table."""
+    if not findings:
+        return 0
+    sql = """
+        INSERT INTO nmon_anomalies
+            (hostname, snap_time, metric_source, metric_name, object_name,
+             metric_value, baseline_mean, baseline_stddev, z_score, severity)
+        VALUES
+            (%(hostname)s, %(snap_time)s, %(metric_source)s, %(metric_name)s,
+             %(object_name)s, %(metric_value)s, %(baseline_mean)s,
+             %(baseline_stddev)s, %(z_score)s, %(severity)s)
+        ON CONFLICT (hostname, snap_time, metric_source, metric_name, object_name)
+        DO UPDATE SET
+            z_score=EXCLUDED.z_score,
+            severity=EXCLUDED.severity,
+            metric_value=EXCLUDED.metric_value
+    """
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.executemany(sql, findings)
+        conn.commit()
+        logger.info(f"Stored {len(findings)} NMON anomalies")
+        return len(findings)
+    except Exception as e:
+        conn.rollback()
+        logger.error(f"NMON anomaly store failed: {e}", exc_info=True)
+        return 0
+    finally:
+        conn.close()
+
+
+# ══════════════════════════════════════════════════════════════
 #  PROGRAMMATIC ENTRY POINTS (called by master_parser / sar_master_parser)
 # ══════════════════════════════════════════════════════════════
 def detect(db_name: str, snap: int, store: bool = False,
@@ -505,6 +636,16 @@ def main():
     sar.add_argument("--store", action="store_true",  help="Save to DB")
     sar.add_argument("--json",  action="store_true",  help="JSON output")
 
+    # NMON mode
+    nmon = sub.add_parser("nmon", help="NMON anomaly detection (IBM AIX)")
+    nmon.add_argument("--host",  required=True,       help="Hostname")
+    nmon.add_argument("--from",  dest="from_time", required=True,
+                      help="Start time YYYY-MM-DD HH:MM")
+    nmon.add_argument("--to",    dest="to_time",  default=None,
+                      help="End time YYYY-MM-DD HH:MM (default: from+25h)")
+    nmon.add_argument("--store", action="store_true", help="Save to DB")
+    nmon.add_argument("--json",  action="store_true", help="JSON output")
+
     # Legacy flat args (backward compat — old callers without subcommand)
     p.add_argument("--db",    default=None)
     p.add_argument("--snap",  default=None, type=int)
@@ -538,6 +679,15 @@ def main():
         findings = detect_sar(args.host, t_from, t_to, store=False)
         if args.store:
             store_sar_anomalies(findings)
+        _print_findings(findings, args.json)
+
+    elif args.mode == "nmon":
+        t_from = datetime.strptime(args.from_time, "%Y-%m-%d %H:%M")
+        t_to   = (datetime.strptime(args.to_time, "%Y-%m-%d %H:%M")
+                  if args.to_time else None)
+        findings = detect_nmon(args.host, t_from, t_to, store=False)
+        if args.store:
+            store_nmon_anomalies(findings)
         _print_findings(findings, args.json)
 
 

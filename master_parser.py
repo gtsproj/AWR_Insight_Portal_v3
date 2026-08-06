@@ -43,6 +43,8 @@ _SAR_MODULES = {
     "remote_fetch",            # remote file fetch framework
     "recommendation_engine",   # called separately after parse
     "ai_engine",               # AI engine
+    # Stale/duplicate modules — broken main() signature, never used
+    "recommendation_engine_unused_duplicate",
 }
 
 # ── materialized views to refresh after each file ─────────────────────

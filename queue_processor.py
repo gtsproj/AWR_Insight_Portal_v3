@@ -48,8 +48,11 @@ AWR_QUEUES_DIR  = os.path.abspath(_paths.get("queues_directory",
                      os.path.join(_PROJECT_ROOT, "queues")))
 SAR_QUEUES_DIR  = os.path.abspath(_paths.get("sar_queues_directory",
                      os.path.join(_PROJECT_ROOT, "sar_queues")))
+NMON_QUEUES_DIR = os.path.abspath(_paths.get("nmon_queues_directory",
+                     os.path.join(_PROJECT_ROOT, "nmon_queues")))
 MASTER_PARSER   = os.path.join(_PROJECT_ROOT, "master_parser.py")
 SAR_PARSER      = os.path.join(_PROJECT_ROOT, "modules", "sar", "sar_master_parser.py")
+NMON_PARSER     = os.path.join(_PROJECT_ROOT, "modules", "nmon", "nmon_master_parser.py")
 MAX_RETRIES     = int(_queue_cfg.get("max_retries", 3))
 POLL_INTERVAL   = int(_queue_cfg.get("poll_interval_seconds", 15))
 ARCHIVE_ON_SUCCESS = _queue_cfg.get("archive_on_success", True)
@@ -193,13 +196,8 @@ def _process_next(queues_dir: str, name: str, parser_script: str,
     finally:
         _release_lock(queues_dir, name)
 
-    # ── DB Master Table check (AWR: by db_name / SAR: by host_name) ──
-    # Simple lookup — if not registered in awr_db_master, skip.
-    # awr_db_master.host_name doubles as the SAR host registry: a SAR
-    # queue's "name" is the hostname, so this blocks any unregistered
-    # host from ever being parsed, instead of only catching it after
-    # the fact via the aggregate sar_exceeded count.
-    if queue_type in ("AWR", "SAR"):
+    # ── DB Master Table check (AWR: by db_name / SAR+NMON: by host_name) ──
+    if queue_type in ("AWR", "SAR", "NMON"):
         _match_col = "db_name" if queue_type == "AWR" else "host_name"
         try:
             sys.path.insert(0, os.path.join(_PROJECT_ROOT, "common"))
@@ -250,7 +248,9 @@ def _process_next(queues_dir: str, name: str, parser_script: str,
         lic    = get_license_status(conn_l)
         conn_l.close()
 
-        _parse_flag_key = "allow_parse_awr" if queue_type == "AWR" else "allow_parse_sar"
+        _parse_flag_key = "allow_parse_awr" if queue_type == "AWR" else (
+            "allow_parse_nmon" if queue_type == "NMON" else "allow_parse_sar"
+        )
         if not lic.get(_parse_flag_key, lic.get("allow_parse", True)):
             logger.warning(
                 f"[{queue_type}/{name}] ⛔ License block: {lic.get('status_msg','')}."
@@ -272,7 +272,7 @@ def _process_next(queues_dir: str, name: str, parser_script: str,
         logger.debug(f"License check skipped (non-fatal): {e}")
 
     # ── Build parser command ──────────────────────────────────────────
-    if queue_type == "SAR":
+    if queue_type in ("SAR", "NMON"):
         hostname = item.get("hostname", name)
         cmd = [sys.executable, parser_script,
                "--file", filepath,
@@ -376,7 +376,7 @@ def print_status_report() -> None:
     print(header)
     print("-" * 70)
 
-    for qtype, qdir in [("AWR", AWR_QUEUES_DIR), ("SAR", SAR_QUEUES_DIR)]:
+    for qtype, qdir in [("AWR", AWR_QUEUES_DIR), ("SAR", SAR_QUEUES_DIR), ("NMON", NMON_QUEUES_DIR)]:
         names = _discover_queues(qdir)
         for name in names:
             items  = _load_queue(qdir, name)
@@ -392,36 +392,42 @@ def print_status_report() -> None:
 
 # ── main ───────────────────────────────────────────────────────────────
 def main():
-    p = argparse.ArgumentParser(description="AWR + SAR Queue Processor")
-    p.add_argument("--daemon",      action="store_true",
+    p = argparse.ArgumentParser(description="AWR + SAR + NMON Queue Processor")
+    p.add_argument("--daemon",       action="store_true",
                    help="Run continuously, polling for new items")
-    p.add_argument("--type",        choices=["awr", "sar", "all"], default="all",
+    p.add_argument("--type",         choices=["awr", "sar", "nmon", "all"], default="all",
                    help="Which queue type to process (default: all)")
-    p.add_argument("--db",          default=None,
+    p.add_argument("--db",           default=None,
                    help="Process only this DB/hostname")
-    p.add_argument("--workers",     type=int, default=4,
+    p.add_argument("--workers",      type=int, default=4,
                    help="Max parallel AWR workers (default: 4)")
-    p.add_argument("--sar-workers", type=int, default=2,
+    p.add_argument("--sar-workers",  type=int, default=2,
                    help="Max parallel SAR workers (default: 2)")
-    p.add_argument("--status",      action="store_true",
+    p.add_argument("--nmon-workers", type=int, default=2,
+                   help="Max parallel NMON workers (default: 2)")
+    p.add_argument("--status",       action="store_true",
                    help="Print queue status and exit")
     args = p.parse_args()
 
-    os.makedirs(AWR_QUEUES_DIR, exist_ok=True)
-    os.makedirs(SAR_QUEUES_DIR, exist_ok=True)
+    os.makedirs(AWR_QUEUES_DIR,  exist_ok=True)
+    os.makedirs(SAR_QUEUES_DIR,  exist_ok=True)
+    os.makedirs(NMON_QUEUES_DIR, exist_ok=True)
 
     if args.status:
         print_status_report()
         return
 
-    awr_workers = args.workers
-    sar_workers = args.sar_workers
+    awr_workers  = args.workers
+    sar_workers  = args.sar_workers
+    nmon_workers = args.nmon_workers
 
     logger.info("=" * 60)
     logger.info(f"Queue Processor starting | type={args.type} | "
-                f"AWR workers={awr_workers} | SAR workers={sar_workers} | daemon={args.daemon}")
-    logger.info(f"AWR queues : {AWR_QUEUES_DIR}")
-    logger.info(f"SAR queues : {SAR_QUEUES_DIR}")
+                f"AWR workers={awr_workers} | SAR workers={sar_workers} | "
+                f"NMON workers={nmon_workers} | daemon={args.daemon}")
+    logger.info(f"AWR queues  : {AWR_QUEUES_DIR}")
+    logger.info(f"SAR queues  : {SAR_QUEUES_DIR}")
+    logger.info(f"NMON queues : {NMON_QUEUES_DIR}")
 
     def build_awr_work():
         if args.db:
@@ -435,16 +441,21 @@ def main():
         return [(SAR_QUEUES_DIR, name, SAR_PARSER, "SAR")
                 for name in _discover_queues(SAR_QUEUES_DIR)]
 
+    def build_nmon_work():
+        if args.db:
+            return [(NMON_QUEUES_DIR, args.db.upper(), NMON_PARSER, "NMON")]
+        return [(NMON_QUEUES_DIR, name, NMON_PARSER, "NMON")
+                for name in _discover_queues(NMON_QUEUES_DIR)]
+
     def run_once():
         work = []
-        if args.type in ("awr", "all"):
-            work.extend(build_awr_work())
-        if args.type in ("sar", "all"):
-            work.extend(build_sar_work())
+        if args.type in ("awr", "all"):  work.extend(build_awr_work())
+        if args.type in ("sar", "all"):  work.extend(build_sar_work())
+        if args.type in ("nmon", "all"): work.extend(build_nmon_work())
         if not work:
             logger.debug("No queues found — nothing to process")
             return
-        total_workers = min(awr_workers + sar_workers, len(work))
+        total_workers = min(awr_workers + sar_workers + nmon_workers, len(work))
         logger.info(f"Processing {len(work)} queue(s) with up to {total_workers} parallel worker(s)")
         with ThreadPoolExecutor(max_workers=total_workers) as pool:
             futures = {
@@ -462,26 +473,30 @@ def main():
 
     def run_daemon():
         """
-        Daemon mode with SEPARATE AWR and SAR thread pools.
-        AWR DBs get up to --workers parallel threads.
+        Daemon mode with SEPARATE AWR, SAR, and NMON thread pools.
+        AWR DBs  get up to --workers parallel threads.
         SAR hosts get up to --sar-workers parallel threads.
-        Both pools poll independently every POLL_INTERVAL seconds.
+        NMON hosts get up to --nmon-workers parallel threads.
+        All three pools poll independently every POLL_INTERVAL seconds.
         Workers exit when queue is empty and are restarted on next poll.
         """
-        awr_active: dict = {}   # label -> Future
-        sar_active: dict = {}   # label -> Future
+        awr_active:  dict = {}
+        sar_active:  dict = {}
+        nmon_active: dict = {}
 
-        logger.info(f"Daemon starting — AWR pool={awr_workers} | SAR pool={sar_workers}")
+        logger.info(f"Daemon starting — AWR pool={awr_workers} | "
+                    f"SAR pool={sar_workers} | NMON pool={nmon_workers}")
 
-        with ThreadPoolExecutor(max_workers=awr_workers) as awr_pool, \
-             ThreadPoolExecutor(max_workers=sar_workers) as sar_pool:
+        with ThreadPoolExecutor(max_workers=awr_workers)  as awr_pool,  \
+             ThreadPoolExecutor(max_workers=sar_workers)  as sar_pool,  \
+             ThreadPoolExecutor(max_workers=nmon_workers) as nmon_pool:
 
             while not _shutdown.is_set():
                 try:
                     # ── AWR workers ───────────────────────────────────
                     if args.type in ("awr", "all"):
                         for qdir, name, parser, qtype in build_awr_work():
-                            label = f"AWR/{name}"
+                            label  = f"AWR/{name}"
                             future = awr_active.get(label)
                             if future is None or future.done():
                                 if future is not None and future.done():
@@ -502,7 +517,7 @@ def main():
                     # ── SAR workers ───────────────────────────────────
                     if args.type in ("sar", "all"):
                         for qdir, name, parser, qtype in build_sar_work():
-                            label = f"SAR/{name}"
+                            label  = f"SAR/{name}"
                             future = sar_active.get(label)
                             if future is None or future.done():
                                 if future is not None and future.done():
@@ -520,10 +535,35 @@ def main():
                                     f"SAR active: {sum(1 for f in sar_active.values() if not f.done())}"
                                 )
 
-                    awr_running = [l for l, f in awr_active.items() if not f.done()]
-                    sar_running = [l for l, f in sar_active.items() if not f.done()]
-                    if awr_running or sar_running:
-                        logger.debug(f"Active — AWR: {awr_running} | SAR: {sar_running}")
+                    # ── NMON workers ──────────────────────────────────
+                    if args.type in ("nmon", "all"):
+                        for qdir, name, parser, qtype in build_nmon_work():
+                            label  = f"NMON/{name}"
+                            future = nmon_active.get(label)
+                            if future is None or future.done():
+                                if future is not None and future.done():
+                                    try:
+                                        n = future.result()
+                                        if n:
+                                            logger.info(f"[{label}] Processed {n} item(s)")
+                                    except Exception as e:
+                                        logger.error(f"[{label}] Error: {e}", exc_info=True)
+                                    del nmon_active[label]
+                                nmon_active[label] = nmon_pool.submit(
+                                    _drain, qdir, name, parser, qtype)
+                                logger.info(
+                                    f"[{label}] Worker started — "
+                                    f"NMON active: {sum(1 for f in nmon_active.values() if not f.done())}"
+                                )
+
+                    awr_running  = [l for l, f in awr_active.items()  if not f.done()]
+                    sar_running  = [l for l, f in sar_active.items()  if not f.done()]
+                    nmon_running = [l for l, f in nmon_active.items() if not f.done()]
+                    if awr_running or sar_running or nmon_running:
+                        logger.debug(
+                            f"Active — AWR: {awr_running} | "
+                            f"SAR: {sar_running} | NMON: {nmon_running}"
+                        )
 
                 except Exception as e:
                     logger.error(f"Daemon poll error: {e}", exc_info=True)
@@ -534,7 +574,7 @@ def main():
 
     if args.daemon:
         logger.info(f"Daemon mode — AWR workers={awr_workers} SAR workers={sar_workers} "
-                    f"poll={POLL_INTERVAL}s")
+                    f"NMON workers={nmon_workers} poll={POLL_INTERVAL}s")
         run_daemon()
     else:
         run_once()
