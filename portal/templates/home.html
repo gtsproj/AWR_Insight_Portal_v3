@@ -62,7 +62,7 @@
     </div>
   </div>
 
-  {# SAR group #}
+  {# SAR group — same class/colour pattern as AWR #}
   <div class="sc" id="sar-stat-pending">
     <div class="sv" id="sar-val-pending">{{ stats.sar_pending }}</div>
     <div class="sl">SAR Pending</div>
@@ -82,6 +82,28 @@
   <div class="sc info" id="sar-stat-hosts">
     <div class="sv" id="sar-val-hosts">{{ stats.sar_host_count }}</div>
     <div class="sl">Servers</div>
+  </div>
+
+  {# NMON group — hidden until NMON license active; same colour standards as AWR/SAR #}
+  <div class="sc" id="nmon-stat-pending" style="display:none">
+    <div class="sv" id="nmon-val-pending">{{ stats.nmon_pending }}</div>
+    <div class="sl">NMON Pending</div>
+  </div>
+  <div class="sc" id="nmon-stat-processing" style="display:none">
+    <div class="sv" id="nmon-val-processing">{{ stats.nmon_processing }}</div>
+    <div class="sl">NMON Processing</div>
+  </div>
+  <div class="sc ok" id="nmon-stat-done" style="display:none">
+    <div class="sv" id="nmon-val-done">{{ stats.nmon_done }}</div>
+    <div class="sl">NMON Done</div>
+  </div>
+  <div class="sc err" id="nmon-stat-failed" style="display:none">
+    <div class="sv" id="nmon-val-failed">{{ stats.nmon_failed }}</div>
+    <div class="sl">NMON Failed</div>
+  </div>
+  <div class="sc info" id="nmon-stat-hosts" style="display:none">
+    <div class="sv" id="nmon-val-hosts">{{ stats.nmon_host_count }}</div>
+    <div class="sl">AIX Servers</div>
   </div>
 
 </div>
@@ -152,59 +174,62 @@
       <small>Controlfiles · Redo · ASM · Partitioning · Health check</small></a>
 	</div>
 
-  {# SAR & Correlation #}
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+  {# SAR & Correlation — hidden only when SAR license = 0 (NMON-only customer) #}
+  <div id="sar-card" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
     <div style="font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;
                 margin-bottom:10px;font-weight:600;border-bottom:1px solid var(--border);padding-bottom:6px">
       🖥️ SAR &amp; Correlation
     </div>
-    {% if ai_mode in ('local_ai','cloud_ai') %}	
+    {% if ai_mode in ('local_ai','cloud_ai') %}
     <a href="{{ grafana_url }}/d/sar-overview-ai" target="_blank" class="dl">
       🖥️ SAR System Overview
-      <small>CPU · Memory · Disk · Network</small></a>
-    {% else %}
-    <a href="{{ grafana_url }}/d/sar-overview" target="_blank" class="dl">
-      🖥️ SAR System Overview
-      <small>CPU · Memory · Disk · Network</small></a>
-    {% endif %}
-    {% if ai_mode in ('local_ai','cloud_ai') %}	
+      <small>CPU · Memory · Disk · Network · Load</small></a>
     <a href="{{ grafana_url }}/d/sar-anomalies-ai" target="_blank" class="dl">
       🚨 SAR Anomaly Detection
       <small>OS resource anomalies</small></a>
-    {% else %}
-    <a href="{{ grafana_url }}/d/sar-anomalies" target="_blank" class="dl">
-      🚨 SAR Anomaly Detection
-      <small>OS resource anomalies</small></a>
-    {% endif %}
-    {% if ai_mode in ('local_ai','cloud_ai') %}	
     <a href="{{ grafana_url }}/d/sar-awr-correlation-ai" target="_blank" class="dl">
       🔗 AWR+SAR Correlation
       <small>Oracle vs OS resource comparison</small></a>
     {% else %}
+    <a href="{{ grafana_url }}/d/sar-overview" target="_blank" class="dl">
+      🖥️ SAR System Overview
+      <small>CPU · Memory · Disk · Network · Load</small></a>
+    <a href="{{ grafana_url }}/d/sar-anomalies" target="_blank" class="dl">
+      🚨 SAR Anomaly Detection
+      <small>OS resource anomalies</small></a>
     <a href="{{ grafana_url }}/d/sar-awr-correlation" target="_blank" class="dl">
       🔗 AWR+SAR Correlation
       <small>Oracle vs OS resource comparison</small></a>
-    {% endif %}	  
+    {% endif %}
   </div>
 
-  {# Portal Tools #}
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+  {# NMON & Correlation — hidden until NMON license active #}
+  <div id="nmon-card" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
     <div style="font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;
                 margin-bottom:10px;font-weight:600;border-bottom:1px solid var(--border);padding-bottom:6px">
-      🛠️ Portal Tools
+      📟 NMON &amp; Correlation
     </div>
-    <a href="/ai-recommendations" class="dl">
-      🤖 AI Recommendations
-      <small>Generate · Review · Accept · Reject</small></a>
-    <a href="/comparison" class="dl">
-      🔄 AWR Before/After Comparison
-      <small>Compare pre/post tuning snapshots</small></a>
-    <a href="/exec-plan" class="dl">
-      📋 Execution Plan Compare
-      <small>Side-by-side plan diff</small></a>
-    <a href="/awr-trends" class="dl">
-      📊 AWR Trends Navigator
-      <small>All AWR section dashboards — snap-aware</small></a>
+    {% if ai_mode in ('local_ai','cloud_ai') %}
+    <a href="{{ grafana_url }}/d/nmon-overview-ai" target="_blank" class="dl">
+      📟 NMON System Overview
+      <small>CPU · Memory · Disk · Network (IBM AIX)</small></a>
+    <a href="{{ grafana_url }}/d/nmon-anomalies-ai" target="_blank" class="dl">
+      🚨 NMON Anomaly Detection
+      <small>AIX resource anomalies</small></a>
+    <a href="{{ grafana_url }}/d/nmon-awr-correlation-ai" target="_blank" class="dl">
+      🔗 AWR+NMON Correlation
+      <small>Oracle vs AIX OS resource comparison</small></a>
+    {% else %}
+    <a href="{{ grafana_url }}/d/nmon-overview" target="_blank" class="dl">
+      📟 NMON System Overview
+      <small>CPU · Memory · Disk · Network (IBM AIX)</small></a>
+    <a href="{{ grafana_url }}/d/nmon-anomalies" target="_blank" class="dl">
+      🚨 NMON Anomaly Detection
+      <small>AIX resource anomalies</small></a>
+    <a href="{{ grafana_url }}/d/nmon-awr-correlation" target="_blank" class="dl">
+      🔗 AWR+NMON Correlation
+      <small>Oracle vs AIX OS resource comparison</small></a>
+    {% endif %}
   </div>
 
 </div>
@@ -271,6 +296,17 @@
       setSc('sar-stat-done',       'ok');
       setSc('sar-stat-failed',     (d.sar_failed??0) > 0 ? 'err' : '');
       setSc('sar-stat-hosts',      'info');
+
+      setText('nmon-val-pending',    d.nmon_pending    ?? 0);
+      setText('nmon-val-processing', d.nmon_processing ?? 0);
+      setText('nmon-val-done',       d.nmon_done       ?? 0);
+      setText('nmon-val-failed',     d.nmon_failed     ?? 0);
+      setText('nmon-val-hosts',      d.nmon_host_count ?? 0);
+      setSc('nmon-stat-pending',    (d.nmon_pending??0) > 10 ? 'err' : (d.nmon_pending??0) === 0 ? 'ok' : '');
+      setSc('nmon-stat-processing', (d.nmon_processing??0) > 0 ? 'warn' : '');
+      setSc('nmon-stat-done',       'ok');
+      setSc('nmon-stat-failed',     (d.nmon_failed??0) > 0 ? 'err' : '');
+      setSc('nmon-stat-hosts',      'info');
 
       // Active parsing banner
       const banner = document.getElementById('active-banner');

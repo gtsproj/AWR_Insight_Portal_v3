@@ -129,6 +129,7 @@
     <div class="nav-sep"></div>
     <a href="#" onclick="showSection('awr_source',this)">🗄 AWR Source</a>
     <a href="#" onclick="showSection('sar_source',this)">🖥 SAR Source</a>
+    <a href="#" onclick="showSection('nmon_source',this)">📟 NMON Source</a>
     <div class="nav-sep"></div>
     <a href="#" onclick="showSection('license',this)">🔑 License</a>
     <a href="#" onclick="showSection('access',this)">🔒 Access Control</a>
@@ -260,9 +261,12 @@
     <!-- ── Anomaly Thresholds ─────────────────────────────────────── -->
     <div id="s-anomaly" class="s-panel">
       <div class="s-title">📊 Anomaly Detection Thresholds</div>
-      <div class="s-desc">These thresholds control sensitivity of AWR and SAR anomaly detection. Changes apply to future detections — re-run backfill to update historical data.</div>
+      <div class="s-desc">Configure sensitivity for AWR, SAR and NMON anomaly detection independently.
+        SAR and NMON may need different thresholds — AIX (NMON) CPU behaviour differs from Linux (SAR).
+        Changes apply to future detections only — re-run backfill to update historical data.</div>
+
       <div class="s-card">
-        <div class="s-card-title">Detection Parameters</div>
+        <div class="s-card-title">AWR Detection Parameters</div>
         <div class="s-row three">
           <div class="s-field">
             <label class="s-label">Z-Score Threshold</label>
@@ -284,7 +288,61 @@
           </div>
         </div>
       </div>
-      <button class="s-btn s-btn-primary" onclick="saveSection('anomaly')" {% if not is_admin %}disabled{% endif %}>
+
+      <div class="s-card" style="margin-top:12px">
+        <div class="s-card-title">SAR Detection Parameters (Linux)</div>
+        <div class="s-row three">
+          <div class="s-field">
+            <label class="s-label">Z-Score Threshold</label>
+            <input class="s-input" id="anomaly_sar_z_threshold" type="number" step="0.1" min="0.5" max="5"
+                   value="{{ cfg.anomaly_sar_z_threshold or cfg.anomaly_z_threshold or 1.5 }}">
+            <span style="font-size:.72rem;color:var(--text2);margin-top:2px">Default: 1.5 (inherits AWR if blank)</span>
+          </div>
+          <div class="s-field">
+            <label class="s-label">Baseline Days</label>
+            <input class="s-input" id="anomaly_sar_baseline_days" type="number" min="7" max="365"
+                   value="{{ cfg.anomaly_sar_baseline_days or cfg.anomaly_baseline_days or 90 }}">
+            <span style="font-size:.72rem;color:var(--text2);margin-top:2px">Default: 90</span>
+          </div>
+          <div class="s-field">
+            <label class="s-label">Min Samples</label>
+            <input class="s-input" id="anomaly_sar_min_samples" type="number" min="1" max="30"
+                   value="{{ cfg.anomaly_sar_min_samples or cfg.anomaly_min_samples or 3 }}">
+            <span style="font-size:.72rem;color:var(--text2);margin-top:2px">Default: 3</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="s-card" style="margin-top:12px" id="nmon-anomaly-card">
+        <div class="s-card-title">NMON Detection Parameters (IBM AIX)</div>
+        <p style="font-size:12px;color:var(--text2);margin:4px 0 10px">
+          AIX CPU and disk counters can behave differently from Linux — tune these
+          separately if the client runs both SAR and NMON.
+        </p>
+        <div class="s-row three">
+          <div class="s-field">
+            <label class="s-label">Z-Score Threshold</label>
+            <input class="s-input" id="anomaly_nmon_z_threshold" type="number" step="0.1" min="0.5" max="5"
+                   value="{{ cfg.anomaly_nmon_z_threshold or cfg.anomaly_z_threshold or 1.5 }}">
+            <span style="font-size:.72rem;color:var(--text2);margin-top:2px">Default: 1.5</span>
+          </div>
+          <div class="s-field">
+            <label class="s-label">Baseline Days</label>
+            <input class="s-input" id="anomaly_nmon_baseline_days" type="number" min="7" max="365"
+                   value="{{ cfg.anomaly_nmon_baseline_days or cfg.anomaly_baseline_days or 90 }}">
+            <span style="font-size:.72rem;color:var(--text2);margin-top:2px">Default: 90</span>
+          </div>
+          <div class="s-field">
+            <label class="s-label">Min Samples</label>
+            <input class="s-input" id="anomaly_nmon_min_samples" type="number" min="1" max="30"
+                   value="{{ cfg.anomaly_nmon_min_samples or cfg.anomaly_min_samples or 3 }}">
+            <span style="font-size:.72rem;color:var(--text2);margin-top:2px">Default: 3</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="s-btn s-btn-primary" onclick="saveSection('anomaly')" {% if not is_admin %}disabled{% endif %}
+              style="margin-top:14px">
         💾 Save Thresholds
       </button>
     </div>
@@ -848,6 +906,138 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
       </button>
     </div>
 
+
+    <!-- ── NMON Source ────────────────────────────────────────────── -->
+    <div id="s-nmon_source" class="s-panel">
+      <div class="s-title">📟 NMON Source Configuration</div>
+      <div class="s-desc">Configure where NMON files from IBM AIX servers are collected.
+        Drop folder per hostname: <code>nmon_drop\HOSTNAME\file.nmon</code>.
+        NMON files are always plain-text CSV — no binary conversion needed.</div>
+      <div class="s-card">
+        <div class="s-card-title">Source Type</div>
+        <div class="s-row">
+          <div class="s-field">
+            <label class="s-label">NMON Source</label>
+            <select class="s-select" id="nmon_source_type" onchange="toggleNmonSource(this.value)">
+              <option value="local" {% if cfg.nmon_source_type=='local' or not cfg.nmon_source_type %}selected{% endif %}>Local Folder (default)</option>
+              <option value="ssh" {% if cfg.nmon_source_type=='ssh' %}selected{% endif %}>SSH Pull from AIX Server</option>
+            </select>
+          </div>
+        </div>
+        <div id="nmon-local-cfg">
+          <div class="s-row">
+            <div class="s-field">
+              <label class="s-label">Local Drop Folder</label>
+              <input class="s-input" id="nmon_local_path" value="{{ cfg.nmon_local_path }}" placeholder="nmon_drop">
+            </div>
+          </div>
+        </div>
+        <div id="nmon-ssh-cfg" style="display:none">
+          <div class="s-card-title" style="margin-top:16px">IBM AIX Server SSH Connections</div>
+          <p style="font-size:12px;color:var(--text2);margin:4px 0 12px">
+            Configure one SSH connection per AIX server. The portal connects via SSH/SFTP
+            and downloads NMON files to <code>nmon_drop\&lt;hostname&gt;\</code> automatically.
+            Authentication via SSH key file (recommended) or password.
+          </p>
+          <div style="margin-bottom:14px">
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr style="background:var(--card2)">
+                  <th style="padding:6px 8px;text-align:left">Hostname</th>
+                  <th style="padding:6px 8px;text-align:left">SSH Host:Port</th>
+                  <th style="padding:6px 8px;text-align:left">User</th>
+                  <th style="padding:6px 8px;text-align:left">Remote Path</th>
+                  <th style="padding:6px 8px;text-align:left">Interval</th>
+                  <th style="padding:6px 8px;text-align:left">Enabled</th>
+                  <th style="padding:6px 8px;text-align:left">Last Pull</th>
+                  <th style="padding:6px 8px;text-align:left">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="nmon-ssh-tbody">
+                <tr><td colspan="8" style="padding:12px;color:var(--text2);text-align:center">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="nmon-ssh-form" style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px" id="nmon-ssh-form-title">➕ Add SSH Connection</div>
+            <input type="hidden" id="nc_edit_id" value="">
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Hostname <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="nc_hostname" placeholder="aixserver01 (used as nmon_drop sub-folder name)">
+              </div>
+              <div class="s-field">
+                <label class="s-label">SSH Host <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="nc_ssh_host" placeholder="aixserver01.company.com or IP">
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">SSH Port</label>
+                <input class="s-input" id="nc_ssh_port" placeholder="22" value="22" type="number">
+              </div>
+              <div class="s-field">
+                <label class="s-label">SSH Username <span style="color:#ef4444">*</span></label>
+                <input class="s-input" id="nc_ssh_user" placeholder="oracle">
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Remote NMON Path</label>
+                <input class="s-input" id="nc_remote_nmon_path" placeholder="/home/oracle/nmon" value="/home/oracle/nmon">
+              </div>
+              <div class="s-field">
+                <label class="s-label">SSH Key File (recommended)</label>
+                <input class="s-input" id="nc_ssh_key_path" placeholder="C:\keys\id_rsa  (leave blank if using password)">
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-field">
+                <label class="s-label">Password (if no key file)</label>
+                <input class="s-input" id="nc_password" type="password" placeholder="(enter to set or change)">
+              </div>
+              <div class="s-field">
+                <label class="s-label">Pull Interval</label>
+                <select class="s-select" id="nc_pull_interval_hrs">
+                  <option value="0">Manual only</option>
+                  <option value="0.5">Every 30 minutes</option>
+                  <option value="1" selected>Every 1 hour</option>
+                  <option value="2">Every 2 hours</option>
+                  <option value="4">Every 4 hours</option>
+                  <option value="8">Every 8 hours</option>
+                  <option value="24">Daily</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:4px">
+              <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+                <input type="checkbox" id="nc_enabled" checked> Enabled
+              </label>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="s-btn s-btn-primary" onclick="saveNmonSshConn()">💾 Save</button>
+              <button class="s-btn" onclick="clearNmonSshForm()">✖ Cancel</button>
+              <span id="nmon-ssh-save-msg" style="font-size:12px;align-self:center"></span>
+            </div>
+          </div>
+          <div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px">📥 Pull NMON Files Now</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select class="s-select" id="nc_pull_conn_id" style="width:220px;font-size:12px">
+                <option value="">All enabled servers</option>
+              </select>
+              <button class="s-btn s-btn-primary" onclick="pullNmonFiles()">⬇ Pull Now</button>
+              <span id="nmon-pull-msg" style="font-size:12px;align-self:center"></span>
+            </div>
+            <div id="nmon-pull-results" style="margin-top:10px;font-size:12px;display:none"></div>
+          </div>
+        </div>
+      </div>
+      <button class="s-btn s-btn-primary" onclick="saveSection('nmon_source')" {% if not is_admin %}disabled{% endif %}>
+        💾 Save NMON Source
+      </button>
+    </div>
+
     <!-- ── License ───────────────────────────────────────────────── -->
     <div id="s-license" class="s-panel">
       <div class="s-title">🔑 License Information</div>
@@ -871,6 +1061,10 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
           <div class="lic-stat">
             <div class="lic-val" id="lic-sar-used">—</div>
             <div class="lic-label">SAR servers used / <span id="lic-sar-limit">—</span> licensed</div>
+          </div>
+          <div class="lic-stat">
+            <div class="lic-val" id="lic-nmon-used">—</div>
+            <div class="lic-label">NMON servers used / <span id="lic-nmon-limit">—</span> licensed</div>
           </div>
           <div class="lic-stat">
             <div class="lic-val" style="font-size:1rem" id="lic-expiry">{{ cfg.license_expiry or '—' }}</div>
@@ -933,6 +1127,19 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
             </div>
             <input type="hidden" id="license_sar_count" value="{{ cfg.license_sar_count }}">
           </div>
+          <div class="s-field">
+            <label class="s-label">Licensed NMON Server Count
+              <span style="font-size:.7rem;color:var(--text2);font-weight:400"> — from key</span>
+            </label>
+            <div class="s-input" id="lic-nmon-count-display"
+                 style="background:var(--surface2);color:var(--text2);cursor:not-allowed;
+                        display:flex;align-items:center">
+              {{ cfg.license_nmon_count or '—' }}
+            </div>
+            <input type="hidden" id="license_nmon_count" value="{{ cfg.license_nmon_count }}">
+          </div>
+        </div>
+        <div class="s-row">
           <div class="s-field">
             <label class="s-label">Monthly Cloud AI Limit</label>
             <input class="s-input" id="ai_monthly_limit" type="number"
@@ -1023,14 +1230,16 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
               <th style="padding:6px 10px;text-align:left;color:var(--text2)">Instance Name</th>
               <th style="padding:6px 10px;text-align:center;color:var(--text2)">Inst#</th>
               <th style="padding:6px 10px;text-align:left;color:var(--text2)">Host</th>
-              <th style="padding:6px 10px;text-align:left;color:var(--text2)">Type</th>
+              <th style="padding:6px 10px;text-align:left;color:var(--text2)">DB Type</th>
+              <th style="padding:6px 10px;text-align:left;color:var(--text2)">OS Type</th>
+              <th style="padding:6px 10px;text-align:left;color:var(--text2)">OS Utility</th>
               <th style="padding:6px 10px;text-align:left;color:var(--text2)">Description</th>
               <th style="padding:6px 10px;text-align:center;color:var(--text2)">Active</th>
               {% if is_admin %}<th style="padding:6px 10px;text-align:center;color:var(--text2)">Actions</th>{% endif %}
             </tr>
           </thead>
           <tbody id="db-master-tbody">
-            <tr><td colspan="8" style="padding:12px;text-align:center;color:var(--text2)">
+            <tr><td colspan="10" style="padding:12px;text-align:center;color:var(--text2)">
               Loading…
             </td></tr>
           </tbody>
@@ -1062,12 +1271,30 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
               <input class="s-input" id="nm-host_name" placeholder="e.g. dbserver01">
             </div>
             <div>
-              <label class="s-label">Type</label>
+              <label class="s-label">DB Type</label>
               <select class="s-select" id="nm-db_type">
                 <option value="STANDALONE">Standalone</option>
                 <option value="RAC">RAC</option>
                 <option value="CDB">CDB</option>
                 <option value="PDB">PDB</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+            <div>
+              <label class="s-label">OS Type</label>
+              <select class="s-select" id="nm-os_type" onchange="onOsTypeChange(this.value)">
+                <option value="Linux">Linux</option>
+                <option value="IBM AIX">IBM AIX</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="s-label">OS Utility <span style="font-size:.7rem;color:var(--text2)">(auto from OS type)</span></label>
+              <select class="s-select" id="nm-os_utility">
+                <option value="SAR">SAR (Linux)</option>
+                <option value="NMON">NMON (IBM AIX)</option>
+                <option value="None">None</option>
               </select>
             </div>
           </div>
@@ -1453,34 +1680,43 @@ async function checkLicenseStatus() {
     }
 
     // Update read-only display fields from validated key
-    const dbDisp  = document.getElementById('lic-db-count-display');
-    const sarDisp = document.getElementById('lic-sar-count-display');
-    const expDisp = document.getElementById('lic-expiry-display');
-    const dbHid   = document.getElementById('license_db_count');
-    const sarHid  = document.getElementById('license_sar_count');
-    const expHid  = document.getElementById('license_expiry');
+    const dbDisp   = document.getElementById('lic-db-count-display');
+    const sarDisp  = document.getElementById('lic-sar-count-display');
+    const nmonDisp = document.getElementById('lic-nmon-count-display');
+    const expDisp  = document.getElementById('lic-expiry-display');
+    const dbHid    = document.getElementById('license_db_count');
+    const sarHid   = document.getElementById('license_sar_count');
+    const nmonHid  = document.getElementById('license_nmon_count');
+    const expHid   = document.getElementById('license_expiry');
 
-    const dbVal  = d.db_limit  === -1 ? 'Unlimited (ENT)' : (d.db_limit  ?? '—');
-    const sarVal = d.sar_limit === -1 ? 'Unlimited (ENT)' : (d.sar_limit ?? '—');
-    const expVal = d.expiry || '—';
+    const dbVal   = d.db_limit   === -1 ? 'Unlimited (ENT)' : (d.db_limit   ?? '—');
+    const sarVal  = d.sar_limit  === -1 ? 'Unlimited (ENT)' : (d.sar_limit  ?? '—');
+    const nmonVal = d.nmon_limit === -1 ? 'Unlimited (ENT)' : (d.nmon_limit ?? '—');
+    const expVal  = d.expiry || '—';
 
-    if (dbDisp)  dbDisp.textContent  = dbVal;
-    if (sarDisp) sarDisp.textContent = sarVal;
-    if (expDisp) expDisp.textContent = expVal;
+    if (dbDisp)   dbDisp.textContent   = dbVal;
+    if (sarDisp)  sarDisp.textContent  = sarVal;
+    if (nmonDisp) nmonDisp.textContent = nmonVal;
+    if (expDisp)  expDisp.textContent  = expVal;
     // Keep hidden inputs in sync so save() writes correct values
-    if (dbHid  && d.db_limit  != null) dbHid.value  = d.db_limit  === -1 ? 999 : d.db_limit;
-    if (sarHid && d.sar_limit != null) sarHid.value = d.sar_limit === -1 ? 999 : d.sar_limit;
-    if (expHid && d.expiry)            expHid.value  = d.expiry;
+    if (dbHid   && d.db_limit   != null) dbHid.value   = d.db_limit   === -1 ? 999 : d.db_limit;
+    if (sarHid  && d.sar_limit  != null) sarHid.value  = d.sar_limit  === -1 ? 999 : d.sar_limit;
+    if (nmonHid && d.nmon_limit != null) nmonHid.value = d.nmon_limit === -1 ? 999 : d.nmon_limit;
+    if (expHid  && d.expiry)             expHid.value  = d.expiry;
 
     // Update stat grid counters
     const el = id => document.getElementById(id);
-    if (el('lic-db-used'))  el('lic-db-used').textContent  = d.db_used  ?? '—';
-    if (el('lic-db-limit')) el('lic-db-limit').textContent = d.db_limit === -1 ? '∞' : (d.db_limit ?? '—');
-    if (el('lic-sar-used')) el('lic-sar-used').textContent = d.sar_used ?? '—';
-    if (el('lic-sar-limit'))el('lic-sar-limit').textContent= d.sar_limit === -1 ? '∞' : (d.sar_limit ?? '—');
-    if (el('lic-tier'))     el('lic-tier').textContent     = d.tier_name || '—';
-    if (el('lic-customer')) el('lic-customer').textContent = d.customer_name || '—';
-    if (el('lic-mac'))      el('lic-mac').textContent      = d.mac_address   || '—';
+    if (el('lic-db-used'))    el('lic-db-used').textContent    = d.db_used    ?? '—';
+    if (el('lic-db-limit'))   el('lic-db-limit').textContent   = d.db_limit   === -1 ? '∞' : (d.db_limit   ?? '—');
+    // SAR: show 0/0 if not in license (AWR+NMON only), real values if licensed
+    if (el('lic-sar-used'))   el('lic-sar-used').textContent   = d.sar_licensed  ? (d.sar_used  ?? '—') : '0';
+    if (el('lic-sar-limit'))  el('lic-sar-limit').textContent  = d.sar_licensed  ? (d.sar_limit === -1 ? '∞' : (d.sar_limit ?? '—')) : '0';
+    // NMON: show 0/0 if not in license (AWR+SAR only), real values if licensed
+    if (el('lic-nmon-used'))  el('lic-nmon-used').textContent  = d.nmon_licensed ? (d.nmon_used ?? '—') : '0';
+    if (el('lic-nmon-limit')) el('lic-nmon-limit').textContent = d.nmon_licensed ? (d.nmon_limit=== -1 ? '∞' : (d.nmon_limit?? '—')) : '0';
+    if (el('lic-tier'))       el('lic-tier').textContent       = (d.tier_name || '—') + (d.license_type ? ' · ' + d.license_type : '');
+    if (el('lic-customer'))   el('lic-customer').textContent   = d.customer_name || '—';
+    if (el('lic-mac'))        el('lic-mac').textContent        = d.mac_address   || '—';
 
     // Update tier table — highlight current tier from live key data
     if (d.tier) {
@@ -1554,11 +1790,13 @@ async function loadDbMaster() {
     }
 
     if (!d.dbs || d.dbs.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" style="padding:14px;text-align:center;color:var(--text2)">
+      tbody.innerHTML = `<tr><td colspan="10" style="padding:14px;text-align:center;color:var(--text2)">
         No databases registered. Add databases below to enable AWR parsing.</td></tr>`;
       return;
     }
-    const TYPE_BADGE = { STANDALONE:'#334155', RAC:'#1e3a5f', CDB:'#3b1f5e', PDB:'#1f3d1f' };
+    const TYPE_BADGE    = { STANDALONE:'#334155', RAC:'#1e3a5f', CDB:'#3b1f5e', PDB:'#1f3d1f' };
+    const UTILITY_BADGE = { SAR:'#1e3a5f', NMON:'#3b1f5e', None:'#33415540' };
+    const OS_ICON       = { Linux:'🐧', 'IBM AIX':'🖥️', Other:'💻' };
     tbody.innerHTML = d.dbs.map(db => `
       <tr style="border-top:1px solid var(--border);opacity:${db.active?1:0.5}">
         <td style="padding:7px 10px;font-weight:600">${db.db_name}</td>
@@ -1568,6 +1806,10 @@ async function loadDbMaster() {
         <td style="padding:7px 10px">
           <span style="font-size:.72rem;padding:2px 7px;border-radius:20px;
             background:${TYPE_BADGE[db.db_type]||'#333'};color:#fff">${db.db_type}</span></td>
+        <td style="padding:7px 10px;font-size:.78rem">${OS_ICON[db.os_type]||''} ${db.os_type||'Linux'}</td>
+        <td style="padding:7px 10px">
+          <span style="font-size:.72rem;padding:2px 7px;border-radius:20px;
+            background:${UTILITY_BADGE[db.os_utility]||'#333'};color:#fff">${db.os_utility||'SAR'}</span></td>
         <td style="padding:7px 10px;color:var(--text2);font-size:.78rem">${db.description||'—'}</td>
         <td style="padding:7px 10px;text-align:center;color:${db.active?'#10b981':'#64748b'}">
           ${db.active?'✅ Active':'⏸ Paused'}</td>
@@ -1582,6 +1824,14 @@ async function loadDbMaster() {
   } catch(e) { console.error('loadDbMaster:', e); }
 }
 
+function onOsTypeChange(osType) {
+  const utilSel = document.getElementById('nm-os_utility');
+  if (!utilSel) return;
+  if (osType === 'Linux')   utilSel.value = 'SAR';
+  else if (osType === 'IBM AIX') utilSel.value = 'NMON';
+  else utilSel.value = 'None';
+}
+
 async function addDbMaster() {
   const db_name = (document.getElementById('nm-db_name').value||'').trim().toUpperCase();
   if (!db_name) { alert('DB Name is required'); return; }
@@ -1591,6 +1841,8 @@ async function addDbMaster() {
     inst_no:  parseInt(document.getElementById('nm-inst_no').value)||1,
     host_name:(document.getElementById('nm-host_name').value||'').trim(),
     db_type:   document.getElementById('nm-db_type').value,
+    os_type:   document.getElementById('nm-os_type').value,
+    os_utility:document.getElementById('nm-os_utility').value,
     description:(document.getElementById('nm-description').value||'').trim(),
   };
   const msgEl = document.getElementById('db-master-add-msg');
@@ -1603,6 +1855,8 @@ async function addDbMaster() {
       ['nm-db_name','nm-instance_name','nm-host_name','nm-description'].forEach(id=>{
         const e=document.getElementById(id); if(e) e.value='';});
       document.getElementById('nm-inst_no').value='1';
+      document.getElementById('nm-os_type').value='Linux';
+      document.getElementById('nm-os_utility').value='SAR';
       loadDbMaster();
     } else {
       if (msgEl){msgEl.textContent=`❌ ${d.error}`;msgEl.style.color='#ef4444';}
@@ -2307,6 +2561,178 @@ function toggleSarSource(val) {
   if (val === 'ssh') loadSarSshConnections();
 }
 
+function toggleNmonSource(val) {
+  document.getElementById('nmon-local-cfg').style.display = val === 'local' ? '' : 'none';
+  document.getElementById('nmon-ssh-cfg').style.display   = val === 'ssh'   ? '' : 'none';
+  if (val === 'ssh') loadNmonSshConnections();
+}
+
+// ── NMON SSH Connection Manager (mirrors SAR SSH pattern) ─────────────────────────
+// Uses /api/nmon-ssh-connections endpoints — backed by nmon_ssh_connections table
+// which mirrors sar_ssh_connections exactly (same schema, same API pattern).
+let _nmonSshConns = [];
+
+async function loadNmonSshConnections() {
+  try {
+    const res  = await fetch('/api/nmon-ssh-connections');
+    const data = await res.json();
+    if (!data.ok) {
+      document.getElementById('nmon-ssh-tbody').innerHTML =
+        `<tr><td colspan="8" style="padding:12px;color:#ef4444;text-align:center">Error: ${data.error}</td></tr>`;
+      return;
+    }
+    _nmonSshConns = data.connections || [];
+    renderNmonSshTable();
+    populateNmonPullDropdown();
+  } catch(e) {
+    document.getElementById('nmon-ssh-tbody').innerHTML =
+      `<tr><td colspan="8" style="padding:12px;color:#ef4444;text-align:center">Failed to load: ${e.message}</td></tr>`;
+  }
+}
+
+function renderNmonSshTable() {
+  const tbody = document.getElementById('nmon-ssh-tbody');
+  if (!_nmonSshConns.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="padding:12px;color:var(--text2);text-align:center">No connections configured yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = _nmonSshConns.map(c => {
+    const lastPull = c.last_pull_at ? new Date(c.last_pull_at).toLocaleString() : '—';
+    const interval = c.pull_interval_hrs == 0 ? 'Manual' : `Every ${c.pull_interval_hrs}h`;
+    const enabled  = c.enabled ? '<span style="color:#10b981;font-size:11px">✅</span>' : '<span style="color:#6b7280;font-size:11px">⬜</span>';
+    const auth     = c.ssh_key_path ? '🔑 Key' : '🔒 Password';
+    return `<tr style="border-top:1px solid var(--border)">
+      <td style="padding:6px 8px;font-weight:600">${c.hostname}</td>
+      <td style="padding:6px 8px;font-size:11px">${c.ssh_host}:${c.ssh_port||22}</td>
+      <td style="padding:6px 8px">${c.ssh_user||'—'}</td>
+      <td style="padding:6px 8px;font-size:11px">${c.remote_nmon_path||'/home/oracle/nmon'}</td>
+      <td style="padding:6px 8px;font-size:11px">${interval}</td>
+      <td style="padding:6px 8px">${enabled}</td>
+      <td style="padding:6px 8px;font-size:11px">${lastPull}</td>
+      <td style="padding:6px 8px">
+        <button class="s-btn" style="padding:2px 8px;font-size:11px" onclick="editNmonSshConn(${c.id})">✏️</button>
+        <button class="s-btn" style="padding:2px 8px;font-size:11px;margin-left:4px" onclick="testNmonSshConn(${c.id},this)">🔌</button>
+        <button class="s-btn" style="padding:2px 8px;font-size:11px;margin-left:4px;color:#ef4444" onclick="deleteNmonSshConn(${c.id},'${c.hostname}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function populateNmonPullDropdown() {
+  const sel = document.getElementById('nc_pull_conn_id');
+  if (!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All enabled servers</option>';
+  _nmonSshConns.filter(c => c.enabled).forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id; opt.textContent = c.hostname;
+    sel.appendChild(opt);
+  });
+  if (cur) sel.value = cur;
+}
+
+function clearNmonSshForm() {
+  document.getElementById('nc_edit_id').value = '';
+  ['nc_hostname','nc_ssh_host','nc_ssh_user','nc_remote_nmon_path','nc_ssh_key_path','nc_password'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('nc_ssh_port').value = '22';
+  document.getElementById('nc_pull_interval_hrs').value = '1';
+  document.getElementById('nc_enabled').checked = true;
+  document.getElementById('nmon-ssh-form-title').textContent = '➕ Add SSH Connection';
+  document.getElementById('nmon-ssh-save-msg').textContent = '';
+}
+
+function editNmonSshConn(id) {
+  const c = _nmonSshConns.find(x => x.id === id); if (!c) return;
+  document.getElementById('nc_edit_id').value          = id;
+  document.getElementById('nc_hostname').value          = c.hostname;
+  document.getElementById('nc_ssh_host').value          = c.ssh_host;
+  document.getElementById('nc_ssh_port').value          = c.ssh_port || 22;
+  document.getElementById('nc_ssh_user').value          = c.ssh_user || '';
+  document.getElementById('nc_remote_nmon_path').value  = c.remote_nmon_path || '/home/oracle/nmon';
+  document.getElementById('nc_ssh_key_path').value      = c.ssh_key_path || '';
+  document.getElementById('nc_password').value          = '';
+  document.getElementById('nc_pull_interval_hrs').value = String(c.pull_interval_hrs ?? 1);
+  document.getElementById('nc_enabled').checked         = !!c.enabled;
+  document.getElementById('nmon-ssh-form-title').textContent = `✏️ Edit: ${c.hostname}`;
+  document.getElementById('nc_hostname').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+async function saveNmonSshConn() {
+  const msg = document.getElementById('nmon-ssh-save-msg');
+  msg.textContent = 'Saving…';
+  const body = {
+    hostname:         document.getElementById('nc_hostname').value.trim(),
+    ssh_host:         document.getElementById('nc_ssh_host').value.trim(),
+    ssh_port:         parseInt(document.getElementById('nc_ssh_port').value) || 22,
+    ssh_user:         document.getElementById('nc_ssh_user').value.trim(),
+    remote_nmon_path: document.getElementById('nc_remote_nmon_path').value.trim() || '/home/oracle/nmon',
+    ssh_key_path:     document.getElementById('nc_ssh_key_path').value.trim(),
+    password:         document.getElementById('nc_password').value,
+    pull_interval_hrs: parseFloat(document.getElementById('nc_pull_interval_hrs').value) || 1,
+    enabled:          document.getElementById('nc_enabled').checked,
+  };
+  if (!body.hostname || !body.ssh_host || !body.ssh_user) {
+    msg.textContent = '❌ Hostname, SSH Host and Username are required';
+    msg.style.color = '#ef4444'; return;
+  }
+  try {
+    const res  = await fetch('/api/nmon-ssh-connections', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.ok) {
+      msg.textContent = '✅ Saved'; msg.style.color = '#10b981';
+      clearNmonSshForm(); await loadNmonSshConnections();
+    } else {
+      msg.textContent = '❌ ' + (data.error || 'Save failed');
+      msg.style.color = '#ef4444';
+    }
+  } catch(e) { msg.textContent = '❌ ' + e.message; msg.style.color = '#ef4444'; }
+}
+
+async function deleteNmonSshConn(id, hostname) {
+  if (!confirm(`Remove SSH connection for ${hostname}?`)) return;
+  await fetch(`/api/nmon-ssh-connections/${id}`, {method:'DELETE'});
+  await loadNmonSshConnections();
+}
+
+async function testNmonSshConn(id, btn) {
+  const orig = btn.textContent; btn.textContent = '…'; btn.disabled = true;
+  try {
+    const res  = await fetch(`/api/nmon-ssh-connections/${id}/test`, {method:'POST'});
+    const data = await res.json();
+    alert(data.ok ? `✅ ${data.message}` : `❌ ${data.message}`);
+  } catch(e) { alert('❌ Test failed: ' + e.message); }
+  finally { btn.textContent = orig; btn.disabled = false; }
+}
+
+async function pullNmonFiles() {
+  const connId = document.getElementById('nc_pull_conn_id').value || null;
+  const msg    = document.getElementById('nmon-pull-msg');
+  const res_el = document.getElementById('nmon-pull-results');
+  msg.textContent = '⏳ Pulling NMON files (incremental)…'; msg.style.color = '#f59e0b';
+  res_el.style.display = 'none';
+  try {
+    // Uses incremental endpoint — only new snapshots since last pull
+    const res  = await fetch('/api/nmon-ssh-connections/pull-incremental', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({conn_id: connId ? parseInt(connId) : null})
+    });
+    const data = await res.json();
+    if (data.ok) {
+      const fname = data.filename || (data.results || []).map(r=>r.filename).filter(Boolean).join(', ') || '—';
+      msg.textContent = `✅ Done — file: ${fname}`;
+      msg.style.color = '#10b981';
+    } else {
+      msg.textContent = '❌ ' + (data.error || 'Pull failed');
+      msg.style.color = '#ef4444';
+    }
+  } catch(e) { msg.textContent = '❌ ' + e.message; msg.style.color = '#ef4444'; }
+}
+
 // ── SAR SSH Connection Manager ─────────────────────────────────────────────────
 let _sarSshConns = [];
 
@@ -2512,6 +2938,7 @@ if (document.getElementById('awr_source_type')?.value === 'network') {
   loadAwrPaths();
 }
 toggleSarSource(document.getElementById('sar_source_type')?.value);
+toggleNmonSource(document.getElementById('nmon_source_type')?.value || 'local');
 if (document.getElementById('sar_source_type')?.value === 'ssh') {
   loadSarSshConnections();
 }
@@ -2522,13 +2949,16 @@ async function saveSection(section) {
   const ids = {
     ai: ['ai_mode','ai_local_url','ai_local_model','ai_cloud_provider',
          'ai_cloud_api_key','ai_cloud_model'],
-    anomaly: ['anomaly_z_threshold','anomaly_baseline_days','anomaly_min_samples'],
+    anomaly: ['anomaly_z_threshold','anomaly_baseline_days','anomaly_min_samples',
+              'anomaly_sar_z_threshold','anomaly_sar_baseline_days','anomaly_sar_min_samples',
+              'anomaly_nmon_z_threshold','anomaly_nmon_baseline_days','anomaly_nmon_min_samples'],
     awr_source: ['awr_source_type','awr_local_path','awr_db_host',
                  'awr_db_port','awr_db_service','awr_db_user','awr_db_password'],
-    sar_source: ['sar_source_type','sar_tz_offset','sar_local_path'],
+    sar_source:  ['sar_source_type','sar_tz_offset','sar_local_path'],
+    nmon_source: ['nmon_source_type','nmon_local_path'],
     license: ['license_key','license_customer','license_db_count',
-              'license_sar_count','license_expiry','ai_monthly_limit',
-              'license_mac_override'],
+              'license_sar_count','license_nmon_count','license_expiry',
+              'ai_monthly_limit','license_mac_override'],
     access: ['session_timeout_mins', 'admin_reset_pin', 'metadata_refresh_days',
              'portal_login_required', 'portal_url', 'grafana_url'],
   };

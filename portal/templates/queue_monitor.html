@@ -147,6 +147,48 @@
 </div>
 {% endif %}
 
+{# ══ NMON QUEUES ══════════════════════════════════════════════════════ #}
+<div style="font-size:.8rem;color:var(--text2);font-weight:600;letter-spacing:.05em;margin:16px 0 8px">NMON QUEUES</div>
+
+{% for host, items in nmon_queues.items() %}
+  {% set pending    = items | selectattr("status","equalto","PENDING")    | list | length %}
+  {% set processing = items | selectattr("status","equalto","PROCESSING") | list | length %}
+  {% set done       = items | selectattr("status","equalto","DONE")       | list | length %}
+  {% set failed     = items | selectattr("status","equalto","FAILED")     | list | length %}
+<div class="card" style="margin-bottom:8px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+    <span style="font-size:.9rem;font-weight:600">📟 {{ host }}</span>
+    <div style="display:flex;gap:6px">
+      {% if pending %}    <span class="badge badge-pending">{{ pending }} pending</span>     {% endif %}
+      {% if processing %} <span class="badge badge-processing">{{ processing }} active</span> {% endif %}
+      {% if failed %}     <span class="badge badge-failed">{{ failed }} failed</span>         {% endif %}
+      <span class="badge badge-done">{{ done }} done</span>
+    </div>
+  </div>
+  {% for item in items %}
+  {% if item.status != 'DONE' or loop.revindex <= 5 %}
+  <div style="display:flex;align-items:center;gap:8px;padding:4px 0;
+              border-top:{% if loop.first %}none{% else %}1px solid var(--border){% endif %};
+              font-size:.78rem">
+    <span class="badge badge-{{ item.status | lower }}">{{ item.status }}</span>
+    <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+      {{ item.filepath | default('—') | basename }}
+    </span>
+    <span style="color:var(--text2);font-size:.72rem;white-space:nowrap">
+      {{ item.queued_at | default('') | truncate(16,True,'') }}
+    </span>
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
+{% endfor %}
+
+{% if not nmon_queues %}
+<div class="card">
+  <p style="color:var(--text2)">No NMON queue files found. Drop NMON files into nmon_drop\&lt;HOSTNAME&gt;\ to get started.</p>
+</div>
+{% endif %}
+
 <script>
 (function () {
   const INTERVAL_MS = 10000;

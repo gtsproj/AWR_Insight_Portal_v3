@@ -186,19 +186,25 @@ pre{background:var(--surface2);padding:14px;border-radius:var(--radius);overflow
     <span class="info-val" id="lic-dbs" style="color:var(--accent)">— DBs</span>
     <span class="info-label">/</span>
     <span class="info-val" id="lic-sars" style="color:#4a90d9">— SAR servers</span>
+    <span class="info-val" id="lic-nmons" style="color:#a855f7;display:none">/ — NMON servers</span>
   </div>
 
-  <!-- Center: AWR + SAR progress bars -->
+  <!-- Center: AWR + SAR + NMON progress bars -->
   <div class="info-center">
     <div class="prog-wrap prog-awr">
       <span class="prog-label">AWR</span>
       <div class="prog-bar"><div class="prog-fill" id="awr-bar" style="width:0%"></div></div>
       <span class="prog-count" id="awr-prog-txt" style="color:var(--accent)">—</span>
     </div>
-    <div class="prog-wrap prog-sar">
+    <div class="prog-wrap prog-sar" id="sar-prog-wrap">
       <span class="prog-label">SAR</span>
       <div class="prog-bar"><div class="prog-fill" id="sar-bar" style="width:0%"></div></div>
       <span class="prog-count" id="sar-prog-txt" style="color:#4a90d9">—</span>
+    </div>
+    <div class="prog-wrap" id="nmon-prog-wrap" style="display:none">
+      <span class="prog-label" style="color:#a855f7">NMON</span>
+      <div class="prog-bar"><div class="prog-fill" id="nmon-bar" style="width:0%;background:#a855f7"></div></div>
+      <span class="prog-count" id="nmon-prog-txt" style="color:#a855f7">—</span>
     </div>
   </div>
 
@@ -262,24 +268,38 @@ pre{background:var(--surface2);padding:14px;border-radius:var(--radius);overflow
     }
 
     // License counts
-    const licDb  = parseInt(data.license_db_count  || 0);
-    const licSar = parseInt(data.license_sar_count || 0);
-    const usedDb  = parseInt(data.db_used   || 0);
-    const usedSar = parseInt(data.sar_used  || 0);
+    const licDb   = parseInt(data.license_db_count   || 0);
+    const licSar  = parseInt(data.license_sar_count  || 0);
+    const licNmon = parseInt(data.license_nmon_count || 0);
+    const usedDb   = parseInt(data.db_used    || 0);
+    const usedSar  = parseInt(data.sar_used   || 0);
+    const usedNmon = parseInt(data.nmon_used  || 0);
     document.getElementById('lic-dbs').textContent  = licDb  + ' DBs';
     document.getElementById('lic-sars').textContent = licSar + ' SAR servers';
 
+    // Show NMON in strip only when licensed
+    const nmonEl = document.getElementById('lic-nmons');
+    const nmonWrap = document.getElementById('nmon-prog-wrap');
+    if (licNmon > 0) {
+      if (nmonEl)   { nmonEl.textContent = '/ ' + licNmon + ' NMON servers'; nmonEl.style.display = ''; }
+      if (nmonWrap) nmonWrap.style.display = '';
+    }
+
     // Progress bars
-    const awrPct = licDb  > 0 ? Math.min(100, Math.round(usedDb  / licDb  * 100)) : 0;
-    const sarPct = licSar > 0 ? Math.min(100, Math.round(usedSar / licSar * 100)) : 0;
-    document.getElementById('awr-bar').style.width  = awrPct + '%';
-    document.getElementById('sar-bar').style.width  = sarPct + '%';
-    document.getElementById('awr-prog-txt').textContent = usedDb  + ' / ' + licDb  + ' DBs';
-    document.getElementById('sar-prog-txt').textContent = usedSar + ' / ' + licSar + ' servers';
+    const awrPct  = licDb   > 0 ? Math.min(100, Math.round(usedDb   / licDb   * 100)) : 0;
+    const sarPct  = licSar  > 0 ? Math.min(100, Math.round(usedSar  / licSar  * 100)) : 0;
+    const nmonPct = licNmon > 0 ? Math.min(100, Math.round(usedNmon / licNmon * 100)) : 0;
+    document.getElementById('awr-bar').style.width  = awrPct  + '%';
+    document.getElementById('sar-bar').style.width  = sarPct  + '%';
+    if (document.getElementById('nmon-bar')) document.getElementById('nmon-bar').style.width = nmonPct + '%';
+    document.getElementById('awr-prog-txt').textContent  = usedDb   + ' / ' + licDb   + ' DBs';
+    document.getElementById('sar-prog-txt').textContent  = usedSar  + ' / ' + licSar  + ' servers';
+    if (document.getElementById('nmon-prog-txt')) document.getElementById('nmon-prog-txt').textContent = usedNmon + ' / ' + licNmon + ' servers';
 
     // Colour bar red if at/over limit
-    if (awrPct >= 100) document.getElementById('awr-bar').style.background = 'var(--danger)';
-    if (sarPct >= 100) document.getElementById('sar-bar').style.background = 'var(--danger)';
+    if (awrPct  >= 100) document.getElementById('awr-bar').style.background  = 'var(--danger)';
+    if (sarPct  >= 100) document.getElementById('sar-bar').style.background  = 'var(--danger)';
+    if (nmonPct >= 100 && document.getElementById('nmon-bar')) document.getElementById('nmon-bar').style.background = 'var(--danger)';
 
     // Username
     if (data.username) {
@@ -296,6 +316,21 @@ pre{background:var(--surface2);padding:14px;border-radius:var(--radius);overflow
       const st = ld.status;
       const dl = ld.days_left;
 
+      // ── NMON/SAR card & counter toggling based on license ──────────
+      // Show NMON stats cards and dashboard card only when NMON license > 0
+      const hasNmon = (ld.nmon_limit !== 0);
+      const hasSar  = (ld.sar_limit  !== 0);
+      ['nmon-stat-pending','nmon-stat-processing','nmon-stat-done',
+       'nmon-stat-failed','nmon-stat-hosts'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = hasNmon ? '' : 'none';
+      });
+      const nmonCard = document.getElementById('nmon-card');
+      if (nmonCard) nmonCard.style.display = hasNmon ? '' : 'none';
+      // SAR card — hide only if customer is NMON-only (no SAR license)
+      const sarCard = document.getElementById('sar-card');
+      if (sarCard) sarCard.style.display = hasSar ? '' : 'none';
+
       // Colour config per status
       const cfg = {
         ok:             {bg:'#10b98112',bc:'#10b98150',tc:'#0d9268', show: false},
@@ -304,6 +339,7 @@ pre{background:var(--surface2);padding:14px;border-radius:var(--radius);overflow
         expired:        {bg:'#ef444412',bc:'#ef444450',tc:'#c53030', show: true},
         db_exceeded:    {bg:'#ef444412',bc:'#ef444450',tc:'#c53030', show: true},
         sar_exceeded:   {bg:'#ef444412',bc:'#ef444450',tc:'#c53030', show: true},
+        nmon_exceeded:  {bg:'#ef444412',bc:'#ef444450',tc:'#c53030', show: true},
         no_key:         {bg:'#ef444412',bc:'#ef444450',tc:'#c53030', show: true},
         mac_mismatch:   {bg:'#ef444412',bc:'#ef444450',tc:'#c53030', show: true},
         evaluation:     {bg:'#3b82f612',bc:'#3b82f650',tc:'#1d5fa8', show: true},
@@ -321,8 +357,9 @@ pre{background:var(--surface2);padding:14px;border-radius:var(--radius);overflow
       else if (st === 'mac_mismatch') label = '⚠ MAC mismatch';
       else if (st === 'expired') label = '⚠ License expired';
       else if (st === 'grace')   label = `⚠ Grace · ${7 + dl}d left`;
-      else if (st === 'db_exceeded')  label = '⚠ DB limit exceeded';
-      else if (st === 'sar_exceeded') label = '⚠ SAR limit exceeded';
+      else if (st === 'db_exceeded')   label = '⚠ DB limit exceeded';
+      else if (st === 'sar_exceeded')  label = '⚠ SAR limit exceeded';
+      else if (st === 'nmon_exceeded') label = '⚠ NMON limit exceeded';
       else if (isTrial && dl >= 0)    label = `Trial · ${dl}d left`;
       else if (st === 'expiry_warning') label = `Expires in ${dl}d`;
       else return;  // licensed + ok — don't show pill
