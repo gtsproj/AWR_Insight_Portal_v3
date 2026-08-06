@@ -53,6 +53,8 @@ QUEUES_DIR    = os.path.join(_PROJECT_ROOT,
     _paths.get("queues_directory", "queues"))
 SAR_QUEUES_DIR = os.path.join(_PROJECT_ROOT,
     _paths.get("sar_queues_directory", "sar_queues"))
+NMON_QUEUES_DIR = os.path.join(_PROJECT_ROOT,
+    _paths.get("nmon_queues_directory", "nmon_queues"))
 
 app = FastAPI(
     title="AWR Insight Portal",
@@ -508,6 +510,104 @@ def _sar_ssh_scheduler():
         _time.sleep(300)  # check every 5 minutes
 
 
+def _nmon_ssh_incremental_scheduler():
+    """
+    Background thread — NMON SSH incremental pull scheduler.
+    Mirrors _sar_ssh_scheduler() above.
+
+    Every pull_interval_hrs (default 1 hour) for each enabled connection:
+      1. SSH into the AIX server
+      2. SFTP-download the currently active .nmon file to nmon_cache/<hostname>/
+      3. Parse only NEW snapshots since last_token_seq (tracked in nmon_parse_log)
+      4. Insert delta rows into nmon_* tables
+
+    nmon_cache/ is NOT watched by NMONWatcher (dedicated cache folder).
+    NMONWatcher only watches nmon_drop/ for manually dropped files.
+    Catch-up is automatic — if scheduler was paused for several hours,
+    all missed tokens are processed on the next run.
+    """
+    import time as _time
+    from datetime import datetime as _dt
+    from logger_utils import get_logger as _get_logger
+    _log = _get_logger('nmon_ssh_scheduler')
+    _log.info('NMON SSH incremental scheduler started (1-hour lag mode)')
+
+    # Read nmon_cache path from settings
+    try:
+        import yaml as _yaml
+        with open(os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')) as f:
+            _settings = _yaml.safe_load(f)
+        _paths     = _settings.get('paths', {})
+        cache_rel  = _paths.get('nmon_cache_directory', 'nmon_cache')
+        nmon_cache = (cache_rel if os.path.isabs(cache_rel)
+                      else os.path.join(_PROJECT_ROOT, cache_rel))
+        os.makedirs(nmon_cache, exist_ok=True)
+        _log.info(f'NMON cache dir: {nmon_cache}')
+    except Exception as e:
+        _log.error(f'Could not read settings: {e}')
+        nmon_cache = os.path.join(_PROJECT_ROOT, 'nmon_cache')
+        os.makedirs(nmon_cache, exist_ok=True)
+
+    while True:
+        try:
+            from modules.nmon_ssh_fetcher import (get_all_connections,
+                                                   pull_and_parse_incremental)
+            connections = get_all_connections()
+            enabled     = [c for c in connections
+                           if c.get('enabled') and
+                           float(c.get('pull_interval_hrs') or 0) > 0]
+            now = _dt.now()
+
+            for c in enabled:
+                try:
+                    interval_hrs  = float(c.get('pull_interval_hrs') or 1)
+                    last_pull     = c.get('last_pull_at')
+                    last_dt       = None
+                    if last_pull:
+                        try:
+                            last_dt = _dt.strptime(last_pull, '%Y-%m-%d %H:%M:%S')
+                        except (ValueError, TypeError):
+                            pass
+
+                    elapsed_mins  = (
+                        (now - last_dt).total_seconds() / 60
+                        if last_dt else float('inf')
+                    )
+                    interval_mins = interval_hrs * 60
+
+                    if elapsed_mins < interval_mins:
+                        _log.debug(
+                            f"NMON scheduler: {c['hostname']} not due "
+                            f"(next in {interval_mins - elapsed_mins:.0f}m)"
+                        )
+                        continue
+
+                    _log.info(
+                        f"NMON scheduler: pulling {c['hostname']} "
+                        f"(interval={interval_hrs}h, elapsed={elapsed_mins:.0f}m)"
+                    )
+                    result = pull_and_parse_incremental(c['id'], nmon_cache)
+                    if result.get('ok'):
+                        _log.info(
+                            f"NMON scheduler: {c['hostname']} done — "
+                            f"file={result.get('filename','?')}"
+                        )
+                    else:
+                        _log.error(
+                            f"NMON scheduler: {c['hostname']} failed — "
+                            f"{result.get('error')}"
+                        )
+                except Exception as e:
+                    _log.error(
+                        f"NMON scheduler error for {c.get('hostname','?')}: {e}",
+                        exc_info=True
+                    )
+        except Exception as e:
+            _log.error(f'NMON scheduler loop error: {e}')
+
+        _time.sleep(300)   # poll every 5 minutes
+
+
 def _awr_remote_scheduler():
     """
     Background thread — AWR remote source pull scheduler (two-tier:
@@ -689,6 +789,14 @@ async def on_startup():
     )
     _awr_remote_thread.start()
     logger.info('AWR remote source scheduler thread started')
+    # Start NMON SSH incremental pull scheduler (1-hour lag)
+    _nmon_thread = threading.Thread(
+        target=_nmon_ssh_incremental_scheduler,
+        name='NMONSSHScheduler',
+        daemon=True
+    )
+    _nmon_thread.start()
+    logger.info('NMON SSH incremental scheduler thread started')
 
 # Static files and templates
 _static_dir    = os.path.join(_PORTAL_DIR, "static")
@@ -1200,6 +1308,24 @@ def _all_sar_queues() -> dict:
     return result
 
 
+def _all_nmon_queues() -> dict:
+    """Mirror of _all_sar_queues for NMON."""
+    result = {}
+    if not os.path.isdir(NMON_QUEUES_DIR):
+        return result
+    for fname in os.listdir(NMON_QUEUES_DIR):
+        if fname.startswith("queue_") and fname.endswith(".json"):
+            host = fname[len("queue_"):-len(".json")]
+            path = os.path.join(NMON_QUEUES_DIR, fname)
+            try:
+                with open(path, encoding="utf-8") as f:
+                    data = json.load(f)
+                    result[host] = data if isinstance(data, list) else []
+            except Exception:
+                result[host] = []
+    return result
+
+
 def _db_list() -> list:
     try:
         conn = get_db_connection()
@@ -1217,46 +1343,43 @@ def _db_list() -> list:
 # ══════════════════════════════════════════════════════════════════════
 
 def _queue_stats() -> dict:
-    """Return live queue counters for both AWR and SAR queues."""
-    awr_queues = _all_queues()          # existing AWR queue reader
-    sar_queues = _all_sar_queues()      # new SAR queue reader
+    """Return live queue counters for AWR, SAR, and NMON queues."""
+    awr_queues  = _all_queues()
+    sar_queues  = _all_sar_queues()
+    nmon_queues = _all_nmon_queues()
 
-    # AWR stats
-    awr_pending    = sum(1 for items in awr_queues.values() for i in items if i.get("status") == "PENDING")
-    awr_processing = sum(1 for items in awr_queues.values() for i in items if i.get("status") == "PROCESSING")
-    awr_done       = sum(1 for items in awr_queues.values() for i in items if i.get("status") == "DONE")
-    awr_failed     = sum(1 for items in awr_queues.values() for i in items if i.get("status") == "FAILED")
+    def _count(queues, status):
+        return sum(1 for items in queues.values() for i in items if i.get("status") == status)
 
-    # SAR stats
-    sar_pending    = sum(1 for items in sar_queues.values() for i in items if i.get("status") == "PENDING")
-    sar_processing = sum(1 for items in sar_queues.values() for i in items if i.get("status") == "PROCESSING")
-    sar_done       = sum(1 for items in sar_queues.values() for i in items if i.get("status") == "DONE")
-    sar_failed     = sum(1 for items in sar_queues.values() for i in items if i.get("status") == "FAILED")
-
-    active_dbs  = [db for db, items in awr_queues.items()
-                   if any(i.get("status") == "PROCESSING" for i in items)]
-    active_sars = [h for h, items in sar_queues.items()
-                   if any(i.get("status") == "PROCESSING" for i in items)]
-    db_names    = sorted(awr_queues.keys())
-    sar_names   = sorted(sar_queues.keys())
+    active_dbs   = [db for db, items in awr_queues.items()  if any(i.get("status") == "PROCESSING" for i in items)]
+    active_sars  = [h  for h,  items in sar_queues.items()  if any(i.get("status") == "PROCESSING" for i in items)]
+    active_nmons = [h  for h,  items in nmon_queues.items() if any(i.get("status") == "PROCESSING" for i in items)]
 
     return {
         # AWR
-        "pending":    awr_pending,
-        "processing": awr_processing,
-        "done":       awr_done,
-        "failed":     awr_failed,
+        "pending":    _count(awr_queues,  "PENDING"),
+        "processing": _count(awr_queues,  "PROCESSING"),
+        "done":       _count(awr_queues,  "DONE"),
+        "failed":     _count(awr_queues,  "FAILED"),
         "db_count":   len(awr_queues),
-        "db_names":   db_names,
+        "db_names":   sorted(awr_queues.keys()),
         "active_db":  ", ".join(active_dbs) if active_dbs else None,
         # SAR
-        "sar_pending":    sar_pending,
-        "sar_processing": sar_processing,
-        "sar_done":       sar_done,
-        "sar_failed":     sar_failed,
+        "sar_pending":    _count(sar_queues,  "PENDING"),
+        "sar_processing": _count(sar_queues,  "PROCESSING"),
+        "sar_done":       _count(sar_queues,  "DONE"),
+        "sar_failed":     _count(sar_queues,  "FAILED"),
         "sar_host_count": len(sar_queues),
-        "sar_hosts":      sar_names,
+        "sar_hosts":      sorted(sar_queues.keys()),
         "active_sar":     ", ".join(active_sars) if active_sars else None,
+        # NMON
+        "nmon_pending":    _count(nmon_queues, "PENDING"),
+        "nmon_processing": _count(nmon_queues, "PROCESSING"),
+        "nmon_done":       _count(nmon_queues, "DONE"),
+        "nmon_failed":     _count(nmon_queues, "FAILED"),
+        "nmon_host_count": len(nmon_queues),
+        "nmon_hosts":      sorted(nmon_queues.keys()),
+        "active_nmon":     ", ".join(active_nmons) if active_nmons else None,
     }
 
 @app.get("/", response_class=HTMLResponse)
@@ -1471,10 +1594,12 @@ async def plan_upload_post(request: Request,
 # ── Queue Monitor ─────────────────────────────────────────────────────
 @app.get("/queues", response_class=HTMLResponse)
 async def queue_monitor(request: Request):
-    queues     = _all_queues()
-    sar_queues = _all_sar_queues()
+    queues      = _all_queues()
+    sar_queues  = _all_sar_queues()
+    nmon_queues = _all_nmon_queues()
     return templates.TemplateResponse(request, "queue_monitor.html",
-        context={"page": "queues", "queues": queues, "sar_queues": sar_queues})
+        context={"page": "queues", "queues": queues,
+                 "sar_queues": sar_queues, "nmon_queues": nmon_queues})
 
 
 @app.post("/queues/retry/{db_name}", response_class=RedirectResponse)
@@ -2128,19 +2253,23 @@ async def api_portal_info(request: Request):
     sess = _get_session(request)
 
     # Get limits from validated key — not from editable config fields
-    lic = _check_license()
-    db_limit  = lic.get("db_limit",  5)
-    sar_limit = lic.get("sar_limit", 5)
-    if db_limit  == -1: db_limit  = 9999  # ENT unlimited — show as large number
-    if sar_limit == -1: sar_limit = 9999
+    lic       = _check_license()
+    db_limit  = lic.get("db_limit",   5)
+    sar_limit = lic.get("sar_limit",  5)
+    nmon_limit= lic.get("nmon_limit", 0)
+    if db_limit   == -1: db_limit   = 9999  # ENT unlimited
+    if sar_limit  == -1: sar_limit  = 9999
+    if nmon_limit == -1: nmon_limit = 9999
 
     return JSONResponse({
-        "ai_mode":           cfg.get("ai_mode", "rules"),
-        "license_db_count":  db_limit,
-        "license_sar_count": sar_limit,
-        "db_used":           lic.get("db_used",  0),
-        "sar_used":          lic.get("sar_used", 0),
-        "username":          sess.get("username", ""),
+        "ai_mode":            cfg.get("ai_mode", "rules"),
+        "license_db_count":   db_limit,
+        "license_sar_count":  sar_limit,
+        "license_nmon_count": nmon_limit,
+        "db_used":            lic.get("db_used",   0),
+        "sar_used":           lic.get("sar_used",  0),
+        "nmon_used":          lic.get("nmon_used", 0),
+        "username":           sess.get("username", ""),
     })
 
 
@@ -2932,21 +3061,25 @@ async def api_db_master_list():
     try:
         conn = get_db_connection()
         with conn.cursor() as cur:
-            # Get db_limit from license key
             cur.execute("SELECT value FROM portal_config WHERE key='license_key'")
             row      = cur.fetchone()
             key_info = {}
             if row and row[0]:
                 from modules.license_engine import validate_license_key
                 key_info = validate_license_key(row[0])
-            db_limit = key_info.get("db_limit", 5)
-            if db_limit == -1:
-                db_limit = 9999
+            db_limit  = key_info.get("db_limit",   5)
+            sar_limit = key_info.get("sar_limit",  0)
+            nmon_limit= key_info.get("nmon_limit", 0)
+            if db_limit   == -1: db_limit   = 9999
+            if sar_limit  == -1: sar_limit  = 9999
+            if nmon_limit == -1: nmon_limit = 9999
 
             cur.execute("""
                 SELECT id, db_name, instance_name, inst_no,
                        host_name, db_type, description, active,
-                       added_at, added_by
+                       added_at, added_by,
+                       COALESCE(os_type,    'Linux') AS os_type,
+                       COALESCE(os_utility, 'SAR')   AS os_utility
                 FROM awr_db_master
                 ORDER BY added_at
             """)
@@ -2966,14 +3099,22 @@ async def api_db_master_list():
                 "active":        r[7],
                 "added_at":      r[8].isoformat() if r[8] else "",
                 "added_by":      r[9] or "",
+                "os_type":       r[10],
+                "os_utility":    r[11],
             })
 
-        active_count = sum(1 for d in dbs if d["active"])
+        active_count     = sum(1 for d in dbs if d["active"])
+        sar_host_count   = len({d["host_name"] for d in dbs if d["active"] and d["os_utility"] == "SAR" and d["host_name"]})
+        nmon_host_count  = len({d["host_name"] for d in dbs if d["active"] and d["os_utility"] == "NMON" and d["host_name"]})
         return JSONResponse({
-            "dbs":          dbs,
-            "db_limit":     db_limit,
-            "active_count": active_count,
-            "slots_free":   max(0, db_limit - active_count),
+            "dbs":             dbs,
+            "db_limit":        db_limit,
+            "sar_limit":       sar_limit,
+            "nmon_limit":      nmon_limit,
+            "active_count":    active_count,
+            "sar_host_count":  sar_host_count,
+            "nmon_host_count": nmon_host_count,
+            "slots_free":      max(0, db_limit - active_count),
         })
     except Exception as e:
         return JSONResponse({"error": str(e), "dbs": [], "db_limit": 0,
@@ -2982,26 +3123,34 @@ async def api_db_master_list():
 
 @app.post("/api/db-master/add")
 async def api_db_master_add(request: Request):
-    """Add a DB to awr_db_master."""
+    """Add a DB to awr_db_master — with OS type/utility and same-hostname validation."""
     if not _is_admin(request):
         raise HTTPException(403, "Admin access required")
     body = await request.json()
-    db_name       = (body.get("db_name") or "").strip().upper()
+    db_name       = (body.get("db_name")       or "").strip().upper()
     instance_name = (body.get("instance_name") or "").strip()
     inst_no       = int(body.get("inst_no") or 1)
-    host_name     = (body.get("host_name") or "").strip()
-    db_type       = (body.get("db_type") or "STANDALONE").strip().upper()
-    description   = (body.get("description") or "").strip()
+    host_name     = (body.get("host_name")     or "").strip()
+    db_type       = (body.get("db_type")       or "STANDALONE").strip().upper()
+    description   = (body.get("description")   or "").strip()
+    os_type       = (body.get("os_type")       or "Linux").strip()
+    os_utility    = (body.get("os_utility")    or "SAR").strip().upper()
     session       = _get_session(request)
     added_by      = session.get("username", "admin")
 
     if not db_name:
         raise HTTPException(400, "db_name is required")
 
+    # Auto-derive utility from OS type if not explicitly set
+    if os_type == "IBM AIX" and os_utility not in ("NMON", "None"):
+        os_utility = "NMON"
+    elif os_type == "Linux" and os_utility not in ("SAR", "None"):
+        os_utility = "SAR"
+
     try:
         conn = get_db_connection()
         with conn.cursor() as cur:
-            # Check license slot availability
+            # License slot check
             cur.execute("SELECT value FROM portal_config WHERE key='license_key'")
             row = cur.fetchone()
             if row and row[0]:
@@ -3009,9 +3158,7 @@ async def api_db_master_add(request: Request):
                 ki = validate_license_key(row[0])
                 db_limit = ki.get("db_limit", 5)
                 if db_limit != -1:
-                    cur.execute(
-                        "SELECT COUNT(*) FROM awr_db_master WHERE active = TRUE"
-                    )
+                    cur.execute("SELECT COUNT(*) FROM awr_db_master WHERE active = TRUE")
                     active_count = cur.fetchone()[0]
                     if active_count >= db_limit:
                         conn.close()
@@ -3022,22 +3169,41 @@ async def api_db_master_add(request: Request):
                                      f"Upgrade license to add more databases."
                         }, status_code=400)
 
+            # Same-hostname SAR+NMON exclusivity check
+            if host_name and os_utility in ("SAR", "NMON"):
+                opposite = "NMON" if os_utility == "SAR" else "SAR"
+                cur.execute("""
+                    SELECT db_name FROM awr_db_master
+                    WHERE host_name = %s AND os_utility = %s AND active = TRUE
+                    LIMIT 1
+                """, (host_name, opposite))
+                conflict = cur.fetchone()
+                if conflict:
+                    conn.close()
+                    return JSONResponse({
+                        "ok": False,
+                        "error": f"Host '{host_name}' already has a {opposite} entry "
+                                 f"({conflict[0]}). A host cannot have both SAR and NMON."
+                    }, status_code=400)
+
             cur.execute("""
                 INSERT INTO awr_db_master
                     (db_name, instance_name, inst_no, host_name,
-                     db_type, description, active, added_by)
-                VALUES (%s, %s, %s, %s, %s, %s, TRUE, %s)
+                     db_type, description, os_type, os_utility, active, added_by)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, TRUE, %s)
                 ON CONFLICT (db_name, inst_no)
                 DO UPDATE SET
                     instance_name = EXCLUDED.instance_name,
                     host_name     = EXCLUDED.host_name,
                     db_type       = EXCLUDED.db_type,
                     description   = EXCLUDED.description,
+                    os_type       = EXCLUDED.os_type,
+                    os_utility    = EXCLUDED.os_utility,
                     active        = TRUE,
                     added_by      = EXCLUDED.added_by
                 RETURNING id
             """, (db_name, instance_name, inst_no, host_name,
-                  db_type, description, added_by))
+                  db_type, description, os_type, os_utility, added_by))
             new_id = cur.fetchone()[0]
         conn.commit()
         conn.close()
@@ -4270,6 +4436,135 @@ async def api_pull_sar_files(request: Request):
             return JSONResponse(result)
         else:
             results = pull_all_servers(sar_drop)
+            total   = sum(r.get('files_pulled', 0) for r in results)
+            return JSONResponse({
+                "ok": True,
+                "servers_processed": len(results),
+                "total_files_pulled": total,
+                "results": results
+            })
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+# ══════════════════════════════════════════════════════════════════════
+# NMON SSH CONNECTIONS API  (mirrors SAR SSH connections above)
+# ══════════════════════════════════════════════════════════════════════
+
+@app.get("/api/nmon-ssh-connections")
+async def api_get_nmon_ssh_connections(request: Request):
+    """List all configured NMON SSH connections (no passwords)."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.nmon_ssh_fetcher import get_all_connections
+        return JSONResponse({"ok": True, "connections": get_all_connections()})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/nmon-ssh-connections")
+async def api_save_nmon_ssh_connection(request: Request):
+    """Add or update a NMON SSH connection."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        body = await request.json()
+        session = _get_session(request)
+        from modules.nmon_ssh_fetcher import save_connection
+        result = save_connection(body, added_by=session.get("username", "admin"))
+        return JSONResponse(result, status_code=200 if result["ok"] else 400)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.delete("/api/nmon-ssh-connections/{conn_id}")
+async def api_delete_nmon_ssh_connection(conn_id: int, request: Request):
+    """Delete a NMON SSH connection."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.nmon_ssh_fetcher import delete_connection
+        return JSONResponse(delete_connection(conn_id))
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/nmon-ssh-connections/{conn_id}/test")
+async def api_test_nmon_ssh_connection(conn_id: int, request: Request):
+    """Test SSH connectivity for a NMON connection."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.nmon_ssh_fetcher import test_connection
+        return JSONResponse(test_connection(conn_id))
+    except Exception as e:
+        return JSONResponse({"ok": False, "message": str(e)}, status_code=500)
+
+
+@app.post("/api/nmon-ssh-connections/pull-incremental")
+async def api_pull_nmon_incremental(request: Request):
+    """
+    Incremental NMON pull — only new snapshots since last call.
+    Downloads to nmon_cache/ (not nmon_drop/) to avoid NMONWatcher race.
+    Body: { conn_id: int|null }
+    """
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        body    = await request.json()
+        conn_id = body.get("conn_id")
+
+        import yaml as _yaml
+        settings_path = os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')
+        with open(settings_path) as f:
+            settings = _yaml.safe_load(f)
+        _paths     = settings.get('paths', {})
+        cache_rel  = _paths.get('nmon_cache_directory', 'nmon_cache')
+        nmon_cache = (cache_rel if os.path.isabs(cache_rel)
+                      else os.path.join(_PROJECT_ROOT, cache_rel))
+        os.makedirs(nmon_cache, exist_ok=True)
+
+        from modules.nmon_ssh_fetcher import (pull_and_parse_incremental,
+                                               pull_and_parse_all_incremental)
+        if conn_id:
+            result = pull_and_parse_incremental(int(conn_id), nmon_cache)
+            return JSONResponse(result)
+        else:
+            results = pull_and_parse_all_incremental(nmon_cache)
+            return JSONResponse({
+                "ok":      True,
+                "servers": len(results),
+                "results": results,
+            })
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/nmon-ssh-connections/pull")
+async def api_pull_nmon_files(request: Request):
+    """Pull NMON files from one or all SSH connections. Body: { conn_id: int|null }"""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        body    = await request.json()
+        conn_id = body.get("conn_id")
+
+        import yaml as _yaml
+        settings_path = os.path.join(_PROJECT_ROOT, 'config', 'settings.yaml')
+        with open(settings_path) as f:
+            settings = _yaml.safe_load(f)
+        nmon_drop = settings.get('paths', {}).get('nmon_drop_directory', 'nmon_drop')
+        if not os.path.isabs(nmon_drop):
+            nmon_drop = os.path.join(_PROJECT_ROOT, nmon_drop)
+        os.makedirs(nmon_drop, exist_ok=True)
+
+        from modules.nmon_ssh_fetcher import pull_nmon_files, pull_all_servers
+        if conn_id:
+            result = pull_nmon_files(int(conn_id), nmon_drop)
+            return JSONResponse(result)
+        else:
+            results = pull_all_servers(nmon_drop)
             total   = sum(r.get('files_pulled', 0) for r in results)
             return JSONResponse({
                 "ok": True,
