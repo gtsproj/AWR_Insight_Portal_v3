@@ -1,0 +1,1128 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 788,
+  "links": [],
+  "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 99,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div style=\"font-family:Inter,system-ui,sans-serif;padding:4px 0;line-height:2\"><a href=\"${portal_url}\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">⬅ Portal home</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/awr-intelligence-ai\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">🧠 AWR intelligence</a><a href=\"/d/awr-anomalies-ai\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">🚨 AWR anomalies</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/nmon-overview-ai\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">📟 NMON overview</a><a href=\"/d/nmon-awr-correlation-ai\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">🔗 AWR+NMON correlation</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/fdv31-awr-nav\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">📊 AWR trends</a></div>",
+        "mode": "html"
+      },
+      "pluginVersion": "12.0.2",
+      "title": "",
+      "type": "text"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "red",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 3
+      },
+      "id": 10,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(*) AS value FROM nmon_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nAND severity='critical'",
+          "refId": "A"
+        }
+      ],
+      "title": "Critical Anomalies",
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "orange",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 3
+      },
+      "id": 11,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(*) AS value FROM nmon_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nAND severity='alert'",
+          "refId": "A"
+        }
+      ],
+      "title": "Alert Anomalies",
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "yellow",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 3
+      },
+      "id": 12,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(*) AS value FROM nmon_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nAND severity='warning'",
+          "refId": "A"
+        }
+      ],
+      "title": "Warning Anomalies",
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "text",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 3
+      },
+      "id": 13,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(DISTINCT snap_time::date) AS value FROM nmon_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')",
+          "refId": "A"
+        }
+      ],
+      "title": "Days with Anomalies",
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "text",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 3
+      },
+      "id": 14,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(DISTINCT hostname) AS value FROM nmon_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')",
+          "refId": "A"
+        }
+      ],
+      "title": "Servers Affected",
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "text",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 3
+      },
+      "id": 15,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT ROUND(MAX(ABS(z_score))::numeric,1) AS value FROM nmon_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')",
+          "refId": "A"
+        }
+      ],
+      "title": "Max Deviation Score",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
+      "id": 20,
+      "panels": [],
+      "title": "Top Anomalies",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 21,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "z_score"
+          }
+        ]
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  CASE severity\n    WHEN 'critical' THEN '🔴 CRITICAL'\n    WHEN 'alert'    THEN '🟠 ALERT'\n    ELSE                 '🟡 WARNING'\n  END AS \"Severity\",\n  hostname AS \"Hostname\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  metric_source AS \"Source\",\n  metric_name   AS \"Metric\",\n  object_name   AS \"Object\",\n  ROUND(metric_value::numeric,2)    AS \"Current Value\",\n  ROUND(baseline_mean::numeric,2)   AS \"Baseline Mean\",\n  ROUND(z_score::numeric,3)         AS \"z_score\",\n  severity\nFROM nmon_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nORDER BY ABS(z_score) DESC, severity, snap_time DESC\nLIMIT 100",
+          "refId": "A"
+        }
+      ],
+      "title": "Top NMON Anomalies by Deviation Score",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 30,
+      "panels": [],
+      "title": "Anomaly Timeline",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Critical"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Alert"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Warning"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "id": 31,
+      "options": {
+        "stacking": "normal",
+        "xField": "Date"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  to_char(snap_time::date,'YYYY-MM-DD') AS \"Date\",\n  NULLIF(COUNT(*) FILTER (WHERE severity='critical'),0) AS \"Critical\",\n  NULLIF(COUNT(*) FILTER (WHERE severity='alert'),0)    AS \"Alert\",\n  COUNT(*) FILTER (WHERE severity='warning')            AS \"Warning\"\nFROM nmon_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nGROUP BY snap_time::date ORDER BY snap_time::date",
+          "refId": "A"
+        }
+      ],
+      "title": "Anomaly Count per Day — by Severity",
+      "type": "barchart"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 40,
+      "panels": [],
+      "title": "Breakdown by Source",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 29
+      },
+      "id": 41,
+      "options": {
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "z_score"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  metric_source AS \"Source\",\n  COUNT(*) FILTER (WHERE severity='critical') AS \"Critical\",\n  COUNT(*) FILTER (WHERE severity='alert')    AS \"Alert\",\n  COUNT(*) FILTER (WHERE severity='warning')  AS \"Warning\",\n  COUNT(*)                                    AS \"Total\"\nFROM nmon_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\nGROUP BY metric_source ORDER BY \"Total\" DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Anomalies by Metric Source",
+      "type": "table"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 29
+      },
+      "id": 42,
+      "options": {
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "z_score"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  metric_source AS \"Source\",\n  metric_name   AS \"Metric\",\n  object_name   AS \"Object\",\n  COUNT(*)      AS \"Times Flagged\",\n  ROUND(MAX(ABS(z_score))::numeric,2)  AS \"Max Dev Score\",\n  ROUND(AVG(metric_value)::numeric,3)  AS \"Avg Value\",\n  ROUND(AVG(baseline_mean)::numeric,3) AS \"Avg Baseline\"\nFROM nmon_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\n  AND severity IN ('alert','critical')\nGROUP BY metric_source, metric_name, object_name\nORDER BY \"Max Dev Score\" DESC LIMIT 50",
+          "refId": "A"
+        }
+      ],
+      "title": "Top Anomalous Metrics (Alert + Critical)",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 38
+      },
+      "id": 50,
+      "panels": [],
+      "title": "CPU Anomalies",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 39
+      },
+      "id": 51,
+      "options": {
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "z_score"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  hostname AS \"Hostname\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  object_name   AS \"CPU\",\n  metric_name   AS \"Metric\",\n  ROUND(metric_value::numeric,2)   AS \"Current Value\",\n  ROUND(baseline_mean::numeric,2)  AS \"Baseline\",\n  ROUND(z_score::numeric,2)        AS \"Dev Score\",\n  severity\nFROM nmon_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\n  AND metric_source IN ('nmon_cpu','nmon_cpu_usr')\nORDER BY ABS(z_score) DESC, snap_time DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU Anomalies (nmon_cpu)",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 47
+      },
+      "id": 60,
+      "panels": [],
+      "title": "Memory Anomalies",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 48
+      },
+      "id": 61,
+      "options": {
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "z_score"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  hostname AS \"Hostname\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  metric_name   AS \"Metric\",\n  ROUND(metric_value::numeric,2)   AS \"Current Value\",\n  ROUND(baseline_mean::numeric,2)  AS \"Baseline\",\n  ROUND(z_score::numeric,2)        AS \"Dev Score\",\n  severity\nFROM nmon_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\n  AND metric_source IN ('nmon_mem','nmon_swap')\nORDER BY ABS(z_score) DESC, snap_time DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Memory Anomalies (nmon_mem)",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 56
+      },
+      "id": 70,
+      "panels": [],
+      "title": "Disk Anomalies",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 57
+      },
+      "id": 71,
+      "options": {
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "z_score"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  hostname AS \"Hostname\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  object_name   AS \"Device\",\n  metric_name   AS \"Metric\",\n  ROUND(metric_value::numeric,2)   AS \"Current Value\",\n  ROUND(baseline_mean::numeric,2)  AS \"Baseline\",\n  ROUND(z_score::numeric,2)        AS \"Dev Score\",\n  severity\nFROM nmon_anomalies\nWHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY')\n  AND metric_source IN ('nmon_disk','nmon_diskrd')\nORDER BY ABS(z_score) DESC, snap_time DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Disk Anomalies (nmon_disk) — per Device",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 65
+      },
+      "id": 80,
+      "panels": [],
+      "title": "Paging, Load & Network Anomalies",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 66
+      },
+      "id": 81,
+      "options": {
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "z_score"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  metric_name AS \"Metric\",\n  ROUND(metric_value::numeric,3) AS \"Current\",\n  ROUND(baseline_mean::numeric,3) AS \"Baseline\",\n  ROUND(z_score::numeric,2) AS \"Dev Score\", severity\nFROM nmon_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY') AND metric_source='nmon_paging'\nORDER BY ABS(z_score) DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Paging Anomalies (nmon_paging)",
+      "type": "table"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 66
+      },
+      "id": 82,
+      "options": {
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "z_score"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  metric_name AS \"Metric\",\n  ROUND(metric_value::numeric,3) AS \"Current\",\n  ROUND(baseline_mean::numeric,3) AS \"Baseline\",\n  ROUND(z_score::numeric,2) AS \"Dev Score\", severity\nFROM nmon_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY') AND metric_source='nmon_runq'\nORDER BY ABS(z_score) DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Run Queue Anomalies (nmon_runq)",
+      "type": "table"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 66
+      },
+      "id": 83,
+      "options": {
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "z_score"
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  CASE severity WHEN 'critical' THEN '🔴' WHEN 'alert' THEN '🟠' ELSE '🟡' END AS \"!\",\n  to_char(snap_time,'YYYY-MM-DD HH24:MI') AS \"Snap Time\",\n  object_name AS \"Interface\",\n  metric_name AS \"Metric\",\n  ROUND(metric_value::numeric,3) AS \"Current\",\n  ROUND(baseline_mean::numeric,3) AS \"Baseline\",\n  ROUND(z_score::numeric,2) AS \"Dev Score\", severity\nFROM nmon_anomalies WHERE hostname = '${hostname}'\n  AND '${hostname}' != ''\n  AND '${from_date}' != '' AND '${to_date}' != ''\n  AND snap_time::date BETWEEN to_date('${from_date}','DD-Mon-YYYY')\n                          AND to_date('${to_date}','DD-Mon-YYYY') AND metric_source='nmon_net'\nORDER BY ABS(z_score) DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Network Anomalies (nmon_net) — per Interface",
+      "type": "table"
+    }
+  ],
+  "preload": false,
+  "refresh": "1m",
+  "schemaVersion": 41,
+  "tags": [
+    "nmon",
+    "awr-insight",
+    "ai"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "http://192.168.1.7:8000",
+          "value": "http://192.168.1.7:8000"
+        },
+        "description": "Base URL for Portal URL — change to server IP for intranet access",
+        "hide": 2,
+        "label": "Portal URL",
+        "name": "portal_url",
+        "options": [
+          {
+            "selected": true,
+            "text": "http://192.168.1.7:8000",
+            "value": "http://192.168.1.7:8000"
+          }
+        ],
+        "query": "http://192.168.1.7:8000",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "http://192.168.1.7:3000",
+          "value": "http://192.168.1.7:3000"
+        },
+        "description": "Base URL for Grafana URL — change to server IP for intranet access",
+        "hide": 2,
+        "label": "Grafana URL",
+        "name": "grafana_url",
+        "options": [
+          {
+            "selected": true,
+            "text": "http://192.168.1.7:3000",
+            "value": "http://192.168.1.7:3000"
+          }
+        ],
+        "query": "http://192.168.1.7:3000",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "ferwfz6k211j4b"
+        },
+        "definition": "SELECT value, label \nFROM (  SELECT '' AS value, '' AS label  \nUNION ALL  \nSELECT DISTINCT hostname AS value, hostname AS label \nFROM nmon_cpu_stats) AS t ORDER BY value;",
+        "includeAll": false,
+        "label": "Hostname",
+        "name": "hostname",
+        "options": [],
+        "query": "SELECT value, label \nFROM (  SELECT '' AS value, '' AS label  \nUNION ALL  \nSELECT DISTINCT hostname AS value, hostname AS label \nFROM nmon_cpu_stats) AS t ORDER BY value;",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "ferwfz6k211j4b"
+        },
+        "definition": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT    to_char(snap_time::date,'DD-Mon-YYYY') AS value,\n    to_char(snap_time::date,'DD-Mon-YYYY') AS label  FROM nmon_cpu_stats WHERE hostname='${hostname}' AND cpu='ALL') AS t ORDER BY value ASC;",
+        "label": "From_Date",
+        "name": "from_date",
+        "options": [],
+        "query": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT    to_char(snap_time::date,'DD-Mon-YYYY') AS value,\n    to_char(snap_time::date,'DD-Mon-YYYY') AS label  FROM nmon_cpu_stats WHERE hostname='${hostname}' AND cpu='ALL') AS t ORDER BY value ASC;",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "ferwfz6k211j4b"
+        },
+        "definition": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT    to_char(snap_time::date,'DD-Mon-YYYY') AS value,\n    to_char(snap_time::date,'DD-Mon-YYYY') AS label  FROM nmon_cpu_stats WHERE hostname='${hostname}' AND cpu='ALL') AS t ORDER BY value ASC;",
+        "label": "To_Date",
+        "name": "to_date",
+        "options": [],
+        "query": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT    to_char(snap_time::date,'DD-Mon-YYYY') AS value,\n    to_char(snap_time::date,'DD-Mon-YYYY') AS label  FROM nmon_cpu_stats WHERE hostname='${hostname}' AND cpu='ALL') AS t ORDER BY value ASC;",
+        "refresh": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1d",
+    "to": "now"
+  },
+  "timepicker": {
+    "hidden": true
+  },
+  "timezone": "Asia/Kolkata",
+  "title": "NMON — Anomaly Detection AI",
+  "uid": "nmon-anomalies-ai",
+  "version": 8
+}

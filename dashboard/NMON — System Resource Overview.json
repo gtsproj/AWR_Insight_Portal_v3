@@ -1,0 +1,1368 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 791,
+  "links": [],
+  "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 99,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div style=\"font-family:Inter,system-ui,sans-serif;padding:4px 0;line-height:2\"><a href=\"${portal_url}\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">⬅ Portal home</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/awr-unified-intelligence\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">🧠 AWR intelligence</a><a href=\"/d/awr-anomalies\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">🚨 AWR anomalies</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/nmon-anomalies\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">🚨 NMON anomalies</a><a href=\"/d/nmon-awr-correlation\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">🔗 AWR+NMON correlation</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/fdv31-awr-nav\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">📊 AWR trends</a></div>",
+        "mode": "html"
+      },
+      "pluginVersion": "12.0.2",
+      "title": "",
+      "type": "text"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 2
+      },
+      "id": 100,
+      "panels": [],
+      "title": "🖥️ CPU",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 0,
+        "y": 3
+      },
+      "id": 1,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, wait_pct AS \"CPU I/O Wait %\"\nFROM nmon_cpu_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date AND cpu='ALL'\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU I/O Wait %",
+      "type": "gauge"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 4,
+        "y": 3
+      },
+      "id": 2,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, busy_pct AS \"CPU Busy %\"\nFROM nmon_cpu_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date AND cpu='ALL'\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU Busy %",
+      "type": "gauge"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 16,
+        "x": 8,
+        "y": 3
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, user_pct AS \"User %\", sys_pct AS \"Sys %\",\n       wait_pct AS \"Wait %\", idle_pct AS \"Idle %\"\nFROM nmon_cpu_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date AND cpu='ALL'\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU — User / Sys / Wait / Idle",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 11
+      },
+      "id": 101,
+      "panels": [],
+      "title": "🧠 Memory",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 12
+      },
+      "id": 20,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time,\n  mem_used_mb AS \"Used MB\", mem_free_mb AS \"Free MB\",\n  cached_mb AS \"Cached MB\", buffers_mb AS \"Buffers MB\"\nFROM nmon_memory_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Memory — Used MB / Free MB",
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 12,
+        "y": 12
+      },
+      "id": 21,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time,\n  mem_used_pct AS \"Mem Used %\", swap_used_pct AS \"Swap Used %\"\nFROM nmon_memory_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Memory — Used % / Swap %",
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 20,
+        "y": 12
+      },
+      "id": 22,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, mem_used_pct AS \"Mem Used %\"\nFROM nmon_memory_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Mem Used %",
+      "type": "gauge"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
+      "id": 102,
+      "panels": [],
+      "title": "💾 Swap",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0,
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 16,
+        "x": 0,
+        "y": 21
+      },
+      "id": 30,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time,\n  (swap_total_mb - swap_free_mb) AS \"Swap Used MB\",\n  swap_free_mb AS \"Swap Free MB\"\nFROM nmon_memory_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Swap — Used MB / Free MB",
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 21
+      },
+      "id": 31,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, swap_used_pct AS \"Swap Used %\"\nFROM nmon_memory_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Swap Used %",
+      "type": "gauge"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 103,
+      "panels": [],
+      "title": "💿 Disk I/O",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0,
+          "unit": "KBs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 16,
+        "x": 0,
+        "y": 29
+      },
+      "id": 40,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time,\n  SUM(read_kbs) AS \"Total Read KB/s\",\n  SUM(write_kbs) AS \"Total Write KB/s\"\nFROM nmon_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nGROUP BY snap_time\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Disk — Total Read + Write KB/s",
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0,
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 29
+      },
+      "id": 41,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, MAX(busy_pct) AS \"Max Disk Busy %\"\nFROM nmon_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nGROUP BY snap_time\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Disk Busy % (max device)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 37
+      },
+      "id": 104,
+      "panels": [],
+      "title": "💿 Disk Detail — Per Device",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0,
+          "unit": "KBs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 38
+      },
+      "id": 42,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, disk_name AS metric, read_kbs AS value\nFROM nmon_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Disk Read KB/s — per Device",
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0,
+          "unit": "KBs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 38
+      },
+      "id": 43,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, disk_name AS metric, write_kbs AS value\nFROM nmon_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Disk Write KB/s — per Device",
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0,
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 46
+      },
+      "id": 44,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, disk_name AS metric, busy_pct AS value\nFROM nmon_disk_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Disk Busy % — per Device",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 54
+      },
+      "id": 105,
+      "panels": [],
+      "title": "🌐 Network",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0,
+          "unit": "KBs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 16,
+        "x": 0,
+        "y": 55
+      },
+      "id": 50,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time,\n  SUM(read_kbs) AS \"Total rxKB/s\", SUM(write_kbs) AS \"Total txKB/s\"\nFROM nmon_network_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nGROUP BY snap_time\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Network — Total Read + Write KB/s",
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0,
+          "unit": "KBs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 55
+      },
+      "id": 51,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, interface, read_kbs AS \"rxKB/s\"\nFROM nmon_network_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Network — per Interface",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 63
+      },
+      "id": 106,
+      "panels": [],
+      "title": "📊 Load & Context Switches",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 64
+      },
+      "id": 60,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, runq_sz AS \"Run Queue\"\nFROM nmon_runqueue_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU Run Queue Length",
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 64
+      },
+      "id": 61,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, cswch_persec AS \"cswch/s\"\nFROM nmon_ctxswitch_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Context Switches / sec",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 71
+      },
+      "id": 107,
+      "panels": [],
+      "title": "📄 Paging",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 16,
+        "x": 0,
+        "y": 72
+      },
+      "id": 70,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time,\n  pgin_persec AS \"Page-in/s\", pgout_persec AS \"Page-out/s\"\nFROM nmon_paging_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Page-in / Page-out per sec",
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 72
+      },
+      "id": 71,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time,\n  pgsin_persec AS \"pgsin/s (swap in)\",\n  pgsout_persec AS \"pgsout/s (swap out)\"\nFROM nmon_paging_stats\nWHERE '${hostname}' != '' AND hostname = '${hostname}' AND snap_time::date BETWEEN '${from_date}'::date AND '${to_date}'::date\nORDER BY snap_time",
+          "refId": "A"
+        }
+      ],
+      "title": "Swap Page-in/out (active swap I/O)",
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "refresh": "1m",
+  "schemaVersion": 41,
+  "tags": [
+    "nmon",
+    "awr-insight",
+    "rules"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "ferwfz6k211j4b"
+        },
+        "definition": "SELECT value, label \nFROM (  SELECT '' AS value, '' AS label  \nUNION ALL  \nSELECT DISTINCT hostname AS value, hostname AS label \nFROM nmon_cpu_stats) AS t ORDER BY value;",
+        "includeAll": false,
+        "label": "Hostname",
+        "name": "hostname",
+        "options": [],
+        "query": "SELECT value, label \nFROM (  SELECT '' AS value, '' AS label  \nUNION ALL  \nSELECT DISTINCT hostname AS value, hostname AS label \nFROM nmon_cpu_stats) AS t ORDER BY value;",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "ferwfz6k211j4b"
+        },
+        "definition": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT    to_char(snap_time::date,'DD-Mon-YYYY') AS value,\n    to_char(snap_time::date,'DD-Mon-YYYY') AS label  FROM nmon_cpu_stats WHERE hostname='${hostname}' AND cpu='ALL') AS t ORDER BY value ASC;",
+        "label": "From_Date",
+        "name": "from_date",
+        "options": [],
+        "query": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT    to_char(snap_time::date,'DD-Mon-YYYY') AS value,\n    to_char(snap_time::date,'DD-Mon-YYYY') AS label  FROM nmon_cpu_stats WHERE hostname='${hostname}' AND cpu='ALL') AS t ORDER BY value ASC;",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "ferwfz6k211j4b"
+        },
+        "definition": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT    to_char(snap_time::date,'DD-Mon-YYYY') AS value,\n    to_char(snap_time::date,'DD-Mon-YYYY') AS label  FROM nmon_cpu_stats WHERE hostname='${hostname}' AND cpu='ALL') AS t ORDER BY value ASC;",
+        "label": "To_Date",
+        "name": "to_date",
+        "options": [],
+        "query": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT    to_char(snap_time::date,'DD-Mon-YYYY') AS value,\n    to_char(snap_time::date,'DD-Mon-YYYY') AS label  FROM nmon_cpu_stats WHERE hostname='${hostname}' AND cpu='ALL') AS t ORDER BY value ASC;",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "http://192.168.1.7:8000",
+          "value": "http://192.168.1.7:8000"
+        },
+        "hide": 2,
+        "label": "Portal URL",
+        "name": "portal_url",
+        "query": "http://192.168.1.7:8000",
+        "skipUrlSync": true,
+        "type": "constant"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1d",
+    "to": "now"
+  },
+  "timepicker": {
+    "hidden": true
+  },
+  "timezone": "Asia/Kolkata",
+  "title": "NMON — System Resource Overview",
+  "uid": "nmon-overview",
+  "version": 6
+}

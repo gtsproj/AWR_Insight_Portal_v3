@@ -1,0 +1,960 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 786,
+  "links": [],
+  "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 99,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div style=\"font-family:Inter,system-ui,sans-serif;padding:4px 0;line-height:2\"><a href=\"${portal_url}\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">⬅ Portal home</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/awr-intelligence-ai\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">🧠 AWR intelligence</a><a href=\"/d/awr-anomalies-ai\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">🚨 AWR anomalies</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/nmon-overview-ai\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">📟 NMON overview</a><a href=\"/d/nmon-anomalies-ai\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">🚨 NMON anomalies</a><span style=\"color:rgba(255,255,255,0.15);margin-right:5px\">|</span><a href=\"/d/fdv31-awr-nav\" target=\"_self\" style=\"display:inline-flex;align-items:center;gap:4px;font-size:11px;color:rgba(220,225,232,0.55);padding:3px 9px;border:1px solid rgba(255,255,255,0.12);border-radius:5px;text-decoration:none;white-space:nowrap;margin-right:5px;margin-bottom:3px\">📊 AWR trends</a></div>",
+        "mode": "html"
+      },
+      "pluginVersion": "12.0.2",
+      "title": "",
+      "type": "text"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 2
+      },
+      "id": 98,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div style=\"font-family:Inter,system-ui,sans-serif;font-size:12px;color:rgba(220,225,232,0.7);padding:6px 8px;line-height:1.6\"><b>AWR + NMON Correlation</b> — Overlays Oracle wait events with IBM AIX OS metrics on the same timeline. Select: <b>Hostname</b> (AIX server running Oracle) → <b>DB Name</b> → <b>Instance</b> → <b>Start Snap</b> → <b>End Snap</b>. NMON snapshots are aligned to AWR snap boundaries using a ±30-minute window.</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "12.0.2",
+      "title": "",
+      "type": "text"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      },
+      "id": 200,
+      "panels": [],
+      "title": "I/O Correlation: Oracle Wait vs NMON OS iowait",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "ferwfz6k211j4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time,\n  event AS metric, pct_db_time AS \"Oracle Wait % DB Time\"\nFROM awr_foreground_wait_events\nWHERE dbname='${dbname}' AND '${dbname}' != ''\n  AND instance='${instance}' AND '${instance}' != ''\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int\n  AND event IN ('db file sequential read','db file scattered read','direct path read')\nORDER BY snap_time;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, wait_pct AS \"NMON OS iowait %\"\nFROM nmon_cpu_stats\nWHERE '${hostname}' != '' AND hostname='${hostname}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND snap_time >= COALESCE(\n    (SELECT snap_time - INTERVAL '30 minutes' FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n       AND begin_snap = split_part('${start_snap}',' - ',1)::int LIMIT 1),\n    NOW() - INTERVAL '24 hours')\n  AND snap_time <= COALESCE(\n    (SELECT snap_time + INTERVAL '30 minutes' FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n       AND begin_snap = split_part('${end_snap}',' - ',1)::int LIMIT 1),\n    NOW()) AND cpu='ALL'\nORDER BY snap_time",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Oracle I/O Wait Events % DB Time  vs  NMON OS iowait %",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "id": 201,
+      "panels": [],
+      "title": "CPU Correlation: Oracle CPU vs NMON CPU",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "ferwfz6k211j4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  snap_time AS time,-- AT TIME ZONE 'Asia/Kolkata' AS \"time\",\n  ROUND(\n    CASE\n      WHEN MAX(CASE WHEN metric = 'DB Time(s)' THEN per_sec END) > 0\n      THEN (\n        MAX(CASE WHEN metric = 'DB CPU(s)'  THEN per_sec END) /\n        MAX(CASE WHEN metric = 'DB Time(s)' THEN per_sec END)\n      ) * 100\n      ELSE 0\n    END::numeric, 2\n  ) AS \"Oracle CPU % of DB Time\",\n  ROUND(\n    MAX(CASE WHEN metric = 'DB CPU(s)' THEN per_sec END)::numeric, 2\n  ) AS \"Oracle DB CPU (s/sec)\"\nFROM awr_load_profile\nWHERE '${dbname}'   != '' AND dbname   = '${dbname}'\n  AND '${instance}' != '' AND instance = '${instance}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int\n  AND metric IN ('DB Time(s)', 'DB CPU(s)')\nGROUP BY snap_time\nORDER BY snap_time",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time,\n  user_pct AS \"NMON user %\", sys_pct AS \"NMON sys %\"\nFROM nmon_cpu_stats\nWHERE '${hostname}' != '' AND hostname='${hostname}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND snap_time >= COALESCE(\n    (SELECT snap_time - INTERVAL '30 minutes' FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n       AND begin_snap = split_part('${start_snap}',' - ',1)::int LIMIT 1),\n    NOW() - INTERVAL '24 hours')\n  AND snap_time <= COALESCE(\n    (SELECT snap_time + INTERVAL '30 minutes' FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n       AND begin_snap = split_part('${end_snap}',' - ',1)::int LIMIT 1),\n    NOW()) AND cpu='ALL'\nORDER BY snap_time",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Oracle CPU Time % vs NMON CPU User/Sys %",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 26
+      },
+      "id": 202,
+      "panels": [],
+      "title": "Memory Correlation: NMON Memory vs Swap (AIX)",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "ferwfz6k211j4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 27
+      },
+      "id": 12,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time,\n  mem_used_pct AS \"Mem Used %\", swap_used_pct AS \"Swap Used %\"\nFROM nmon_memory_stats\nWHERE '${hostname}' != '' AND hostname='${hostname}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND snap_time >= COALESCE(\n    (SELECT snap_time - INTERVAL '30 minutes' FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n       AND begin_snap = split_part('${start_snap}',' - ',1)::int LIMIT 1),\n    NOW() - INTERVAL '24 hours')\n  AND snap_time <= COALESCE(\n    (SELECT snap_time + INTERVAL '30 minutes' FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n       AND begin_snap = split_part('${end_snap}',' - ',1)::int LIMIT 1),\n    NOW())\nORDER BY snap_time",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time,\n  (swap_total_mb - swap_free_mb) AS \"Swap Used MB\"\nFROM nmon_memory_stats\nWHERE '${hostname}' != '' AND hostname='${hostname}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND snap_time >= COALESCE(\n    (SELECT snap_time - INTERVAL '30 minutes' FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n       AND begin_snap = split_part('${start_snap}',' - ',1)::int LIMIT 1),\n    NOW() - INTERVAL '24 hours')\n  AND snap_time <= COALESCE(\n    (SELECT snap_time + INTERVAL '30 minutes' FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n       AND begin_snap = split_part('${end_snap}',' - ',1)::int LIMIT 1),\n    NOW())\nORDER BY snap_time",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "NMON Memory Used % + Swap Used % (AIX memory pressure)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 37
+      },
+      "id": 203,
+      "panels": [],
+      "title": "Disk I/O Correlation: NMON Disk vs Oracle Reads",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "ferwfz6k211j4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 38
+      },
+      "id": 13,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, disk_name AS metric, busy_pct AS value\nFROM nmon_disk_stats\nWHERE '${hostname}' != '' AND hostname='${hostname}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND snap_time >= COALESCE(\n    (SELECT snap_time - INTERVAL '30 minutes' FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n       AND begin_snap = split_part('${start_snap}',' - ',1)::int LIMIT 1),\n    NOW() - INTERVAL '24 hours')\n  AND snap_time <= COALESCE(\n    (SELECT snap_time + INTERVAL '30 minutes' FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n       AND begin_snap = split_part('${end_snap}',' - ',1)::int LIMIT 1),\n    NOW())\nORDER BY snap_time",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "NMON Disk Busy % per Device — AIX disk I/O saturation",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 46
+      },
+      "id": 204,
+      "panels": [],
+      "title": "CPU Run Queue: NMON Saturation Indicator",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "ferwfz6k211j4b"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 47
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ferwfz6k211j4b"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT snap_time AS time, runq_sz AS \"Run Queue Length\"\nFROM nmon_runqueue_stats\nWHERE '${hostname}' != '' AND hostname='${hostname}'\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND snap_time >= COALESCE(\n    (SELECT snap_time - INTERVAL '30 minutes' FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n       AND begin_snap = split_part('${start_snap}',' - ',1)::int LIMIT 1),\n    NOW() - INTERVAL '24 hours')\n  AND snap_time <= COALESCE(\n    (SELECT snap_time + INTERVAL '30 minutes' FROM awr_load_profile\n     WHERE dbname='${dbname}' AND instance='${instance}'\n       AND begin_snap = split_part('${end_snap}',' - ',1)::int LIMIT 1),\n    NOW())\nORDER BY snap_time",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "NMON Run Queue Length — spike = Oracle CPU starvation on AIX",
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "refresh": "1m",
+  "schemaVersion": 41,
+  "tags": [
+    "nmon",
+    "awr-insight",
+    "ai"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "http://192.168.1.7:8000",
+          "value": "http://192.168.1.7:8000"
+        },
+        "description": "Base URL for Portal URL — change to server IP for intranet access",
+        "hide": 2,
+        "label": "Portal URL",
+        "name": "portal_url",
+        "options": [
+          {
+            "selected": true,
+            "text": "http://192.168.1.7:8000",
+            "value": "http://192.168.1.7:8000"
+          }
+        ],
+        "query": "http://192.168.1.7:8000",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "http://192.168.1.7:3000",
+          "value": "http://192.168.1.7:3000"
+        },
+        "description": "Base URL for Grafana URL — change to server IP for intranet access",
+        "hide": 2,
+        "label": "Grafana URL",
+        "name": "grafana_url",
+        "options": [
+          {
+            "selected": true,
+            "text": "http://192.168.1.7:3000",
+            "value": "http://192.168.1.7:3000"
+          }
+        ],
+        "query": "http://192.168.1.7:3000",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "ferwfz6k211j4b"
+        },
+        "definition": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  \nUNION ALL  \nSELECT DISTINCT UPPER(hostname) AS value, UPPER(hostname) AS label \nFROM nmon_cpu_stats) AS t ORDER BY value;",
+        "label": "Hostname",
+        "name": "hostname",
+        "options": [],
+        "query": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  \nUNION ALL  \nSELECT DISTINCT UPPER(hostname) AS value, UPPER(hostname) AS label \nFROM nmon_cpu_stats) AS t ORDER BY value;",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "ferwfz6k211j4b"
+        },
+        "definition": "SELECT value, label FROM (\n  SELECT '' AS value, '' AS label\n  UNION ALL\n  SELECT DISTINCT db.db_name AS value, db.db_name AS label\n  FROM awr_db_info db\n  WHERE UPPER(db.host_name) = '${hostname}'\n    AND  UPPER('${hostname}') != ''\n) AS t ORDER BY value;",
+        "label": "DB Name",
+        "name": "dbname",
+        "options": [],
+        "query": "SELECT value, label FROM (\n  SELECT '' AS value, '' AS label\n  UNION ALL\n  SELECT DISTINCT db.db_name AS value, db.db_name AS label\n  FROM awr_db_info db\n  WHERE UPPER(db.host_name) = '${hostname}'\n    AND  UPPER('${hostname}') != ''\n) AS t ORDER BY value;",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "ferwfz6k211j4b"
+        },
+        "definition": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT instance AS value, instance AS label  FROM awr_load_profile WHERE dbname='${dbname}') AS t ORDER BY value;",
+        "label": "Instance",
+        "name": "instance",
+        "options": [],
+        "query": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT instance AS value, instance AS label  FROM awr_load_profile WHERE dbname='${dbname}') AS t ORDER BY value;",
+        "refresh": 2,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "ferwfz6k211j4b"
+        },
+        "definition": "SELECT '' AS label UNION ALL SELECT DISTINCT begin_snap::int || ' - ' || to_char(snap_time,'YYYY-MM-DD HH24:MI') FROM awr_load_profile WHERE dbname='${dbname}' AND instance='${instance}' ORDER BY label NULLS FIRST;",
+        "label": "Start Snap",
+        "name": "start_snap",
+        "options": [],
+        "query": "SELECT '' AS label UNION ALL SELECT DISTINCT begin_snap::int || ' - ' || to_char(snap_time,'YYYY-MM-DD HH24:MI') FROM awr_load_profile WHERE dbname='${dbname}' AND instance='${instance}' ORDER BY label NULLS FIRST;",
+        "refresh": 2,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "ferwfz6k211j4b"
+        },
+        "definition": "SELECT '' AS label UNION ALL SELECT DISTINCT begin_snap::int || ' - ' || to_char(snap_time,'YYYY-MM-DD HH24:MI') FROM awr_load_profile WHERE dbname='${dbname}' AND instance='${instance}' ORDER BY label NULLS FIRST;",
+        "label": "End Snap",
+        "name": "end_snap",
+        "options": [],
+        "query": "SELECT '' AS label UNION ALL SELECT DISTINCT begin_snap::int || ' - ' || to_char(snap_time,'YYYY-MM-DD HH24:MI') FROM awr_load_profile WHERE dbname='${dbname}' AND instance='${instance}' ORDER BY label NULLS FIRST;",
+        "refresh": 2,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {
+    "hidden": true
+  },
+  "timezone": "Asia/Kolkata",
+  "title": "AWR+NMON — Oracle vs AIX Correlation AI",
+  "uid": "nmon-awr-correlation-ai",
+  "version": 22
+}
