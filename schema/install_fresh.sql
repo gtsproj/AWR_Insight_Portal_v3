@@ -1,48 +1,93 @@
 -- ============================================================
--- install_fresh.sql
--- DAR Portal v3 — Database Analysis and Recommendations
+-- AWR Insight Portal v3 — Fresh Installation Script
 -- Avekshaa Technologies
---
--- Complete single-file schema installer.
--- Generated: 2026-08-04 06:12:21
--- Schema source: awr_portal_full_schema_extracted_from_database.sql
---                (constraint Cartesian bug fixed by extract_ddl.py)
---
--- Run via interactive installer (recommended):
---   schema\install_dar_portal.bat
---
--- Or run directly as postgres superuser:
---   psql -U postgres -d postgres -v ON_ERROR_STOP=0 -f install_fresh.sql
---
--- WHAT THIS SCRIPT CREATES:
---   Step 1: Tablespaces awrparser + awrparser_idx
---   Step 2: Role DAR_PORTAL_USER (schema owner)
---   Step 3: 80 tables, 86 indexes, 2 views, 12 materialized views
---   Step 4: 46 portal_config seed rows
---   Step 5: portal_users admin account (SETUP sentinel — password set on first login)
---   Step 6: 1918 Oracle wait event classifications (awr_wait_event_master)
---   Step 7: Refresh all materialized views
---   Step 8: Object-level permissions for DAR_PORTAL_USER
---
--- SAFE TO RE-RUN: IF NOT EXISTS on all DDL; ON CONFLICT DO NOTHING/UPDATE
--- on all seed data. Re-running will not overwrite existing data or passwords.
 -- ============================================================
+--
+-- Complete single-script installation:
+--   Section 1 — Configuration guide (read before running)
+--   Section 2 — Tablespaces (edit paths before running)
+--   Section 3 — Schema owner role (edit password before running)
+--   Section 4 — Database objects
+--                 80 tables  (79 from schema + sar_anomalies)
+--                 88 indexes (78 regular + 10 unique)
+--                 2  views
+--                 11 materialized views
+--   Section 5 — Seed data
+--                 portal_config   : 46 keys (all from live DB)
+--                 portal_users    : 1 row  (admin / Admin@123)
+--                 awr_wait_event_master : 1918 rows (full Oracle
+--                   wait event catalog with correlation metadata)
+--   Section 6 — Grant permissions to DAR_PORTAL_USER role
+--   Section 7 — Verify installation
+--
+-- ── RECOMMENDED: Use the interactive batch installer ────────
+--   install_dar_portal.bat
+--   (Prompts for all values, creates directories, runs this SQL)
+--
+-- ── ALTERNATIVE: Run this SQL directly ───────────────────────
+--   1. Create tablespace directories (mkdir)
+--   2. Edit tablespace LOCATION paths in Section 2 below
+--   3. Edit DAR_PORTAL_USER password in Section 3 below
+--   4. Run: psql -U postgres -d postgres -f install_fresh.sql
+--
+-- ── AFTER RUNNING ───────────────────────────────────────────
+--   py bulk_import.py          → import Grafana dashboards
+--   http://localhost:8000      → login: admin / Admin@123
+--   Settings → Access Control  → update portal_url, grafana_url
+--   Settings → License         → enter license key
+--   Settings → Users           → CHANGE admin password
+-- ============================================================
+
+\echo ''
+\echo '============================================================'
+\echo ' AWR Insight Portal v3 — Fresh Installation'
+\echo ' Avekshaa Technologies'
+\echo '============================================================'
 
 SET client_min_messages = WARNING;
 SET search_path = public;
 
+
 -- ============================================================
--- SECTION 1: TABLESPACES
+-- SECTION 1: CONFIGURATION
 -- ============================================================
--- EDIT THE LOCATION PATHS BELOW before running directly.
--- install_dar_portal.bat substitutes these paths automatically
--- based on your prompts — no manual editing needed when using
--- the interactive installer.
 --
--- The tablespace directories MUST exist before this runs.
--- install_dar_portal.bat creates them automatically.
+-- RECOMMENDED: Use install_dar_portal.bat (Windows) which:
+--   • Prompts for all values interactively
+--   • Creates tablespace directories automatically
+--   • Substitutes paths and passwords before running this SQL
+--
+-- MANUAL SETUP (if running this SQL directly):
+--   ① Create tablespace directories first:
+--       Windows:
+--         mkdir C:\PostgreSQL\tablespaces\awrparser
+--         mkdir C:\PostgreSQL\tablespaces\awrparser_idx
+--       Linux:
+--         mkdir -p /opt/postgresql/tablespaces/awrparser
+--         mkdir -p /opt/postgresql/tablespaces/awrparser_idx
+--         chown postgres:postgres /opt/postgresql/tablespaces/awrparser*
+--
+--   ② Edit the two LOCATION paths in Section 2 below
+--       Look for: -- ^^^ EDIT THIS PATH
+--
+--   ③ Edit the DAR_PORTAL_USER password in Section 3 below
+--       Look for: -- ^^^ EDIT THIS PASSWORD
+--
+--   ④ No-tablespace option: comment out the CREATE TABLESPACE
+--       statements and instead run:
+--         CREATE TABLESPACE awrparser     OWNER postgres LOCATION '<dir1>';
+--         CREATE TABLESPACE awrparser_idx OWNER postgres LOCATION '<dir2>';
+--       Or replace all TABLESPACE awrparser with TABLESPACE pg_default.
 -- ============================================================
 
+
+-- ============================================================
+-- SECTION 2: TABLESPACES
+-- ── Tablespace LOCATION paths ───────────────────────────────
+-- If using install_dar_portal.bat: paths are substituted
+-- automatically — do not edit here.
+-- If running this SQL directly: edit the two LOCATION paths.
+-- ============================================================
 \echo 'Step 1/6: Creating tablespaces...'
 
 -- Data tablespace: stores all AWR/SAR/multi-DB analysis tables
@@ -57,12 +102,6 @@ CREATE TABLESPACE IF NOT EXISTS awrparser_idx
     LOCATION 'C:\PostgreSQL\tablespaces\awrparser_idx';
     -- ^^^ EDIT THIS PATH (or use install_dar_portal.bat for prompt)
 
--- Grant DAR_PORTAL_USER permission to create objects in both tablespaces.
--- Without this, CREATE TABLE ... TABLESPACE awrparser fails with:
---   ERROR: permission denied for tablespace awrparser
-GRANT CREATE ON TABLESPACE awrparser     TO DAR_PORTAL_USER;
-GRANT CREATE ON TABLESPACE awrparser_idx TO DAR_PORTAL_USER;
-
 \echo '  Tablespaces: done'
 
 
@@ -75,20 +114,8 @@ GRANT CREATE ON TABLESPACE awrparser_idx TO DAR_PORTAL_USER;
 --
 -- If using install_dar_portal.bat: password is prompted and
 -- substituted automatically — do not edit here.
-
-
+-- If running this SQL directly: replace YourSecurePassword123.
 -- ============================================================
--- SECTION 2: SCHEMA OWNER ROLE
--- ── DAR_PORTAL_USER — owns all DAR Portal schema objects ──
--- DAR = Database Analysis and Recommendations
--- Designed for future expansion to SQL Server, PostgreSQL,
--- MySQL, MariaDB, Cassandra in later releases.
---
--- install_dar_portal.bat substitutes YourSecurePassword123
--- with your chosen password automatically.
--- If running directly: replace YourSecurePassword123 below.
--- ============================================================
-
 \echo 'Step 2/6: Creating schema owner DAR_PORTAL_USER...'
 
 DO $$
@@ -119,24 +146,14 @@ GRANT USAGE    ON SCHEMA public     TO DAR_PORTAL_USER;
 
 
 -- ============================================================
+-- ============================================================
 -- SECTION 4: DATABASE OBJECTS
-
-
+-- 93 tables, 74 indexes, 2 views, 12 materialized views
 -- ============================================================
--- SECTION 3: DATABASE OBJECTS
--- 80 tables | 86 indexes | 2 views | 12 materialized views
---
--- Source: awr_portal_full_schema_extracted_from_database.sql
--- Constraint fix: extract_ddl.py now issues 4 separate queries
--- per constraint type (PK/UNIQUE/FK/CHECK) — eliminates the
--- Cartesian product that produced duplicate column names when
--- a table had constraints with N columns (old code produced
--- N*N rows instead of N rows for PK and UNIQUE constraints).
--- ============================================================
+\echo 'Step 3/6: Creating database objects...'
+\echo '  93 tables, 74 indexes, 2 views, 12 materialized views'
 
-\echo 'Step 3/6: Creating 80 tables, 86 indexes, 2 views, 12 MVs...'
-
--- TABLES (80 portal tables)
+-- TABLES (93 portal tables)
 -- ============================================================
 
 -- Table: awr_advisory_pga
@@ -345,9 +362,13 @@ CREATE TABLE IF NOT EXISTS awr_db_master (
     active                         BOOLEAN DEFAULT true,
     added_at                       TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
     added_by                       TEXT DEFAULT 'admin'::text,
+    os_type                        TEXT DEFAULT 'Linux'::text,
+    os_utility                     TEXT DEFAULT 'SAR'::text,
     CONSTRAINT awr_db_master_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_db_master_db_inst UNIQUE (db_name, inst_no)
-);
+    CONSTRAINT uq_db_master_db_inst UNIQUE (db_name, inst_no),
+    CONSTRAINT awr_db_master_os_type_check CHECK ((os_type = ANY (ARRAY['Linux'::text, 'IBM AIX'::text, 'Other'::text]))),
+    CONSTRAINT awr_db_master_os_utility_check CHECK ((os_utility = ANY (ARRAY['SAR'::text, 'NMON'::text, 'None'::text])))
+) tablespace awrparser;
 COMMENT ON TABLE awr_db_master IS 'Licensed database registry. Only DBs in this table will be parsed by the queue processor.';
 
 -- Table: awr_enqueue_statistics
@@ -768,6 +789,48 @@ CREATE TABLE IF NOT EXISTS awr_recommendations (
     CONSTRAINT awr_recommendations_pkey PRIMARY KEY (id),
     CONSTRAINT uq_awr_rec UNIQUE (dbname, begin_snap, end_snap, rule_id)
 ) TABLESPACE awrparser;
+
+-- Table: awr_remote_db_paths
+CREATE TABLE IF NOT EXISTS awr_remote_db_paths (
+    id                             SERIAL,
+    server_id                      INTEGER NOT NULL,
+    db_name                        TEXT NOT NULL,
+    display_name                   TEXT,
+    remote_subpath                 TEXT NOT NULL,
+    pull_interval_hrs              NUMERIC(4,1) DEFAULT 1,
+    enabled                        BOOLEAN DEFAULT true,
+    last_pull_at                   TIMESTAMP WITHOUT TIME ZONE,
+    added_at                       TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    added_by                       TEXT DEFAULT 'admin'::text,
+    CONSTRAINT awr_remote_db_paths_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_awr_remote_db_per_server UNIQUE (server_id, db_name),
+    CONSTRAINT awr_remote_db_paths_server_id_fkey FOREIGN KEY (server_id)
+        REFERENCES awr_remote_servers (id) ON DELETE CASCADE
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_remote_db_paths IS 'OPTIONAL per-database override for a server. Only needed to rename a folder, give one database its own interval, or list databases explicitly when a server has auto_discover=FALSE. Full remote location = server.root_path + / + remote_subpath. Files are copied to awr_reports/<db_name>/ and picked up by the queue processor.';
+
+-- Table: awr_remote_servers
+CREATE TABLE IF NOT EXISTS awr_remote_servers (
+    id                             SERIAL,
+    display_name                   TEXT NOT NULL,
+    connection_type                TEXT DEFAULT 'unc'::text NOT NULL,
+    host                           TEXT NOT NULL,
+    root_path                      TEXT NOT NULL,
+    ssh_port                       INTEGER DEFAULT 22,
+    ssh_key_path                   TEXT,
+    username                       TEXT,
+    password_enc                   TEXT,
+    auto_discover                  BOOLEAN DEFAULT true,
+    pull_interval_hrs              NUMERIC(4,1) DEFAULT 1,
+    enabled                        BOOLEAN DEFAULT true,
+    last_pull_at                   TIMESTAMP WITHOUT TIME ZONE,
+    added_at                       TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    added_by                       TEXT DEFAULT 'admin'::text,
+    CONSTRAINT awr_remote_servers_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_awr_remote_server UNIQUE (display_name),
+    CONSTRAINT awr_remote_servers_connection_type_check CHECK ((connection_type = ANY (ARRAY['unc'::text, 'ssh'::text])))
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_remote_servers IS 'Remote server config for AWR network sources. One row per server, one login. connection_type=unc uses Windows net use with root_path as a UNC prefix. connection_type=ssh uses paramiko SFTP with root_path as a remote directory. When auto_discover=TRUE, every immediate subfolder under root_path is treated as a database automatically — no per-database configuration required.';
 
 -- Table: awr_repo_scan_log
 CREATE TABLE IF NOT EXISTS awr_repo_scan_log (
@@ -1426,6 +1489,24 @@ CREATE TABLE IF NOT EXISTS awr_time_model_stats (
     CONSTRAINT uq_awr_time_model UNIQUE (dbname, instance, begin_snap, row_hash)
 ) TABLESPACE awrparser;
 
+-- Table: awr_unc_connections
+CREATE TABLE IF NOT EXISTS awr_unc_connections (
+    id                             SERIAL,
+    db_name                        TEXT NOT NULL,
+    display_name                   TEXT,
+    unc_path                       TEXT NOT NULL,
+    username                       TEXT,
+    password_enc                   TEXT,
+    pull_interval_hrs              NUMERIC(4,1) DEFAULT 1,
+    enabled                        BOOLEAN DEFAULT true,
+    last_pull_at                   TIMESTAMP WITHOUT TIME ZONE,
+    added_at                       TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    added_by                       TEXT DEFAULT 'admin'::text,
+    CONSTRAINT awr_unc_connections_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_awr_unc_db_name UNIQUE (db_name)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_unc_connections IS 'Per-database network/UNC path config for AWR source type = network. One row per Oracle database. Each row points at its own UNC folder — no shared root path or DB-name subfolder convention required. Files are copied to awr_reports\<db_name>\ and picked up by the queue processor.';
+
 -- Table: awr_undo_statistics
 CREATE TABLE IF NOT EXISTS awr_undo_statistics (
     id                             SERIAL,
@@ -1475,6 +1556,176 @@ CREATE TABLE IF NOT EXISTS exec_plan_headers (
     created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
     CONSTRAINT exec_plan_headers_pkey PRIMARY KEY (id)
 ) TABLESPACE awrparser;
+
+-- Table: nmon_anomalies
+CREATE TABLE IF NOT EXISTS nmon_anomalies (
+    id                             SERIAL,
+    hostname                       TEXT NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    metric_source                  TEXT NOT NULL,
+    metric_name                    TEXT NOT NULL,
+    object_name                    TEXT,
+    metric_value                   NUMERIC,
+    baseline_mean                  NUMERIC,
+    baseline_stddev                NUMERIC,
+    z_score                        NUMERIC,
+    severity                       TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT nmon_anomalies_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_nmon_anomaly UNIQUE (hostname, snap_time, metric_source, metric_name, object_name)
+) TABLESPACE awrparser;
+
+-- Table: nmon_cpu_stats
+CREATE TABLE IF NOT EXISTS nmon_cpu_stats (
+    id                             SERIAL,
+    hostname                       TEXT NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    cpu                            TEXT DEFAULT 'ALL'::text NOT NULL,
+    user_pct                       NUMERIC,
+    sys_pct                        NUMERIC,
+    wait_pct                       NUMERIC,
+    idle_pct                       NUMERIC,
+    busy_pct                       NUMERIC,
+    cpu_count                      INTEGER,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT nmon_cpu_stats_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_nmon_cpu UNIQUE (hostname, snap_time, cpu, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE nmon_cpu_stats IS 'NMON CPU_ALL section — mirrors sar_cpu_stats. wait_pct is NMON''s I/O wait, the closest analogue to SAR''s %iowait, used in AWR/NMON correlation.';
+
+-- Table: nmon_ctxswitch_stats
+CREATE TABLE IF NOT EXISTS nmon_ctxswitch_stats (
+    id                             SERIAL,
+    hostname                       TEXT NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    cswch_persec                   NUMERIC,
+    fork_persec                    NUMERIC,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT nmon_ctxswitch_stats_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_nmon_ctxsw UNIQUE (hostname, snap_time, row_hash)
+) TABLESPACE awrparser;
+
+-- Table: nmon_disk_stats
+CREATE TABLE IF NOT EXISTS nmon_disk_stats (
+    id                             SERIAL,
+    hostname                       TEXT NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    disk_name                      TEXT NOT NULL,
+    busy_pct                       NUMERIC,
+    read_kbs                       NUMERIC,
+    write_kbs                      NUMERIC,
+    xfers_per_sec                  NUMERIC,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT nmon_disk_stats_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_nmon_disk UNIQUE (hostname, snap_time, disk_name, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE nmon_disk_stats IS 'NMON DISKBUSY/DISKREAD/DISKWRITE sections merged per disk per snapshot — mirrors sar_disk_stats.';
+
+-- Table: nmon_memory_stats
+CREATE TABLE IF NOT EXISTS nmon_memory_stats (
+    id                             SERIAL,
+    hostname                       TEXT NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    mem_total_mb                   NUMERIC,
+    mem_free_mb                    NUMERIC,
+    mem_used_mb                    NUMERIC,
+    mem_used_pct                   NUMERIC,
+    buffers_mb                     NUMERIC,
+    cached_mb                      NUMERIC,
+    swap_total_mb                  NUMERIC,
+    swap_free_mb                   NUMERIC,
+    swap_used_pct                  NUMERIC,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT nmon_memory_stats_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_nmon_mem UNIQUE (hostname, snap_time, row_hash)
+) TABLESPACE awrparser;
+
+-- Table: nmon_network_stats
+CREATE TABLE IF NOT EXISTS nmon_network_stats (
+    id                             SERIAL,
+    hostname                       TEXT NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    interface                      TEXT NOT NULL,
+    read_kbs                       NUMERIC,
+    write_kbs                      NUMERIC,
+    read_packets                   NUMERIC,
+    write_packets                  NUMERIC,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT nmon_network_stats_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_nmon_net UNIQUE (hostname, snap_time, interface, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE nmon_network_stats IS 'NMON NET section — mirrors sar_network_stats.';
+
+-- Table: nmon_paging_stats
+CREATE TABLE IF NOT EXISTS nmon_paging_stats (
+    id                             SERIAL,
+    hostname                       TEXT NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    pgin_persec                    NUMERIC,
+    pgout_persec                   NUMERIC,
+    pgsin_persec                   NUMERIC,
+    pgsout_persec                  NUMERIC,
+    fault_persec                   NUMERIC,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT nmon_paging_stats_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_nmon_page UNIQUE (hostname, snap_time, row_hash)
+) TABLESPACE awrparser;
+
+-- Table: nmon_parse_log
+CREATE TABLE IF NOT EXISTS nmon_parse_log (
+    id                             SERIAL,
+    hostname                       TEXT NOT NULL,
+    filename                       TEXT NOT NULL,
+    snap_date                      DATE,
+    rows_parsed                    INTEGER DEFAULT 0,
+    status                         TEXT DEFAULT 'ok'::text,
+    error_msg                      TEXT,
+    parsed_at                      TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    last_token_seq                 INTEGER DEFAULT 0,
+    last_snap_time                 TIMESTAMP WITHOUT TIME ZONE,
+    CONSTRAINT nmon_parse_log_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_nmon_parse_log UNIQUE (hostname, filename)
+) TABLESPACE awrparser;
+
+-- Table: nmon_runqueue_stats
+CREATE TABLE IF NOT EXISTS nmon_runqueue_stats (
+    id                             SERIAL,
+    hostname                       TEXT NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    runq_sz                        NUMERIC,
+    swapin_procs                   NUMERIC,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT nmon_runqueue_stats_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_nmon_runq UNIQUE (hostname, snap_time, row_hash)
+) TABLESPACE awrparser;
+
+-- Table: nmon_ssh_connections
+CREATE TABLE IF NOT EXISTS nmon_ssh_connections (
+    id                             SERIAL,
+    hostname                       TEXT NOT NULL,
+    display_name                   TEXT,
+    ssh_host                       TEXT NOT NULL,
+    ssh_port                       INTEGER DEFAULT 22,
+    ssh_user                       TEXT NOT NULL,
+    ssh_key_path                   TEXT,
+    password_enc                   TEXT,
+    remote_nmon_path               TEXT DEFAULT '/home/oracle/nmon'::text,
+    pull_interval_hrs              NUMERIC(4,1) DEFAULT 1,
+    enabled                        BOOLEAN DEFAULT true,
+    last_pull_at                   TIMESTAMP WITHOUT TIME ZONE,
+    added_at                       TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    added_by                       TEXT DEFAULT 'admin'::text,
+    CONSTRAINT nmon_ssh_connections_pkey PRIMARY KEY (id),
+    CONSTRAINT nmon_ssh_connections_hostname_key UNIQUE (hostname)
+) TABLESPACE awrparser;
+COMMENT ON TABLE nmon_ssh_connections IS 'SSH pull configuration for NMON files from IBM AIX servers. Mirrors sar_ssh_connections. Files pulled via SFTP and deposited under nmon_drop/<hostname>/ for the NMONWatcher service to pick up.';
 
 -- Table: portal_config
 CREATE TABLE IF NOT EXISTS portal_config (
@@ -1735,112 +1986,141 @@ CREATE TABLE IF NOT EXISTS wait_event_trend (
     total_wait_time_s              DOUBLE PRECISION,
     db_time_pct                    DOUBLE PRECISION,
     avg_wait                       TEXT
-);
+) tablespace awrparser;
 
 
 -- ============================================================
--- INDEXES (61 indexes)
+
+
+-- INDEXES (74 indexes)
 -- ============================================================
 
-CREATE INDEX IF NOT EXISTS idx_ai_rec_dbname ON awr_ai_recommendations USING btree (dbname, begin_snap);
-CREATE INDEX IF NOT EXISTS idx_ai_rec_status ON awr_ai_recommendations USING btree (status);
-CREATE INDEX IF NOT EXISTS idx_ai_rec_trigger ON awr_ai_recommendations USING btree (trigger_type, trigger_value);
+CREATE INDEX IF NOT EXISTS idx_ai_rec_dbname awr_ai_recommendations USING btree (dbname, begin_snap) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_ai_rec_status awr_ai_recommendations USING btree (status) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_ai_rec_trigger awr_ai_recommendations USING btree (trigger_type, trigger_value) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_awr_anomaly_db_snap ON awr_anomalies USING btree (dbname, instance, begin_snap, severity);
-CREATE INDEX IF NOT EXISTS idx_awr_anomaly_time ON awr_anomalies USING btree (snap_time DESC);
+CREATE INDEX IF NOT EXISTS idx_awr_anomaly_db_snap awr_anomalies USING btree (dbname, instance, begin_snap, severity) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_awr_anomaly_time awr_anomalies USING btree (snap_time DESC) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_change_log_db_time ON awr_change_log USING btree (dbname, event_time);
+CREATE INDEX IF NOT EXISTS idx_change_log_db_time awr_change_log USING btree (dbname, event_time) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_db_master_db_name ON awr_db_master USING btree (db_name, active);
+CREATE INDEX IF NOT EXISTS idx_db_master_db_name awr_db_master USING btree (db_name, active) tablespace awrparser_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS uq_awr_db_master_host_utility awr_db_master USING btree (host_name, os_utility) WHERE ((active = true) AND (host_name IS NOT NULL) AND (host_name <> ''::text)) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_exec_plan_fts ON awr_execution_plans USING gin (to_tsvector('english'::regconfig, ((COALESCE(object_name, ''::text) || ' '::text) || COALESCE(operation, ''::text))));
-CREATE INDEX IF NOT EXISTS idx_exec_plan_obj ON awr_execution_plans USING btree (object_owner, object_name);
-CREATE INDEX IF NOT EXISTS idx_exec_plan_snap ON awr_execution_plans USING btree (dbname, begin_snap);
-CREATE INDEX IF NOT EXISTS idx_exec_plan_sql ON awr_execution_plans USING btree (dbname, sql_id);
+CREATE INDEX IF NOT EXISTS idx_exec_plan_fts awr_execution_plans USING gin (to_tsvector('english'::regconfig, ((COALESCE(object_name, ''::text) || ' '::text) || COALESCE(operation, ''::text)))) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exec_plan_obj awr_execution_plans USING btree (object_owner, object_name) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exec_plan_snap awr_execution_plans USING btree (dbname, begin_snap) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exec_plan_sql awr_execution_plans USING btree (dbname, sql_id) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_awrfw_pdb ON awr_foreground_wait_events USING btree (dbname, pdb_name, snap_time);
+CREATE INDEX IF NOT EXISTS idx_awrfw_pdb awr_foreground_wait_events USING btree (dbname, pdb_name, snap_time) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_lic_audit_time ON awr_license_audit USING btree (event_time DESC);
+CREATE INDEX IF NOT EXISTS idx_lic_audit_time awr_license_audit USING btree (event_time DESC) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_obj_meta_db ON awr_object_metadata USING btree (dbname);
-CREATE INDEX IF NOT EXISTS idx_obj_meta_owner ON awr_object_metadata USING btree (owner, object_name);
-CREATE INDEX IF NOT EXISTS idx_obj_meta_type ON awr_object_metadata USING btree (object_type);
+CREATE INDEX IF NOT EXISTS idx_obj_meta_db awr_object_metadata USING btree (dbname) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_obj_meta_owner awr_object_metadata USING btree (owner, object_name) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_obj_meta_type awr_object_metadata USING btree (object_type) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_oracle_conn_enabled ON awr_oracle_connections USING btree (enabled, db_name);
+CREATE INDEX IF NOT EXISTS idx_oracle_conn_enabled awr_oracle_connections USING btree (enabled, db_name) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_failed_snaps_pending ON awr_oracle_failed_snaps USING btree (conn_id, resolved, retry_count) WHERE (resolved = false);
+CREATE INDEX IF NOT EXISTS idx_failed_snaps_pending awr_oracle_failed_snaps USING btree (conn_id, resolved, retry_count) WHERE (resolved = false) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_awr_rec_category ON awr_recommendations USING btree (category, severity);
-CREATE INDEX IF NOT EXISTS idx_awr_rec_db_snap ON awr_recommendations USING btree (dbname, begin_snap, end_snap);
-CREATE INDEX IF NOT EXISTS idx_awr_rec_severity ON awr_recommendations USING btree (severity, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_awr_rec_category awr_recommendations USING btree (category, severity) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_awr_rec_db_snap awr_recommendations USING btree (dbname, begin_snap, end_snap) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_awr_rec_severity awr_recommendations USING btree (severity, created_at DESC) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_repo_scan_db ON awr_repo_scan_log USING btree (db_name, status);
-CREATE INDEX IF NOT EXISTS idx_repo_scan_status ON awr_repo_scan_log USING btree (status, scanned_at);
+CREATE INDEX IF NOT EXISTS idx_awr_remote_db_enabled awr_remote_db_paths USING btree (enabled, server_id) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_awrseg_pdb ON awr_seg_logical_reads USING btree (dbname, pdb_name, snap_time);
+CREATE INDEX IF NOT EXISTS idx_repo_scan_db awr_repo_scan_log USING btree (db_name, status) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_repo_scan_status awr_repo_scan_log USING btree (status, scanned_at) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_cluster ON awr_sql_cluster_wait_time USING btree (dbname, instance, sql_id, begin_snap);
+CREATE INDEX IF NOT EXISTS idx_awrseg_pdb awr_seg_logical_reads USING btree (dbname, pdb_name, snap_time) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_cpu ON awr_sql_cpu_time USING btree (dbname, instance, sql_id, begin_snap);
+CREATE INDEX IF NOT EXISTS idx_cluster awr_sql_cluster_wait_time USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_awrsql_pdb ON awr_sql_elapsed_time USING btree (dbname, pdb_name, snap_time);
-CREATE INDEX IF NOT EXISTS idx_elapsed ON awr_sql_elapsed_time USING btree (dbname, instance, sql_id, begin_snap);
+CREATE INDEX IF NOT EXISTS idx_cpu awr_sql_cpu_time USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_gets ON awr_sql_gets USING btree (dbname, instance, sql_id, begin_snap);
+CREATE INDEX IF NOT EXISTS idx_awrsql_pdb awr_sql_elapsed_time USING btree (dbname, pdb_name, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_elapsed awr_sql_elapsed_time USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_parse ON awr_sql_parsed_calls USING btree (dbname, instance, sql_id, begin_snap);
+CREATE INDEX IF NOT EXISTS idx_gets awr_sql_gets USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_phy ON awr_sql_phy_reads_unopt USING btree (dbname, instance, sql_id, begin_snap);
+CREATE INDEX IF NOT EXISTS idx_parse awr_sql_parsed_calls USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_reads ON awr_sql_reads USING btree (dbname, instance, sql_id, begin_snap);
+CREATE INDEX IF NOT EXISTS idx_phy awr_sql_phy_reads_unopt USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_sql_text_trgm ON awr_sql_text USING gin (sql_text gin_trgm_ops);
-CREATE INDEX IF NOT EXISTS ix_sql_text_snap ON awr_sql_text USING btree (dbname, instance, begin_snap);
+CREATE INDEX IF NOT EXISTS idx_reads awr_sql_reads USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_uio ON awr_sql_user_io_time USING btree (dbname, instance, sql_id, begin_snap);
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
-CREATE INDEX IF NOT EXISTS idx_plan_hdr_created ON exec_plan_headers USING btree (created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_plan_hdr_dbname ON exec_plan_headers USING btree (dbname);
-CREATE INDEX IF NOT EXISTS idx_plan_hdr_sql ON exec_plan_headers USING btree (sql_id);
+CREATE INDEX IF NOT EXISTS idx_sql_text_trgm awr_sql_text USING gin (sql_text gin_trgm_ops) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS ix_sql_text_snap awr_sql_text USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_fetch_log_src ON remote_fetch_log USING btree (source_type, source_id, fetched_at DESC);
+CREATE INDEX IF NOT EXISTS idx_uio awr_sql_user_io_time USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_sar_anomaly_host_time ON sar_anomalies USING btree (hostname, snap_time DESC, severity);
-CREATE INDEX IF NOT EXISTS idx_sar_anomaly_severity ON sar_anomalies USING btree (severity, snap_time DESC);
+CREATE INDEX IF NOT EXISTS idx_awr_unc_enabled awr_unc_connections USING btree (enabled, db_name) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_sar_cpu_host_time ON sar_cpu_stats USING btree (hostname, snap_time);
-CREATE INDEX IF NOT EXISTS idx_sar_cpu_iowait ON sar_cpu_stats USING btree (hostname, iowait_pct DESC);
+CREATE INDEX IF NOT EXISTS idx_plan_hdr_created exec_plan_headers USING btree (created_at DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_plan_hdr_dbname exec_plan_headers USING btree (dbname) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_plan_hdr_sql exec_plan_headers USING btree (sql_id) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_sar_ctxswitch_cswch ON sar_ctxswitch_stats USING btree (hostname, cswch_per_sec DESC);
-CREATE INDEX IF NOT EXISTS idx_sar_ctxswitch_host_time ON sar_ctxswitch_stats USING btree (hostname, snap_time);
+CREATE INDEX IF NOT EXISTS idx_nmon_cpu_host_time nmon_cpu_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_nmon_cpu_wait nmon_cpu_stats USING btree (hostname, wait_pct DESC) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_sar_disk_host_time ON sar_disk_stats USING btree (hostname, snap_time);
-CREATE INDEX IF NOT EXISTS idx_sar_disk_util ON sar_disk_stats USING btree (hostname, util_pct DESC);
+CREATE INDEX IF NOT EXISTS idx_nmon_ctxsw_host_time nmon_ctxswitch_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_sar_hugepage_host_time ON sar_hugepage_stats USING btree (hostname, snap_time);
-CREATE INDEX IF NOT EXISTS idx_sar_hugepage_pct ON sar_hugepage_stats USING btree (hostname, hugused_pct DESC);
+CREATE INDEX IF NOT EXISTS idx_nmon_disk_busy nmon_disk_stats USING btree (hostname, busy_pct DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_nmon_disk_host_time nmon_disk_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_sar_loadavg_blocked ON sar_loadavg_stats USING btree (hostname, blocked DESC);
-CREATE INDEX IF NOT EXISTS idx_sar_loadavg_host_time ON sar_loadavg_stats USING btree (hostname, snap_time);
-CREATE INDEX IF NOT EXISTS idx_sar_loadavg_runq ON sar_loadavg_stats USING btree (hostname, runq_sz DESC);
+CREATE INDEX IF NOT EXISTS idx_nmon_mem_host_time nmon_memory_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_sar_mem_host_time ON sar_memory_stats USING btree (hostname, snap_time);
+CREATE INDEX IF NOT EXISTS idx_nmon_net_host_time nmon_network_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_sar_network_host_time ON sar_network_stats USING btree (hostname, snap_time);
-CREATE INDEX IF NOT EXISTS idx_sar_network_iface ON sar_network_stats USING btree (iface);
+CREATE INDEX IF NOT EXISTS idx_nmon_page_host_time nmon_paging_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_sar_paging_host_time ON sar_paging_stats USING btree (hostname, snap_time);
-CREATE INDEX IF NOT EXISTS idx_sar_paging_majflt ON sar_paging_stats USING btree (hostname, majflt_per_sec DESC);
+CREATE INDEX IF NOT EXISTS idx_nmon_runq_host_time nmon_runqueue_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_sar_socket_host_time ON sar_socket_stats USING btree (hostname, snap_time);
-CREATE INDEX IF NOT EXISTS idx_sar_socket_tcptw ON sar_socket_stats USING btree (hostname, tcp_tw DESC);
+CREATE INDEX IF NOT EXISTS idx_nmon_ssh_enabled nmon_ssh_connections USING btree (enabled, hostname) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_sar_ssh_enabled ON sar_ssh_connections USING btree (enabled, hostname);
+CREATE INDEX IF NOT EXISTS idx_fetch_log_src remote_fetch_log USING btree (source_type, source_id, fetched_at DESC) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_sar_swap_host_time ON sar_swap_stats USING btree (hostname, snap_time);
+CREATE INDEX IF NOT EXISTS idx_sar_anomaly_host_time sar_anomalies USING btree (hostname, snap_time DESC, severity) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_sar_anomaly_severity sar_anomalies USING btree (severity, snap_time DESC) tablespace awrparser_idx;
+
+CREATE INDEX IF NOT EXISTS idx_sar_cpu_host_time sar_cpu_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_sar_cpu_iowait sar_cpu_stats USING btree (hostname, iowait_pct DESC) tablespace awrparser_idx;
+
+CREATE INDEX IF NOT EXISTS idx_sar_ctxswitch_cswch sar_ctxswitch_stats USING btree (hostname, cswch_per_sec DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_sar_ctxswitch_host_time sar_ctxswitch_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+
+CREATE INDEX IF NOT EXISTS idx_sar_disk_host_time sar_disk_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_sar_disk_util sar_disk_stats USING btree (hostname, util_pct DESC) tablespace awrparser_idx;
+
+CREATE INDEX IF NOT EXISTS idx_sar_hugepage_host_time sar_hugepage_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_sar_hugepage_pct sar_hugepage_stats USING btree (hostname, hugused_pct DESC) tablespace awrparser_idx;
+
+CREATE INDEX IF NOT EXISTS idx_sar_loadavg_blocked sar_loadavg_stats USING btree (hostname, blocked DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_sar_loadavg_host_time sar_loadavg_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_sar_loadavg_runq sar_loadavg_stats USING btree (hostname, runq_sz DESC) tablespace awrparser_idx;
+
+CREATE INDEX IF NOT EXISTS idx_sar_mem_host_time sar_memory_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+
+CREATE INDEX IF NOT EXISTS idx_sar_network_host_time sar_network_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_sar_network_iface sar_network_stats USING btree (iface) tablespace awrparser_idx;
+
+CREATE INDEX IF NOT EXISTS idx_sar_paging_host_time sar_paging_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_sar_paging_majflt sar_paging_stats USING btree (hostname, majflt_per_sec DESC) tablespace awrparser_idx;
+
+CREATE INDEX IF NOT EXISTS idx_sar_socket_host_time sar_socket_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_sar_socket_tcptw sar_socket_stats USING btree (hostname, tcp_tw DESC) tablespace awrparser_idx;
+
+CREATE INDEX IF NOT EXISTS idx_sar_ssh_enabled sar_ssh_connections USING btree (enabled, hostname) tablespace awrparser_idx;
+
+CREATE INDEX IF NOT EXISTS idx_sar_swap_host_time sar_swap_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
 
 
 -- ============================================================
+
+
 -- VIEWS (2 portal views)
 -- ============================================================
 
@@ -1854,7 +2134,7 @@ CREATE OR REPLACE VIEW awr_seg_score_by_snap AS
     awr_segment_summary_mv.obj_type,
     avg(awr_segment_summary_mv.severity_score) AS seg_score_snap
    FROM awr_segment_summary_mv
-  GROUP BY awr_segment_summary_mv.dbname, awr_segment_summary_mv.instance, awr_segment_summary_mv.begin_snap, (lower(awr_segment_summary_mv.owner)), (lower(awr_segment_summary_mv.object_name)), awr_segment_summary_mv.obj_type;;
+  GROUP BY awr_segment_summary_mv.dbname, awr_segment_summary_mv.instance, awr_segment_summary_mv.begin_snap, (lower(awr_segment_summary_mv.owner)), (lower(awr_segment_summary_mv.object_name)), awr_segment_summary_mv.obj_type;
 
 -- View: awr_sql_score_by_snap
 CREATE OR REPLACE VIEW awr_sql_score_by_snap AS
@@ -1864,15 +2144,19 @@ CREATE OR REPLACE VIEW awr_sql_score_by_snap AS
     lower(awr_sql_summary_mv.sql_id) AS sql_id,
     avg(awr_sql_summary_mv.severity_score) AS sql_score_snap
    FROM awr_sql_summary_mv
-  GROUP BY awr_sql_summary_mv.dbname, awr_sql_summary_mv.instance, awr_sql_summary_mv.begin_snap, (lower(awr_sql_summary_mv.sql_id));;
+  GROUP BY awr_sql_summary_mv.dbname, awr_sql_summary_mv.instance, awr_sql_summary_mv.begin_snap, (lower(awr_sql_summary_mv.sql_id));
 
 
 -- ============================================================
+
+
 -- MATERIALIZED VIEWS (12 portal MVs)
 -- ============================================================
 
 -- Materialized View: awr_bg_wait_event_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_event_summary_mv AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_event_summary_mv 
+tablespace awrparser
+AS
  SELECT e.dbname,
     e.instance,
     e.begin_snap,
@@ -1896,10 +2180,12 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_event_summary_mv AS
      LEFT JOIN awr_wait_event_master m ON ((btrim(lower(e.event)) = btrim(lower(m.event)))))
   WHERE (e.pct_db_time > (5)::numeric)
   GROUP BY e.dbname, e.instance, e.begin_snap, m.wait_class, e.event;
-WITH DATA;
+WITH DATA ;
 
 -- Materialized View: awr_bg_wait_event_summary_mv1
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_event_summary_mv1 AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_event_summary_mv1 
+tablespace awrparser
+AS
  SELECT e.dbname,
     e.instance,
     e.begin_snap,
@@ -1926,7 +2212,9 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_event_summary_mv1 AS
 WITH DATA;
 
 -- Materialized View: awr_bg_wait_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_summary_mv AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_summary_mv 
+tablespace awrparser
+AS
  WITH bg_waits AS (
          SELECT awr_background_wait_events.dbname,
             awr_background_wait_events.instance,
@@ -1962,7 +2250,9 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_summary_mv AS
 WITH DATA;
 
 -- Materialized View: awr_fg_wait_event_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_fg_wait_event_summary_mv AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_fg_wait_event_summary_mv 
+tablespace awrparser
+AS
  SELECT e.dbname,
     e.instance,
     e.begin_snap,
@@ -1989,7 +2279,9 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS awr_fg_wait_event_summary_mv AS
 WITH DATA;
 
 -- Materialized View: awr_fg_wait_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_fg_wait_summary_mv AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_fg_wait_summary_mv 
+tablespace awrparser
+AS
  WITH fg_waits AS (
          SELECT awr_foreground_wait_events.dbname,
             awr_foreground_wait_events.instance,
@@ -2025,7 +2317,9 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS awr_fg_wait_summary_mv AS
 WITH DATA;
 
 -- Materialized View: awr_seg_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_seg_summary_mv AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_seg_summary_mv 
+tablespace awrparser
+AS
  WITH logical_reads AS (
          SELECT awr_seg_logical_reads.dbname,
             awr_seg_logical_reads.instance,
@@ -2266,7 +2560,9 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS awr_seg_summary_mv AS
 WITH DATA;
 
 -- Materialized View: awr_segment_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_segment_summary_mv AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_segment_summary_mv 
+tablespace awrparser
+AS
  WITH logical_reads AS (
          SELECT t.dbname,
             t.instance,
@@ -2505,7 +2801,9 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS awr_segment_summary_mv AS
 WITH DATA;
 
 -- Materialized View: awr_sql_object_map_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_object_map_mv AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_object_map_mv 
+tablespace awrparser
+AS
  WITH t AS (
          SELECT awr_sql_text_norm.sql_id,
             awr_sql_text_norm.sql_text_clean
@@ -2553,7 +2851,9 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_object_map_mv AS
 WITH DATA;
 
 -- Materialized View: awr_sql_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_summary_mv AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_summary_mv 
+tablespace awrparser
+AS
  WITH elapsed AS (
          SELECT awr_sql_elapsed_time.dbname,
             awr_sql_elapsed_time.instance,
@@ -2666,7 +2966,9 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_summary_mv AS
 WITH DATA;
 
 -- Materialized View: awr_sql_text_norm
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_text_norm AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_text_norm 
+tablespace awrparser
+AS
  WITH src AS (
          SELECT DISTINCT lower(awr_sql_text.sql_id) AS sql_id,
             awr_sql_text.sql_text
@@ -2682,7 +2984,9 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_text_norm AS
 WITH DATA;
 
 -- Materialized View: awr_sql_text_norm_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_text_norm_mv AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_text_norm_mv 
+tablespace awrparser
+AS
  WITH src AS (
          SELECT DISTINCT lower(awr_sql_text.sql_id) AS sql_id,
             awr_sql_text.sql_text
@@ -2699,7 +3003,9 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_text_norm_mv AS
 WITH DATA;
 
 -- Materialized View: awr_wait_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_wait_summary_mv AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_wait_summary_mv 
+tablespace awrparser
+AS
  WITH fg AS (
          SELECT e.dbname,
             e.instance,
@@ -2781,60 +3087,169 @@ WITH DATA;
 
 
 -- ============================================================
+
+
 -- MATERIALIZED VIEW INDEXES
 -- ============================================================
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_bg_wait_event_summary_mv_id ON awr_bg_wait_event_summary_mv USING btree (mv_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_bg_wait_event_summary_mv_id awr_bg_wait_event_summary_mv USING btree (mv_id) tablespace awrparser_idx;
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_bg_wait_summary_mv_id ON awr_bg_wait_summary_mv USING btree (mv_id);
-CREATE INDEX IF NOT EXISTS idx_bg_wait_summary_dbinstsnap ON awr_bg_wait_summary_mv USING btree (dbname, instance, begin_snap);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_bg_wait_summary_mv_id awr_bg_wait_summary_mv USING btree (mv_id) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_bg_wait_summary_dbinstsnap awr_bg_wait_summary_mv USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_fg_wait_event_summary_mv_id ON awr_fg_wait_event_summary_mv USING btree (mv_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_fg_wait_event_summary_mv_id awr_fg_wait_event_summary_mv USING btree (mv_id) tablespace awrparser_idx;
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_fg_wait_summary_mv_id ON awr_fg_wait_summary_mv USING btree (mv_id);
-CREATE INDEX IF NOT EXISTS idx_fg_wait_summary_dbinstsnap ON awr_fg_wait_summary_mv USING btree (dbname, instance, begin_snap);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_fg_wait_summary_mv_id awr_fg_wait_summary_mv USING btree (mv_id) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_fg_wait_summary_dbinstsnap awr_fg_wait_summary_mv USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_seg_summary_mv_id ON awr_seg_summary_mv USING btree (mv_id);
-CREATE INDEX IF NOT EXISTS idx_seg_summary_dbinstsnap ON awr_seg_summary_mv USING btree (dbname, instance, begin_snap);
-CREATE INDEX IF NOT EXISTS idx_seg_summary_score ON awr_seg_summary_mv USING btree (severity_score DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_seg_summary_mv_id awr_seg_summary_mv USING btree (mv_id) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_seg_summary_dbinstsnap awr_seg_summary_mv USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_seg_summary_score awr_seg_summary_mv USING btree (severity_score DESC) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_seg_summary_mv_dbname_snap ON awr_segment_summary_mv USING btree (dbname, instance, begin_snap);
-CREATE INDEX IF NOT EXISTS idx_seg_summary_mv_owner_object ON awr_segment_summary_mv USING btree (dbname, owner, object_name);
-CREATE INDEX IF NOT EXISTS idx_seg_summary_mv_severity ON awr_segment_summary_mv USING btree (dbname, instance, begin_snap, severity_score DESC);
-CREATE INDEX IF NOT EXISTS ix_seg_mv_snap ON awr_segment_summary_mv USING btree (dbname, instance, begin_snap);
-CREATE UNIQUE INDEX IF NOT EXISTS uq_seg_mv_id ON awr_segment_summary_mv USING btree (mv_id);
+CREATE INDEX IF NOT EXISTS idx_seg_summary_mv_dbname_snap awr_segment_summary_mv USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_seg_summary_mv_owner_object awr_segment_summary_mv USING btree (dbname, owner, object_name) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_seg_summary_mv_severity awr_segment_summary_mv USING btree (dbname, instance, begin_snap, severity_score DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS ix_seg_mv_snap awr_segment_summary_mv USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS uq_seg_mv_id awr_segment_summary_mv USING btree (mv_id) tablespace awrparser_idx;
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_sql_object_map_mv_id ON awr_sql_object_map_mv USING btree (mv_id);
-CREATE INDEX IF NOT EXISTS idx_awr_sql_object_map_obj ON awr_sql_object_map_mv USING btree (object);
-CREATE INDEX IF NOT EXISTS idx_awr_sql_object_map_sql ON awr_sql_object_map_mv USING btree (sql_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_sql_object_map_mv_id awr_sql_object_map_mv USING btree (mv_id) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_awr_sql_object_map_obj awr_sql_object_map_mv USING btree (object) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_awr_sql_object_map_sql awr_sql_object_map_mv USING btree (sql_id) tablespace awrparser_idx;
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_sql_summary_mv_id ON awr_sql_summary_mv USING btree (mv_id);
-CREATE INDEX IF NOT EXISTS ix_sql_summary_snap ON awr_sql_summary_mv USING btree (dbname, instance, begin_snap);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_sql_summary_mv_id awr_sql_summary_mv USING btree (mv_id) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS ix_sql_summary_snap awr_sql_summary_mv USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
 
-CREATE INDEX IF NOT EXISTS idx_awr_sql_text_norm_id ON awr_sql_text_norm USING btree (sql_id);
-CREATE INDEX IF NOT EXISTS idx_awr_sql_text_norm_mv_sql_id ON awr_sql_text_norm USING btree (sql_id);
+CREATE INDEX IF NOT EXISTS idx_awr_sql_text_norm_id awr_sql_text_norm USING btree (sql_id) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_awr_sql_text_norm_mv_sql_id awr_sql_text_norm USING btree (sql_id) tablespace awrparser_idx;
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_sql_text_norm_mv_id ON awr_sql_text_norm_mv USING btree (mv_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_sql_text_norm_mv_id awr_sql_text_norm_mv USING btree (mv_id) tablespace awrparser_idx;
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_wait_summary_mv_id ON awr_wait_summary_mv USING btree (mv_id);
-CREATE INDEX IF NOT EXISTS idx_wait_summary_dbinstsnap ON awr_wait_summary_mv USING btree (dbname, instance, begin_snap, wait_scope, wait_class);
-CREATE INDEX IF NOT EXISTS ix_wait_mv_snap ON awr_wait_summary_mv USING btree (dbname, instance, begin_snap);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_wait_summary_mv_id awr_wait_summary_mv USING btree (mv_id) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_wait_summary_dbinstsnap awr_wait_summary_mv USING btree (dbname, instance, begin_snap, wait_scope, wait_class) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS ix_wait_mv_snap awr_wait_summary_mv USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
 
 
 -- ============================================================
+
+
+-- REFRESH MATERIALIZED VIEWS
+-- ============================================================
+
+-- Run after initial data load to populate all MVs:
+REFRESH MATERIALIZED VIEW CONCURRENTLY awr_bg_wait_event_summary_mv;
+REFRESH MATERIALIZED VIEW CONCURRENTLY awr_bg_wait_event_summary_mv1;
+REFRESH MATERIALIZED VIEW CONCURRENTLY awr_bg_wait_summary_mv;
+REFRESH MATERIALIZED VIEW CONCURRENTLY awr_fg_wait_event_summary_mv;
+REFRESH MATERIALIZED VIEW CONCURRENTLY awr_fg_wait_summary_mv;
+REFRESH MATERIALIZED VIEW CONCURRENTLY awr_seg_summary_mv;
+REFRESH MATERIALIZED VIEW CONCURRENTLY awr_segment_summary_mv;
+REFRESH MATERIALIZED VIEW CONCURRENTLY awr_sql_object_map_mv;
+REFRESH MATERIALIZED VIEW CONCURRENTLY awr_sql_summary_mv;
+REFRESH MATERIALIZED VIEW CONCURRENTLY awr_sql_text_norm;
+REFRESH MATERIALIZED VIEW CONCURRENTLY awr_sql_text_norm_mv;
+REFRESH MATERIALIZED VIEW CONCURRENTLY awr_wait_summary_mv;
+
+
+-- ============================================================
+
+
+
+-- ============================================================
+-- TABLE COMMENTS (82 new + 11 already embedded above)
+-- ============================================================
+
+COMMENT ON TABLE awr_advisory_pga IS 'PGA Memory Advisory data parsed from Oracle AWR HTML reports. Contains estimated cache hit % and time savings vs target PGA size.';
+COMMENT ON TABLE awr_advisory_sga IS 'SGA Target Advisory data parsed from Oracle AWR HTML reports. Estimated DB time and physical reads for each SGA size factor.';
+COMMENT ON TABLE awr_ai_learnings IS 'AI learning feedback loop — stores accepted recommendation patterns to improve future AI suggestions. Keyed on trigger_pattern.';
+COMMENT ON TABLE awr_ai_recommendations IS 'AI-generated tuning recommendations. status tracks pending/accepted/rejected DBA review. Links to the trigger metric that caused generation.';
+COMMENT ON TABLE awr_anomalies IS 'AWR anomaly detection results — Z-score flagging of AWR metrics deviating from the rolling 90-day baseline. One row per metric per snap.';
+COMMENT ON TABLE awr_background_wait_events IS 'AWR Background Wait Events section parsed from AWR HTML reports. pct_bg_time mirrors foreground pct_db_time for background processes.';
+COMMENT ON TABLE awr_buffer_wait_statistics IS 'AWR Buffer Wait Statistics section — class-level buffer contention (data block, segment header, undo header, undo block).';
+COMMENT ON TABLE awr_change_log IS 'DBA-maintained change log for correlating configuration changes with AWR performance shifts. Manually entered via the portal.';
+COMMENT ON TABLE awr_comparison_tags IS 'User-defined labels for before/after comparison snap ranges. tag_type distinguishes baseline vs problem window.';
+COMMENT ON TABLE awr_db_info IS 'Oracle DB/instance/host metadata extracted from AWR report header. One row per unique db_name + instance + row_hash combination.';
+COMMENT ON TABLE awr_enqueue_statistics IS 'AWR Enqueue Activity section — TX, TM, HW lock waits with average wait times per enqueue type.';
+COMMENT ON TABLE awr_execution_plans IS 'Parsed Oracle execution plans — step-level storage enabling plan comparison and regression detection across snap windows.';
+COMMENT ON TABLE awr_file_io_stats IS 'AWR File IO Stats section — per-datafile read/write rates and buffer wait statistics.';
+COMMENT ON TABLE awr_foreground_wait_class IS 'AWR Foreground Wait Class rollup — User I/O, System I/O, Commit, Concurrency, Other categories aggregated per snap.';
+COMMENT ON TABLE awr_foreground_wait_events IS 'AWR Top Foreground Wait Events — pct_db_time drives the anomaly detector and MV scoring engine.';
+COMMENT ON TABLE awr_instance_activity_stats IS 'AWR Key Instance Activity Stats — db block gets, consistent gets, physical reads per second and per transaction.';
+COMMENT ON TABLE awr_instance_efficiency IS 'AWR Instance Efficiency Percentages — buffer hit%, library hit%, soft parse%, execute-to-parse% per snap.';
+COMMENT ON TABLE awr_io_profile IS 'AWR IO Profile section — megabytes/s and requests/s split by read and write direction.';
+COMMENT ON TABLE awr_iostat_filetype IS 'AWR IOStat by Filetype summary — I/O breakdown by file type (Data File, Log File, Temp File, Control File).';
+COMMENT ON TABLE awr_iostat_func_filetype IS 'AWR IOStat by Function/Filetype cross-dimension summary — I/O breakdown by Oracle function AND file type combination.';
+COMMENT ON TABLE awr_iostat_function IS 'AWR IOStat by Function summary — I/O by Oracle function (DBWR, LGWR, Buffer Cache Read, Direct Read).';
+COMMENT ON TABLE awr_license_audit IS 'Audit log for license check events — tracks DB and SAR counts against the licensed limits at each check.';
+COMMENT ON TABLE awr_licensed_dbs IS 'Registry of Oracle databases consuming a license slot. Distinct from awr_db_master — tracks registered vs active DBs.';
+COMMENT ON TABLE awr_load_profile IS 'AWR Load Profile section — per-second and per-transaction rates for DB Time, CPU, reads, writes, parses, and transactions.';
+COMMENT ON TABLE awr_object_metadata IS 'Oracle schema object statistics uploaded from CSV or direct query. Used by execution plan analysis and segment correlation.';
+COMMENT ON TABLE awr_os_statistics IS 'AWR Operating System Statistics section — BUSY_TIME, IOWAIT_TIME, NUM_CPUS, PHYSICAL_MEMORY_BYTES and related OS counters.';
+COMMENT ON TABLE awr_recommendation_rules IS 'Rule definitions for the rules-based recommendation engine. category + rule_key form the PK; rule_text holds the recommendation template.';
+COMMENT ON TABLE awr_recommendations IS 'Generated tuning recommendations — one row per unique (dbname, snap range, rule_id). resolution_json holds structured advice.';
+COMMENT ON TABLE awr_repo_scan_log IS 'File scan log for central repository mode — tracks parse status of each AWR HTML file found under the configured repo_path.';
+COMMENT ON TABLE awr_seg_buff_busy_waits IS 'AWR Segments by Buffer Busy Waits — hot blocks contended at the buffer cache level.';
+COMMENT ON TABLE awr_seg_cr_blk_rec IS 'AWR Segments by CR Blocks Received — RAC cross-instance consistent-read block transfers per segment.';
+COMMENT ON TABLE awr_seg_cur_blk_rec IS 'AWR Segments by Current Blocks Received — RAC cross-instance current block transfers per segment.';
+COMMENT ON TABLE awr_seg_db_blk_chg IS 'AWR Segments by DB Block Changes — high change-rate segments driving redo generation.';
+COMMENT ON TABLE awr_seg_direct_phy_reads IS 'AWR Segments by Direct Physical Reads — reads bypassing buffer cache (parallel query or LOB reads).';
+COMMENT ON TABLE awr_seg_direct_phy_writes IS 'AWR Segments by Direct Physical Writes — parallel DML or LOB writes bypassing the buffer cache.';
+COMMENT ON TABLE awr_seg_gbl_cache_buff_busy IS 'AWR Segments by Global Cache Buffer Busy — RAC global cache contention at the block level.';
+COMMENT ON TABLE awr_seg_itl_waits IS 'AWR Segments by ITL Waits — transaction slot contention in the block header; typically caused by INITRANS being too low.';
+COMMENT ON TABLE awr_seg_logical_reads IS 'AWR Segments by Logical Reads — top segments by buffer gets (hot tables and indexes).';
+COMMENT ON TABLE awr_seg_opt_reads IS 'AWR Segments by Optimized Reads — Smart Scan or buffer cache satisfied reads (Exadata).';
+COMMENT ON TABLE awr_seg_phy_read_req IS 'AWR Segments by Physical Read Requests — request count for single and multiblock reads per segment.';
+COMMENT ON TABLE awr_seg_phy_reads IS 'AWR Segments by Physical Reads — top physical read segments (block count, not bytes).';
+COMMENT ON TABLE awr_seg_phy_write_req IS 'AWR Segments by Physical Write Requests — DBWR write request count per segment.';
+COMMENT ON TABLE awr_seg_phy_writes IS 'AWR Segments by Physical Writes — top physical write segments (DBWR writes).';
+COMMENT ON TABLE awr_seg_row_lck_waits IS 'AWR Segments by Row Lock Waits — DML contention on hot rows.';
+COMMENT ON TABLE awr_seg_table_scan IS 'AWR Segments by Table Scans — full table scans per segment; a high count signals a missing or unusable index.';
+COMMENT ON TABLE awr_seg_unopt_reads IS 'AWR Segments by UnOptimized Reads — physical reads NOT satisfied from Smart Scan cache (Exadata).';
+COMMENT ON TABLE awr_sql_cluster_wait_time IS 'AWR SQL Ordered by Cluster Wait Time — RAC interconnect impact per SQL statement.';
+COMMENT ON TABLE awr_sql_cpu_time IS 'AWR SQL Ordered by CPU Time — CPU-bound statements.';
+COMMENT ON TABLE awr_sql_elapsed_time IS 'AWR SQL Ordered by Elapsed Time — primary SQL ranking table; feeds awr_sql_summary_mv severity scoring.';
+COMMENT ON TABLE awr_sql_executions IS 'AWR SQL Ordered by Executions — high-frequency statements; row_hash deduplicates across multiple AWR sections.';
+COMMENT ON TABLE awr_sql_gets IS 'AWR SQL Ordered by Buffer Gets — memory-intensive statements with high logical read counts.';
+COMMENT ON TABLE awr_sql_parsed_calls IS 'AWR SQL Ordered by Parse Calls — high parse rate signals missing cursor sharing or bind variable usage.';
+COMMENT ON TABLE awr_sql_phy_reads_unopt IS 'AWR SQL Ordered by Physical Reads (UnOptimized) — Smart Scan bypass rate per SQL (Exadata).';
+COMMENT ON TABLE awr_sql_reads IS 'AWR SQL Ordered by Reads — physical read intensive statements.';
+COMMENT ON TABLE awr_sql_text IS 'AWR Complete List of SQL Text — full SQL text keyed by sql_id; joined to all awr_sql_* tables via sql_id.';
+COMMENT ON TABLE awr_sql_user_io_time IS 'AWR SQL Ordered by User I/O Wait Time — I/O bound statements.';
+COMMENT ON TABLE awr_tablespace_io_stats IS 'AWR Tablespace IO Stats section — per-tablespace read/write rates and buffer wait statistics.';
+COMMENT ON TABLE awr_time_model_stats IS 'AWR Time Model Statistics — DB time breakdown: DB CPU, parse time, PL/SQL execution, background elapsed.';
+COMMENT ON TABLE awr_undo_statistics IS 'AWR Undo Segment Stats — undo block consumption and concurrent transaction counts per snap.';
+COMMENT ON TABLE awr_wait_event_master IS 'Oracle wait event classification catalog — 1918 events with corr_type for AWR Intelligence correlation.';
+COMMENT ON TABLE exec_plan_headers IS 'Execution plan header records for plan comparison — paired with awr_execution_plans step detail for before/after analysis.';
+COMMENT ON TABLE nmon_anomalies IS 'NMON anomaly detection results — Z-score flagging of IBM AIX OS metrics against the 90-day rolling baseline.';
+COMMENT ON TABLE nmon_ctxswitch_stats IS 'NMON context switch stats from IBM AIX — cswch_persec and fork_persec; mirrors sar_ctxswitch_stats.';
+COMMENT ON TABLE nmon_memory_stats IS 'NMON MEM section — AIX memory and swap totals, used MB and %, buffers, cached; mirrors sar_memory_stats.';
+COMMENT ON TABLE nmon_paging_stats IS 'NMON PAGE section — AIX page-in/out and swap page rates; mirrors sar_paging_stats.';
+COMMENT ON TABLE nmon_parse_log IS 'NMON file parse tracking — incremental parse state with last_token_seq for 1-hour lag pull.';
+COMMENT ON TABLE nmon_runqueue_stats IS 'NMON PROC section — AIX run queue length and swapped-in process count; mirrors sar_loadavg_stats.';
+COMMENT ON TABLE portal_config IS 'Key-value store for all portal configuration settings. Replaces settings.yaml for runtime-configurable parameters.';
+COMMENT ON TABLE portal_users IS 'Portal user accounts with bcrypt password hashes. Supports admin and viewer roles.';
+COMMENT ON TABLE remote_fetch_log IS 'Log of all file fetch attempts from remote AWR sources (SSH, UNC, Oracle direct). One row per file fetch attempt.';
+COMMENT ON TABLE sar_anomalies IS 'SAR anomaly detection results — Z-score flagging of Linux OS metrics against the 90-day rolling baseline.';
+COMMENT ON TABLE sar_cpu_stats IS 'SAR CPU utilization per-CPU and ALL — mirrors Oracle AWR OS Stats; usr/nice/system/iowait/steal/idle columns.';
+COMMENT ON TABLE sar_ctxswitch_stats IS 'SAR context switch and process creation rates — high cswch/s correlates with CPU saturation on Oracle servers.';
+COMMENT ON TABLE sar_disk_stats IS 'SAR disk device I/O stats — tps, read/write MB/s, await_ms, util_pct per device per snap.';
+COMMENT ON TABLE sar_hugepage_stats IS 'SAR huge page utilization — kbhugfree/kbhugused/hugused_pct for Oracle HugePages monitoring.';
+COMMENT ON TABLE sar_loadavg_stats IS 'SAR load average and run queue — ldavg_1/5/15 and blocked process count per snap.';
+COMMENT ON TABLE sar_memory_stats IS 'SAR memory utilization — free/used MB, buffers, cached, commit percentage per snap.';
+COMMENT ON TABLE sar_network_stats IS 'SAR network interface stats — rx/tx packets and KB/s per interface with utilisation %.';
+COMMENT ON TABLE sar_paging_stats IS 'SAR paging activity — page-in/out rates, major faults, vmeff% for memory pressure diagnosis.';
+COMMENT ON TABLE sar_socket_stats IS 'SAR socket counts — total/TCP/UDP/raw sockets and TIME_WAIT connections per snap.';
+COMMENT ON TABLE sar_swap_stats IS 'SAR swap utilization — swap_free_mb, swap_used_mb, swap_used_pct per snap.';
+COMMENT ON TABLE wait_event_trend IS 'Time-series wait event trend data for longitudinal analysis across snap windows.';
 
 \echo '  Database objects: done'
 
-
 -- ============================================================
--- SECTION 4: PORTAL CONFIGURATION
--- 46 portal_config keys covering all settings sections:
---   ai, anomaly, awr_source, sar_source, license, access
--- ON CONFLICT DO NOTHING — preserves any user-customised values
--- on re-run.
+-- SECTION 5: SEED DATA — portal_config
+-- All 46 keys from the live database, with comments.
+-- ON CONFLICT DO NOTHING — safe to re-run.
 -- ============================================================
 
-\echo 'Step 4/6: Seeding portal_config (46 keys)...'
+\echo 'Step 4/6: Seeding portal_config (47 keys)...'
 
 INSERT INTO portal_config (key, value, section, updated_by, updated_at) VALUES
 
@@ -2900,6 +3315,7 @@ INSERT INTO portal_config (key, value, section, updated_by, updated_at) VALUES
 ('license_tier',         '',                       'license',   'install', NOW()),
 ('license_db_count',     '0',                      'license',   'install', NOW()),
 ('license_sar_count',    '0',                      'license',   'install', NOW()),
+('license_nmon_count',   '0',                      'license',   'install', NOW()),
 ('license_expiry',       '',                       'license',   'install', NOW()),
 ('license_mac_override', '',                       'license',   'install', NOW()),
 
@@ -2926,44 +3342,21 @@ INSERT INTO portal_config (key, value, section, updated_by, updated_at) VALUES
 ('metadata_refresh_days','30',                     'access',    'install', NOW())
 
 ON CONFLICT (key) DO NOTHING;
-
-\echo '  portal_config: done (46 keys)'
-
 -- ── Default admin user ───────────────────────────────────────────────────
 -- Username : admin
--- Password : SETUP sentinel — set on first login via /setup-password
-
-
--- ============================================================
--- SECTION 5: ADMIN USER
--- First-time setup: password_hash='SETUP' sentinel.
--- The portal detects this on login and redirects to
--- /setup-password — forcing the admin to set a real password
--- before entering the portal. Eliminates bcrypt hash
--- pre-computation issues in different environments.
---
--- ON CONFLICT DO UPDATE — safe CASE expression: NEVER overwrites
--- an existing bcrypt hash (starts with $2b$) with SETUP.
--- Re-running on a live DB does not reset a real password.
--- ============================================================
-
-\echo 'Step 5/6: Seeding portal_users (admin / SETUP — password set on first login)...'
+-- Password : Admin@123  (bcrypt hash, cost 12)
+-- CHANGE THIS PASSWORD immediately after first login:
+--   Settings → Users → Change Password
+\echo 'Step 5/6: Seeding portal_users (admin / Admin@123)...'
 
 INSERT INTO portal_users
     (username, full_name, password_hash, role, active, created_at)
 VALUES
-    ('admin', 'Administrator', 'SETUP', 'admin', TRUE, NOW())
-ON CONFLICT (username) DO UPDATE
-    SET password_hash = CASE
-            WHEN EXCLUDED.password_hash = 'SETUP'
-             AND portal_users.password_hash NOT LIKE '$2b$%'
-            THEN 'SETUP'
-            ELSE portal_users.password_hash
-        END,
-        role   = 'admin',
-        active = TRUE;
-
-\echo '  portal_users: done'
+    ('admin',
+     'Administrator',
+     'SETUP',
+     'admin', TRUE, NOW())
+ON CONFLICT (username) DO NOTHING;
 
 
 -- ============================================================
@@ -2984,13 +3377,8 @@ ON CONFLICT (username) DO UPDATE
 --   NULL        → not yet classified (Other/Idle wait class)
 --
 -- ON CONFLICT DO UPDATE — idempotent, updates guidance_text
-
-
+-- if the event already exists from a previous installation.
 -- ============================================================
--- SECTION 6: ORACLE WAIT EVENT CLASSIFICATIONS
--- 1918 rows — full Oracle wait event catalog.
--- ============================================================
-
 \echo 'Step 6/6: Seeding awr_wait_event_master (1918 Oracle wait events)...'
 
 INSERT INTO awr_wait_event_master
@@ -4999,13 +5387,13 @@ END $$;
 \echo '============================================================'
 
 SELECT object_type, count FROM (
-    SELECT 'Tables'             AS object_type, COUNT(*)::TEXT AS count FROM information_schema.tables       WHERE table_schema='public' AND table_type='BASE TABLE'
+    SELECT 'Tables'             AS object_type, COUNT(*)::TEXT AS count FROM information_schema.tables       WHERE table_schema='DAR_PORTAL_USER' AND table_type='BASE TABLE'
     UNION ALL
-    SELECT 'Materialized Views',                COUNT(*)::TEXT FROM pg_matviews                              WHERE schemaname='public'
+    SELECT 'Materialized Views',                COUNT(*)::TEXT FROM pg_matviews                              WHERE schemaname='DAR_PORTAL_USER'
     UNION ALL
-    SELECT 'Views',                             COUNT(*)::TEXT FROM information_schema.views                  WHERE table_schema='public'
+    SELECT 'Views',                             COUNT(*)::TEXT FROM information_schema.views                  WHERE table_schema='DAR_PORTAL_USER'
     UNION ALL
-    SELECT 'Indexes',                           COUNT(*)::TEXT FROM pg_indexes                               WHERE schemaname='public'
+    SELECT 'Indexes',                           COUNT(*)::TEXT FROM pg_indexes                               WHERE schemaname='DAR_PORTAL_USER'
     UNION ALL
     SELECT 'portal_config rows',                COUNT(*)::TEXT FROM portal_config
     UNION ALL
@@ -5016,11 +5404,11 @@ SELECT object_type, count FROM (
 
 \echo ''
 \echo 'Expected results:'
-\echo '  Tables               : 80'
-\echo '  Materialized Views   : 11'
+\echo '  Tables               : 93'
+\echo '  Materialized Views   : 12'
 \echo '  Views                : 2'
-\echo '  Indexes              : 90+'
-\echo '  portal_config rows   : 46'
+\echo '  Indexes              : 74'
+\echo '  portal_config rows   : 48'
 \echo '  portal_users rows    : 1'
 \echo '  wait_event_master    : 1918'
 \echo ''
@@ -5030,112 +5418,8 @@ SELECT object_type, count FROM (
 \echo '  3. Edit config\settings.yaml  (DB password, portal/grafana URLs)'
 \echo '  4. install_services.bat       (register Windows services)'
 \echo '  5. py bulk_import.py          (import Grafana dashboards)'
-\echo '  6. Open http://localhost:8000  login: admin (any password — redirected to set-password)'
+\echo '  6. Open http://localhost:8000  login: admin / Admin@123'
 \echo '  7. Settings → Access Control  update portal_url and grafana_url'
 \echo '  8. Settings → License         enter your license key'
 \echo '  9. CHANGE THE ADMIN PASSWORD  Settings → Users → Change Password'
-\echo '============================================================'
-
-
--- ============================================================
--- SECTION 7: REFRESH MATERIALIZED VIEWS
--- Run after all seed data is loaded so aggregations are current.
--- CONCURRENTLY requires a unique index — created in Section 3.
--- ============================================================
-
-\echo 'Step 7/6: Refreshing 12 materialized views...'
-
-REFRESH MATERIALIZED VIEW CONCURRENTLY awr_bg_wait_event_summary_mv;
-REFRESH MATERIALIZED VIEW CONCURRENTLY awr_bg_wait_summary_mv;
-REFRESH MATERIALIZED VIEW CONCURRENTLY awr_fg_wait_event_summary_mv;
-REFRESH MATERIALIZED VIEW CONCURRENTLY awr_fg_wait_summary_mv;
-REFRESH MATERIALIZED VIEW CONCURRENTLY awr_seg_summary_mv;
-REFRESH MATERIALIZED VIEW CONCURRENTLY awr_segment_summary_mv;
-REFRESH MATERIALIZED VIEW CONCURRENTLY awr_sql_object_map_mv;
-REFRESH MATERIALIZED VIEW CONCURRENTLY awr_sql_summary_mv;
-REFRESH MATERIALIZED VIEW CONCURRENTLY awr_sql_text_norm_mv;
-REFRESH MATERIALIZED VIEW CONCURRENTLY awr_wait_summary_mv;
-
--- awr_sql_text_norm and awr_bg_wait_event_summary_mv1 may not
--- have unique indexes yet — refresh without CONCURRENTLY:
-REFRESH MATERIALIZED VIEW awr_sql_text_norm;
-
-\echo '  Materialized views: refreshed'
-
-
--- ============================================================
--- SECTION 8: OBJECT PERMISSIONS FOR DAR_PORTAL_USER
--- ============================================================
-
-\echo 'Step 8/6: Granting object permissions to DAR_PORTAL_USER...'
-
--- Tablespace grants (separate privilege from schema grants)
-GRANT CREATE ON TABLESPACE awrparser     TO DAR_PORTAL_USER;
-GRANT CREATE ON TABLESPACE awrparser_idx TO DAR_PORTAL_USER;
-
--- Table grants
-DO $$
-DECLARE r RECORD;
-BEGIN
-    FOR r IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' LOOP
-        EXECUTE format(
-            'GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.%I TO DAR_PORTAL_USER',
-            r.tablename
-        );
-    END LOOP;
-END $$;
-
--- Sequence grants (for SERIAL / BIGSERIAL columns)
-DO $$
-DECLARE r RECORD;
-BEGIN
-    FOR r IN SELECT sequencename FROM pg_sequences WHERE schemaname = 'public' LOOP
-        EXECUTE format(
-            'GRANT USAGE, SELECT ON SEQUENCE public.%I TO DAR_PORTAL_USER',
-            r.sequencename
-        );
-    END LOOP;
-END $$;
-
--- Materialized view grants (SELECT only)
-DO $$
-DECLARE r RECORD;
-BEGIN
-    FOR r IN SELECT matviewname FROM pg_matviews WHERE schemaname = 'public' LOOP
-        EXECUTE format(
-            'GRANT SELECT ON TABLE public.%I TO DAR_PORTAL_USER',
-            r.matviewname
-        );
-    END LOOP;
-END $$;
-
-\echo '  Permissions: done'
-
-
--- ============================================================
--- INSTALLATION COMPLETE
--- ============================================================
-\echo ''
-\echo '============================================================'
-\echo '  DAR Portal v3 — Schema Installation Complete'
-\echo '============================================================'
-\echo ''
-\echo '  Objects created:'
-\echo '    Tables:             80'
-\echo '    Indexes:            86'
-\echo '    Views:              2'
-\echo '    Materialized Views: 12'
-\echo '    portal_config rows: 46'
-\echo '    wait event rows:    1918'
-\echo ''
-\echo '  NEXT STEPS:'
-\echo '  1. py -m pip install --only-binary=:all: -r requirements.txt'
-\echo '  2. py -m pip install --only-binary=:all: oracledb paramiko'
-\echo '  3. Edit config\settings.yaml  (DB password, URLs)'
-\echo '  4. install_services.bat       (register Windows services)'
-\echo '  5. py bulk_import.py          (import Grafana dashboards)'
-\echo '  6. Open http://localhost:8000'
-\echo '     Login: admin / (set password on first login)'
-\echo '  7. Settings > Access Control  (update URLs)'
-\echo '  8. Settings > License         (enter license key)'
 \echo '============================================================'
