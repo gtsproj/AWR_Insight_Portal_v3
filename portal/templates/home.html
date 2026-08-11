@@ -131,7 +131,8 @@
 </div>
 
 {# ── Main dashboard grid ── #}
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+{# Row 1: AWR Analysis + Exadata Analysis (2-column) #}
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px">
 
   {# AWR Analysis #}
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
@@ -156,12 +157,12 @@
     <a href="{{ grafana_url }}/d/awr-memory-advisory" target="_blank" class="dl">
       💾 Memory Advisory
       <small>SGA · PGA · Instance Efficiency</small></a>
-    {% endif %}	  
+    {% endif %}
     {% if ai_mode in ('local_ai','cloud_ai') %}
     <a href="{{ grafana_url }}/d/awr-anomalies-ai" target="_blank" class="dl">
       🚨 AWR Anomaly Detection
       <small>Trend analysis · Baseline deviation</small></a>
-    {% else %}	
+    {% else %}
     <a href="{{ grafana_url }}/d/awr-anomalies" target="_blank" class="dl">
       🚨 AWR Anomaly Detection
       <small>Trend analysis · Baseline deviation</small></a>
@@ -172,7 +173,32 @@
     <a href="/system-study" class="dl">
       🔬 Database System Study
       <small>Controlfiles · Redo · ASM · Partitioning · Health check</small></a>
-	</div>
+  </div>
+
+  {# Exadata Analysis — visible when db_type is Exadata-RAC or Exadata-Standalone #}
+  <div id="exadata-card" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+    <div style="font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;
+                margin-bottom:10px;font-weight:600;border-bottom:1px solid var(--border);padding-bottom:6px">
+      ⚡ Exadata Analysis
+    </div>
+    <a href="{{ grafana_url }}/d/exa-smart-cache-perf" target="_blank" class="dl">
+      🔋 Smart Cache Performance
+      <small>Flash Cache hit% · XRMEM/RDMA · Skip rate · Flushing cell alert</small></a>
+    <a href="{{ grafana_url }}/d/exa-smart-scan" target="_blank" class="dl">
+      🔍 Smart Scan Analysis
+      <small>Eligible MB · Flash vs Disk · Passthru% · Storage Index savings</small></a>
+    <a href="{{ grafana_url }}/d/exa-fc-health" target="_blank" class="dl">
+      💾 Flash Cache Health
+      <small>Large Write% · Write rejections · Partial writes · Internal IO</small></a>
+    <a href="{{ grafana_url }}/d/exa-cell-io-dist" target="_blank" class="dl">
+      📡 Cell IO Distribution
+      <small>Cell IOPs outliers · IO Reasons · IORM queue · Disk outliers</small></a>
+  </div>
+
+</div>
+
+{# Row 2: SAR & Correlation + NMON & Correlation (2×2 arrangement) #}
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px">
 
   {# SAR & Correlation — hidden only when SAR license = 0 (NMON-only customer) #}
   <div id="sar-card" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
