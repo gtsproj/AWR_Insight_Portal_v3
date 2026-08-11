@@ -944,5 +944,182 @@
       "related_rules": ["SAR_001", "SAR_002"]
     }
 
+,
+    // ═══════════════════════════════════════════════════════
+    // CATEGORY: EXADATA — Flash Cache & Smart Scan
+    // Wave 1 rules: FC Config, Perf Summary, Smart IO, FC Reads
+    // EXA_001 is hard-coded in evaluate_exadata_rules() as the
+    // critical flushing detector — kept here for documentation.
+    // ═══════════════════════════════════════════════════════
+
+    {
+      "rule_id": "EXA_001",
+      "category": "exadata",
+      "sub_category": "fc_config",
+      "condition": "is_flushing == True",
+      "severity": "critical",
+      "oracle_versions": ["19c", "21c", "23ai"],
+      "title": "Flash Cache Flushing Active on Storage Cell",
+      "root_cause": "A storage cell has Flash Cache in 'normal - flushing' state. During flushing, the cell migrates all Flash Cache data back to hard disk and stops serving client IOs from Flash Cache. All reads on this cell are redirected to hard disk (20-50x higher latency). This directly causes spiking cell smart table scan and cell single block physical read wait times. Per Oracle, flush should never be executed during active database workload.",
+      "resolution_steps": [
+        "1. IMMEDIATE — cancel the flush on each affected cell:",
+        "   cellcli -e 'ALTER FLASHCACHE CANCEL FLUSH'",
+        "2. Verify: cellcli -e 'LIST FLASHCACHE DETAIL' — status should return to 'normal'.",
+        "3. Monitor: cell smart table scan avg_wait_ms should drop within 5 minutes of cancellation.",
+        "4. ROOT CAUSE: Identify who initiated the flush (usually ALTER FLASHCACHE FLUSH issued by a DBA or maintenance script) and add guardrails to prevent peak-hour execution.",
+        "5. If flash log is absent on the affected cell (check EXA_007), configure flash log before further Flash Cache operations.",
+        "6. Review IORM plans after recovery — IORM queue time for large IOs may remain elevated for several snaps."
+      ],
+      "diagnostic_sql": [
+        "-- Flash Cache status from database\nSELECT cellname, flashcachestatus FROM v$cell_state WHERE flashcachestatus != 'normal';",
+        "-- Cell smart scan wait trend\nSELECT event, total_waits, time_waited_micro/1000000 AS wait_s, average_wait/1000 AS avg_ms\nFROM v$system_event WHERE event LIKE 'cell smart%' ORDER BY time_waited_micro DESC;"
+      ],
+      "related_rules": ["EXA_002", "EXA_004"]
+    },
+
+    {
+      "rule_id": "EXA_002",
+      "category": "exadata",
+      "sub_category": "fc_reads",
+      "condition": "hit_pct < 80 AND io_type == 'OLTP'",
+      "primary_metric": "hit_pct",
+      "detail_template": "Cell {cell_name} OLTP Flash Cache hit% = {hit_pct}% (threshold: 80%)",
+      "severity": "high",
+      "oracle_versions": ["19c", "21c", "23ai"],
+      "title": "Flash Cache OLTP Hit Rate Below Threshold",
+      "root_cause": "Flash Cache hit rate for OLTP (single-block) reads is below 80%, meaning more than 1 in 5 single-block reads is going to hard disk. On Exadata, even 2% of single-block reads from disk can account for 82% of single-block wait time (disk latency is 20-50× higher than Flash Cache). Low hit rate is caused by: (1) Flash Cache flushing on one or more cells, (2) excessive flash cache skips due to CELL_FLASH_CACHE NONE storage clause, (3) Flash Cache undersized for the working set, or (4) heavy write activity consuming Flash Cache space.",
+      "resolution_steps": [
+        "1. Check EXA_001 first — Flash Cache flushing is the most common cause of sudden hit rate drops.",
+        "2. Review Flash Cache skip reasons in the Flash Cache User Reads - Skips section.",
+        "3. Identify segments with CELL_FLASH_CACHE NONE: SELECT owner, segment_name, storage_clause FROM dba_segments WHERE storage_clause LIKE '%NONE%';",
+        "4. Check Flash Cache size vs active data working set — if undersized, consider increasing using: ALTER CELL flashcache SET size = <new_size>;",
+        "5. Review Flash Cache User Writes sections for high write activity consuming cache space."
+      ],
+      "diagnostic_sql": [
+        "-- Flash Cache hit rate per cell from v$cell_state\nSELECT cellname, flashcacherds, flashcacherdmisses,\n       ROUND(1 - flashcacherdmisses/NULLIF(flashcacherds,0), 3)*100 AS hit_pct\nFROM v$cell_state ORDER BY hit_pct;",
+        "-- Segments with CELL_FLASH_CACHE NONE\nSELECT owner, segment_name, segment_type FROM dba_segments\nWHERE regexp_like(storage_clause, 'CELL_FLASH_CACHE.*NONE', 'i')\nORDER BY owner, segment_name;"
+      ],
+      "related_rules": ["EXA_001", "EXA_003", "EXA_004"]
+    },
+
+    {
+      "rule_id": "EXA_003",
+      "category": "exadata",
+      "sub_category": "fc_reads",
+      "condition": "hit_pct < 70 AND io_type == 'Scan'",
+      "primary_metric": "hit_pct",
+      "detail_template": "Cell {cell_name} Scan Flash Cache hit% = {hit_pct}% (threshold: 70%)",
+      "severity": "high",
+      "oracle_versions": ["19c", "21c", "23ai"],
+      "title": "Flash Cache Scan Hit Rate Below Threshold",
+      "root_cause": "Flash Cache hit rate for Smart Scan reads is below 70%. Smart Scans read large amounts of data, and when this data is not in Flash Cache, reads go to hard disk — dramatically increasing cell smart table scan wait times. Low scan hit rate is more tolerable than low OLTP hit rate (XRMEM cache supplements Flash Cache for scans), but a sudden drop indicates: (1) Flash Cache flushing, (2) Flash Cache space consumed by Large Writes (temp spills), or (3) Flash Cache skip due to encryption or timezone upgrade.",
+      "resolution_steps": [
+        "1. Check Flash Cache Space Usage section — if large_write_pct > 20%, temp spills are consuming scan space (see EXA_005).",
+        "2. Check cell smart table scan passthru variants: 'cell smart table scan: passthru', 'cell smart table scan: db timezone upgrade', 'cell smart table scan: disabled by user' in Foreground Wait Events.",
+        "3. If passthru_pct is high, see EXA_006 for Smart Scan passthru remediation.",
+        "4. Verify Flash Cache space is not fragmented: cellcli -e 'LIST FLASHCACHE DETAIL' to see free space per cell."
+      ],
+      "diagnostic_sql": [
+        "-- Smart Scan passthru reasons from v$sysstat\nSELECT name, value FROM v$sysstat\nWHERE name LIKE 'cell%offload%' OR name LIKE '%smart scan%passthru%'\nORDER BY value DESC;"
+      ],
+      "related_rules": ["EXA_001", "EXA_005", "EXA_006"]
+    },
+
+    {
+      "rule_id": "EXA_004",
+      "category": "exadata",
+      "sub_category": "perf_summary",
+      "condition": "fc_read_skip_count > 100000",
+      "primary_metric": "fc_read_skip_count",
+      "detail_template": "Flash Cache read skip count = {fc_read_skip_count:,} in this snap interval",
+      "severity": "medium",
+      "oracle_versions": ["19c", "21c", "23ai"],
+      "title": "High Flash Cache Read Skip Count",
+      "root_cause": "A significant number of reads are bypassing Flash Cache entirely. Read skips occur when: (1) a segment has CELL_FLASH_CACHE NONE in its storage clause, (2) Flash Cache is full and IOs cannot be absorbed, (3) the read is for a segment type not eligible for Flash Cache (e.g. redo log reads), or (4) Flash Cache is flushing. Unlike cache misses (data was evicted), skips mean the data was never eligible to be cached — identifying and fixing skip reasons recovers cache hits for eligible IOs.",
+      "resolution_steps": [
+        "1. Review Flash Cache User Reads - Skips section to identify the skip reason breakdown.",
+        "2. If skip reason is 'storage clause (CELL_FLASH_CACHE NONE)': ALTER TABLE <table> STORAGE (CELL_FLASH_CACHE DEFAULT);",
+        "3. If skips are on hot segments: consider adding them to the KEEP flash cache policy.",
+        "4. If Flash Cache is full: review space usage sections and address large write pressure (see EXA_005)."
+      ],
+      "diagnostic_sql": [
+        "-- Flash Cache skip statistics\nSELECT name, value FROM v$sysstat\nWHERE name IN ('cell flash cache read hits','cell flash cache read miss','cell flash cache skipped (not eligible)')\nORDER BY name;"
+      ],
+      "related_rules": ["EXA_002", "EXA_001"]
+    },
+
+    {
+      "rule_id": "EXA_005",
+      "category": "exadata",
+      "sub_category": "perf_summary",
+      "condition": "fc_pct_of_db_ios < 20 AND xrmem_pct_of_db_ios < 50",
+      "primary_metric": "fc_pct_of_db_ios",
+      "detail_template": "Only {fc_pct_of_db_ios}% of DB IOs from Flash Cache, {xrmem_pct_of_db_ios}% from XRMEM Cache",
+      "severity": "high",
+      "oracle_versions": ["19c", "21c", "23ai"],
+      "title": "Low Exadata Cache Coverage — High Disk IO Rate",
+      "root_cause": "Both Flash Cache and XRMEM Cache are serving fewer than expected IOs. In a healthy Exadata deployment, the combination of Flash Cache + XRMEM Cache should serve 85%+ of DB IOs. Low coverage indicates: (1) one or more cells in flushing state (see EXA_001), (2) working set size exceeds total cache capacity, (3) Flash Cache skips for large categories of IOs, or (4) high write amplification consuming cache space. The remaining IOs going to hard disk are the primary source of I/O-related DB time.",
+      "resolution_steps": [
+        "1. Check Flash Cache Configuration section — cells in flushing state are the most common cause.",
+        "2. Review Exadata Smart IO section — disk_pct column identifies cells with high disk read ratios.",
+        "3. Compare fc_pct trend across multiple snaps — a sudden drop isolates when the issue started.",
+        "4. Check Total DB IOs vs Flash Cache capacity — if the working set exceeds FC size, consider enabling XRMEM write-back or increasing Flash Cache size.",
+        "5. Review passthru rate in Smart IO section — high passthru means Smart Scan bypasses FC (see EXA_006)."
+      ],
+      "diagnostic_sql": [
+        "-- Flash Cache and XRMEM hit statistics\nSELECT name, value FROM v$sysstat\nWHERE name IN ('cell flash cache read hits','cell physical IO bytes eligible for predicate offload',\n  'cell physical IO interconnect bytes')\nORDER BY name;"
+      ],
+      "related_rules": ["EXA_001", "EXA_002", "EXA_006"]
+    },
+
+    {
+      "rule_id": "EXA_006",
+      "category": "exadata",
+      "sub_category": "smart_io",
+      "condition": "passthru_pct > 15 AND cell_name != 'All'",
+      "primary_metric": "passthru_pct",
+      "detail_template": "Cell {cell_name}: Smart Scan passthru = {passthru_pct}% of eligible MB",
+      "severity": "high",
+      "oracle_versions": ["19c", "21c", "23ai"],
+      "title": "High Smart Scan Passthru Rate — Offload Inefficiency",
+      "root_cause": "More than 15% of Smart Scan eligible IO is in passthru mode — the storage cell cannot offload the processing and must send all raw data blocks to the database node. Common causes: (1) database timezone upgrade is in progress (cell smart table scan: db timezone upgrade wait event), (2) a session or system parameter has disabled offload (ALTER SESSION SET cell_offload_processing=FALSE), (3) the segment uses Securefile LOBs, encryption, or compressed format that cells cannot process, (4) columnar cache is not available. Passthru significantly increases interconnect bandwidth and DB CPU usage.",
+      "resolution_steps": [
+        "1. Check the Foreground Wait Events section for 'cell smart table scan: passthru', 'cell smart table scan: disabled by user', or 'cell smart table scan: db timezone upgrade'.",
+        "2. If timezone upgrade: SELECT * FROM v$timezone_file; — wait for it to complete before running Smart Scan heavy workloads.",
+        "3. If user disabled: SELECT sql_id, module, action, event FROM v$active_session_history WHERE event LIKE 'cell smart table scan: disabled%' ORDER BY sample_time DESC;",
+        "4. Check for CELL_FLASH_CACHE NONE at tablespace level: SELECT tablespace_name FROM dba_tablespaces WHERE flash_cache = 'NONE';",
+        "5. Review compression and encryption settings on high-passthru segments."
+      ],
+      "diagnostic_sql": [
+        "-- Cell offload statistics\nSELECT name, value FROM v$sysstat WHERE name LIKE '%cell%offload%' ORDER BY name;",
+        "-- Passthru reasons in ASH\nSELECT event, COUNT(*) AS samples FROM v$active_session_history\nWHERE event LIKE 'cell smart table scan%'\nGROUP BY event ORDER BY samples DESC;"
+      ],
+      "related_rules": ["EXA_003", "EXA_005"]
+    },
+
+    {
+      "rule_id": "EXA_007",
+      "category": "exadata",
+      "sub_category": "smart_io",
+      "condition": "disk_pct > 40 AND cell_name != 'All'",
+      "primary_metric": "disk_pct",
+      "detail_template": "Cell {cell_name}: {disk_pct}% of Smart Scan IO from hard disk (Flash Cache not serving scans)",
+      "severity": "high",
+      "oracle_versions": ["19c", "21c", "23ai"],
+      "title": "Smart Scan Disk IO Ratio High — Flash Cache Not Serving Scans",
+      "root_cause": "More than 40% of Smart Scan IO on this cell is being served from hard disk rather than Flash Cache. This dramatically increases cell smart table scan wait times since disk latency is 20-50× higher than Flash Cache. This is the signature of a cell in flushing state — compare with Flash Cache Configuration section to confirm. Other causes include Flash Cache misses for large scans that were evicted due to small Flash Cache size or heavy write pressure.",
+      "resolution_steps": [
+        "1. Confirm flushing state: if awr_exadata_fc_config.is_flushing = TRUE for this cell, issue ALTER FLASHCACHE CANCEL FLUSH immediately.",
+        "2. Check Flash Cache Space Usage — if large writes are consuming >15% of FC, temp spills are displacing scan data.",
+        "3. Review cell server statistics for this cell — high write IO on the affected cell points to flushing or checkpoint storm.",
+        "4. If cell is not flushing, check Flash Cache size — large tables performing Smart Scan may exceed the single-cell FC capacity.",
+        "5. Consider KEEP flash cache policy for frequently scanned tables: ALTER TABLE fact_sales STORAGE (CELL_FLASH_CACHE KEEP);"
+      ],
+      "diagnostic_sql": [
+        "-- Smart Scan IO source breakdown\nSELECT cellname, smartscaneligiblebytes, smartscanflashbytes, smartscandiskbytes,\n       ROUND(smartscandiskbytes / NULLIF(smartscaneligiblebytes,0) * 100, 1) AS disk_pct\nFROM v$cell_state WHERE smartscaneligiblebytes > 0 ORDER BY disk_pct DESC;"
+      ],
+      "related_rules": ["EXA_001", "EXA_002", "EXA_006"]
+    }
+
   ]
 }
