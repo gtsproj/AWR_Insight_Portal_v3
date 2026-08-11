@@ -1557,6 +1557,412 @@ CREATE TABLE IF NOT EXISTS exec_plan_headers (
     CONSTRAINT exec_plan_headers_pkey PRIMARY KEY (id)
 ) TABLESPACE awrparser;
 
+CREATE TABLE IF NOT EXISTS awr_exadata_fc_config (
+    id              SERIAL,
+    dbname          TEXT        NOT NULL,
+    instance        TEXT        NOT NULL,
+    begin_snap      INTEGER,
+    snap_time       TIMESTAMP   WITHOUT TIME ZONE,
+    cell_name       TEXT        NOT NULL,   -- e.g. celadm01 or 'All'
+    fc_status       TEXT,                  -- normal | normal-flushing | etc.
+    fc_size_gb      NUMERIC,               -- Flash Cache size in GB
+    fl_size_mb      NUMERIC,               -- Flash Log size in MB (NULL = no FL)
+    is_flushing     BOOLEAN     DEFAULT false,  -- derived: 'flushing' in status
+    row_hash        CHAR(32)    NOT NULL,
+    created_at      TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_fc_config_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_fc_config
+        UNIQUE (dbname, begin_snap, cell_name, row_hash)
+) TABLESPACE awrparser;
+
+COMMENT ON TABLE awr_exadata_fc_config IS
+'Per-cell Exadata Flash Cache configuration and status from AWR reports. '
+'is_flushing=TRUE is a CRITICAL condition: Flash Cache is actively flushing '
+'to disk and IOs on that cell are redirected to hard disk, causing severe latency.';
+
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_config_snap
+    ON awr_exadata_fc_config (dbname, begin_snap) TABLESPACE awrparser_idx;
+
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_config_flushing
+    ON awr_exadata_fc_config (dbname, is_flushing) TABLESPACE awrparser_idx
+    WHERE is_flushing = true ;
+
+CREATE TABLE IF NOT EXISTS awr_exadata_perf_summary (
+    id                      SERIAL,
+    dbname                  TEXT        NOT NULL,
+    instance                TEXT        NOT NULL,
+    begin_snap              INTEGER,
+    snap_time               TIMESTAMP   WITHOUT TIME ZONE,
+    -- Cache Savings
+    fc_pct_of_db_ios        NUMERIC,   -- % DB IOs from Flash Cache
+    xrmem_pct_of_db_ios     NUMERIC,   -- % DB IOs from XRMEM Cache
+    rdma_pct_of_db_ios      NUMERIC,   -- % DB IOs via RDMA (subset of XRMEM)
+    fc_hit_oltp_pct         NUMERIC,   -- Flash Cache hit% for OLTP reads
+    fc_hit_scan_pct         NUMERIC,   -- Flash Cache hit% for Scan reads
+    -- Disk Activity
+    fc_read_skip_count      BIGINT,    -- Flash Cache read skips (reads bypassing FC)
+    fc_write_skip_count     BIGINT,    -- Flash Cache write skips
+    scrub_io_mbps           NUMERIC,   -- Disk scrub IO MB/s (expected on idle disk)
+    fc_read_miss_count      BIGINT,    -- Flash Cache read misses (went to disk)
+    row_hash                CHAR(32)   NOT NULL,
+    created_at              TIMESTAMP  WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_perf_summary_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_perf_summary
+        UNIQUE (dbname, begin_snap, row_hash)
+) TABLESPACE awrparser;
+
+COMMENT ON TABLE awr_exadata_perf_summary IS
+'System-level Exadata cache efficiency from AWR Performance Summary section. '
+'fc_pct_of_db_ios + xrmem_pct_of_db_ios describe where DB IOs are served from. '
+'Low hit% or high skip counts indicate cache pressure or misconfiguration.';
+
+CREATE INDEX IF NOT EXISTS idx_exadata_perf_summary_snap
+    ON awr_exadata_perf_summary (dbname, begin_snap) TABLESPACE awrparser_idx;
+
+
+CREATE TABLE IF NOT EXISTS awr_exadata_smart_io (
+    id                  SERIAL,
+    dbname              TEXT        NOT NULL,
+    instance            TEXT        NOT NULL,
+    begin_snap          INTEGER,
+    snap_time           TIMESTAMP   WITHOUT TIME ZONE,
+    cell_name           TEXT        NOT NULL,   -- 'All' or cell hostname
+    eligible_mbps       NUMERIC,    -- MB/s eligible for Smart Scan offload
+    si_savings_mbps     NUMERIC,    -- MB/s saved by Storage Index elimination
+    flash_read_mbps     NUMERIC,    -- MB/s satisfied from Flash Cache (Smart Scan)
+    disk_read_mbps      NUMERIC,    -- MB/s read from hard disk (Smart Scan)
+    passthru_mbps       NUMERIC,    -- MB/s in passthru (not offloaded)
+    col_cache_mbps      NUMERIC,    -- MB/s from Columnar Cache
+    reverse_offload_mbps NUMERIC,   -- MB/s in reverse offload mode
+    passthru_pct        NUMERIC,    -- passthru_mbps / eligible_mbps * 100
+    disk_pct            NUMERIC,    -- disk_read_mbps / eligible_mbps * 100
+    row_hash            CHAR(32)    NOT NULL,
+    created_at          TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_smart_io_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_smart_io
+        UNIQUE (dbname, begin_snap, cell_name, row_hash)
+) TABLESPACE awrparser;
+
+COMMENT ON TABLE awr_exadata_smart_io IS
+'Per-cell Exadata Smart IO statistics from AWR. '
+'passthru_pct > 15% is a HIGH alert — smart scans are not offloading. '
+'disk_pct > 40% means most scans are hitting hard disk, not Flash Cache. '
+'Outlier cells (diff from peers) indicate cell-level Flash Cache issues.';
+
+CREATE INDEX IF NOT EXISTS idx_exadata_smart_io_snap
+    ON awr_exadata_smart_io (dbname, begin_snap) TABLESPACE awrparser_idx;
+
+CREATE INDEX IF NOT EXISTS idx_exadata_smart_io_passthru
+    ON awr_exadata_smart_io (dbname, begin_snap, passthru_pct DESC) TABLESPACE awrparser_idx
+    WHERE passthru_pct IS NOT NULL ;
+
+
+CREATE TABLE IF NOT EXISTS awr_exadata_fc_reads (
+    id              SERIAL,
+    dbname          TEXT        NOT NULL,
+    instance        TEXT        NOT NULL,
+    begin_snap      INTEGER,
+    snap_time       TIMESTAMP   WITHOUT TIME ZONE,
+    cell_name       TEXT        NOT NULL,   -- cell hostname or 'All'
+    io_type         TEXT        NOT NULL,   -- OLTP | Scan | Total
+    req_per_sec     NUMERIC,    -- read requests per second to Flash Cache
+    miss_per_sec    NUMERIC,    -- cache miss rate (requests going to disk/XRMEM)
+    hit_pct         NUMERIC,    -- Flash Cache hit percentage
+    skip_count      BIGINT,     -- reads that bypassed Flash Cache entirely
+    row_hash        CHAR(32)    NOT NULL,
+    created_at      TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_fc_reads_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_fc_reads
+        UNIQUE (dbname, begin_snap, cell_name, io_type, row_hash)
+) TABLESPACE awrparser;
+
+COMMENT ON TABLE awr_exadata_fc_reads IS
+'Per-cell Exadata Flash Cache read performance from AWR. '
+'hit_pct < 80% for OLTP or < 70% for Scan = HIGH alert. '
+'Cells with lower hit_pct than peers indicate Flash Cache flushing or '
+'size/configuration differences across cells.';
+
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_reads_snap
+    ON awr_exadata_fc_reads (dbname, begin_snap) TABLESPACE awrparser_idx;
+
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_reads_hit
+    ON awr_exadata_fc_reads (dbname, begin_snap, io_type, hit_pct) TABLESPACE awrparser_idx;
+
+CREATE TABLE IF NOT EXISTS awr_exadata_top_db (
+    id                  SERIAL,
+    dbname              TEXT        NOT NULL,
+    instance            TEXT        NOT NULL,
+    begin_snap          INTEGER,
+    snap_time           TIMESTAMP   WITHOUT TIME ZONE,
+    target_dbname       TEXT        NOT NULL,  -- database being reported (Global AWR: could differ)
+    flash_req_pct       NUMERIC,               -- % IO requests from Flash Cache
+    disk_req_pct        NUMERIC,               -- % IO requests from Hard Disk
+    small_avg_lat_ms    NUMERIC,               -- avg latency for small IOs (ms)
+    large_avg_lat_ms    NUMERIC,               -- avg latency for large IOs (ms)
+    iorm_queue_ms       NUMERIC,               -- IORM queue time for large IOs (ms)
+    total_req           BIGINT,                -- total IO request count
+    flash_mb_pct        NUMERIC,               -- % IO MB from Flash
+    disk_mb_pct         NUMERIC,               -- % IO MB from Disk
+    row_hash            CHAR(32)    NOT NULL,
+    created_at          TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_top_db_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_top_db UNIQUE (dbname, begin_snap, target_dbname, row_hash)
+) TABLESPACE awrparser;
+
+COMMENT ON TABLE awr_exadata_top_db IS
+'Top Databases by IO Requests from Exadata AWR. Shows per-database IO distribution across '
+'Flash Cache and Hard Disk, with average latencies and IORM queue times. '
+'High iorm_queue_ms (>5ms) on large IOs indicates IORM resource contention.';
+
+CREATE INDEX IF NOT EXISTS idx_exadata_top_db_snap
+    ON awr_exadata_top_db (dbname, begin_snap) TABLESPACE awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_top_db_iorm
+    ON awr_exadata_top_db (dbname, begin_snap, iorm_queue_ms DESC) TABLESPACE awrparser_idx;
+
+
+CREATE TABLE IF NOT EXISTS awr_exadata_cell_iostat (
+    id                  SERIAL,
+    dbname              TEXT        NOT NULL,
+    instance            TEXT        NOT NULL,
+    begin_snap          INTEGER,
+    snap_time           TIMESTAMP   WITHOUT TIME ZONE,
+    cell_name           TEXT        NOT NULL,
+    device_type         TEXT,                  -- 'Flash' or 'HardDisk' (with size suffix)
+    iops                NUMERIC,               -- IO operations per second
+    throughput_mbps     NUMERIC,               -- MB/s throughput
+    util_pct            NUMERIC,               -- utilization %
+    service_ms          NUMERIC,               -- average service time (ms)
+    queue_ms            NUMERIC,               -- average queue time (ms)
+    is_outlier          BOOLEAN DEFAULT false, -- marked as IO outlier vs peers
+    at_max_capacity     BOOLEAN DEFAULT false, -- at maximum device capacity
+    row_hash            CHAR(32)    NOT NULL,
+    created_at          TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_cell_iostat_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_cell_iostat UNIQUE (dbname, begin_snap, cell_name, device_type, row_hash)
+) TABLESPACE awrparser;
+
+COMMENT ON TABLE awr_exadata_cell_iostat IS
+'OS IO Statistics for Exadata storage cells from AWR Outlier Cells section. '
+'is_outlier=TRUE means this cell is performing significantly more IO than its peers. '
+'at_max_capacity=TRUE is a HIGH alert — the cell is throttling IOs.';
+
+CREATE INDEX IF NOT EXISTS idx_exadata_cell_iostat_snap
+    ON awr_exadata_cell_iostat (dbname, begin_snap) TABLESPACE awrparser_idx;
+	
+CREATE INDEX IF NOT EXISTS idx_exadata_cell_iostat_outlier
+    ON awr_exadata_cell_iostat (dbname, is_outlier)  TABLESPACE awrparser_idx
+    WHERE is_outlier = true;
+CREATE INDEX IF NOT EXISTS idx_exadata_cell_iostat_maxcap
+    ON awr_exadata_cell_iostat (dbname, at_max_capacity)  TABLESPACE awrparser_idx
+    WHERE at_max_capacity = truec;
+
+CREATE TABLE IF NOT EXISTS awr_exadata_io_reasons (
+    id                  SERIAL,
+    dbname              TEXT        NOT NULL,
+    instance            TEXT        NOT NULL,
+    begin_snap          INTEGER,
+    snap_time           TIMESTAMP   WITHOUT TIME ZONE,
+    cell_name           TEXT        NOT NULL,  -- 'All' for system aggregate
+    reason              TEXT        NOT NULL,  -- Smart Scan | Redo | DBWR | Scrub | Internal IO | etc.
+    small_req           BIGINT,                -- small IO request count
+    large_req           BIGINT,                -- large IO request count
+    total_req           BIGINT,                -- total requests
+    small_mb            NUMERIC,               -- MB from small IOs
+    large_mb            NUMERIC,               -- MB from large IOs
+    total_mb            NUMERIC,               -- total MB
+    pct_of_total_req    NUMERIC,               -- % of all cell requests
+    row_hash            CHAR(32)    NOT NULL,
+    created_at          TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_io_reasons_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_io_reasons UNIQUE (dbname, begin_snap, cell_name, reason, row_hash)
+) TABLESPACE awrparser;
+
+COMMENT ON TABLE awr_exadata_io_reasons IS
+'IO Reasons breakdown from Exadata AWR — why IOs occur on storage cells. '
+'reason = Smart Scan is the most valuable (Exadata value adds). '
+'High Redo% = log-write intensive; High Internal IO% = maintenance activity.';
+
+CREATE INDEX IF NOT EXISTS idx_exadata_io_reasons_snap
+    ON awr_exadata_io_reasons (dbname, begin_snap) TABLESPACE awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_io_reasons_reason
+    ON awr_exadata_io_reasons (dbname, begin_snap, reason) TABLESPACE awrparser_idx;
+
+CREATE TABLE IF NOT EXISTS awr_exadata_fc_space (
+    id                  SERIAL,
+    dbname              TEXT        NOT NULL,
+    instance            TEXT        NOT NULL,
+    begin_snap          INTEGER,
+    snap_time           TIMESTAMP   WITHOUT TIME ZONE,
+    cell_name           TEXT        NOT NULL,  -- 'All' or cell hostname
+    total_fc_mb         NUMERIC,               -- total Flash Cache size (MB)
+    oltp_used_mb        NUMERIC,               -- MB used for OLTP reads
+    scan_used_mb        NUMERIC,               -- MB used for Smart Scan reads
+    large_write_mb      NUMERIC,               -- MB used for Large Writes (temp/direct)
+    large_write_pct     NUMERIC,               -- large_write_mb / total_fc_mb * 100
+    free_mb             NUMERIC,               -- free Flash Cache space
+    row_hash            CHAR(32)    NOT NULL,
+    created_at          TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_fc_space_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_fc_space UNIQUE (dbname, begin_snap, cell_name, row_hash)
+) TABLESPACE awrparser;
+
+COMMENT ON TABLE awr_exadata_fc_space IS
+'Flash Cache space usage per cell from Exadata AWR. '
+'large_write_pct > 15% = Global Limit pressure; > 20% = HIGH alert. '
+'Large writes come from PGA spills (temp), direct-path inserts, and DBWR. '
+'When large_write_pct is high, OLTP and Scan data are being evicted.';
+
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_space_snap
+    ON awr_exadata_fc_space (dbname, begin_snap) TABLESPACE awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_space_lw
+    ON awr_exadata_fc_space (dbname, begin_snap, large_write_pct DESC) TABLESPACE awrparser_idx;
+
+
+CREATE TABLE IF NOT EXISTS awr_exadata_cell_server (
+    id                  SERIAL,
+    dbname              TEXT        NOT NULL,
+    instance            TEXT        NOT NULL,
+    begin_snap          INTEGER,
+    snap_time           TIMESTAMP   WITHOUT TIME ZONE,
+    cell_name           TEXT        NOT NULL,
+    small_read_iops     NUMERIC,               -- small read IO/s
+    small_write_iops    NUMERIC,               -- small write IO/s
+    large_read_iops     NUMERIC,               -- large read IO/s
+    large_write_iops    NUMERIC,               -- large write IO/s
+    small_read_mbps     NUMERIC,               -- small read MB/s
+    small_write_mbps    NUMERIC,               -- small write MB/s
+    large_read_mbps     NUMERIC,               -- large read MB/s
+    large_write_mbps    NUMERIC,               -- large write MB/s
+    total_iops          NUMERIC,               -- derived: sum of all iops
+    large_write_pct_iops NUMERIC,              -- large_write_iops/total_iops*100
+    row_hash            CHAR(32)    NOT NULL,
+    created_at          TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_cell_server_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_cell_server UNIQUE (dbname, begin_snap, cell_name, row_hash)
+) TABLESPACE awrparser;
+
+COMMENT ON TABLE awr_exadata_cell_server IS
+'Cell Server IO statistics per cell from Exadata AWR. '
+'Breaks down IO into small/large read/write for each cell. '
+'High large_write_pct_iops signals temp spill pressure or checkpoint storm. '
+'Cross-cell imbalance (one cell doing 2x others) indicates uneven data distribution.';
+
+CREATE INDEX IF NOT EXISTS idx_exadata_cell_server_snap
+    ON awr_exadata_cell_server (dbname, begin_snap) TABLESPACE awrparser_idx;
+
+-- awr_exadata_fc_writes
+CREATE TABLE IF NOT EXISTS awr_exadata_fc_writes (
+    id                SERIAL,
+    dbname            TEXT        NOT NULL,
+    instance          TEXT        NOT NULL,
+    begin_snap        INTEGER,
+    snap_time         TIMESTAMP   WITHOUT TIME ZONE,
+    cell_name         TEXT        NOT NULL,
+    write_section     TEXT        NOT NULL,
+    total_write_reqs  BIGINT,
+    partial_writes    BIGINT,
+    absorbed_writes   BIGINT,
+    rejected_writes   BIGINT,
+    partial_write_pct NUMERIC,
+    large_write_count BIGINT,
+    large_write_type  TEXT,
+    skip_count        BIGINT,
+    skip_reason       TEXT,
+    row_hash          CHAR(32)    NOT NULL,
+    created_at        TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_fc_writes_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_fc_writes UNIQUE (dbname, begin_snap, cell_name, write_section, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_fc_writes IS 'Flash Cache User Write stats — normal writes, large writes (temp spills/direct path), write skips. High rejected_writes means Global Limit hit.';
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_writes_snap ON awr_exadata_fc_writes (dbname, begin_snap) TABLESPACE awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_writes_rejects ON awr_exadata_fc_writes (dbname, begin_snap, rejected_writes DESC) TABLESPACE awrparser_idx WHERE rejected_writes IS NOT NULL;
+
+-- awr_exadata_fc_write_reject
+CREATE TABLE IF NOT EXISTS awr_exadata_fc_write_reject (
+    id               SERIAL,
+    dbname           TEXT        NOT NULL,
+    instance         TEXT        NOT NULL,
+    begin_snap       INTEGER,
+    snap_time        TIMESTAMP   WITHOUT TIME ZONE,
+    cell_name        TEXT        NOT NULL,
+    reason           TEXT        NOT NULL,
+    rejection_count  BIGINT,
+    rejection_pct    NUMERIC,
+    row_hash         CHAR(32)    NOT NULL,
+    created_at       TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_fc_write_reject_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_fc_write_reject UNIQUE (dbname, begin_snap, cell_name, reason, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_fc_write_reject IS 'Flash Cache Large Write Rejection reasons. reason=Global Limit means FC large-write space ceiling was hit — direct-path/temp writes go to disk.';
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_write_reject_snap ON awr_exadata_fc_write_reject (dbname, begin_snap) TABLESPACE awrparser_idx;
+
+-- awr_exadata_config
+CREATE TABLE IF NOT EXISTS awr_exadata_config (
+    id               SERIAL,
+    dbname           TEXT        NOT NULL,
+    instance         TEXT        NOT NULL,
+    begin_snap       INTEGER,
+    snap_time        TIMESTAMP   WITHOUT TIME ZONE,
+    cell_name        TEXT        NOT NULL,
+    model            TEXT,
+    storage_version  TEXT,
+    flash_cache_mb   NUMERIC,
+    flash_log_mb     NUMERIC,
+    cell_disks       INTEGER,
+    grid_disks       INTEGER,
+    has_flash_log    BOOLEAN     DEFAULT false,
+    row_hash         CHAR(32)    NOT NULL,
+    created_at       TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_config_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_config UNIQUE (dbname, begin_snap, cell_name, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_config IS 'Exadata cell hardware config. Inconsistent flash_cache_mb or missing flash_log across cells is a MEDIUM alert.';
+CREATE INDEX IF NOT EXISTS idx_exadata_config_snap ON awr_exadata_config (dbname, begin_snap) TABLESPACE awrparser_idx;
+
+-- awr_exadata_disk_iostat
+CREATE TABLE IF NOT EXISTS awr_exadata_disk_iostat (
+    id               SERIAL,
+    dbname           TEXT        NOT NULL,
+    instance         TEXT        NOT NULL,
+    begin_snap       INTEGER,
+    snap_time        TIMESTAMP   WITHOUT TIME ZONE,
+    cell_name        TEXT,
+    disk_name        TEXT,
+    device_type      TEXT,
+    iops             NUMERIC,
+    throughput_mbps  NUMERIC,
+    util_pct         NUMERIC,
+    service_ms       NUMERIC,
+    is_outlier       BOOLEAN     DEFAULT false,
+    row_hash         CHAR(32)    NOT NULL,
+    created_at       TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_disk_iostat_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_disk_iostat UNIQUE (dbname, begin_snap, cell_name, device_type, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_disk_iostat IS 'Per-disk IO stats from Outlier Disks section. is_outlier within a healthy cell may indicate a degraded disk.';
+CREATE INDEX IF NOT EXISTS idx_exadata_disk_iostat_snap ON awr_exadata_disk_iostat (dbname, begin_snap) TABLESPACE awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_disk_iostat_outlier ON awr_exadata_disk_iostat (dbname, is_outlier) TABLESPACE awrparser_idx WHERE is_outlier = true;
+
+-- awr_exadata_fc_internal
+CREATE TABLE IF NOT EXISTS awr_exadata_fc_internal (
+    id               SERIAL,
+    dbname           TEXT        NOT NULL,
+    instance         TEXT        NOT NULL,
+    begin_snap       INTEGER,
+    snap_time        TIMESTAMP   WITHOUT TIME ZONE,
+    cell_name        TEXT        NOT NULL,
+    io_direction     TEXT        NOT NULL,
+    request_count    BIGINT,
+    io_type          TEXT,
+    row_hash         CHAR(32)    NOT NULL,
+    created_at       TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_fc_internal_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_fc_internal UNIQUE (dbname, begin_snap, cell_name, io_direction, io_type, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_fc_internal IS 'Flash Cache Internal Reads/Writes. Internal Reads spike during flushing. Absence of Internal Writes is also a flushing diagnostic.';
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_internal_snap ON awr_exadata_fc_internal (dbname, begin_snap) TABLESPACE awrparser_idx;
+
+
 -- Table: nmon_anomalies
 CREATE TABLE IF NOT EXISTS nmon_anomalies (
     id                             SERIAL,
@@ -3318,6 +3724,7 @@ INSERT INTO portal_config (key, value, section, updated_by, updated_at) VALUES
 ('license_nmon_count',   '0',                      'license',   'install', NOW()),
 ('license_expiry',       '',                       'license',   'install', NOW()),
 ('license_mac_override', '',                       'license',   'install', NOW()),
+('license_exadata',      'false',                  'license',   'install', NOW()),
 
 -- ── Database Reader Roles (for read-only Grafana access) ─────────────────
 -- Optional: configure dedicated DBA and reader roles for tighter security
@@ -5339,7 +5746,34 @@ VALUES
     ('reliable message','Other','none','none',TRUE,'Background inter-process messaging wait. (1) Investigate only if this dominates alongside other symptoms. (2) Correlate with specific background process (AQ, XStream, Replication). (3) Check alert log for related background process errors.'),
     ('rdbms ipc reply','Other','none','none',TRUE,'Foreground session waiting for a background process to complete an operation. (1) Identify the background process from ASH (PROGRAM column). (2) If SMON: check for heavy coalescing or undo management. (3) If ARCn: check archivelog I/O and destination space.'),
     ('PX Deq Credit: send blkd','Idle','none','none',TRUE,'PX producer slave blocked — consumer slaves cannot process rows fast enough. (1) Identify the bottleneck operation in the parallel plan. (2) Review join methods — hash joins consume faster than nested loops. (3) Reduce DOP if consumer is overloaded.'),
-    ('PX Deq: Execute Reply','Idle','none','none',TRUE,'Parallel query coordinator waiting for slave replies. (1) Check for data distribution imbalance across partitions. (2) Review PARALLEL_MAX_SERVERS and available PX server pool. (3) Consider reducing degree of parallelism if server pool is saturated.')
+    ('PX Deq: Execute Reply','Idle','none','none',TRUE,'Parallel query coordinator waiting for slave replies. (1) Check for data distribution imbalance across partitions. (2) Review PARALLEL_MAX_SERVERS and available PX server pool. (3) Consider reducing degree of parallelism if server pool is saturated.'),
+    ('cell single block physical read: RDMA','User I/O','io_read','index_only',FALSE,'Exadata single-block read served from XRMEM Cache via RDMA (Remote Direct Memory Access) — the fastest single-block read path on Exadata X9M+. Typical latency ~30µs. This is the best outcome for a single-block read; the wait time is negligible. (1) No action required if avg_wait_ms is below 1ms. (2) If avg_wait_ms is unexpectedly high (>2ms), check RDMA network health — InfiniBand or RoCE fabric errors can degrade RDMA throughput. (3) If this event disappears and is replaced by flash cache or disk variants, XRMEM Cache is under pressure — review XRMEM Cache size and eviction rate via cell server statistics.'),
+('cell single block physical read: xrmem cache','User I/O','io_read','index_only',FALSE,'Exadata single-block read served from XRMEM Cache (non-RDMA path) — second-fastest single-block read tier, typical latency ~168µs. The data was found in the cell''s persistent memory (XRMEM) but was transferred via the standard cell interconnect rather than RDMA. (1) No action required if avg_wait_ms is under 0.5ms. (2) A mix of RDMA and xrmem cache variants for the same DB is normal — RDMA handles requests the DB node can reach directly. (3) If this event dominates but RDMA variant is absent, verify RDMA is enabled and the InfiniBand or RoCE fabric is healthy. (4) Index block hot spots still apply — check BLEVEL and clustering factor of hot indexes.'),
+('cell single block physical read: flash cache','User I/O','io_read''index_only',FALSE,'Exadata single-block read served from Smart Flash Cache — third-fastest tier, typical latency ~649µs. XRMEM Cache did not have this block; Flash Cache served it without a hard disk read. (1) This is the expected fallback when XRMEM Cache capacity is exceeded — acceptable as long as avg_wait_ms stays under 2ms. (2) If avg_wait_ms exceeds 5ms, Flash Cache may be under flushing pressure — check Flash Cache Configuration section for cells in flushing state. (3) If the proportion of flash cache reads is declining in favour of disk reads, Flash Cache hit rate is dropping — review Flash Cache User Reads Efficiency section and check for cells with is_flushing=TRUE. (4) Hot indexes should be assigned to the KEEP flash cache policy: ALTER INDEX <idx> STORAGE (CELL_FLASH_CACHE KEEP)'),
+(
+    'cell smart table scan: passthru',
+    'User I/O',
+    'io_read',
+    'table_only',
+    FALSE,
+    'Exadata Smart Scan fell back to passthru mode — the storage cell could not offload predicate processing and is sending all raw data blocks to the database node. This negates the primary Exadata advantage: all data traverses the cell interconnect unfiltered, increasing both interconnect bandwidth and DB CPU usage. Root causes: (1) Unsupported data format for offload — Securefile LOBs with encryption, hybrid columnar compression, or BasicFile LOBs. (2) Active database timezone upgrade preventing offload. (3) Columnar cache write-back in progress. (4) Cell software version mismatch with DB version. (1) Identify the specific passthru reason via v$sysstat: SELECT name, value FROM v$sysstat WHERE name LIKE ''%passthru%''; (2) Check for active timezone upgrades: SELECT * FROM v$timezone_file; (3) Review object storage clauses for unsupported formats. (4) Monitor the Exadata Smart IO section — passthru_pct > 15% triggers a HIGH alert (rule EXA_006).'
+),
+(
+    'cell smart table scan: disabled by user',
+    'User I/O',
+    'io_read',
+    'table_only',
+    FALSE,
+    'Exadata Smart Scan offload has been explicitly disabled — either at the session level (ALTER SESSION SET cell_offload_processing = FALSE) or at the system level (ALTER SYSTEM SET cell_offload_processing = FALSE). All scans on the affected table are running in passthru mode with no predicate offloading. (1) Identify which sessions or SQLs are disabling offload: SELECT sql_id, module, action FROM v$active_session_history WHERE event = ''cell smart table scan: disabled by user'' GROUP BY sql_id, module, action ORDER BY COUNT(*) DESC; (2) Check the system parameter: SELECT name, value FROM v$parameter WHERE name = ''cell_offload_processing''; (3) If the parameter was set globally, restore it: ALTER SYSTEM SET cell_offload_processing = TRUE; (4) Review application code or DBA scripts that set this parameter — it is sometimes disabled as a workaround for incorrect results, which should be addressed via an Oracle SR instead.'
+),
+(
+    'cell smart table scan: db timezone upgrade',
+    'User I/O',
+    'io_read',
+    'table_only',
+    FALSE,
+    'Exadata Smart Scan is in passthru mode because a database timezone file upgrade is in progress. When the database timezone version differs from the storage cell timezone version during an upgrade, the cell cannot safely evaluate predicates involving DATE or TIMESTAMP WITH TIME ZONE columns and forces passthru for all affected scans. This condition is temporary and resolves automatically when the timezone upgrade completes. (1) Check upgrade status: SELECT status, con_id FROM v$timezone_file; SELECT * FROM dba_registry WHERE comp_id = ''CATJAVA''; (2) Do not run heavy Smart Scan workloads during timezone upgrades — reschedule batch analytics to after the upgrade completes. (3) If this event persists after the timezone upgrade, verify: SELECT property_value FROM database_properties WHERE property_name = ''DST_UPGRADE_STATE''; — state should be NONE when complete. (4) Plan timezone upgrades during maintenance windows to avoid peak-hour Smart Scan degradation.'
+)
 ON CONFLICT (event) DO UPDATE SET
     wait_class        = EXCLUDED.wait_class,
     corr_type         = EXCLUDED.corr_type,
