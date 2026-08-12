@@ -697,12 +697,12 @@
           "type": "postgres",
           "uid": "ferwfz6k211j4b"
         },
-        "definition": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT dbname AS value, dbname AS label  FROM awr_load_profile) AS t ORDER BY value;",
+        "definition": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT dbname AS value, dbname AS label  FROM awr_exadata_perf_summary) AS t ORDER BY value;",
         "includeAll": false,
         "label": "Database",
         "name": "dbname",
         "options": [],
-        "query": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT dbname AS value, dbname AS label  FROM awr_load_profile) AS t ORDER BY value;",
+        "query": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT dbname AS value, dbname AS label  FROM awr_exadata_perf_summary) AS t ORDER BY value;",
         "refresh": 2,
         "sort": 1,
         "type": "query"
@@ -716,12 +716,12 @@
           "type": "postgres",
           "uid": "ferwfz6k211j4b"
         },
-        "definition": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT instance AS value, instance AS label  FROM awr_load_profile WHERE dbname='${dbname}') AS t ORDER BY value;",
+        "definition": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT instance AS value, instance AS label  FROM awr_exadata_perf_summary WHERE dbname='${dbname}') AS t ORDER BY value;",
         "includeAll": false,
         "label": "Instance",
         "name": "instance",
         "options": [],
-        "query": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT instance AS value, instance AS label  FROM awr_load_profile WHERE dbname='${dbname}') AS t ORDER BY value;",
+        "query": "SELECT value, label FROM (  SELECT '' AS value, '' AS label  UNION ALL  SELECT DISTINCT instance AS value, instance AS label  FROM awr_exadata_perf_summary WHERE dbname='${dbname}') AS t ORDER BY value;",
         "refresh": 2,
         "sort": 1,
         "type": "query"
@@ -735,12 +735,12 @@
           "type": "postgres",
           "uid": "ferwfz6k211j4b"
         },
-        "definition": "SELECT '' AS label UNION ALL SELECT DISTINCT begin_snap::int || ' - ' || to_char(snap_time,'YYYY-MM-DD HH24:MI') FROM awr_load_profile WHERE dbname='${dbname}' AND instance='${instance}' ORDER BY label NULLS FIRST;",
+        "definition": "SELECT '' AS label UNION ALL SELECT DISTINCT begin_snap::int || ' - ' || to_char(snap_time,'YYYY-MM-DD HH24:MI') FROM awr_exadata_perf_summary WHERE dbname='${dbname}' AND instance='${instance}' ORDER BY label NULLS FIRST;",
         "includeAll": false,
         "label": "Start Snap",
         "name": "start_snap",
         "options": [],
-        "query": "SELECT '' AS label UNION ALL SELECT DISTINCT begin_snap::int || ' - ' || to_char(snap_time,'YYYY-MM-DD HH24:MI') FROM awr_load_profile WHERE dbname='${dbname}' AND instance='${instance}' ORDER BY label NULLS FIRST;",
+        "query": "SELECT '' AS label UNION ALL SELECT DISTINCT begin_snap::int || ' - ' || to_char(snap_time,'YYYY-MM-DD HH24:MI') FROM awr_exadata_perf_summary WHERE dbname='${dbname}' AND instance='${instance}' ORDER BY label NULLS FIRST;",
         "refresh": 2,
         "sort": 1,
         "type": "query"
@@ -754,12 +754,12 @@
           "type": "postgres",
           "uid": "ferwfz6k211j4b"
         },
-        "definition": "SELECT '' AS label UNION ALL SELECT DISTINCT begin_snap::int || ' - ' || to_char(snap_time,'YYYY-MM-DD HH24:MI') FROM awr_load_profile WHERE dbname='${dbname}' AND instance='${instance}' ORDER BY label NULLS FIRST;",
+        "definition": "SELECT '' AS label UNION ALL SELECT DISTINCT begin_snap::int || ' - ' || to_char(snap_time,'YYYY-MM-DD HH24:MI') FROM awr_exadata_perf_summary WHERE dbname='${dbname}' AND instance='${instance}' ORDER BY label NULLS FIRST;",
         "includeAll": false,
         "label": "End Snap",
         "name": "end_snap",
         "options": [],
-        "query": "SELECT '' AS label UNION ALL SELECT DISTINCT begin_snap::int || ' - ' || to_char(snap_time,'YYYY-MM-DD HH24:MI') FROM awr_load_profile WHERE dbname='${dbname}' AND instance='${instance}' ORDER BY label NULLS FIRST;",
+        "query": "SELECT '' AS label UNION ALL SELECT DISTINCT begin_snap::int || ' - ' || to_char(snap_time,'YYYY-MM-DD HH24:MI') FROM awr_exadata_perf_summary WHERE dbname='${dbname}' AND instance='${instance}' ORDER BY label NULLS FIRST;",
         "refresh": 2,
         "sort": 1,
         "type": "query"
@@ -774,5 +774,5 @@
   "timezone": "browser",
   "title": "Exadata — Flash Cache Health",
   "uid": "exa-fc-health",
-  "version": 8
+  "version": 12
 }
