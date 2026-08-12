@@ -1342,6 +1342,37 @@ def _db_list() -> list:
 # ROUTES
 # ══════════════════════════════════════════════════════════════════════
 
+def _license_flags_for_ui() -> dict:
+    """Return boolean license flags consumed by the home-page Jinja2 template
+    and JS refresh loop.  Always returns the two keys — never raises.
+
+    Default (fresh install / no portal_config entries):
+        license_exadata = False  →  Exadata card hidden
+        license_nmon    = False  →  NMON card hidden
+    """
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT key, value FROM portal_config "
+                "WHERE key IN ('license_exadata','license_nmon_count')"
+            )
+            rows = cur.fetchall()
+        conn.close()
+        cfg = {r[0]: (r[1] or "").strip().lower() for r in rows}
+        nmon_count = int(cfg.get("license_nmon_count", "0") or "0")
+        exa_flag   = cfg.get("license_exadata", "false") == "true"
+        # nmon_count: -1 = unlimited (v2 key or ENT), 0 = none, >0 = count
+        # All non-zero values = NMON is licensed
+        return {
+            "license_exadata": exa_flag,
+            "license_nmon":    nmon_count != 0,
+        }
+    except Exception:
+        # DB unavailable or table missing — default to all hidden (safe)
+        return {"license_exadata": False, "license_nmon": False}
+
+
 def _queue_stats() -> dict:
     """Return live queue counters for AWR, SAR, and NMON queues."""
     awr_queues  = _all_queues()
@@ -1380,6 +1411,10 @@ def _queue_stats() -> dict:
         "nmon_host_count": len(nmon_queues),
         "nmon_hosts":      sorted(nmon_queues.keys()),
         "active_nmon":     ", ".join(active_nmons) if active_nmons else None,
+        # ── License flags for home-page card visibility ──────────────────
+        # Read directly from portal_config so the JS doesn't need a
+        # separate /api/portal-info call just for card show/hide.
+        **_license_flags_for_ui(),
     }
 
 @app.get("/", response_class=HTMLResponse)
@@ -1829,6 +1864,12 @@ async def api_queue_stats():
     return JSONResponse(_queue_stats())
 
 
+@app.get("/api/queue-stats")
+async def api_queue_stats_hyphen():
+    """Alias used by home.html JS — same response as /api/queue/stats."""
+    return JSONResponse(_queue_stats())
+
+
 # ── Service names managed by NSSM ─────────────────────────────────────
 _SERVICES = {
     "portal":    "AWRPortal",
@@ -2259,7 +2300,9 @@ async def api_portal_info(request: Request):
     nmon_limit= lic.get("nmon_limit", 0)
     if db_limit   == -1: db_limit   = 9999  # ENT unlimited
     if sar_limit  == -1: sar_limit  = 9999
-    if nmon_limit == -1: nmon_limit = 9999
+    # nmon_limit: -1=unlimited (v2 key), 0=none (v3 key with nmon_count=0)
+    # Store as-is so _license_flags_for_ui can distinguish unlimited from none
+    if nmon_limit == -1: nmon_limit = -1  # keep as unlimited sentinel
 
     return JSONResponse({
         "ai_mode":            cfg.get("ai_mode", "rules"),
@@ -2269,6 +2312,8 @@ async def api_portal_info(request: Request):
         "db_used":            lic.get("db_used",   0),
         "sar_used":           lic.get("sar_used",  0),
         "nmon_used":          lic.get("nmon_used", 0),
+        "license_exadata":    cfg.get("license_exadata", "false").strip().lower() == "true",
+        "license_nmon":       nmon_limit > 0,
         "username":           sess.get("username", ""),
     })
 
@@ -3072,7 +3117,7 @@ async def api_db_master_list():
             nmon_limit= key_info.get("nmon_limit", 0)
             if db_limit   == -1: db_limit   = 9999
             if sar_limit  == -1: sar_limit  = 9999
-            if nmon_limit == -1: nmon_limit = 9999
+            if nmon_limit == -1: nmon_limit = -1  # unlimited — keep as-is
 
             cur.execute("""
                 SELECT id, db_name, instance_name, inst_no,
