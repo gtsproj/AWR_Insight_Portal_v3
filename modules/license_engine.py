@@ -394,22 +394,27 @@ def generate_license_key(
     nmon_count: int = 0,
 ) -> str:
     """
-    Generate a compact license key (v2 format — 17-byte payload).
+    Generate a compact license key (v3 format — 18-byte payload).
 
-    Binary payload (17 bytes):
+    Format versions detected by stripped base64 payload length:
+      v1 (22 chars) — 16-byte payload — no nmon field (legacy)
+      v2 (23 chars) — 17-byte payload — adds nmon; 0 = unlimited (old flaw)
+      v3 (24 chars) — 18-byte payload — version byte; 0 = none, 255 = unlimited
+
+    v3 sentinel: 0 = not licensed, 1-254 = count, 255 = unlimited (-1)
+
+    v3 payload (18 bytes):
+      1 byte  — format version (0x03)
       1 byte  — tier code
       6 bytes — MAC address octets
-      1 byte  — db_count   (max 255; 0 = unlimited for ENT)
-      1 byte  — sar_count  (max 255; 0 = unlimited for ENT)
-      1 byte  — nmon_count (max 255; 0 = unlimited for ENT)  ← NEW v2
-      2 bytes — days since 2024-01-01 (expiry)
+      1 byte  — db_count   (0=none, 255=unlimited)
+      1 byte  — sar_count  (0=none, 255=unlimited)
+      1 byte  — nmon_count (0=none, 255=unlimited)
+      2 bytes — days since 2024-01-01
       3 bytes — customer_id hash (sha256 first 3 bytes)
-      2 bytes — checksum (sum of above % 65536)
+      2 bytes — checksum
 
-    v1 keys (16-byte payload, 22 base64 chars) are still validated;
-    they decode to nmon_count=0. v2 keys produce 23 base64 chars.
-
-    Output format: AVK-{TIER}-{23 base64url chars}
+    Output: AVK-{TIER}-{24 base64url chars}
     """
     if tier not in _TIER_CODE:
         raise ValueError(f"Unknown tier: {tier}. Valid: {list(_TIER_CODE.keys())}")
@@ -423,15 +428,22 @@ def generate_license_key(
     if days < 0 or days > 65535:
         raise ValueError(f"Expiry date out of range: {expiry_date}")
 
-    db_val   = 0 if db_count   == -1 else min(db_count,   255)
-    sar_val  = 0 if sar_count  == -1 else min(sar_count,  255)
-    nmon_val = 0 if nmon_count == -1 else min(nmon_count, 255)
+    def _enc(count: int) -> int:
+        """v3 encoding: -1 → 255 (unlimited), 0 → 0 (none), 1-254 → count."""
+        if count == -1: return 255
+        if count ==  0: return 0
+        return min(max(count, 1), 254)
+
+    db_val   = _enc(db_count)
+    sar_val  = _enc(sar_count)
+    nmon_val = _enc(nmon_count)
 
     cust_hash = hashlib.sha256(customer_id.encode()).digest()[:3]
 
-    # v2: 15-byte payload
+    # v3: 16-byte payload body
     payload = struct.pack(
-        ">B6sBBBH3s",
+        ">BB6sBBBH3s",
+        0x03,           # format version byte
         _TIER_CODE[tier],
         mac_bytes,
         db_val,
@@ -440,13 +452,11 @@ def generate_license_key(
         days,
         cust_hash,
     )
-
     chk = sum(payload) & 0xFFFF
-    payload += struct.pack(">H", chk)  # 17 bytes total
+    payload += struct.pack(">H", chk)   # 18 bytes total
 
     encrypted = _xor_crypt(payload, _LICENSE_SECRET)
     b64 = base64.urlsafe_b64encode(encrypted).decode().rstrip("=")
-
     return f"AVK-{tier}-{b64}"
 
 
@@ -493,30 +503,47 @@ def validate_license_key(key: str) -> dict:
     except Exception:
         return {**empty, "error": "Key structure invalid"}
 
-    # Detect format version by payload length
-    # v1: 16 bytes (14 payload + 2 checksum) → 22 stripped b64 chars
-    # v2: 17 bytes (15 payload + 2 checksum) → 23 stripped b64 chars
+    # Detect format version by payload body length
+    # v1: 14-byte body (16 total) → 22 stripped b64 chars — no nmon
+    # v2: 15-byte body (17 total) → 23 stripped b64 chars — 0=unlimited (legacy)
+    # v3: 16-byte body (18 total) → 24 stripped b64 chars — 0=none, 255=unlimited
     payload_body = payload[:-2]  # strip checksum
-    is_v2 = len(payload_body) == 15
 
-    # Unpack
+    def _dec_v2(val):
+        """v2 sentinel: 0 = unlimited (-1), 1-255 = count."""
+        return -1 if val == 0 else int(val)
+
+    def _dec_v3(val):
+        """v3 sentinel: 0 = none (0), 255 = unlimited (-1), 1-254 = count."""
+        if val == 255: return -1
+        return int(val)   # 0 stays 0 (none)
+
     try:
-        if is_v2:
+        if len(payload_body) == 16:
+            # v3 key — leading version byte
+            _ver, tier_code, mac_bytes, db_val, sar_val, nmon_val, days, cust_hash = \
+                struct.unpack(">BB6sBBBH3s", payload_body)
+            db_limit   = _dec_v3(db_val)
+            sar_limit  = _dec_v3(sar_val)
+            nmon_limit = _dec_v3(nmon_val)
+        elif len(payload_body) == 15:
+            # v2 key
             tier_code, mac_bytes, db_val, sar_val, nmon_val, days, cust_hash = \
                 struct.unpack(">B6sBBBH3s", payload_body)
+            db_limit   = _dec_v2(db_val)
+            sar_limit  = _dec_v2(sar_val)
+            nmon_limit = _dec_v2(nmon_val)
         else:
             # v1 key — no nmon_count
             tier_code, mac_bytes, db_val, sar_val, days, cust_hash = \
                 struct.unpack(">B6sBBH3s", payload_body)
-            nmon_val = 0
+            db_limit   = _dec_v2(db_val)
+            sar_limit  = _dec_v2(sar_val)
+            nmon_limit = 0
     except Exception as e:
         return {**empty, "error": f"Key unpack failed: {e}"}
 
-    # Resolve values
-    key_mac    = ":".join(f"{b:02X}" for b in mac_bytes)
-    db_limit   = -1 if db_val   == 0 else int(db_val)
-    sar_limit  = -1 if sar_val  == 0 else int(sar_val)
-    nmon_limit = -1 if nmon_val == 0 else int(nmon_val)
+    key_mac = ":".join(f"{b:02X}" for b in mac_bytes)
     expiry_dt  = _KEY_EPOCH + timedelta(days=int(days))
     today      = date.today()
     days_left  = (expiry_dt - today).days
