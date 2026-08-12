@@ -175,24 +175,86 @@
       <small>Controlfiles · Redo · ASM · Partitioning · Health check</small></a>
   </div>
 
-  {# Exadata Analysis — visible when db_type is Exadata-RAC or Exadata-Standalone #}
-  <div id="exadata-card" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
-    <div style="font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;
-                margin-bottom:10px;font-weight:600;border-bottom:1px solid var(--border);padding-bottom:6px">
-      ⚡ Exadata Analysis
+  {# ── Exadata Analysis ─────────────────────────────────────────────────
+     Option C: card always occupies its grid position (no layout shift).
+     When licensed  → active card with dashboard links.
+     When unlicensed → muted locked placeholder with admin shortcut.
+     Both states controlled server-side (Jinja2) + JS for live refresh.
+  #}
+  <div id="exadata-card"
+       style="display:block;
+              background:var(--surface);
+              border:1px {{ 'solid var(--border)' if stats.license_exadata else 'dashed color-mix(in srgb,var(--border) 60%,transparent)' }};
+              border-radius:var(--radius);
+              padding:14px;
+              opacity:{{ '1' if stats.license_exadata else '0.72' }};
+              transition:opacity .3s,border .3s">
+
+    {# ── Header — same in both states ─────────────────────────────── #}
+    <div style="font-size:.68rem;color:var(--text2);text-transform:uppercase;
+                letter-spacing:.08em;margin-bottom:10px;font-weight:600;
+                border-bottom:1px solid var(--border);padding-bottom:6px;
+                display:flex;align-items:center;justify-content:space-between">
+      <span>{{ '⚡' if stats.license_exadata else '🔒' }} Exadata Analysis</span>
+      {% if not stats.license_exadata %}
+      <span style="font-size:.65rem;font-weight:400;
+                   background:color-mix(in srgb,var(--border) 40%,transparent);
+                   padding:2px 7px;border-radius:999px;letter-spacing:.04em">
+        NOT LICENSED
+      </span>
+      {% endif %}
     </div>
-    <a href="{{ grafana_url }}/d/exa-smart-cache-perf" target="_blank" class="dl">
-      🔋 Smart Cache Performance
-      <small>Flash Cache hit% · XRMEM/RDMA · Skip rate · Flushing cell alert</small></a>
-    <a href="{{ grafana_url }}/d/exa-smart-scan" target="_blank" class="dl">
-      🔍 Smart Scan Analysis
-      <small>Eligible MB · Flash vs Disk · Passthru% · Storage Index savings</small></a>
-    <a href="{{ grafana_url }}/d/exa-fc-health" target="_blank" class="dl">
-      💾 Flash Cache Health
-      <small>Large Write% · Write rejections · Partial writes · Internal IO</small></a>
-    <a href="{{ grafana_url }}/d/exa-cell-io-dist" target="_blank" class="dl">
-      📡 Cell IO Distribution
-      <small>Cell IOPs outliers · IO Reasons · IORM queue · Disk outliers</small></a>
+
+    {# ── Active state — dashboard links ────────────────────────────── #}
+    <div id="exadata-active"
+         style="{{ '' if stats.license_exadata else 'display:none' }}">
+      <a href="{{ grafana_url }}/d/exa-smart-cache-perf" target="_blank" class="dl">
+        🔋 Smart Cache Performance
+        <small>Flash Cache hit% · XRMEM/RDMA · Skip rate · Flushing cell alert</small></a>
+      <a href="{{ grafana_url }}/d/exa-smart-scan" target="_blank" class="dl">
+        🔍 Smart Scan Analysis
+        <small>Eligible MB · Flash vs Disk · Passthru% · Storage Index savings</small></a>
+      <a href="{{ grafana_url }}/d/exa-fc-health" target="_blank" class="dl">
+        💾 Flash Cache Health
+        <small>Large Write% · Write rejections · Partial writes · Internal IO</small></a>
+      <a href="{{ grafana_url }}/d/exa-cell-io-dist" target="_blank" class="dl">
+        📡 Cell IO Distribution
+        <small>Cell IOPs outliers · IO Reasons · IORM queue · Disk outliers</small></a>
+    </div>
+
+    {# ── Locked placeholder ────────────────────────────────────────── #}
+    <div id="exadata-locked"
+         style="{{ 'display:none' if stats.license_exadata else '' }};
+                display:flex;flex-direction:column;align-items:center;
+                justify-content:center;text-align:center;
+                padding:24px 12px;gap:10px">
+      <div style="font-size:2rem;line-height:1">🔒</div>
+      <div style="font-size:.82rem;font-weight:600;color:var(--text)">
+        Exadata Analysis not licensed
+      </div>
+      <div style="font-size:.76rem;color:var(--text2);line-height:1.5;max-width:240px">
+        Enables Flash Cache diagnostics, Smart Scan analysis, Cell IO
+        distribution and recommendation rules for Oracle Exadata hardware.
+      </div>
+      <div style="font-size:.72rem;color:var(--text2);
+                  border:1px solid var(--border);border-radius:var(--radius);
+                  padding:4px 10px;margin-top:4px">
+        Oracle Exadata X-Series · ExaDB-D · ExaDB-C@C
+      </div>
+      {% if is_admin %}
+      <a href="/settings?section=license"
+         style="margin-top:6px;font-size:.76rem;
+                color:var(--accent,#6366f1);text-decoration:none;
+                display:flex;align-items:center;gap:4px">
+        ⚙️ Enable in Settings → License
+      </a>
+      {% else %}
+      <div style="margin-top:6px;font-size:.74rem;color:var(--text2)">
+        Contact your administrator to enable Exadata Analysis.
+      </div>
+      {% endif %}
+    </div>
+
   </div>
 
 </div>
@@ -200,8 +262,11 @@
 {# Row 2: SAR & Correlation + NMON & Correlation (2×2 arrangement) #}
 <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px">
 
-  {# SAR & Correlation — hidden only when SAR license = 0 (NMON-only customer) #}
-  <div id="sar-card" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+  {# ── SAR & Correlation ────────────────────────────────────────────────
+     Visibility: ALWAYS visible — no license check required.
+     display:block is set explicitly so no JS or CSS can hide it.
+  #}
+  <div id="sar-card" style="display:block;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
     <div style="font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;
                 margin-bottom:10px;font-weight:600;border-bottom:1px solid var(--border);padding-bottom:6px">
       🖥️ SAR &amp; Correlation
@@ -229,8 +294,13 @@
     {% endif %}
   </div>
 
-  {# NMON & Correlation — hidden until NMON license active #}
-  <div id="nmon-card" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+  {# ── NMON & Correlation ───────────────────────────────────────────────
+     Visibility: hidden by default; shown ONLY when license_nmon_count > 0
+     in portal_config. Controlled server-side (Jinja2) for initial render
+     and client-side (JS refreshStats) for live updates without page reload.
+  #}
+  <div id="nmon-card"
+       style="{{ 'display:block' if stats.license_nmon else 'display:none' }};background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
     <div style="font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;
                 margin-bottom:10px;font-weight:600;border-bottom:1px solid var(--border);padding-bottom:6px">
       📟 NMON &amp; Correlation
@@ -333,6 +403,34 @@
       setSc('nmon-stat-done',       'ok');
       setSc('nmon-stat-failed',     (d.nmon_failed??0) > 0 ? 'err' : '');
       setSc('nmon-stat-hosts',      'info');
+
+      // ── Exadata card: toggle active ↔ locked state ───────────────
+      const exaLicensed = d.license_exadata;
+      const exaCard     = document.getElementById('exadata-card');
+      const exaActive   = document.getElementById('exadata-active');
+      const exaLocked   = document.getElementById('exadata-locked');
+      if (exaCard) {
+        exaCard.style.opacity = exaLicensed ? '1' : '0.72';
+        exaCard.style.border  = exaLicensed
+          ? '1px solid var(--border)'
+          : '1px dashed color-mix(in srgb,var(--border) 60%,transparent)';
+        // Header badge
+        const badge = exaCard.querySelector('[data-badge="exa"]');
+        if (badge) badge.style.display = exaLicensed ? 'none' : 'inline';
+      }
+      if (exaActive) exaActive.style.display = exaLicensed ? ''     : 'none';
+      if (exaLocked) exaLocked.style.display = exaLicensed ? 'none' : '';
+
+      // NMON card: shown only when license_nmon = true (nmon_count > 0)
+      const nmonCard = document.getElementById('nmon-card');
+      if (nmonCard) nmonCard.style.display = d.license_nmon ? 'block' : 'none';
+
+      // NMON stat tiles in the stats bar — show/hide with license
+      ['nmon-stat-pending','nmon-stat-processing',
+       'nmon-stat-done','nmon-stat-failed','nmon-stat-hosts'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = d.license_nmon ? '' : 'none';
+      });
 
       // Active parsing banner
       const banner = document.getElementById('active-banner');

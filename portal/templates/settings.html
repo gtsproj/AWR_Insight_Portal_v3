@@ -1067,6 +1067,10 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
             <div class="lic-label">NMON servers used / <span id="lic-nmon-limit">—</span> licensed</div>
           </div>
           <div class="lic-stat">
+            <div class="lic-val" id="lic-exa-status" style="font-size:.9rem">—</div>
+            <div class="lic-label">Exadata Analysis</div>
+          </div>
+          <div class="lic-stat">
             <div class="lic-val" style="font-size:1rem" id="lic-expiry">{{ cfg.license_expiry or '—' }}</div>
             <div class="lic-label">Expiry — <span id="lic-days-left"></span></div>
           </div>
@@ -1137,6 +1141,30 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
               {{ cfg.license_nmon_count or '—' }}
             </div>
             <input type="hidden" id="license_nmon_count" value="{{ cfg.license_nmon_count }}">
+          </div>
+        </div>
+
+        {# ── Exadata Analysis License ── #}
+        <div class="s-row" style="margin-top:12px">
+          <div class="s-field">
+            <label class="s-label">Exadata Analysis License
+              <span style="font-size:.7rem;color:var(--text2);font-weight:400">
+                — enables Exadata parsers and Exadata dashboards on home page
+              </span>
+            </label>
+            <select class="s-select" id="license_exadata">
+              <option value="false" {% if cfg.license_exadata != 'true' %}selected{% endif %}>
+                ❌ Disabled (default — Exadata parsers skipped)
+              </option>
+              <option value="true" {% if cfg.license_exadata == 'true' %}selected{% endif %}>
+                ✅ Enabled — Exadata X-Series / ExaDB-D / ExaDB-C@C
+              </option>
+            </select>
+            <div style="font-size:.72rem;color:var(--text2);margin-top:3px">
+              When disabled: all <code>exadata_*</code> parsers are skipped during AWR processing
+              and the Exadata Analysis card is hidden on the home page.
+              Enable only for environments with Oracle Exadata hardware.
+            </div>
           </div>
         </div>
         <div class="s-row">
@@ -1288,7 +1316,7 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
               <select class="s-select" id="nm-os_type" onchange="onOsTypeChange(this.value)">
                 <option value="Linux">Linux</option>
                 <option value="IBM AIX">IBM AIX</option>
-                <option value="Other">Other</option>
+                <option value="Windows">Windows</option>
               </select>
             </div>
             <div>
@@ -1296,7 +1324,7 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
               <select class="s-select" id="nm-os_utility">
                 <option value="SAR">SAR (Linux)</option>
                 <option value="NMON">NMON (IBM AIX)</option>
-                <option value="None">None</option>
+                <option value="NONE">None (Windows / Other)</option>
               </select>
             </div>
           </div>
@@ -1716,6 +1744,12 @@ async function checkLicenseStatus() {
     // NMON: show 0/0 if not in license (AWR+SAR only), real values if licensed
     if (el('lic-nmon-used'))  el('lic-nmon-used').textContent  = d.nmon_licensed ? (d.nmon_used ?? '—') : '0';
     if (el('lic-nmon-limit')) el('lic-nmon-limit').textContent = d.nmon_licensed ? (d.nmon_limit=== -1 ? '∞' : (d.nmon_limit?? '—')) : '0';
+    // Exadata flag from portal_config (not from license key)
+    if (el('lic-exa-status')) {
+      const exaEnabled = document.getElementById('license_exadata')?.value === 'true';
+      el('lic-exa-status').textContent = exaEnabled ? '✅ Enabled' : '❌ Disabled';
+      el('lic-exa-status').style.color = exaEnabled ? '#10b981' : '#ef4444';
+    }
     if (el('lic-tier'))       el('lic-tier').textContent       = (d.tier_name || '—') + (d.license_type ? ' · ' + d.license_type : '');
     if (el('lic-customer'))   el('lic-customer').textContent   = d.customer_name || '—';
     if (el('lic-mac'))        el('lic-mac').textContent        = d.mac_address   || '—';
@@ -1798,7 +1832,7 @@ async function loadDbMaster() {
     }
     const TYPE_BADGE    = { STANDALONE:'#334155', RAC:'#1e3a5f', CDB:'#3b1f5e', PDB:'#1f3d1f' };
     const UTILITY_BADGE = { SAR:'#1e3a5f', NMON:'#3b1f5e', None:'#33415540' };
-    const OS_ICON       = { Linux:'🐧', 'IBM AIX':'🖥️', Other:'💻' };
+    const OS_ICON       = { Linux:'🐧', 'IBM AIX':'🖥️', Windows:'💻' };
     tbody.innerHTML = d.dbs.map(db => `
       <tr style="border-top:1px solid var(--border);opacity:${db.active?1:0.5}">
         <td style="padding:7px 10px;font-weight:600">${db.db_name}</td>
@@ -1829,9 +1863,9 @@ async function loadDbMaster() {
 function onOsTypeChange(osType) {
   const utilSel = document.getElementById('nm-os_utility');
   if (!utilSel) return;
-  if (osType === 'Linux')   utilSel.value = 'SAR';
+  if (osType === 'Linux')        utilSel.value = 'SAR';
   else if (osType === 'IBM AIX') utilSel.value = 'NMON';
-  else utilSel.value = 'None';
+  else                           utilSel.value = 'NONE';  // Windows / Other
 }
 
 async function addDbMaster() {
@@ -1882,6 +1916,15 @@ async function deleteDbMaster(id, dbName) {
 
 setTimeout(checkLicenseStatus, 400);
 setTimeout(loadDbMaster, 600);
+
+// ── Deep-link: /settings?section=license jumps straight to that tab ──
+(function() {
+  const sec = new URLSearchParams(window.location.search).get('section');
+  if (sec) {
+    const link = document.querySelector(`.settings-nav a[onclick*="'${sec}'"]`);
+    showSection(sec, link || null);
+  }
+})();
 
 function toggleAwrSource(val) {
   document.getElementById('awr-local-cfg').style.display   = val === 'local'     ? '' : 'none';
@@ -2960,7 +3003,7 @@ async function saveSection(section) {
     nmon_source: ['nmon_source_type','nmon_local_path'],
     license: ['license_key','license_customer','license_db_count',
               'license_sar_count','license_nmon_count','license_expiry',
-              'ai_monthly_limit','license_mac_override'],
+              'ai_monthly_limit','license_mac_override','license_exadata'],
     access: ['session_timeout_mins', 'admin_reset_pin', 'metadata_refresh_days',
              'portal_login_required', 'portal_url', 'grafana_url'],
   };
