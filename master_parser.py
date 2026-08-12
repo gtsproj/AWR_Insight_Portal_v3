@@ -47,6 +47,17 @@ _SAR_MODULES = {
     "recommendation_engine_unused_duplicate",
 }
 
+# ── NMON modules excluded from AWR run ────────────────────────────────
+# NMON parsers have their own nmon_master_parser.py invoked by the NMON
+# queue; they must not run during AWR processing (they look for NMON
+# sections that AWR files never contain — wasted time every file).
+_NMON_MODULES = {
+    "nmon_cpu_parser", "nmon_disk_parser", "nmon_memory_parser",
+    "nmon_network_parser", "nmon_paging_parser", "nmon_proc_parser",
+    "nmon_ctxswitch_parser", "nmon_runqueue_parser",
+    "nmon_common", "nmon_master_parser", "nmon_anomaly_detector",
+}
+
 # ── materialized views to refresh after each file ─────────────────────
 _MV_NAMES = [
     "public.awr_sql_summary_mv",
@@ -353,7 +364,42 @@ def process_file(filepath: str, archive: bool = False) -> bool:
         p for p in glob.glob(os.path.join(MODULES_DIR, "**", "*.py"), recursive=True)
         if not p.endswith("__init__.py")
         and os.path.basename(p).replace(".py", "") not in _SAR_MODULES
+        and os.path.basename(p).replace(".py", "") not in _NMON_MODULES
     ])
+
+    # ── License-based module filtering ──────────────────────────────────
+    # Read license flags from portal_config so unlicensed parsers are
+    # skipped entirely rather than running and producing 0 rows.
+    try:
+        _lic_conn = get_db_connection()
+        with _lic_conn.cursor() as _c:
+            _c.execute(
+                "SELECT key, value FROM portal_config WHERE key IN "
+                "('license_exadata','license_nmon_count')"
+            )
+            _lic_cfg = {r[0]: (r[1] or '') for r in _c.fetchall()}
+        _lic_conn.close()
+    except Exception:
+        _lic_cfg = {}
+
+    _exa_licensed  = _lic_cfg.get("license_exadata",    "false").lower() == "true"
+    _nmon_licensed = int(_lic_cfg.get("license_nmon_count", "0") or "0") > 0
+
+    if not _exa_licensed:
+        module_files = [
+            p for p in module_files
+            if "exadata" not in os.path.basename(p).lower()
+        ]
+        logger.info("⚠️  Exadata license not enabled — Exadata parsers skipped")
+
+    if not _nmon_licensed:
+        module_files = [
+            p for p in module_files
+            if not os.path.basename(p).startswith("nmon_")
+        ]
+        # (NMON modules are already in _NMON_MODULES exclusion set;
+        #  this guard covers any nmon_* files that may land directly in modules/)
+
 
     if not module_files:
         logger.error(f"No parser modules found in {MODULES_DIR}")
