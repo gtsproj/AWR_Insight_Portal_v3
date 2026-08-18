@@ -1,0 +1,511 @@
+[2026-08-17 11:57:39] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 11:57:39] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:57:39.365261).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:57:39.365261).
+
+[2026-08-17 11:57:50] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 11:57:51] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (2, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:57:51.109098).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (2, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:57:51.109098).
+
+[2026-08-17 11:58:02] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 11:58:02] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (3, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:58:02.193735).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (3, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:58:02.193735).
+
+[2026-08-17 11:58:13] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 11:58:13] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (4, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:58:13.638631).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (4, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:58:13.638631).
+
+[2026-08-17 11:58:24] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 11:58:24] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (5, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:58:24.935427).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (5, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:58:24.935427).
+
+[2026-08-17 11:58:35] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 11:58:35] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (6, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:58:35.879391).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (6, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:58:35.879391).
+
+[2026-08-17 11:58:47] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 11:58:47] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (7, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:58:47.464377).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (7, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:58:47.464377).
+
+[2026-08-17 11:58:59] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 11:58:59] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (8, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:58:59.354558).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (8, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:58:59.354558).
+
+[2026-08-17 11:59:11] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 11:59:11] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (9, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:59:11.758049).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (9, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:59:11.758049).
+
+[2026-08-17 11:59:22] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 11:59:23] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (10, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:59:23.006588).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (10, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:59:23.006588).
+
+[2026-08-17 11:59:34] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 11:59:34] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (11, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:59:34.42687).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (11, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:59:34.42687).
+
+[2026-08-17 11:59:45] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 11:59:45] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (12, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:59:45.58821).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (12, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:59:45.58821).
+
+[2026-08-17 11:59:56] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 11:59:56] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (13, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:59:56.726475).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (13, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 11:59:56.726475).
+
+[2026-08-17 12:00:07] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 12:00:08] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (14, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 12:00:08.030691).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (14, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 12:00:08.030691).
+
+[2026-08-17 12:00:20] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 12:00:20] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (15, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 12:00:20.470904).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (15, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 12:00:20.470904).
+
+[2026-08-17 12:00:32] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 12:00:32] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (16, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 12:00:32.409459).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (16, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 12:00:32.409459).
+
+[2026-08-17 12:00:44] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 12:00:44] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (17, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 12:00:44.833888).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (17, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 12:00:44.833888).
+
+[2026-08-17 12:00:56] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 12:00:56] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (18, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 12:00:56.526615).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (18, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 12:00:56.526615).
+
+[2026-08-17 12:01:08] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 12:01:08] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (19, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 12:01:08.515411).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (19, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 12:01:08.515411).
+
+[2026-08-17 12:01:19] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 12:01:20] ERROR    | exadata_storage_info_parser | ❌ Storage Info insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (20, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 12:01:20.088289).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_storage_info_parser.py", line 89, in insert_storage_info
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["n_cells"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_cache_gb"],r["xrmem_cache_gb"],r["flash_log_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["n_hard_disk"],r["n_flash_disk"],r["n_griddisks"],r["n_celldisks"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_list"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (20, null, null, null, 7, null, 1255.00, 0.50, null, null, 360, null, mexa1cell01-07, 067faa3754df92ff8110197de5c795c8, 2026-08-17 12:01:20.088289).
+
+[2026-08-17 12:06:29] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 12:07:59] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 12:09:29] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 12:11:02] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 12:37:49] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 12:39:24] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 12:40:56] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 12:42:31] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 12:44:07] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 13:36:08] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 13:37:45] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 13:39:13] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 13:40:52] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 13:42:33] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:02:54] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:04:33] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:06:09] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:07:49] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:09:23] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:11:00] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:12:33] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:15:07] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:16:44] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:33:26] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:34:58] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:36:30] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:38:06] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:39:39] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:41:08] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:42:37] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:44:10] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 14:45:44] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:03:49] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:05:24] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:06:58] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:08:32] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:10:03] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:11:32] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:13:01] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:14:35] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:18:03] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:19:39] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:36:20] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:37:51] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:44:10] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:45:44] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:47:18] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:48:51] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:50:27] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:52:03] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:53:38] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:55:11] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 15:57:27] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:07:06] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:08:32] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:10:03] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:11:38] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:13:07] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:14:38] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:15:53] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:17:28] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:19:01] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:20:41] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:21:35] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:21:36] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:21:48] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:21:49] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:22:01] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:22:01] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:22:13] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:22:13] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:22:14] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:22:35] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:22:36] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:22:48] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:22:48] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:23:01] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:23:01] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:23:13] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:23:13] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:23:26] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:23:26] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:23:38] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:23:38] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:23:44] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:23:51] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:23:51] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:24:04] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:24:04] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:24:16] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:24:16] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:24:28] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:24:29] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:24:41] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:24:41] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:24:53] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:24:53] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:25:06] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:25:06] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:25:19] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:25:19] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:25:31] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:25:31] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:25:44] INFO     | exadata_storage_info_parser | ✅ Parsed 2 Storage Information rows
+[2026-08-17 16:25:44] INFO     | exadata_storage_info_parser | ✅ Inserted 2 rows into awr_exadata_storage_info
+[2026-08-17 16:40:40] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:42:14] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:43:46] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:45:20] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:46:51] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:48:21] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:49:55] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:51:30] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:53:02] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:54:37] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:56:08] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:57:43] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 16:59:11] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:11:24] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:12:57] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:14:27] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:16:01] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:17:32] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:19:09] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:20:39] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:22:14] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:23:46] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:25:20] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:26:51] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:28:23] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:29:53] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:31:22] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:42:12] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:43:47] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:45:20] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:46:54] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:48:25] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 17:49:54] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-17 18:16:17] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:36:02] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:37:19] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:38:59] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:40:35] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:42:08] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:43:33] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:44:53] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:46:21] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:47:59] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:49:26] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:50:53] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:52:23] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:54:04] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:55:49] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:57:38] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 09:59:19] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 10:00:55] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 10:02:25] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 10:03:50] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 10:05:17] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 10:07:12] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 10:08:52] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 10:10:19] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 10:11:51] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 10:31:23] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 11:01:29] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 11:03:14] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 11:31:27] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 11:32:56] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 11:34:24] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 12:02:55] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 12:04:29] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 12:05:59] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 12:07:30] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 12:33:05] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 12:34:44] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 12:36:19] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 12:37:51] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 12:39:25] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 13:05:44] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 13:07:14] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 13:08:46] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 13:10:17] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 13:11:52] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 13:13:26] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 13:54:50] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 13:56:26] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 13:58:00] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 13:59:29] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 14:10:26] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 14:12:00] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found
+[2026-08-18 14:13:31] WARNING  | exadata_storage_info_parser | ⚠️  Exadata Storage Information section not found

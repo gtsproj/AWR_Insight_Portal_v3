@@ -1,0 +1,511 @@
+[2026-08-17 11:57:38] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 11:57:38] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 18.59, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:57:38.584489).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 18.59, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:57:38.584489).
+
+[2026-08-17 11:57:50] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 11:57:50] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (2, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 22.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:57:50.282685).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (2, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 22.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:57:50.282685).
+
+[2026-08-17 11:58:01] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 11:58:01] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (3, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 20.10, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:58:01.511646).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (3, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 20.10, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:58:01.511646).
+
+[2026-08-17 11:58:12] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 11:58:12] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (4, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 2.10, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:58:12.912682).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (4, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 2.10, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:58:12.912682).
+
+[2026-08-17 11:58:24] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 11:58:24] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (5, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 5.20, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:58:24.264507).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (5, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 5.20, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:58:24.264507).
+
+[2026-08-17 11:58:35] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 11:58:35] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (6, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 42.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:58:35.248604).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (6, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 42.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:58:35.248604).
+
+[2026-08-17 11:58:46] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 11:58:46] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (7, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 8.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:58:46.374769).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (7, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 8.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:58:46.374769).
+
+[2026-08-17 11:58:58] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 11:58:58] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (8, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 14.20, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:58:58.485932).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (8, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 14.20, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:58:58.485932).
+
+[2026-08-17 11:59:10] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 11:59:10] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (9, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 28.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:59:10.532666).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (9, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 28.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:59:10.532666).
+
+[2026-08-17 11:59:22] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 11:59:22] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (10, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 68.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:59:22.334026).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (10, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 68.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:59:22.334026).
+
+[2026-08-17 11:59:33] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 11:59:33] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (11, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 62.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:59:33.723513).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (11, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 62.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:59:33.723513).
+
+[2026-08-17 11:59:44] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 11:59:44] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (12, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 72.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:59:44.894261).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (12, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 72.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:59:44.894261).
+
+[2026-08-17 11:59:55] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 11:59:55] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (13, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 78.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:59:55.97481).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (13, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 78.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 11:59:55.97481).
+
+[2026-08-17 12:00:07] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 12:00:07] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (14, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 68.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 12:00:07.334636).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (14, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 68.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 12:00:07.334636).
+
+[2026-08-17 12:00:19] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 12:00:19] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (15, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 64.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 12:00:19.595808).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (15, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 64.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 12:00:19.595808).
+
+[2026-08-17 12:00:31] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 12:00:31] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (16, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 74.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 12:00:31.761542).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (16, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 74.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 12:00:31.761542).
+
+[2026-08-17 12:00:43] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 12:00:44] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (17, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 62.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 12:00:44.071075).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (17, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 62.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 12:00:44.071075).
+
+[2026-08-17 12:00:55] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 12:00:55] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (18, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 38.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 12:00:55.82393).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (18, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 38.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 12:00:55.82393).
+
+[2026-08-17 12:01:07] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 12:01:07] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (19, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 5.80, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 12:01:07.786824).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (19, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 5.80, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 12:01:07.786824).
+
+[2026-08-17 12:01:19] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 12:01:19] ERROR    | exadata_os_io_summary_parser | ❌ OS I/O Summary insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (20, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 62.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 12:01:19.377378).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_os_io_summary_parser.py", line 107, in insert_os_io_summary
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["disk_type"],r["n_cells"],r["n_disks"],r["total_iops"],r["iops_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["total_mbps"],r["mbps_per_cell"],r["service_time_ms"],r["wait_time_ms"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["pct_disk_util"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (20, null, null, null, null, F/6.2T, 8, null, 705946.62, 88243.33, 81679.41, null, 0.0200, 0.2400, 62.40, df3626fe446c4482e798667a9d2a05a2, 2026-08-17 12:01:19.377378).
+
+[2026-08-17 12:06:24] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 12:07:54] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 12:09:24] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 12:10:58] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 12:37:44] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 12:39:20] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 12:40:51] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 12:42:27] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 12:44:02] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 13:36:04] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 13:37:41] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 13:39:08] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 13:40:47] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 13:42:28] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:02:48] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:04:28] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:06:04] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:07:43] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:09:18] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:10:55] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:12:28] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:15:02] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:16:40] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:33:21] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:34:54] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:36:25] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:38:01] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:39:34] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:41:04] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:42:32] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:44:05] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 14:45:38] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:03:45] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:05:18] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:06:52] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:08:27] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:09:59] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:11:28] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:12:56] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:14:29] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:17:58] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:19:34] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:36:15] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:37:46] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:44:05] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:45:39] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:47:13] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:48:47] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:50:22] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:51:58] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:53:33] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:55:06] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 15:57:22] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:07:01] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:08:28] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:09:58] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:11:33] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:13:02] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:14:33] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:15:48] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:17:23] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:18:55] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:20:37] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:21:34] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:21:35] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:21:48] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:21:48] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:22:00] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:22:00] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:22:09] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:22:13] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:22:13] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:22:34] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:22:35] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:22:47] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:22:47] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:23:00] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:23:00] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:23:12] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:23:13] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:23:25] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:23:25] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:23:38] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:23:38] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:23:40] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:23:50] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:23:50] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:24:03] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:24:03] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:24:15] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:24:15] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:24:28] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:24:28] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:24:40] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:24:40] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:24:53] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:24:53] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:25:05] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:25:05] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:25:18] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:25:18] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:25:30] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:25:30] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:25:43] INFO     | exadata_os_io_summary_parser | ✅ Parsed 2 OS I/O Summary rows
+[2026-08-17 16:25:43] INFO     | exadata_os_io_summary_parser | ✅ Inserted 2 rows into awr_exadata_os_io_summary
+[2026-08-17 16:40:36] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:42:09] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:43:42] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:45:15] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:46:46] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:48:16] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:49:50] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:51:25] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:52:57] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:54:33] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:56:03] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:57:38] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 16:59:06] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:11:19] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:12:52] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:14:22] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:15:56] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:17:27] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:19:04] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:20:34] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:22:09] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:23:41] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:25:15] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:26:46] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:28:19] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:29:48] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:31:18] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:42:07] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:43:42] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:45:15] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:46:49] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:48:20] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 17:49:49] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-17 18:16:10] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:35:59] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:37:14] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:38:54] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:40:30] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:42:04] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:43:29] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:44:49] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:46:16] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:47:54] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:49:22] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:50:49] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:52:18] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:53:58] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:55:44] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:57:34] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 09:59:15] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 10:00:49] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 10:02:21] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 10:03:46] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 10:05:13] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 10:07:06] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 10:08:48] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 10:10:14] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 10:11:46] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 10:31:18] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 11:01:25] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 11:03:09] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 11:31:22] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 11:32:52] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 11:34:19] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 12:02:50] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 12:04:24] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 12:05:55] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 12:07:25] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 12:33:01] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 12:34:39] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 12:36:14] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 12:37:46] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 12:39:20] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 13:05:39] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 13:07:09] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 13:08:41] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 13:10:12] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 13:11:47] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 13:13:21] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 13:54:46] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 13:56:21] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 13:57:55] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 13:59:24] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 14:10:21] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 14:11:55] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found
+[2026-08-18 14:13:26] WARNING  | exadata_os_io_summary_parser | ⚠️  OS I/O Summary section not found

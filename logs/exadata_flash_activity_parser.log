@@ -1,0 +1,531 @@
+[2026-08-17 11:57:37] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2569.88/s, fc_oltp=56.62/s, fc_scan=10091.12/s)
+[2026-08-17 11:57:37] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1, null, null, null, null, 2569.88, 20559.00, 2569.88, 56.62, 453.00, 10091.12, 80729.00, 0.61, 4.84, 3356.50, 26852.00, 207.12, 0.67, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:57:37.785574).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1, null, null, null, null, 2569.88, 20559.00, 2569.88, 56.62, 453.00, 10091.12, 80729.00, 0.61, 4.84, 3356.50, 26852.00, 207.12, 0.67, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:57:37.785574).
+
+[2026-08-17 11:57:49] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=1775.0/s, fc_oltp=15.0/s, fc_scan=11980.0/s)
+[2026-08-17 11:57:49] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (2, null, null, null, null, 1775.00, 14200.00, 1775.00, 15.00, 120.00, 11980.00, 95840.00, 0.61, 4.84, 2300.00, 18400.00, 207.12, 0.51, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:57:49.630682).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (2, null, null, null, null, 1775.00, 14200.00, 1775.00, 15.00, 120.00, 11980.00, 95840.00, 0.61, 4.84, 2300.00, 18400.00, 207.12, 0.51, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:57:49.630682).
+
+[2026-08-17 11:58:00] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2300.0/s, fc_oltp=47.5/s, fc_scan=7800.0/s)
+[2026-08-17 11:58:00] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (3, null, null, null, null, 2300.00, 18400.00, 2300.00, 47.50, 380.00, 7800.00, 62400.00, 0.61, 4.84, 2762.50, 22100.00, 207.12, 0.78, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:00.927033).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (3, null, null, null, null, 2300.00, 18400.00, 2300.00, 47.50, 380.00, 7800.00, 62400.00, 0.61, 4.84, 2762.50, 22100.00, 207.12, 0.78, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:00.927033).
+
+[2026-08-17 11:58:12] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=155.0/s, fc_oltp=3.0/s, fc_scan=1050.0/s)
+[2026-08-17 11:58:12] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (4, null, null, null, null, 155.00, 1240.00, 155.00, 3.00, 24.00, 1050.00, 8400.00, 0.61, 4.84, 262.50, 2100.00, 207.12, 0.10, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:12.34059).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (4, null, null, null, null, 155.00, 1240.00, 155.00, 3.00, 24.00, 1050.00, 8400.00, 0.61, 4.84, 262.50, 2100.00, 207.12, 0.10, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:12.34059).
+
+[2026-08-17 11:58:23] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2569.88/s, fc_oltp=10091.12/s, fc_scan=56.62/s)
+[2026-08-17 11:58:23] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (5, null, null, null, null, 2569.88, 20559.00, 2569.88, 10091.12, 80729.00, 56.62, 453.00, 0.61, 4.84, 0.60, 4.84, 207.12, 207.00, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:23.680579).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (5, null, null, null, null, 2569.88, 20559.00, 2569.88, 10091.12, 80729.00, 56.62, 453.00, 0.61, 4.84, 0.60, 4.84, 207.12, 207.00, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:23.680579).
+
+[2026-08-17 11:58:34] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=1550.0/s, fc_oltp=40.0/s, fc_scan=3550.0/s)
+[2026-08-17 11:58:34] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (6, null, null, null, null, 1550.00, 12400.00, 1550.00, 40.00, 320.00, 3550.00, 28400.00, 0.61, 4.84, 2275.00, 18200.00, 207.12, 35500.00, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:34.614779).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (6, null, null, null, null, 1550.00, 12400.00, 1550.00, 40.00, 320.00, 3550.00, 28400.00, 0.61, 4.84, 2275.00, 18200.00, 207.12, 35500.00, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:34.614779).
+
+[2026-08-17 11:58:45] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=310.0/s, fc_oltp=10.5/s, fc_scan=605.0/s)
+[2026-08-17 11:58:45] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (7, null, null, null, null, 310.00, 2480.00, 310.00, 10.50, 84.00, 605.00, 4840.00, 0.61, 4.84, 160.00, 1280.00, 207.12, 0.00, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:45.701292).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (7, null, null, null, null, 310.00, 2480.00, 310.00, 10.50, 84.00, 605.00, 4840.00, 0.61, 4.84, 160.00, 1280.00, 207.12, 0.00, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:45.701292).
+
+[2026-08-17 11:58:57] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2275.0/s, fc_oltp=6050.0/s, fc_scan=1060.0/s)
+[2026-08-17 11:58:57] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (8, null, null, null, null, 2275.00, 18200.00, 2275.00, 6050.00, 48400.00, 1060.00, 8480.00, 0.61, 4.84, 2800.00, 22400.00, 207.12, 1.05, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:57.849238).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (8, null, null, null, null, 2275.00, 18200.00, 2275.00, 6050.00, 48400.00, 1060.00, 8480.00, 0.61, 4.84, 2800.00, 22400.00, 207.12, 1.05, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:57.849238).
+
+[2026-08-17 11:59:09] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2800.0/s, fc_oltp=85.5/s, fc_scan=5300.0/s)
+[2026-08-17 11:59:10] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (9, null, null, null, null, 2800.00, 22400.00, 2800.00, 85.50, 684.00, 5300.00, 42400.00, 0.61, 4.84, 3550.00, 28400.00, 207.12, 1.55, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:10.026538).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (9, null, null, null, null, 2800.00, 22400.00, 2800.00, 85.50, 684.00, 5300.00, 42400.00, 0.61, 4.84, 3550.00, 28400.00, 207.12, 1.55, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:10.026538).
+
+[2026-08-17 11:59:21] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2800.0/s, fc_oltp=60.5/s, fc_scan=9050.0/s)
+[2026-08-17 11:59:21] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (10, null, null, null, null, 2800.00, 22400.00, 2800.00, 60.50, 484.00, 9050.00, 72400.00, 0.61, 4.84, 7800.00, 62400.00, 207.12, 0.60, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:21.761268).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (10, null, null, null, null, 2800.00, 22400.00, 2800.00, 60.50, 484.00, 9050.00, 72400.00, 0.61, 4.84, 7800.00, 62400.00, 207.12, 0.60, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:21.761268).
+
+[2026-08-17 11:59:32] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2550.0/s, fc_oltp=60.5/s, fc_scan=7800.0/s)
+[2026-08-17 11:59:33] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (11, null, null, null, null, 2550.00, 20400.00, 2550.00, 60.50, 484.00, 7800.00, 62400.00, 0.61, 4.84, 6050.00, 48400.00, 207.12, 0.80, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:33.000343).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (11, null, null, null, null, 2550.00, 20400.00, 2550.00, 60.50, 484.00, 7800.00, 62400.00, 0.61, 4.84, 6050.00, 48400.00, 207.12, 0.80, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:33.000343).
+
+[2026-08-17 11:59:44] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2300.0/s, fc_oltp=60.5/s, fc_scan=9050.0/s)
+[2026-08-17 11:59:44] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (12, null, null, null, null, 2300.00, 18400.00, 2300.00, 60.50, 484.00, 9050.00, 72400.00, 0.61, 4.84, 3550.00, 28400.00, 207.12, 0.80, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:44.298087).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (12, null, null, null, null, 2300.00, 18400.00, 2300.00, 60.50, 484.00, 9050.00, 72400.00, 0.61, 4.84, 3550.00, 28400.00, 207.12, 0.80, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:44.298087).
+
+[2026-08-17 11:59:55] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=3050.0/s, fc_oltp=110.5/s, fc_scan=10300.0/s)
+[2026-08-17 11:59:55] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (13, null, null, null, null, 3050.00, 24400.00, 3050.00, 110.50, 884.00, 10300.00, 82400.00, 0.61, 4.84, 4800.00, 38400.00, 207.12, 1.05, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:55.331118).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (13, null, null, null, null, 3050.00, 24400.00, 3050.00, 110.50, 884.00, 10300.00, 82400.00, 0.61, 4.84, 4800.00, 38400.00, 207.12, 1.05, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:55.331118).
+
+[2026-08-17 12:00:06] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2300.0/s, fc_oltp=60.5/s, fc_scan=9050.0/s)
+[2026-08-17 12:00:06] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (14, null, null, null, null, 2300.00, 18400.00, 2300.00, 60.50, 484.00, 9050.00, 72400.00, 0.61, 4.84, 3550.00, 28400.00, 207.12, 1.05, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:06.702626).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (14, null, null, null, null, 2300.00, 18400.00, 2300.00, 60.50, 484.00, 9050.00, 72400.00, 0.61, 4.84, 3550.00, 28400.00, 207.12, 1.05, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:06.702626).
+
+[2026-08-17 12:00:18] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=3050.0/s, fc_oltp=60.5/s, fc_scan=8050.0/s)
+[2026-08-17 12:00:18] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (15, null, null, null, null, 3050.00, 24400.00, 3050.00, 60.50, 484.00, 8050.00, 64400.00, 0.61, 4.84, 16050.00, 128400.00, 207.12, 1.05, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:18.903106).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (15, null, null, null, null, 3050.00, 24400.00, 3050.00, 60.50, 484.00, 8050.00, 64400.00, 0.61, 4.84, 16050.00, 128400.00, 207.12, 1.05, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:18.903106).
+
+[2026-08-17 12:00:30] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2550.0/s, fc_oltp=60.5/s, fc_scan=9050.0/s)
+[2026-08-17 12:00:31] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (16, null, null, null, null, 2550.00, 20400.00, 2550.00, 60.50, 484.00, 9050.00, 72400.00, 0.61, 4.84, 4050.00, 32400.00, 207.12, 1.05, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:31.036796).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (16, null, null, null, null, 2550.00, 20400.00, 2550.00, 60.50, 484.00, 9050.00, 72400.00, 0.61, 4.84, 4050.00, 32400.00, 207.12, 1.05, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:31.036796).
+
+[2026-08-17 12:00:43] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2800.0/s, fc_oltp=60.5/s, fc_scan=7800.0/s)
+[2026-08-17 12:00:43] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (17, null, null, null, null, 2800.00, 22400.00, 2800.00, 60.50, 484.00, 7800.00, 62400.00, 0.61, 4.84, 4800.00, 38400.00, 207.12, 1.05, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:43.424223).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (17, null, null, null, null, 2800.00, 22400.00, 2800.00, 60.50, 484.00, 7800.00, 62400.00, 0.61, 4.84, 4800.00, 38400.00, 207.12, 1.05, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:43.424223).
+
+[2026-08-17 12:00:55] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2300.0/s, fc_oltp=35.5/s, fc_scan=4800.0/s)
+[2026-08-17 12:00:55] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (18, null, null, null, null, 2300.00, 18400.00, 2300.00, 35.50, 284.00, 4800.00, 38400.00, 0.61, 4.84, 3550.00, 28400.00, 207.12, 1.05, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:55.189243).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (18, null, null, null, null, 2300.00, 18400.00, 2300.00, 35.50, 284.00, 4800.00, 38400.00, 0.61, 4.84, 3550.00, 28400.00, 207.12, 1.05, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:55.189243).
+
+[2026-08-17 12:01:06] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=310.0/s, fc_oltp=10.5/s, fc_scan=605.0/s)
+[2026-08-17 12:01:07] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (19, null, null, null, null, 310.00, 2480.00, 310.00, 10.50, 84.00, 605.00, 4840.00, 0.61, 4.84, 160.00, 1280.00, 207.12, 0.00, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:01:07.030485).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (19, null, null, null, null, 310.00, 2480.00, 310.00, 10.50, 84.00, 605.00, 4840.00, 0.61, 4.84, 160.00, 1280.00, 207.12, 0.00, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:01:07.030485).
+
+[2026-08-17 12:01:18] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2300.0/s, fc_oltp=48.0/s, fc_scan=7800.0/s)
+[2026-08-17 12:01:18] ERROR    | exadata_flash_activity_parser | ❌ Flash Activity insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (20, null, null, null, null, 2300.00, 18400.00, 2300.00, 48.00, 384.00, 7800.00, 62400.00, 0.61, 4.84, 2800.00, 22400.00, 207.12, 6050.00, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:01:18.74904).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_flash_activity_parser.py", line 128, in insert_flash_activity
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["flash_log_writes_ps"],r["flash_log_writes_total"],r["flash_log_writes_per_cell"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["disk_writer_reads_ps"],r["population_writes_ps"],r["metadata_writes_ps"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["row_hash"]))
+        ^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (20, null, null, null, null, 2300.00, 18400.00, 2300.00, 48.00, 384.00, 7800.00, 62400.00, 0.61, 4.84, 2800.00, 22400.00, 207.12, 6050.00, 761.14, 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:01:18.74904).
+
+[2026-08-17 12:06:19] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 12:07:50] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 12:09:19] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 12:10:53] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 12:37:39] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 12:39:15] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 12:40:46] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 12:42:22] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 12:43:57] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 13:35:42] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 13:37:36] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 13:39:03] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 13:40:42] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 13:42:23] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:02:43] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:04:23] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:05:58] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:07:38] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:09:13] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:10:50] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:12:23] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:14:57] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:16:35] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:33:16] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:34:49] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:36:20] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:37:56] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:39:29] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:40:59] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:42:28] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:44:01] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 14:45:33] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:03:40] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:05:13] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:06:47] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:08:22] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:09:54] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:11:23] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:12:51] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:14:24] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:17:53] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:19:29] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:36:11] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:37:41] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:44:00] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:45:34] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:47:07] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:48:42] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:50:17] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:51:53] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:53:28] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:55:01] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 15:57:17] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:06:56] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:08:23] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:09:53] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:11:28] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:12:57] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:14:29] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:15:43] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:17:18] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:18:50] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:20:32] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:21:34] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2569.88/s, fc_oltp=56.62/s, fc_scan=10091.12/s)
+[2026-08-17 16:21:34] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:21:47] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=1775.0/s, fc_oltp=15.0/s, fc_scan=11980.0/s)
+[2026-08-17 16:21:47] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:21:59] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2300.0/s, fc_oltp=47.5/s, fc_scan=7800.0/s)
+[2026-08-17 16:21:59] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:22:04] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:22:12] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=155.0/s, fc_oltp=3.0/s, fc_scan=1050.0/s)
+[2026-08-17 16:22:12] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:22:34] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2569.88/s, fc_oltp=10091.12/s, fc_scan=56.62/s)
+[2026-08-17 16:22:34] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:22:47] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=1550.0/s, fc_oltp=40.0/s, fc_scan=3550.0/s)
+[2026-08-17 16:22:47] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:22:59] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=310.0/s, fc_oltp=10.5/s, fc_scan=605.0/s)
+[2026-08-17 16:22:59] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:23:12] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2275.0/s, fc_oltp=6050.0/s, fc_scan=1060.0/s)
+[2026-08-17 16:23:12] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:23:24] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2800.0/s, fc_oltp=85.5/s, fc_scan=5300.0/s)
+[2026-08-17 16:23:24] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:23:35] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:23:37] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2800.0/s, fc_oltp=60.5/s, fc_scan=9050.0/s)
+[2026-08-17 16:23:37] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:23:49] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2550.0/s, fc_oltp=60.5/s, fc_scan=7800.0/s)
+[2026-08-17 16:23:49] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:24:02] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2300.0/s, fc_oltp=60.5/s, fc_scan=9050.0/s)
+[2026-08-17 16:24:02] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:24:15] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=3050.0/s, fc_oltp=110.5/s, fc_scan=10300.0/s)
+[2026-08-17 16:24:15] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:24:27] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2300.0/s, fc_oltp=60.5/s, fc_scan=9050.0/s)
+[2026-08-17 16:24:27] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:24:40] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=3050.0/s, fc_oltp=60.5/s, fc_scan=8050.0/s)
+[2026-08-17 16:24:40] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:24:52] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2550.0/s, fc_oltp=60.5/s, fc_scan=9050.0/s)
+[2026-08-17 16:24:52] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:25:04] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2800.0/s, fc_oltp=60.5/s, fc_scan=7800.0/s)
+[2026-08-17 16:25:05] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:25:17] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2300.0/s, fc_oltp=35.5/s, fc_scan=4800.0/s)
+[2026-08-17 16:25:17] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:25:30] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=310.0/s, fc_oltp=10.5/s, fc_scan=605.0/s)
+[2026-08-17 16:25:30] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:25:42] INFO     | exadata_flash_activity_parser | ✅ Parsed Flash Activity (fl_log_writes=2300.0/s, fc_oltp=48.0/s, fc_scan=7800.0/s)
+[2026-08-17 16:25:43] INFO     | exadata_flash_activity_parser | ✅ Inserted 1 rows into awr_exadata_flash_activity
+[2026-08-17 16:40:31] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:42:05] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:43:37] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:45:10] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:46:42] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:48:12] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:49:45] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:51:20] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:52:52] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:54:28] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:55:58] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:57:33] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 16:59:01] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:11:15] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:12:47] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:14:17] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:15:51] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:17:22] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:19:00] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:20:29] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:22:04] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:23:37] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:25:10] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:26:41] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:28:14] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:29:43] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:31:13] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:42:02] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:43:37] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:45:10] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:46:44] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:48:15] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 17:49:45] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-17 18:15:39] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:35:53] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:37:09] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:38:49] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:40:24] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:42:00] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:43:25] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:44:45] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:46:11] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:47:49] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:49:17] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:50:45] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:52:13] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:53:54] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:55:38] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:57:29] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 09:59:11] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 10:00:43] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 10:02:16] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 10:03:41] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 10:05:09] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 10:07:01] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 10:08:44] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 10:10:11] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 10:11:41] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 10:31:13] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 11:01:19] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 11:03:02] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 11:31:17] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 11:32:47] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 11:34:14] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 12:02:45] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 12:04:19] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 12:05:50] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 12:07:20] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 12:32:58] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 12:34:34] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 12:36:09] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 12:37:41] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 12:39:15] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 13:05:34] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 13:07:04] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 13:08:36] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 13:10:07] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 13:11:42] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 13:13:16] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 13:54:41] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 13:56:16] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 13:57:51] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 13:59:19] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 14:10:16] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 14:11:51] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found
+[2026-08-18 14:13:21] WARNING  | exadata_flash_activity_parser | ⚠️  Flash Activity section not found

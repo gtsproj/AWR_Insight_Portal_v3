@@ -1,0 +1,813 @@
+[2026-08-11 12:44:31] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-11 12:44:45] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-11 12:44:57] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:44:57] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:45:10] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:45:10] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:45:14] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:45:14] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:45:17] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:45:17] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:45:29] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:45:30] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:45:42] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:45:42] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:45:54] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:45:54] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:46:07] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:46:07] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:46:10] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:46:10] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:46:24] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:46:24] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:46:29] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:46:29] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:46:44] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:46:44] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:46:48] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:46:48] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:47:03] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:47:03] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:47:08] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:47:08] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:47:13] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:47:13] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:47:17] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:47:17] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-11 12:47:31] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-11 12:47:31] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 13:57:10] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:39:53] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:41:07] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:43:43] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:44:03] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:44:20] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:44:20] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:44:33] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:44:37] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:44:37] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:44:45] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:44:45] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:44:55] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:44:56] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:44:56] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:45:13] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:45:17] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:45:17] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:45:34] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:45:40] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:45:40] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:45:53] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:45:57] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:46:06] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:46:06] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:46:22] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:46:30] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:46:30] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:46:41] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:46:41] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:46:45] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:47:03] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:47:03] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:47:05] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:47:12] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:47:13] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:47:31] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:47:39] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:47:39] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:47:50] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:47:50] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:47:55] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:48:04] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:48:17] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:48:17] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:48:25] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:48:25] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:48:35] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:48:35] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:48:44] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:48:44] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:49:00] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:49:05] INFO     | exadata_io_reasons_parser | ✅ Parsed 9 IO Reasons rows
+[2026-08-12 14:49:05] INFO     | exadata_io_reasons_parser | ✅ Inserted 9 rows into awr_exadata_io_reasons
+[2026-08-12 14:51:38] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:52:02] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:53:49] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:55:48] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:56:27] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:58:37] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 14:59:16] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:00:49] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:02:16] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:02:28] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:05:32] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:08:05] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:10:17] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:12:43] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:15:03] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:17:09] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:20:58] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:23:04] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:25:13] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:25:25] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:26:39] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:27:22] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:27:59] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:29:18] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:29:26] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:30:47] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:31:34] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:32:19] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:33:47] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:33:50] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:35:05] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:35:57] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:36:22] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:37:43] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:38:21] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:39:16] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:40:32] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:40:35] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:41:53] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:42:51] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:43:07] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:45:14] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:47:29] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:49:42] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:51:53] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:54:22] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:56:41] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 15:59:05] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:01:19] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:03:40] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:05:59] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:08:13] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:10:31] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:12:50] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:15:02] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:17:17] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:19:28] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:21:36] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:23:47] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:26:00] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:28:05] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:30:13] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:32:20] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-12 16:34:30] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 10:01:16] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 10:33:39] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 10:34:53] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 11:06:48] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 11:08:03] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 11:09:20] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 11:36:45] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 11:38:02] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 11:39:21] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 11:40:35] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 12:07:07] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 12:08:23] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 12:09:39] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 12:10:53] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 12:12:07] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 12:45:17] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 12:46:33] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 12:47:53] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 12:49:08] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 12:50:23] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 12:51:38] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:15:34] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:16:47] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:17:59] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:19:16] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:20:32] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:21:47] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:23:03] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:45:59] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:47:07] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:48:18] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:49:24] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:50:33] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:51:46] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:53:04] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 13:54:14] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:16:27] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:17:34] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:18:46] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:19:51] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:20:58] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:22:02] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:23:08] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:24:14] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:25:23] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:46:45] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:47:56] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:49:09] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:50:22] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:51:38] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:52:47] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:53:56] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:55:02] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:56:18] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 14:57:31] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:17:52] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:19:12] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:20:31] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:21:50] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:23:08] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:24:24] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:25:43] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:27:02] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:28:23] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:29:42] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:31:02] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:50:00] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:51:18] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:52:33] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:53:48] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:55:03] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:56:17] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:57:33] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 15:58:51] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:00:07] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:01:20] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:02:31] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:03:46] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:23:37] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:24:52] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:26:10] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:27:26] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:28:39] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:34:00] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:35:16] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:36:31] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:37:51] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:39:06] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:40:22] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:41:37] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:42:53] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:54:37] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:55:48] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:57:03] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 16:58:19] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 17:29:04] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 17:30:08] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 17:31:27] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-13 17:32:41] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-14 12:01:41] INFO     | exadata_io_reasons_parser | ✅ Parsed 7 IO Reasons rows
+[2026-08-14 12:01:41] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1027, null, null, null, null, All, Smart Scan Reads, null, null, 48200, null, null, 18240.0, 52.5, e1472bf784e1933ed8d4498ed127e1da, 2026-08-14 12:01:41.40238).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1027, null, null, null, null, All, Smart Scan Reads, null, null, 48200, null, null, 18240.0, 52.5, e1472bf784e1933ed8d4498ed127e1da, 2026-08-14 12:01:41.40238).
+
+[2026-08-14 12:01:47] INFO     | exadata_io_reasons_parser | ✅ Parsed 7 IO Reasons rows
+[2026-08-14 12:01:47] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1028, null, null, null, null, All, Smart Scan Reads, null, null, 48200, null, null, 18240.0, 52.5, e1472bf784e1933ed8d4498ed127e1da, 2026-08-14 12:01:47.959937).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1028, null, null, null, null, All, Smart Scan Reads, null, null, 48200, null, null, 18240.0, 52.5, e1472bf784e1933ed8d4498ed127e1da, 2026-08-14 12:01:47.959937).
+
+[2026-08-14 12:01:53] INFO     | exadata_io_reasons_parser | ✅ Parsed 7 IO Reasons rows
+[2026-08-14 12:01:53] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1029, null, null, null, null, All, Smart Scan Reads, null, null, 48200, null, null, 18240.0, 52.5, e1472bf784e1933ed8d4498ed127e1da, 2026-08-14 12:01:53.452559).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1029, null, null, null, null, All, Smart Scan Reads, null, null, 48200, null, null, 18240.0, 52.5, e1472bf784e1933ed8d4498ed127e1da, 2026-08-14 12:01:53.452559).
+
+[2026-08-14 12:01:59] INFO     | exadata_io_reasons_parser | ✅ Parsed 7 IO Reasons rows
+[2026-08-14 12:01:59] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1030, null, null, null, null, All, Smart Scan Reads, null, null, 48200, null, null, 18240.0, 52.5, e1472bf784e1933ed8d4498ed127e1da, 2026-08-14 12:01:59.134649).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1030, null, null, null, null, All, Smart Scan Reads, null, null, 48200, null, null, 18240.0, 52.5, e1472bf784e1933ed8d4498ed127e1da, 2026-08-14 12:01:59.134649).
+
+[2026-08-14 12:02:04] INFO     | exadata_io_reasons_parser | ✅ Parsed 7 IO Reasons rows
+[2026-08-14 12:02:04] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1031, null, null, null, null, All, Smart Scan Reads, null, null, 48200, null, null, 18240.0, 52.5, e1472bf784e1933ed8d4498ed127e1da, 2026-08-14 12:02:04.541777).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1031, null, null, null, null, All, Smart Scan Reads, null, null, 48200, null, null, 18240.0, 52.5, e1472bf784e1933ed8d4498ed127e1da, 2026-08-14 12:02:04.541777).
+
+[2026-08-14 12:02:10] INFO     | exadata_io_reasons_parser | ✅ Parsed 7 IO Reasons rows
+[2026-08-14 12:02:10] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1032, null, null, null, null, All, Smart Scan Reads, null, null, 48200, null, null, 18240.0, 52.5, e1472bf784e1933ed8d4498ed127e1da, 2026-08-14 12:02:10.525759).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1032, null, null, null, null, All, Smart Scan Reads, null, null, 48200, null, null, 18240.0, 52.5, e1472bf784e1933ed8d4498ed127e1da, 2026-08-14 12:02:10.525759).
+
+[2026-08-14 12:08:55] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-14 12:10:13] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-14 12:11:29] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 11:57:38] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 11:57:38] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1033, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.3, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:57:38.185749).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1033, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.3, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:57:38.185749).
+
+[2026-08-17 11:57:49] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 11:57:49] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1034, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 85.2, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:57:49.924908).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1034, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 85.2, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:57:49.924908).
+
+[2026-08-17 11:58:01] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 11:58:01] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1035, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 85.4, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:58:01.230451).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1035, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 85.4, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:58:01.230451).
+
+[2026-08-17 11:58:12] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 11:58:12] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1036, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 91.0, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:58:12.629006).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1036, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 91.0, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:58:12.629006).
+
+[2026-08-17 11:58:23] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 11:58:23] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1037, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 1.0, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:58:23.969646).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1037, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 1.0, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:58:23.969646).
+
+[2026-08-17 11:58:34] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 11:58:34] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1038, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.0, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:58:34.965935).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1038, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.0, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:58:34.965935).
+
+[2026-08-17 11:58:45] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 11:58:46] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1039, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 91.0, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:58:46.005686).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1039, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 91.0, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:58:46.005686).
+
+[2026-08-17 11:58:58] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 11:58:58] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1040, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.6, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:58:58.149977).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1040, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.6, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:58:58.149977).
+
+[2026-08-17 11:59:10] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 11:59:10] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1041, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 85.4, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:59:10.32738).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1041, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 85.4, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:59:10.32738).
+
+[2026-08-17 11:59:21] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 11:59:22] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1042, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.7, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:59:22.048199).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1042, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.7, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:59:22.048199).
+
+[2026-08-17 11:59:33] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 11:59:33] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1043, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.6, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:59:33.290034).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1043, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.6, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:59:33.290034).
+
+[2026-08-17 11:59:44] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 11:59:44] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1044, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.0, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:59:44.598113).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1044, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.0, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:59:44.598113).
+
+[2026-08-17 11:59:55] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 11:59:55] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1045, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.0, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:59:55.654468).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1045, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.0, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 11:59:55.654468).
+
+[2026-08-17 12:00:06] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 12:00:06] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1046, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 0.2, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 12:00:06.98845).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1046, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 0.2, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 12:00:06.98845).
+
+[2026-08-17 12:00:19] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 12:00:19] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1047, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.6, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 12:00:19.252747).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1047, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.6, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 12:00:19.252747).
+
+[2026-08-17 12:00:31] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 12:00:31] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1048, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.6, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 12:00:31.338944).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1048, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.6, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 12:00:31.338944).
+
+[2026-08-17 12:00:43] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 12:00:43] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1049, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.6, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 12:00:43.739059).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1049, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.6, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 12:00:43.739059).
+
+[2026-08-17 12:00:55] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 12:00:55] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1050, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.6, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 12:00:55.514957).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1050, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 84.6, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 12:00:55.514957).
+
+[2026-08-17 12:01:07] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 12:01:07] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1051, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 90.9, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 12:01:07.397226).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1051, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 90.9, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 12:01:07.397226).
+
+[2026-08-17 12:01:18] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 12:01:19] ERROR    | exadata_io_reasons_parser | ❌ null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1052, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 83.9, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 12:01:19.066229).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_io_reasons_parser.py", line 168, in insert_io_reasons
+    cur.execute(sql,(r["dbname"],r["instance"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"],r["reason"],r["small_req"],r["large_req"],r["total_req"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["small_mb"],r["large_mb"],r["total_mb"],r["pct_of_total_req"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1052, null, null, null, null, All, smart scan, null, null, 628361, null, null, 78545.0, 83.9, df2ae78e9a08be4f4fc9bb52c4d0f28b, 2026-08-17 12:01:19.066229).
+
+[2026-08-17 12:06:22] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 12:07:52] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 12:09:22] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 12:10:55] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 12:37:42] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 12:39:17] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 12:40:48] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 12:42:24] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 12:43:59] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 13:36:02] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 13:37:38] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 13:39:05] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 13:40:44] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 13:42:25] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:02:46] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:04:25] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:06:01] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:07:41] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:09:16] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:10:53] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:12:26] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:14:59] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:16:37] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:33:19] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:34:51] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:36:22] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:37:59] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:39:32] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:41:01] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:42:30] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:44:03] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 14:45:36] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:03:42] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:05:15] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:06:50] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:08:25] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:09:56] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:11:25] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:12:53] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:14:27] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:17:56] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:19:32] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:36:13] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:37:43] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:44:03] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:45:36] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:47:10] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:48:45] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:50:19] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:51:55] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:53:30] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:55:04] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 15:57:19] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:06:58] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:08:25] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:09:55] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:11:30] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:12:59] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:14:31] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:15:45] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:17:20] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:18:53] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:20:34] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:21:34] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:21:34] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:21:47] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:21:47] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:22:00] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:22:00] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:22:06] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:22:12] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:22:12] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:22:34] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:22:34] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:22:47] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:22:47] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:23:00] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:23:00] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:23:12] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:23:12] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:23:25] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:23:25] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:23:37] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:23:37] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:23:37] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:23:50] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:23:50] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:24:02] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:24:03] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:24:15] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:24:15] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:24:27] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:24:28] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:24:40] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:24:40] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:24:52] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:24:52] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:25:05] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:25:05] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:25:17] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:25:18] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:25:30] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:25:30] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:25:43] INFO     | exadata_io_reasons_parser | ✅ Parsed 12 IO Reasons rows
+[2026-08-17 16:25:43] INFO     | exadata_io_reasons_parser | ✅ Inserted 12 rows into awr_exadata_io_reasons
+[2026-08-17 16:40:33] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:42:07] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:43:39] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:45:13] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:46:44] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:48:14] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:49:47] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:51:23] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:52:54] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:54:30] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:56:00] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:57:35] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 16:59:04] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:11:17] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:12:49] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:14:20] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:15:54] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:17:24] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:19:02] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:20:32] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:22:06] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:23:39] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:25:13] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:26:44] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:28:16] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:29:46] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:31:15] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:42:04] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:43:39] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:45:13] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:46:46] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:48:17] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 17:49:47] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-17 18:16:04] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:35:56] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:37:11] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:38:52] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:40:27] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:42:02] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:43:27] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:44:47] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:46:13] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:47:52] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:49:19] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:50:47] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:52:16] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:53:56] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:55:41] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:57:31] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 09:59:13] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 10:00:46] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 10:02:18] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 10:03:44] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 10:05:11] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 10:07:04] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 10:08:46] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 10:10:13] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 10:11:44] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 10:31:16] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 11:01:22] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 11:03:06] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 11:31:19] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 11:32:49] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 11:34:17] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 12:02:48] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 12:04:22] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 12:05:52] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 12:07:22] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 12:33:00] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 12:34:36] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 12:36:11] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 12:37:44] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 12:39:17] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 13:05:36] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 13:07:06] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 13:08:39] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 13:10:10] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 13:11:44] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 13:13:19] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 13:54:43] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 13:56:19] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 13:57:53] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 13:59:22] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 14:10:18] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 14:11:53] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found
+[2026-08-18 14:13:23] WARNING  | exadata_io_reasons_parser | ⚠️  IO Reasons section not found

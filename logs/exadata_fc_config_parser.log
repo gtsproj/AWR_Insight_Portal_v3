@@ -1,0 +1,967 @@
+[2026-08-11 12:44:30] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:44:30] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:44:44] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (1 cells flushing)
+[2026-08-11 12:44:44] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:44:57] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (2 cells flushing)
+[2026-08-11 12:44:57] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:45:10] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:45:10] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:45:13] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:45:13] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:45:17] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:45:17] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:45:29] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:45:29] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:45:42] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:45:42] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:45:54] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:45:54] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:46:07] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:46:07] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:46:10] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:46:10] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:46:23] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:46:24] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:46:29] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:46:29] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:46:43] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:46:43] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:46:47] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:46:47] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:47:03] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:47:03] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:47:07] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:47:07] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:47:12] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:47:12] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:47:16] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (1 cells flushing)
+[2026-08-11 12:47:16] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-11 12:47:31] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-11 12:47:31] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 13:57:04] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:39:49] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:41:02] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:43:42] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:43:42] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:44:02] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (1 cells flushing)
+[2026-08-12 14:44:02] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:44:20] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (2 cells flushing)
+[2026-08-12 14:44:20] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:44:32] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:44:37] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:44:37] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:44:44] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:44:44] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:44:54] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:44:55] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:44:55] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:45:12] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:45:16] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:45:16] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:45:33] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:45:39] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:45:39] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:45:42] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:45:56] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:46:05] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:46:05] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:46:21] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:46:30] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:46:30] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:46:40] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:46:40] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:46:45] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:47:02] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:47:02] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:47:05] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:47:11] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:47:11] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:47:30] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:47:39] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:47:39] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:47:43] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:47:49] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:47:49] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:47:54] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:48:17] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:48:17] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:48:25] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:48:25] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:48:34] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:48:34] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:48:43] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (1 cells flushing)
+[2026-08-12 14:48:43] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:48:49] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:49:05] INFO     | exadata_fc_config_parser | ✅ Parsed 4 Flash Cache Config rows (0 cells flushing)
+[2026-08-12 14:49:05] INFO     | exadata_fc_config_parser | ✅ Inserted 4 rows into awr_exadata_fc_config
+[2026-08-12 14:51:28] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:51:48] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:53:39] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:55:34] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:56:18] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:58:29] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 14:59:00] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:00:40] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:02:08] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:02:14] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:05:23] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:07:56] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:10:08] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:12:33] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:14:53] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:17:01] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:20:50] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:22:55] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:25:04] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:25:21] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:26:34] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:27:13] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:27:54] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:29:12] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:29:18] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:30:41] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:31:25] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:32:12] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:33:37] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:33:45] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:34:59] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:35:48] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:36:17] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:37:37] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:38:11] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:39:12] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:40:25] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:40:27] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:41:48] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:42:41] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:43:01] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:45:04] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:47:19] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:49:33] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:51:44] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:54:13] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:56:32] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 15:58:55] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:01:10] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:03:30] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:05:49] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:08:03] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:10:22] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:12:40] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:14:53] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:17:08] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:19:18] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:21:27] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:23:38] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:25:52] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:27:56] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:30:04] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:32:11] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-12 16:34:21] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 10:01:12] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 10:33:35] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 10:34:49] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 11:06:44] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 11:07:59] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 11:09:16] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 11:36:41] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 11:37:57] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 11:39:16] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 11:40:31] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 12:07:03] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 12:08:19] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 12:09:35] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 12:10:49] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 12:12:03] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 12:45:13] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 12:46:29] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 12:47:49] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 12:49:04] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 12:50:19] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 12:51:34] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:15:30] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:16:44] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:17:55] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:19:11] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:20:29] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:21:42] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:22:59] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:45:55] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:47:03] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:48:14] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:49:20] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:50:29] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:51:41] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:53:00] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 13:54:10] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:16:22] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:17:30] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:18:42] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:19:47] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:20:54] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:21:58] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:23:04] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:24:10] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:25:19] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:46:40] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:47:52] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:49:05] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:50:17] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:51:34] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:52:43] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:53:52] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:54:57] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:56:13] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 14:57:27] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:17:47] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:19:08] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:20:27] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:21:46] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:23:04] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:24:20] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:25:39] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:26:58] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:28:18] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:29:38] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:30:58] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:49:56] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:51:14] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:52:29] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:53:44] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:54:59] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:56:12] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:57:29] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 15:58:46] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:00:04] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:01:17] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:02:27] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:03:42] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:23:32] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:24:48] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:26:06] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:27:22] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:28:36] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:33:57] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:35:12] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:36:27] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:37:47] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:39:02] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:40:18] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:41:33] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:42:49] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:54:33] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:55:44] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:56:59] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 16:58:15] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 17:29:00] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 17:30:03] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 17:31:23] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-13 17:32:37] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-14 12:01:40] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-14 12:01:40] INFO     | exadata_fc_config_parser | ✅ Parsed 3 Flash Cache Config rows (0 cells flushing)
+[2026-08-14 12:01:40] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (505, null, null, null, null, cel01.exadb.internal, 8388608, null, 2097152.0, f, 1ddfae5ac98feb353519d79e656dd249, 2026-08-14 12:01:40.902459).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (505, null, null, null, null, cel01.exadb.internal, 8388608, null, 2097152.0, f, 1ddfae5ac98feb353519d79e656dd249, 2026-08-14 12:01:40.902459).
+
+[2026-08-14 12:01:47] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-14 12:01:47] INFO     | exadata_fc_config_parser | ✅ Parsed 3 Flash Cache Config rows (0 cells flushing)
+[2026-08-14 12:01:47] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (506, null, null, null, null, cel01.exadb.internal, 8388608, null, 2097152.0, f, 1ddfae5ac98feb353519d79e656dd249, 2026-08-14 12:01:47.526963).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (506, null, null, null, null, cel01.exadb.internal, 8388608, null, 2097152.0, f, 1ddfae5ac98feb353519d79e656dd249, 2026-08-14 12:01:47.526963).
+
+[2026-08-14 12:01:52] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-14 12:01:52] INFO     | exadata_fc_config_parser | ✅ Parsed 3 Flash Cache Config rows (0 cells flushing)
+[2026-08-14 12:01:53] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (507, null, null, null, null, cel01.exadb.internal, 8388608, null, 2097152.0, f, 1ddfae5ac98feb353519d79e656dd249, 2026-08-14 12:01:53.019367).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (507, null, null, null, null, cel01.exadb.internal, 8388608, null, 2097152.0, f, 1ddfae5ac98feb353519d79e656dd249, 2026-08-14 12:01:53.019367).
+
+[2026-08-14 12:01:58] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-14 12:01:58] INFO     | exadata_fc_config_parser | ✅ Parsed 3 Flash Cache Config rows (0 cells flushing)
+[2026-08-14 12:01:58] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (508, null, null, null, null, cel01.exadb.internal, 8388608, null, 2097152.0, f, 1ddfae5ac98feb353519d79e656dd249, 2026-08-14 12:01:58.698446).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (508, null, null, null, null, cel01.exadb.internal, 8388608, null, 2097152.0, f, 1ddfae5ac98feb353519d79e656dd249, 2026-08-14 12:01:58.698446).
+
+[2026-08-14 12:02:03] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-14 12:02:03] INFO     | exadata_fc_config_parser | ✅ Parsed 3 Flash Cache Config rows (0 cells flushing)
+[2026-08-14 12:02:04] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (509, null, null, null, null, cel01.exadb.internal, 8388608, null, 2097152.0, f, 1ddfae5ac98feb353519d79e656dd249, 2026-08-14 12:02:04.010232).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (509, null, null, null, null, cel01.exadb.internal, 8388608, null, 2097152.0, f, 1ddfae5ac98feb353519d79e656dd249, 2026-08-14 12:02:04.010232).
+
+[2026-08-14 12:02:09] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-14 12:02:09] INFO     | exadata_fc_config_parser | ✅ Parsed 3 Flash Cache Config rows (0 cells flushing)
+[2026-08-14 12:02:10] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (510, null, null, null, null, cel01.exadb.internal, 8388608, null, 2097152.0, f, 1ddfae5ac98feb353519d79e656dd249, 2026-08-14 12:02:10.031938).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (510, null, null, null, null, cel01.exadb.internal, 8388608, null, 2097152.0, f, 1ddfae5ac98feb353519d79e656dd249, 2026-08-14 12:02:10.031938).
+
+[2026-08-14 12:08:51] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-14 12:10:08] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-14 12:11:25] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 11:57:37] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 11:57:37] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 11:57:37] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (511, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:57:37.162393).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (511, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:57:37.162393).
+
+[2026-08-17 11:57:48] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 11:57:48] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 11:57:48] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (512, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:57:48.881175).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (512, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:57:48.881175).
+
+[2026-08-17 11:58:00] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 11:58:00] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 11:58:00] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (513, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:58:00.378635).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (513, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:58:00.378635).
+
+[2026-08-17 11:58:11] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 11:58:11] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 11:58:11] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (514, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:58:11.82889).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (514, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:58:11.82889).
+
+[2026-08-17 11:58:23] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 11:58:23] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 11:58:23] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (515, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:58:23.163413).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (515, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:58:23.163413).
+
+[2026-08-17 11:58:33] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 11:58:33] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 11:58:34] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (516, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:58:34.044783).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (516, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:58:34.044783).
+
+[2026-08-17 11:58:45] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 11:58:45] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 11:58:45] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (517, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:58:45.181871).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (517, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:58:45.181871).
+
+[2026-08-17 11:58:57] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 11:58:57] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 11:58:57] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (518, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:58:57.322356).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (518, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:58:57.322356).
+
+[2026-08-17 11:59:09] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 11:59:09] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 11:59:09] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (519, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:59:09.539838).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (519, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:59:09.539838).
+
+[2026-08-17 11:59:21] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 11:59:21] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 11:59:21] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (520, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:59:21.263473).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (520, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:59:21.263473).
+
+[2026-08-17 11:59:32] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 11:59:32] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 11:59:32] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (521, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:59:32.516628).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (521, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:59:32.516628).
+
+[2026-08-17 11:59:43] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 11:59:43] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 11:59:43] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (522, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:59:43.755129).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (522, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:59:43.755129).
+
+[2026-08-17 11:59:54] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 11:59:54] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 11:59:54] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (523, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:59:54.814669).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (523, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 11:59:54.814669).
+
+[2026-08-17 12:00:06] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 12:00:06] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 12:00:06] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (524, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 12:00:06.134619).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (524, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 12:00:06.134619).
+
+[2026-08-17 12:00:18] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 12:00:18] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 12:00:18] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (525, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 12:00:18.273641).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (525, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 12:00:18.273641).
+
+[2026-08-17 12:00:30] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 12:00:30] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 12:00:30] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (526, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 12:00:30.52181).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (526, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 12:00:30.52181).
+
+[2026-08-17 12:00:42] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 12:00:42] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 12:00:42] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (527, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 12:00:42.712698).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (527, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 12:00:42.712698).
+
+[2026-08-17 12:00:54] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 12:00:54] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 12:00:54] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (528, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 12:00:54.560221).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (528, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 12:00:54.560221).
+
+[2026-08-17 12:01:06] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 12:01:06] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 12:01:06] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (529, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 12:01:06.504129).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (529, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 12:01:06.504129).
+
+[2026-08-17 12:01:18] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 12:01:18] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 12:01:18] ERROR    | exadata_fc_config_parser | ❌ Failed inserting FC Config: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (530, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 12:01:18.15567).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_fc_config_parser.py", line 210, in insert_fc_config
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_name"], r["fc_status"], r["fc_size_gb"], r["fl_size_mb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["is_flushing"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (530, null, null, null, null, mexa1cell01, 8388608, null, 2097152.0, f, 43d751c10c298afeaee865dd583b3ff6, 2026-08-17 12:01:18.15567).
+
+[2026-08-17 12:06:14] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 12:07:45] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 12:09:14] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 12:10:48] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 12:37:34] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 12:39:10] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 12:40:41] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 12:42:17] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 12:43:52] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 13:29:36] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 13:37:30] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 13:38:58] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 13:40:36] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 13:42:17] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:02:38] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:04:18] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:05:53] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:07:32] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:09:08] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:10:45] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:12:19] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:14:51] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:16:30] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:33:11] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:34:44] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:36:15] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:37:51] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:39:24] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:40:54] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:42:23] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:43:56] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 14:45:28] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:03:35] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:05:08] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:06:42] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:08:18] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:09:49] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:11:19] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:12:46] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:14:19] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:17:48] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:19:24] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:36:06] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:37:36] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:43:55] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:45:29] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:47:02] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:48:37] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:50:11] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:51:48] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:53:22] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:54:57] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 15:57:11] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:06:50] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:08:18] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:09:48] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:11:23] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:12:52] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:14:24] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:15:37] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:17:13] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:18:45] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:20:27] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:21:33] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:21:33] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:21:33] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:21:46] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:21:46] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:21:47] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:21:58] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:21:59] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:21:59] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:21:59] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:22:12] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:22:12] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:22:12] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:22:33] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:22:33] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:22:33] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:22:46] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:22:46] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:22:46] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:22:59] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:22:59] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:22:59] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:23:11] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:23:11] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:23:11] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:23:23] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:23:23] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:23:24] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:23:30] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:23:36] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:23:36] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:23:36] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:23:49] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:23:49] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:23:49] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:24:01] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:24:01] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:24:02] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:24:14] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:24:14] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:24:14] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:24:27] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:24:27] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:24:27] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:24:39] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:24:39] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:24:39] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:24:51] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:24:51] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:24:52] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:25:04] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:25:04] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:25:04] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:25:17] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:25:17] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:25:17] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:25:29] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:25:29] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:25:29] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:25:42] INFO     | exadata_fc_config_parser | ℹ️  Using positional column access for FC Config table
+[2026-08-17 16:25:42] INFO     | exadata_fc_config_parser | ✅ Parsed 8 Flash Cache Config rows (0 cells flushing)
+[2026-08-17 16:25:42] INFO     | exadata_fc_config_parser | ✅ Inserted 8 rows into awr_exadata_fc_config
+[2026-08-17 16:40:26] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:41:59] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:43:31] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:45:05] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:46:37] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:48:07] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:49:39] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:51:15] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:52:46] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:54:23] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:55:53] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:57:27] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 16:58:57] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:11:09] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:12:42] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:14:12] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:15:46] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:17:16] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:18:55] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:20:24] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:21:59] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:23:31] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:25:05] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:26:36] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:28:09] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:29:39] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:31:08] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:41:56] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:43:32] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:45:05] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:46:39] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:48:10] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 17:49:40] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-17 18:15:32] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:35:49] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:37:04] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:38:44] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:40:19] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:41:55] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:43:20] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:44:41] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:46:06] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:47:44] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:49:13] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:50:41] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:52:08] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:53:48] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:55:32] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:57:23] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 09:59:07] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 10:00:37] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 10:02:12] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 10:03:37] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 10:05:04] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 10:06:56] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 10:08:40] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 10:10:06] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 10:11:36] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 10:31:08] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 11:01:14] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 11:02:55] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 11:31:12] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 11:32:42] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 11:34:09] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 12:02:40] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 12:04:14] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 12:05:45] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 12:07:14] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 12:32:55] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 12:34:29] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 12:36:04] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 12:37:36] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 12:39:11] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 13:05:29] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 13:06:59] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 13:08:32] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 13:10:02] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 13:11:37] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 13:13:11] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 13:54:35] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 13:56:11] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 13:57:46] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 13:59:14] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 14:10:10] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 14:11:46] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report
+[2026-08-18 14:13:15] WARNING  | exadata_fc_config_parser | ⚠️  Flash Cache Configuration section not found — non-Exadata or text-format AWR report

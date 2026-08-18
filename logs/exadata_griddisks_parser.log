@@ -1,0 +1,471 @@
+[2026-08-17 11:57:37] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 11:57:37] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:57:37.991025).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:57:37.991025).
+
+[2026-08-17 11:57:49] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 11:57:49] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (2, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:57:49.773571).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (2, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:57:49.773571).
+
+[2026-08-17 11:58:00] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 11:58:01] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (3, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:58:01.072036).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (3, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:58:01.072036).
+
+[2026-08-17 11:58:12] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 11:58:12] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (4, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:58:12.487166).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (4, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:58:12.487166).
+
+[2026-08-17 11:58:23] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 11:58:23] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (5, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:58:23.824105).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (5, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:58:23.824105).
+
+[2026-08-17 11:58:34] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 11:58:34] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (6, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:58:34.788336).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (6, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:58:34.788336).
+
+[2026-08-17 11:58:45] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 11:58:45] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (7, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:58:45.84862).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (7, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:58:45.84862).
+
+[2026-08-17 11:58:57] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 11:58:57] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (8, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:58:57.994918).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (8, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:58:57.994918).
+
+[2026-08-17 11:59:10] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 11:59:10] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (9, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:59:10.191659).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (9, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:59:10.191659).
+
+[2026-08-17 11:59:21] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 11:59:21] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (10, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:59:21.901523).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (10, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:59:21.901523).
+
+[2026-08-17 11:59:33] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 11:59:33] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (11, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:59:33.14012).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (11, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:59:33.14012).
+
+[2026-08-17 11:59:44] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 11:59:44] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (12, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:59:44.444886).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (12, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:59:44.444886).
+
+[2026-08-17 11:59:55] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 11:59:55] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (13, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:59:55.485238).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (13, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 11:59:55.485238).
+
+[2026-08-17 12:00:06] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 12:00:06] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (14, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 12:00:06.843311).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (14, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 12:00:06.843311).
+
+[2026-08-17 12:00:18] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 12:00:19] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (15, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 12:00:19.064255).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (15, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 12:00:19.064255).
+
+[2026-08-17 12:00:31] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 12:00:31] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (16, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 12:00:31.184758).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (16, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 12:00:31.184758).
+
+[2026-08-17 12:00:43] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 12:00:43] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (17, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 12:00:43.587328).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (17, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 12:00:43.587328).
+
+[2026-08-17 12:00:55] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 12:00:55] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (18, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 12:00:55.337986).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (18, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 12:00:55.337986).
+
+[2026-08-17 12:01:07] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 12:01:07] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (19, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 12:01:07.207427).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (19, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 12:01:07.207427).
+
+[2026-08-17 12:01:18] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 12:01:18] ERROR    | exadata_griddisks_parser | ❌ Griddisks insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (20, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 12:01:18.901549).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_griddisks_parser.py", line 95, in insert_griddisks
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],r["griddisk_prefix"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["caching_policy"],r["n_griddisks"],r["n_cached_by"],r["griddisk_size_gb"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["cell_total_gb"],r["system_total_gb"],r["disk_type"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (20, null, null, null, DATAC1, default, null, null, null, null, null, null, All (8), 040fa319806af10c39cfdc6c6d75b1b4, 2026-08-17 12:01:18.901549).
+
+[2026-08-17 12:06:20] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 12:07:51] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 12:09:20] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 12:10:54] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 12:37:40] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 12:39:16] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 12:40:47] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 12:42:23] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 12:43:58] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 13:36:01] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 13:37:37] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 13:39:04] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 13:40:43] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 13:42:24] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:02:44] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:04:24] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:05:59] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:07:39] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:09:14] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:10:51] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:12:25] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:14:58] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:16:36] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:33:17] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:34:50] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:36:21] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:37:58] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:39:31] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:41:00] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:42:29] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:44:02] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 14:45:35] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:03:41] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:05:14] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:06:48] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:08:24] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:09:55] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:11:24] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:12:52] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:14:25] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:17:54] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:19:31] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:36:12] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:37:42] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:44:02] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:45:35] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:47:09] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:48:43] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:50:18] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:51:54] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:53:29] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:55:02] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 15:57:18] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:06:57] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:08:24] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:09:54] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:11:29] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:12:58] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:14:30] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:15:44] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:17:19] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:18:52] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:20:33] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:21:34] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:21:34] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:21:47] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:21:47] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:21:59] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:22:00] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:22:05] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:22:12] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:22:12] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:22:34] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:22:34] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:22:47] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:22:47] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:22:59] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:23:00] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:23:12] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:23:12] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:23:24] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:23:25] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:23:36] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:23:37] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:23:37] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:23:49] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:23:50] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:24:02] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:24:02] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:24:15] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:24:15] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:24:27] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:24:27] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:24:40] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:24:40] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:24:52] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:24:52] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:25:05] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:25:05] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:25:17] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:25:17] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:25:30] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:25:30] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:25:43] INFO     | exadata_griddisks_parser | ✅ Parsed 3 Griddisk rows
+[2026-08-17 16:25:43] INFO     | exadata_griddisks_parser | ✅ Inserted 3 rows into awr_exadata_griddisks
+[2026-08-17 16:40:32] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:42:06] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:43:38] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:45:12] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:46:43] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:48:13] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:49:46] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:51:22] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:52:53] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:54:29] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:55:59] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:57:34] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 16:59:03] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:11:16] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:12:48] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:14:19] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:15:53] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:17:23] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:19:01] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:20:31] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:22:05] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:23:38] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:25:11] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:26:43] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:28:15] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:29:45] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:31:14] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:42:03] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:43:38] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:45:11] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:46:45] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:48:16] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 17:49:46] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-17 18:15:40] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:35:55] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:37:10] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:38:50] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:40:26] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:42:01] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:43:26] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:44:46] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:46:12] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:47:51] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:49:18] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:50:46] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:52:15] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:53:55] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:55:39] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:57:30] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 09:59:12] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 10:00:45] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 10:02:17] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 10:03:43] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 10:05:10] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 10:07:02] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 10:08:45] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 10:10:12] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 10:11:42] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 10:31:14] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 11:01:21] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 11:03:04] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 11:31:18] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 11:32:48] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 11:34:15] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 12:02:46] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 12:04:21] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 12:05:51] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 12:07:21] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 12:32:59] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 12:34:35] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 12:36:10] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 12:37:42] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 12:39:16] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 13:05:35] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 13:07:05] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 13:08:38] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 13:10:08] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 13:11:43] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 13:13:17] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 13:54:42] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 13:56:17] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 13:57:52] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 13:59:21] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 14:10:17] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 14:11:52] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found
+[2026-08-18 14:13:22] WARNING  | exadata_griddisks_parser | ⚠️  Exadata Griddisks section not found

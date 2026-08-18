@@ -1,0 +1,895 @@
+[2026-08-11 12:44:31] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:44:31] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:44:45] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:44:45] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:44:58] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:44:58] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:45:10] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows | HIGH passthru: ['All', 'exacell01', 'exacell02', 'exacell03', 'exacell04']
+[2026-08-11 12:45:10] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:45:14] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows | HIGH passthru: ['All', 'exacell01', 'exacell02', 'exacell03', 'exacell04']
+[2026-08-11 12:45:14] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:45:17] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:45:18] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:45:30] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:45:30] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:45:42] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:45:42] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:45:55] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:45:55] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:46:07] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:46:07] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:46:11] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:46:11] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:46:24] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:46:24] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:46:30] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:46:30] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:46:44] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:46:44] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:46:48] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:46:48] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:47:04] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:47:04] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:47:08] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:47:08] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:47:13] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:47:13] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:47:17] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows | HIGH passthru: ['All', 'exacell01', 'exacell02', 'exacell03']
+[2026-08-11 12:47:17] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-11 12:47:31] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-11 12:47:31] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 13:57:12] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:39:56] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:41:09] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:43:43] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:43:43] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:44:03] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:44:03] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:44:21] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:44:21] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:44:33] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:44:37] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows | HIGH passthru: ['All', 'exacell01', 'exacell02', 'exacell03', 'exacell04']
+[2026-08-12 14:44:37] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:44:46] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows | HIGH passthru: ['All', 'exacell01', 'exacell02', 'exacell03', 'exacell04']
+[2026-08-12 14:44:46] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:44:55] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:44:56] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:44:56] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:45:14] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:45:18] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:45:18] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:45:35] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:45:41] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:45:41] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:45:58] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:46:00] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:46:07] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:46:07] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:46:23] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:46:30] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:46:30] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:46:42] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:46:42] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:46:46] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:47:03] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:47:03] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:47:05] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:47:13] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:47:13] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:47:31] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:47:39] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:47:40] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:47:51] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:47:51] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:47:55] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:48:16] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:48:18] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:48:18] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:48:25] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:48:26] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:48:35] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:48:35] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:48:45] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows | HIGH passthru: ['All', 'exacell01', 'exacell02', 'exacell03']
+[2026-08-12 14:48:45] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:49:05] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:49:06] INFO     | exadata_smart_io_parser | ✅ Parsed 5 Exadata Smart IO rows
+[2026-08-12 14:49:06] INFO     | exadata_smart_io_parser | ✅ Inserted 5 rows into awr_exadata_smart_io
+[2026-08-12 14:51:42] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:52:09] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:53:53] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:55:54] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:56:31] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:58:42] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 14:59:22] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:00:53] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:02:20] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:02:35] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:05:37] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:08:10] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:10:22] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:12:48] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:15:07] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:17:13] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:21:03] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:23:08] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:25:17] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:25:27] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:26:42] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:27:26] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:28:01] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:29:21] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:29:31] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:30:50] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:31:38] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:32:21] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:33:51] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:33:53] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:35:07] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:36:01] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:36:25] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:37:46] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:38:26] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:39:19] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:40:35] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:40:39] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:41:55] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:42:55] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:43:10] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:45:18] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:47:33] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:49:47] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:51:58] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:54:27] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:56:46] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 15:59:09] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:01:24] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:03:45] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:06:03] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:08:17] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:10:36] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:12:54] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:15:06] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:17:21] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:19:32] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:21:41] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:23:52] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:26:05] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:28:08] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:30:18] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:32:24] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-12 16:34:34] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 10:01:19] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 10:33:41] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 10:34:56] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 11:06:50] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 11:08:06] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 11:09:22] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 11:36:48] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 11:38:04] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 11:39:23] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 11:40:37] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 12:07:10] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 12:08:26] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 12:09:41] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 12:10:55] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 12:12:09] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 12:45:20] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 12:46:35] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 12:47:55] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 12:49:10] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 12:50:25] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 12:51:40] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:15:37] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:16:50] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:18:01] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:19:18] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:20:35] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:21:50] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:23:05] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:46:01] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:47:09] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:48:20] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:49:26] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:50:35] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:51:49] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:53:07] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 13:54:16] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:16:29] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:17:36] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:18:48] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:19:53] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:21:00] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:22:04] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:23:10] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:24:16] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:25:25] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:46:47] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:47:58] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:49:11] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:50:24] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:51:40] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:52:49] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:53:58] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:55:04] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:56:20] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 14:57:33] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:17:54] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:19:15] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:20:34] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:21:53] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:23:11] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:24:27] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:25:46] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:27:05] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:28:25] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:29:44] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:31:05] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:50:03] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:51:21] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:52:35] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:53:50] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:55:05] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:56:19] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:57:35] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 15:58:53] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:00:09] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:01:23] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:02:33] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:03:48] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:23:39] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:24:55] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:26:13] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:27:28] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:28:41] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:34:03] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:35:18] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:36:33] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:37:53] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:39:09] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:40:24] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:41:39] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:42:55] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:54:40] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:55:51] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:57:06] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 16:58:21] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 17:29:07] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 17:30:10] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 17:31:30] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-13 17:32:43] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-14 12:01:41] INFO     | exadata_smart_io_parser | ✅ Parsed 3 Exadata Smart IO rows
+[2026-08-14 12:01:41] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (631, null, null, null, null, cel01.exadb.internal, 18240.0, null, 14892.0, 2848.0, 500.0, null, null, 2.7, 15.6, 3b8d2c461f00043813366126d8d8b294, 2026-08-14 12:01:41.793715).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (631, null, null, null, null, cel01.exadb.internal, 18240.0, null, 14892.0, 2848.0, 500.0, null, null, 2.7, 15.6, 3b8d2c461f00043813366126d8d8b294, 2026-08-14 12:01:41.793715).
+
+[2026-08-14 12:01:48] INFO     | exadata_smart_io_parser | ✅ Parsed 3 Exadata Smart IO rows
+[2026-08-14 12:01:48] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (632, null, null, null, null, cel01.exadb.internal, 18240.0, null, 14892.0, 2848.0, 500.0, null, null, 2.7, 15.6, 3b8d2c461f00043813366126d8d8b294, 2026-08-14 12:01:48.260777).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (632, null, null, null, null, cel01.exadb.internal, 18240.0, null, 14892.0, 2848.0, 500.0, null, null, 2.7, 15.6, 3b8d2c461f00043813366126d8d8b294, 2026-08-14 12:01:48.260777).
+
+[2026-08-14 12:01:53] INFO     | exadata_smart_io_parser | ✅ Parsed 3 Exadata Smart IO rows
+[2026-08-14 12:01:53] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (633, null, null, null, null, cel01.exadb.internal, 18240.0, null, 14892.0, 2848.0, 500.0, null, null, 2.7, 15.6, 3b8d2c461f00043813366126d8d8b294, 2026-08-14 12:01:53.725209).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (633, null, null, null, null, cel01.exadb.internal, 18240.0, null, 14892.0, 2848.0, 500.0, null, null, 2.7, 15.6, 3b8d2c461f00043813366126d8d8b294, 2026-08-14 12:01:53.725209).
+
+[2026-08-14 12:01:59] INFO     | exadata_smart_io_parser | ✅ Parsed 3 Exadata Smart IO rows
+[2026-08-14 12:01:59] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (634, null, null, null, null, cel01.exadb.internal, 18240.0, null, 14892.0, 2848.0, 500.0, null, null, 2.7, 15.6, 3b8d2c461f00043813366126d8d8b294, 2026-08-14 12:01:59.395399).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (634, null, null, null, null, cel01.exadb.internal, 18240.0, null, 14892.0, 2848.0, 500.0, null, null, 2.7, 15.6, 3b8d2c461f00043813366126d8d8b294, 2026-08-14 12:01:59.395399).
+
+[2026-08-14 12:02:04] INFO     | exadata_smart_io_parser | ✅ Parsed 3 Exadata Smart IO rows
+[2026-08-14 12:02:04] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (635, null, null, null, null, cel01.exadb.internal, 18240.0, null, 14892.0, 2848.0, 500.0, null, null, 2.7, 15.6, 3b8d2c461f00043813366126d8d8b294, 2026-08-14 12:02:04.863819).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (635, null, null, null, null, cel01.exadb.internal, 18240.0, null, 14892.0, 2848.0, 500.0, null, null, 2.7, 15.6, 3b8d2c461f00043813366126d8d8b294, 2026-08-14 12:02:04.863819).
+
+[2026-08-14 12:02:10] INFO     | exadata_smart_io_parser | ✅ Parsed 3 Exadata Smart IO rows
+[2026-08-14 12:02:10] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (636, null, null, null, null, cel01.exadb.internal, 18240.0, null, 14892.0, 2848.0, 500.0, null, null, 2.7, 15.6, 3b8d2c461f00043813366126d8d8b294, 2026-08-14 12:02:10.887022).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (636, null, null, null, null, cel01.exadb.internal, 18240.0, null, 14892.0, 2848.0, 500.0, null, null, 2.7, 15.6, 3b8d2c461f00043813366126d8d8b294, 2026-08-14 12:02:10.887022).
+
+[2026-08-14 12:08:58] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-14 12:10:15] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-14 12:11:31] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 11:57:39] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 11:57:39] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (637, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 2448.0, 36.0, null, null, 0.2, 13.4, 36353128748b75fa30c5f469a361e5ae, 2026-08-17 11:57:39.192875).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (637, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 2448.0, 36.0, null, null, 0.2, 13.4, 36353128748b75fa30c5f469a361e5ae, 2026-08-17 11:57:39.192875).
+
+[2026-08-17 11:57:50] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 11:57:50] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (638, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 4824.0, 146.0, null, null, 0.8, 26.4, 76e9281f01a615df99841f22ab608253, 2026-08-17 11:57:50.925202).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (638, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 4824.0, 146.0, null, null, 0.8, 26.4, 76e9281f01a615df99841f22ab608253, 2026-08-17 11:57:50.925202).
+
+[2026-08-17 11:58:01] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 11:58:02] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (639, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 3366.0, 218.0, null, null, 1.2, 18.5, eb9fbf1ad0a01e5f1173349a3c9ed249, 2026-08-17 11:58:02.02847).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (639, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 3366.0, 218.0, null, null, 1.2, 18.5, eb9fbf1ad0a01e5f1173349a3c9ed249, 2026-08-17 11:58:02.02847).
+
+[2026-08-17 11:58:13] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 11:58:13] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (640, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 13644.0, 2.0, null, null, 0.0, 74.8, e3314b6c1c01210c9fa9fe24e98a76eb, 2026-08-17 11:58:13.469956).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (640, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 13644.0, 2.0, null, null, 0.0, 74.8, e3314b6c1c01210c9fa9fe24e98a76eb, 2026-08-17 11:58:13.469956).
+
+[2026-08-17 11:58:24] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 11:58:24] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (641, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 16974.0, 0.0, null, null, 0.0, 93.1, 38541e37eee8bb05f95be97b971fde02, 2026-08-17 11:58:24.783927).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (641, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 16974.0, 0.0, null, null, 0.0, 93.1, 38541e37eee8bb05f95be97b971fde02, 2026-08-17 11:58:24.783927).
+
+[2026-08-17 11:58:35] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 11:58:35] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (642, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 8910.0, 1529.0, null, null, 8.4, 48.8, 92b9213cb60509f68c270eeebfded578, 2026-08-17 11:58:35.730411).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (642, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 8910.0, 1529.0, null, null, 8.4, 48.8, 92b9213cb60509f68c270eeebfded578, 2026-08-17 11:58:35.730411).
+
+[2026-08-17 11:58:47] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows | HIGH passthru: ['mexa1cell01', 'mexa1cell02', 'mexa1cell03', 'mexa1cell04', 'mexa1cell05', 'mexa1cell06', 'mexa1cell07', 'mexa1cell08']
+[2026-08-17 11:58:47] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (643, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 11376.0, 5169.0, null, null, 28.3, 62.4, 057a99352ab59ce3fab0edcaf9e02db6, 2026-08-17 11:58:47.190177).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (643, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 11376.0, 5169.0, null, null, 28.3, 62.4, 057a99352ab59ce3fab0edcaf9e02db6, 2026-08-17 11:58:47.190177).
+
+[2026-08-17 11:58:58] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows | HIGH passthru: ['mexa1cell01', 'mexa1cell02', 'mexa1cell03', 'mexa1cell04', 'mexa1cell05', 'mexa1cell06', 'mexa1cell07', 'mexa1cell08']
+[2026-08-17 11:58:59] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (644, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 3132.0, 12449.0, null, null, 68.3, 17.2, 67919cfe17f6b37d7943867b9b5f6080, 2026-08-17 11:58:59.077334).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (644, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 3132.0, 12449.0, null, null, 68.3, 17.2, 67919cfe17f6b37d7943867b9b5f6080, 2026-08-17 11:58:59.077334).
+
+[2026-08-17 11:59:11] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 11:59:11] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (645, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 12456.0, 437.0, null, null, 2.4, 68.3, 62ec4d50f90545c86159bd1f033c9054, 2026-08-17 11:59:11.326273).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (645, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 12456.0, 437.0, null, null, 2.4, 68.3, 62ec4d50f90545c86159bd1f033c9054, 2026-08-17 11:59:11.326273).
+
+[2026-08-17 11:59:22] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 11:59:22] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (646, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 5436.0, 255.0, null, null, 1.4, 29.8, 7da437f6e34ac7b4b60b1db2e6ab5b71, 2026-08-17 11:59:22.860896).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (646, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 5436.0, 255.0, null, null, 1.4, 29.8, 7da437f6e34ac7b4b60b1db2e6ab5b71, 2026-08-17 11:59:22.860896).
+
+[2026-08-17 11:59:34] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 11:59:34] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (647, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 6984.0, 510.0, null, null, 2.8, 38.3, 37be2f736ab299a8e30b72d2d7c689cf, 2026-08-17 11:59:34.25801).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (647, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 6984.0, 510.0, null, null, 2.8, 38.3, 37be2f736ab299a8e30b72d2d7c689cf, 2026-08-17 11:59:34.25801).
+
+[2026-08-17 11:59:45] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 11:59:45] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (648, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 4644.0, 328.0, null, null, 1.8, 25.5, 8ea1eb171c7ebcfa9203b2a7ffa45a9f, 2026-08-17 11:59:45.420997).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (648, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 4644.0, 328.0, null, null, 1.8, 25.5, 8ea1eb171c7ebcfa9203b2a7ffa45a9f, 2026-08-17 11:59:45.420997).
+
+[2026-08-17 11:59:56] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 11:59:56] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (649, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 3456.0, 437.0, null, null, 2.4, 18.9, e66b3a0d48b0b09d25d920a5dc11affa, 2026-08-17 11:59:56.512432).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (649, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 3456.0, 437.0, null, null, 2.4, 18.9, e66b3a0d48b0b09d25d920a5dc11affa, 2026-08-17 11:59:56.512432).
+
+[2026-08-17 12:00:07] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 12:00:07] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (650, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 5292.0, 400.0, null, null, 2.2, 29.0, 4f801070bf2b68a38cb725b681113842, 2026-08-17 12:00:07.871539).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (650, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 5292.0, 400.0, null, null, 2.2, 29.0, 4f801070bf2b68a38cb725b681113842, 2026-08-17 12:00:07.871539).
+
+[2026-08-17 12:00:20] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 12:00:20] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (651, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 5616.0, 801.0, null, null, 4.4, 30.8, 2d97ea79563793dd69fb15c65c8c0b62, 2026-08-17 12:00:20.30891).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (651, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 5616.0, 801.0, null, null, 4.4, 30.8, 2d97ea79563793dd69fb15c65c8c0b62, 2026-08-17 12:00:20.30891).
+
+[2026-08-17 12:00:32] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 12:00:32] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (652, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 4032.0, 582.0, null, null, 3.2, 22.1, 7fce5845907a9e80c821854b1169e1c3, 2026-08-17 12:00:32.23954).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (652, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 4032.0, 582.0, null, null, 3.2, 22.1, 7fce5845907a9e80c821854b1169e1c3, 2026-08-17 12:00:32.23954).
+
+[2026-08-17 12:00:44] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 12:00:44] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (653, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 5904.0, 874.0, null, null, 4.8, 32.4, 45839e47c6d2675614f9ae27f8244018, 2026-08-17 12:00:44.660149).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (653, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 5904.0, 874.0, null, null, 4.8, 32.4, 45839e47c6d2675614f9ae27f8244018, 2026-08-17 12:00:44.660149).
+
+[2026-08-17 12:00:56] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 12:00:56] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (654, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 8856.0, 2257.0, null, null, 12.4, 48.6, 59cd36199573f0ff48f59e55d168df7e, 2026-08-17 12:00:56.345427).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (654, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 8856.0, 2257.0, null, null, 12.4, 48.6, 59cd36199573f0ff48f59e55d168df7e, 2026-08-17 12:00:56.345427).
+
+[2026-08-17 12:01:08] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows | HIGH passthru: ['mexa1cell01', 'mexa1cell02', 'mexa1cell03', 'mexa1cell04', 'mexa1cell05', 'mexa1cell06', 'mexa1cell07', 'mexa1cell08']
+[2026-08-17 12:01:08] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (655, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 3924.0, 13177.0, null, null, 72.2, 21.5, 936f86070b9c8b736619fe88b393e9ce, 2026-08-17 12:01:08.354447).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (655, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 3924.0, 13177.0, null, null, 72.2, 21.5, 936f86070b9c8b736619fe88b393e9ce, 2026-08-17 12:01:08.354447).
+
+[2026-08-17 12:01:19] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 12:01:19] ERROR    | exadata_smart_io_parser | ❌ Failed inserting Smart IO: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (656, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 5976.0, 801.0, null, null, 4.4, 32.8, 986eeb1d2604c3e743a2c374cfc82fa9, 2026-08-17 12:01:19.908258).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_smart_io_parser.py", line 222, in insert_smart_io
+    cur.execute(sql, (
+    ~~~~~~~~~~~^^^^^^^
+        r["dbname"], r["instance"], r["begin_snap"], r["snap_time"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        r["passthru_pct"], r["disk_pct"], r["row_hash"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ))
+    ^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (656, null, null, null, null, mexa1cell01, 18240.0, 2400.0, 14892.0, 5976.0, 801.0, null, null, 4.4, 32.8, 986eeb1d2604c3e743a2c374cfc82fa9, 2026-08-17 12:01:19.908258).
+
+[2026-08-17 12:06:28] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 12:07:58] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 12:09:28] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 12:11:01] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 12:37:48] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 12:39:23] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 12:40:55] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 12:42:30] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 12:44:05] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 13:36:07] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 13:37:44] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 13:39:12] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 13:40:51] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 13:42:32] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:02:52] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:04:32] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:06:07] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:07:47] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:09:22] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:10:59] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:12:32] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:15:06] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:16:43] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:33:25] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:34:57] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:36:28] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:38:05] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:39:38] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:41:07] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:42:36] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:44:09] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 14:45:42] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:03:48] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:05:22] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:06:56] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:08:31] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:10:02] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:11:31] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:12:59] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:14:34] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:18:02] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:19:38] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:36:19] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:37:50] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:44:09] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:45:42] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:47:16] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:48:50] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:50:25] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:52:01] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:53:36] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:55:10] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 15:57:25] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:07:05] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:08:31] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:10:02] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:11:37] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:13:05] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:14:37] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:15:52] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:17:26] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:18:59] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:20:40] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:21:35] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:21:35] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:21:48] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:21:48] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:22:01] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:22:01] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:22:12] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:22:13] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:22:13] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:22:35] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:22:35] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:22:48] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:22:48] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:23:01] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows | HIGH passthru: ['mexa1cell01', 'mexa1cell02', 'mexa1cell03', 'mexa1cell04', 'mexa1cell05', 'mexa1cell06', 'mexa1cell07', 'mexa1cell08']
+[2026-08-17 16:23:01] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:23:13] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows | HIGH passthru: ['mexa1cell01', 'mexa1cell02', 'mexa1cell03', 'mexa1cell04', 'mexa1cell05', 'mexa1cell06', 'mexa1cell07', 'mexa1cell08']
+[2026-08-17 16:23:13] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:23:26] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:23:26] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:23:38] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:23:38] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:23:43] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:23:51] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:23:51] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:24:03] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:24:04] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:24:16] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:24:16] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:24:28] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:24:28] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:24:41] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:24:41] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:24:53] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:24:53] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:25:06] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:25:06] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:25:18] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:25:19] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:25:31] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows | HIGH passthru: ['mexa1cell01', 'mexa1cell02', 'mexa1cell03', 'mexa1cell04', 'mexa1cell05', 'mexa1cell06', 'mexa1cell07', 'mexa1cell08']
+[2026-08-17 16:25:31] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:25:44] INFO     | exadata_smart_io_parser | ✅ Parsed 8 Exadata Smart IO rows
+[2026-08-17 16:25:44] INFO     | exadata_smart_io_parser | ✅ Inserted 8 rows into awr_exadata_smart_io
+[2026-08-17 16:40:39] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:42:13] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:43:45] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:45:19] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:46:50] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:48:20] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:49:53] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:51:29] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:53:01] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:54:36] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:56:07] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:57:41] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 16:59:10] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:11:23] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:12:55] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:14:26] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:16:00] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:17:30] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:19:08] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:20:38] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:22:13] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:23:45] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:25:19] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:26:50] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:28:22] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:29:52] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:31:21] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:42:11] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:43:46] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:45:19] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:46:53] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:48:23] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 17:49:53] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-17 18:16:15] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:36:01] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:37:18] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:38:58] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:40:33] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:42:07] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:43:32] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:44:52] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:46:20] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:47:58] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:49:25] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:50:52] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:52:22] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:54:03] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:55:48] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:57:37] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 09:59:18] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 10:00:53] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 10:02:23] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 10:03:49] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 10:05:16] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 10:07:10] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 10:08:51] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 10:10:18] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 10:11:50] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 10:31:21] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 11:01:28] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 11:03:12] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 11:31:25] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 11:32:55] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 11:34:23] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 12:02:54] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 12:04:28] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 12:05:58] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 12:07:29] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 12:33:04] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 12:34:43] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 12:36:18] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 12:37:50] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 12:39:24] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 13:05:43] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 13:07:13] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 13:08:45] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 13:10:16] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 13:11:51] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 13:13:25] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 13:54:49] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 13:56:25] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 13:57:59] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 13:59:27] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 14:10:25] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 14:11:59] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found
+[2026-08-18 14:13:29] WARNING  | exadata_smart_io_parser | ⚠️  Exadata Smart IO section not found

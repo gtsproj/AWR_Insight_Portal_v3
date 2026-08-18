@@ -1,0 +1,431 @@
+[2026-08-17 11:57:38] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 11:57:38] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:57:38.360216).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (1, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:57:38.360216).
+
+[2026-08-17 11:57:49] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 11:57:50] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (2, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:57:50.100419).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (2, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:57:50.100419).
+
+[2026-08-17 11:58:01] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 11:58:01] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (3, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:01.377671).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (3, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:01.377671).
+
+[2026-08-17 11:58:12] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 11:58:12] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (4, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:12.762349).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (4, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:12.762349).
+
+[2026-08-17 11:58:23] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 11:58:24] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (5, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:24.110553).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (5, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:24.110553).
+
+[2026-08-17 11:58:34] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 11:58:35] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (6, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:35.108183).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (6, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:35.108183).
+
+[2026-08-17 11:58:46] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 11:58:46] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (7, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:46.155295).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (7, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:46.155295).
+
+[2026-08-17 11:58:58] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 11:58:58] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (8, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:58.323256).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (8, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:58:58.323256).
+
+[2026-08-17 11:59:10] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 11:59:10] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (9, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:10.433245).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (9, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:10.433245).
+
+[2026-08-17 11:59:22] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 11:59:22] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (10, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:22.194795).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (10, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:22.194795).
+
+[2026-08-17 11:59:33] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 11:59:33] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (11, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:33.449564).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (11, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:33.449564).
+
+[2026-08-17 11:59:44] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 11:59:44] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (12, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:44.744427).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (12, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:44.744427).
+
+[2026-08-17 11:59:55] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 11:59:55] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (13, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:55.801964).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (13, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 11:59:55.801964).
+
+[2026-08-17 12:00:07] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 12:00:07] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (14, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:07.146023).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (14, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:07.146023).
+
+[2026-08-17 12:00:19] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 12:00:19] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (15, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:19.409312).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (15, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:19.409312).
+
+[2026-08-17 12:00:31] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 12:00:31] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (16, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:31.486246).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (16, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:31.486246).
+
+[2026-08-17 12:00:43] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 12:00:43] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (17, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:43.90679).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (17, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:43.90679).
+
+[2026-08-17 12:00:55] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 12:00:55] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (18, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:55.681573).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (18, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:00:55.681573).
+
+[2026-08-17 12:01:07] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 12:01:07] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (19, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:01:07.580088).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (19, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:01:07.580088).
+
+[2026-08-17 12:01:19] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 12:01:19] ERROR    | exadata_iorm_objective_parser | ❌ IORM Objective insert failed: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (20, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:01:19.209798).
+Traceback (most recent call last):
+  File "C:\AWR_Insight_Portal_v2\modules\awr\exadata_iorm_objective_parser.py", line 69, in insert_iorm_objective
+    cur.execute(sql,(r["dbname"],r["begin_snap"],r["snap_time"],
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        r["iorm_begin"],r["iorm_end"],r["cells"],r["row_hash"]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "dbname" violates not-null constraint
+DETAIL:  Failing row contains (20, null, null, null, auto, null, All (8), 39a7be3edaebc920d152c0783aef5022, 2026-08-17 12:01:19.209798).
+
+[2026-08-17 12:06:23] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 12:07:53] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 12:09:23] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 12:10:56] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 12:37:43] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 12:39:18] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 12:40:50] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 12:42:25] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 12:44:00] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 13:36:03] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 13:37:39] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 13:39:07] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 13:40:46] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 13:42:26] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:02:47] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:04:27] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:06:02] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:07:42] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:09:17] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:10:54] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:12:27] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:15:01] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:16:38] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:33:20] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:34:52] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:36:24] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:38:00] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:39:33] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:41:03] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:42:31] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:44:04] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 14:45:37] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:03:43] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:05:17] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:06:51] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:08:26] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:09:57] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:11:27] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:12:54] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:14:28] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:17:57] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:19:33] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:36:14] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:37:45] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:44:04] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:45:37] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:47:11] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:48:46] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:50:21] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:51:56] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:53:31] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:55:05] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 15:57:20] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:07:00] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:08:27] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:09:56] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:11:32] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:13:01] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:14:32] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:15:47] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:17:21] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:18:54] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:20:35] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:21:34] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:21:34] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:21:47] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:21:48] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:22:00] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:22:00] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:22:07] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:22:12] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:22:13] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:22:34] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:22:34] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:22:47] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:22:47] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:23:00] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:23:00] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:23:12] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:23:12] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:23:25] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:23:25] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:23:37] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:23:38] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:23:38] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:23:50] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:23:50] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:24:03] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:24:03] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:24:15] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:24:15] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:24:28] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:24:28] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:24:40] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:24:40] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:24:52] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:24:53] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:25:05] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:25:05] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:25:18] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:25:18] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:25:30] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:25:30] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:25:43] INFO     | exadata_iorm_objective_parser | ✅ Parsed IORM Objective: begin=auto, cells=All (8)
+[2026-08-17 16:25:43] INFO     | exadata_iorm_objective_parser | ✅ Inserted 1 rows into awr_exadata_iorm_objective
+[2026-08-17 16:40:35] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:42:08] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:43:40] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:45:14] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:46:45] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:48:15] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:49:49] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:51:24] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:52:56] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:54:32] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:56:02] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:57:36] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 16:59:05] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:11:18] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:12:50] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:14:21] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:15:55] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:17:26] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:19:03] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:20:33] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:22:07] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:23:40] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:25:14] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:26:45] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:28:18] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:29:47] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:31:16] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:42:06] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:43:41] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:45:14] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:46:47] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:48:18] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 17:49:48] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-17 18:16:07] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:35:58] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:37:13] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:38:53] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:40:29] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:42:03] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:43:28] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:44:48] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:46:14] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:47:53] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:49:20] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:50:48] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:52:17] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:53:57] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:55:42] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:57:32] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 09:59:14] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 10:00:47] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 10:02:20] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 10:03:45] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 10:05:12] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 10:07:05] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 10:08:47] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 10:10:13] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 10:11:45] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 10:31:17] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 11:01:23] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 11:03:07] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 11:31:20] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 11:32:50] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 11:34:18] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 12:02:49] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 12:04:23] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 12:05:53] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 12:07:23] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 12:33:01] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 12:34:37] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 12:36:12] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 12:37:45] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 12:39:19] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 13:05:38] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 13:07:08] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 13:08:40] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 13:10:11] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 13:11:46] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 13:13:20] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 13:54:44] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 13:56:20] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 13:57:54] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 13:59:23] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 14:10:20] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 14:11:54] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
+[2026-08-18 14:13:24] WARNING  | exadata_iorm_objective_parser | ⚠️  IORM Objective section not found
