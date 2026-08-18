@@ -2,19 +2,46 @@
 {% block title %} — Home{% endblock %}
 {% block content %}
 <style>
-.dl{display:block;padding:8px 10px;background:var(--bg);border:1px solid var(--border);
-    border-radius:var(--radius);color:var(--text);text-decoration:none;font-size:.84rem;
-    font-weight:600;line-height:1.3;transition:.15s;margin-top:5px}
+/* ── Dashboard link tiles ── */
+.dl{display:flex;flex-direction:column;gap:2px;padding:9px 11px;background:var(--bg);
+    border:1px solid var(--border);border-left:3px solid transparent;
+    border-radius:8px;color:var(--text);text-decoration:none;font-size:.84rem;
+    font-weight:600;line-height:1.3;margin-top:6px;
+    transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease,background .15s ease}
 .dl:first-of-type{margin-top:0}
-.dl:hover{border-color:var(--accent);color:var(--accent)}
-.dl small{display:block;font-size:.71rem;font-weight:400;color:var(--text2);margin-top:2px}
-.sc{background:var(--surface2);border-radius:var(--radius);padding:10px 12px;text-align:center}
+.dl:hover{border-color:var(--card-accent,var(--accent));
+    border-left-color:var(--card-accent,var(--accent));
+    background:color-mix(in srgb,var(--card-accent,var(--accent)) 8%,var(--bg));
+    color:var(--text);text-decoration:none;
+    transform:translateY(-1px);
+    box-shadow:0 4px 10px rgba(0,0,0,.28)}
+.dl small{display:block;font-size:.71rem;font-weight:400;color:var(--text2);margin-top:1px}
+
+/* ── Stat tiles (queue counters) ── */
+.sc{background:var(--surface2);border-radius:8px;padding:10px 12px;text-align:center;
+    border:1px solid rgba(255,255,255,.04)}
 .sc .sv{font-size:1.4rem;font-weight:700;line-height:1}
 .sc .sl{font-size:.68rem;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
 .sc.ok .sv{color:#10b981}
 .sc.warn .sv{color:#f59e0b}
 .sc.err .sv{color:#ef4444}
 .sc.info .sv{color:var(--accent)}
+
+/* ── Dashboard section cards ── */
+.dash-card{--card-accent:var(--accent);background:var(--surface);
+    border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px 14px 12px;
+    box-shadow:0 1px 4px rgba(0,0,0,.22);
+    border-top:3px solid var(--card-accent)}
+.dash-card[data-accent="awr"]{--card-accent:#6366f1}
+.dash-card[data-accent="sar"]{--card-accent:#0ea5e9}
+.dash-card[data-accent="nmon"]{--card-accent:#a855f7}
+.dash-card[data-accent="exadata"]{--card-accent:#f59e0b}
+.dash-hdr{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text);
+    letter-spacing:.02em;margin-bottom:10px;font-weight:700;
+    border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:9px}
+.icon-badge{display:inline-flex;align-items:center;justify-content:center;
+    width:24px;height:24px;border-radius:7px;font-size:.86rem;flex-shrink:0;
+    background:color-mix(in srgb,var(--card-accent,var(--accent)) 20%,transparent)}
 </style>
 
 {# ── Page header ── #}
@@ -135,10 +162,10 @@
 <div style="display:grid;grid-template-columns:{{ 'repeat(2,1fr)' if exadata_enabled else '1fr' }};gap:10px;margin-bottom:10px">
 
   {# AWR Analysis #}
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
-    <div style="font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;
-                margin-bottom:10px;font-weight:600;border-bottom:1px solid var(--border);padding-bottom:6px">
-      📊 AWR Analysis
+  <div class="dash-card" data-accent="awr">
+    <div class="dash-hdr">
+      <span class="icon-badge">📊</span>
+      <span>AWR Analysis</span>
     </div>
     {% if ai_mode in ('local_ai','cloud_ai') %}
     <a href="{{ grafana_url }}/d/awr-intelligence-ai-v2" target="_blank" class="dl">
@@ -190,21 +217,15 @@
      Both states controlled server-side (Jinja2) + JS for live refresh.
   #}
   {% if exadata_enabled %}
-  <div id="exadata-card"
+  <div id="exadata-card" class="dash-card" data-accent="exadata"
        style="display:block;
-              background:var(--surface);
               border:1px {{ 'solid var(--border)' if stats.license_exadata else 'dashed color-mix(in srgb,var(--border) 60%,transparent)' }};
-              border-radius:var(--radius);
-              padding:14px;
               opacity:{{ '1' if stats.license_exadata else '0.72' }};
               transition:opacity .3s,border .3s">
 
     {# ── Header — same in both states ─────────────────────────────── #}
-    <div style="font-size:.68rem;color:var(--text2);text-transform:uppercase;
-                letter-spacing:.08em;margin-bottom:10px;font-weight:600;
-                border-bottom:1px solid var(--border);padding-bottom:6px;
-                display:flex;align-items:center;justify-content:space-between">
-      <span>{{ '⚡' if stats.license_exadata else '🔒' }} Exadata Analysis</span>
+    <div class="dash-hdr" style="justify-content:space-between">
+      <span><span class="icon-badge">{{ '⚡' if stats.license_exadata else '🔒' }}</span> Exadata Analysis</span>
       {% if not stats.license_exadata %}
       <span style="font-size:.65rem;font-weight:400;
                    background:color-mix(in srgb,var(--border) 40%,transparent);
@@ -269,17 +290,20 @@
 
 </div>
 
-{# Row 2: SAR & Correlation + NMON & Correlation (2×2 arrangement) #}
-<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px">
+{# Row 2: SAR & Correlation (+ NMON & Correlation when licensed — mirrors
+   Row 1's exadata_enabled pattern so there's no dead half-column when NMON
+   isn't licensed; grid-template-columns set server-side AND kept in sync
+   live by refreshStats() below if the license changes without a reload) #}
+<div id="sar-nmon-row" style="display:grid;grid-template-columns:{{ 'repeat(2,1fr)' if stats.license_nmon else '1fr' }};gap:10px;margin-bottom:14px">
 
   {# ── SAR & Correlation ────────────────────────────────────────────────
      Visibility: ALWAYS visible — no license check required.
      display:block is set explicitly so no JS or CSS can hide it.
   #}
-  <div id="sar-card" style="display:block;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
-    <div style="font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;
-                margin-bottom:10px;font-weight:600;border-bottom:1px solid var(--border);padding-bottom:6px">
-      🖥️ SAR &amp; Correlation
+  <div id="sar-card" class="dash-card" data-accent="sar" style="display:block">
+    <div class="dash-hdr">
+      <span class="icon-badge">🖥️</span>
+      <span>SAR &amp; Correlation</span>
     </div>
     {% if ai_mode in ('local_ai','cloud_ai') %}
     <a href="{{ grafana_url }}/d/sar-overview-ai" target="_blank" class="dl">
@@ -309,11 +333,11 @@
      in portal_config. Controlled server-side (Jinja2) for initial render
      and client-side (JS refreshStats) for live updates without page reload.
   #}
-  <div id="nmon-card"
-       style="{{ 'display:block' if stats.license_nmon else 'display:none' }};background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
-    <div style="font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;
-                margin-bottom:10px;font-weight:600;border-bottom:1px solid var(--border);padding-bottom:6px">
-      📟 NMON &amp; Correlation
+  <div id="nmon-card" class="dash-card" data-accent="nmon"
+       style="{{ 'display:block' if stats.license_nmon else 'display:none' }}">
+    <div class="dash-hdr">
+      <span class="icon-badge">📟</span>
+      <span>NMON &amp; Correlation</span>
     </div>
     {% if ai_mode in ('local_ai','cloud_ai') %}
     <a href="{{ grafana_url }}/d/nmon-overview-ai" target="_blank" class="dl">
@@ -434,6 +458,12 @@
       // NMON card: shown only when license_nmon = true (nmon_count > 0)
       const nmonCard = document.getElementById('nmon-card');
       if (nmonCard) nmonCard.style.display = d.license_nmon ? 'block' : 'none';
+
+      // Keep the SAR/NMON row grid in sync so SAR doesn't leave a dead
+      // half-empty column when NMON isn't licensed (mirrors server-side
+      // Jinja render of #sar-nmon-row on initial page load).
+      const sarNmonRow = document.getElementById('sar-nmon-row');
+      if (sarNmonRow) sarNmonRow.style.gridTemplateColumns = d.license_nmon ? 'repeat(2,1fr)' : '1fr';
 
       // NMON stat tiles in the stats bar — show/hide with license
       ['nmon-stat-pending','nmon-stat-processing',
