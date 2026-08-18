@@ -148,8 +148,8 @@ pre{background:var(--surface2);padding:14px;border-radius:var(--radius);overflow
 
     <!-- Analysis dropdown: AWR Compare, Plan Compare, SQL Search -->
     <div class="nav-drop">
-      <button class="nav-drop-btn {% if page in ['comparison','exec_plan','sql_search'] %}active{% endif %}"
-              title="AWR comparison, execution plan comparison, SQL search">
+      <button class="nav-drop-btn {% if page in ['comparison','exec_plan','sql_search','analysis_report'] %}active{% endif %}"
+              title="AWR comparison, execution plan comparison, SQL search, analysis report">
         🔍 Analysis <span class="caret">▼</span>
       </button>
       <div class="nav-drop-menu">
@@ -157,6 +157,7 @@ pre{background:var(--surface2);padding:14px;border-radius:var(--radius);overflow
         <a href="/exec-plan"   class="{% if page=='exec_plan' %}active{% endif %}">📊 Plan comparison</a>
         <div class="nav-drop-divider"></div>
         <a href="/sql-search"  class="{% if page=='sql_search' %}active{% endif %}">🔎 SQL search</a>
+        <a href="/analysis-report" class="{% if page=='analysis_report' %}active{% endif %}">📑 Analysis report</a>
       </div>
     </div>
 

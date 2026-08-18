@@ -1254,6 +1254,10 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
         <table style="width:100%;border-collapse:collapse;font-size:.8rem" id="db-master-table">
           <thead>
             <tr style="background:var(--surface2)">
+              <th style="padding:6px 10px;text-align:left;color:var(--text2)">App Code</th>
+              <th style="padding:6px 10px;text-align:left;color:var(--text2)">App Name</th>
+              <th style="padding:6px 10px;text-align:left;color:var(--text2)">App Usage</th>
+              <th style="padding:6px 10px;text-align:left;color:var(--text2)">App Category</th>
               <th style="padding:6px 10px;text-align:left;color:var(--text2)">DB Name</th>
               <th style="padding:6px 10px;text-align:left;color:var(--text2)">Instance Name</th>
               <th style="padding:6px 10px;text-align:center;color:var(--text2)">Inst#</th>
@@ -1267,7 +1271,7 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
             </tr>
           </thead>
           <tbody id="db-master-tbody">
-            <tr><td colspan="10" style="padding:12px;text-align:center;color:var(--text2)">
+            <tr><td colspan="14" style="padding:12px;text-align:center;color:var(--text2)">
               Loading…
             </td></tr>
           </tbody>
@@ -1331,6 +1335,42 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
           <div style="margin-bottom:10px">
             <label class="s-label">Description</label>
             <input class="s-input" id="nm-description" placeholder="Optional notes">
+          </div>
+
+          {# ── Application fields ── #}
+          <div style="display:grid;grid-template-columns:140px 1fr 1fr;gap:8px;margin-bottom:8px">
+            <div>
+              <label class="s-label">App Code</label>
+              <input class="s-input" id="nm-app_code" placeholder="e.g. CBS01"
+                     style="text-transform:uppercase">
+            </div>
+            <div>
+              <label class="s-label">App Name</label>
+              <input class="s-input" id="nm-app_name" placeholder="e.g. Core Banking System">
+            </div>
+            <div>
+              <label class="s-label">App Category</label>
+              <select class="s-select" id="nm-app_category">
+                <option value="OTHER">Other</option>
+                <option value="PLATINUM">Platinum</option>
+                <option value="GOLD">Gold</option>
+                <option value="SILVER">Silver</option>
+                <option value="BRONZE">Bronze</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-bottom:10px">
+            <label class="s-label">App Usage</label>
+            <select class="s-select" id="nm-app_usage">
+              <option value="OTHER">Other</option>
+              <option value="BANKING">Banking</option>
+              <option value="ERP">ERP</option>
+              <option value="CRM">CRM</option>
+              <option value="HR">HR</option>
+              <option value="ANALYTICS">Analytics</option>
+              <option value="ECOMMERCE">E-Commerce</option>
+              <option value="INTERNAL">Internal Tools</option>
+            </select>
           </div>
           <div style="display:flex;gap:8px">
             <button class="s-btn s-btn-primary" onclick="addDbMaster()">✅ Add Database</button>
@@ -1831,10 +1871,22 @@ async function loadDbMaster() {
       return;
     }
     const TYPE_BADGE    = { STANDALONE:'#334155', RAC:'#1e3a5f', CDB:'#3b1f5e', PDB:'#1f3d1f' };
-    const UTILITY_BADGE = { SAR:'#1e3a5f', NMON:'#3b1f5e', None:'#33415540' };
-    const OS_ICON       = { Linux:'🐧', 'IBM AIX':'🖥️', Windows:'💻' };
+    const UTILITY_BADGE = { SAR:'#1e3a5f', NMON:'#3b1f5e', NONE:'#33415540' };
+    const OS_ICON       = { Linux:'🐧', 'IBM AIX':'🖥️', Windows:'🪟' };
+    const USAGE_BADGE   = { BANKING:'#1e3a5f',ERP:'#3b1f5e',CRM:'#1f3d2f',HR:'#3d2f1f',
+                            ANALYTICS:'#4a2f1f',ECOMMERCE:'#0f3d3d',INTERNAL:'#3d3d0f',OTHER:'#333' };
+    const CAT_BADGE     = { PLATINUM:'#4a4a6a',GOLD:'#6b4c1e',SILVER:'#3a3a3a',
+                            BRONZE:'#5c3a1e',OTHER:'#333' };
     tbody.innerHTML = d.dbs.map(db => `
       <tr style="border-top:1px solid var(--border);opacity:${db.active?1:0.5}">
+        <td style="padding:7px 10px;font-size:.78rem;font-weight:600;color:var(--text2)">${db.app_code||'—'}</td>
+        <td style="padding:7px 10px;font-size:.78rem;color:var(--text2)">${db.app_name||'—'}</td>
+        <td style="padding:7px 10px">
+          <span style="font-size:.7rem;padding:2px 6px;border-radius:20px;
+            background:${USAGE_BADGE[db.app_usage]||'#333'};color:#fff">${db.app_usage||'OTHER'}</span></td>
+        <td style="padding:7px 10px">
+          <span style="font-size:.7rem;padding:2px 6px;border-radius:20px;
+            background:${CAT_BADGE[db.app_category]||'#333'};color:#fff">${db.app_category||'OTHER'}</span></td>
         <td style="padding:7px 10px;font-weight:600">${db.db_name}</td>
         <td style="padding:7px 10px;color:var(--text2)">${db.instance_name||'—'}</td>
         <td style="padding:7px 10px;text-align:center;color:var(--text2)">${db.inst_no}</td>
@@ -1880,6 +1932,10 @@ async function addDbMaster() {
     os_type:   document.getElementById('nm-os_type').value,
     os_utility:document.getElementById('nm-os_utility').value,
     description:(document.getElementById('nm-description').value||'').trim(),
+    app_code:  (document.getElementById('nm-app_code').value||'').trim().toUpperCase(),
+    app_name:  (document.getElementById('nm-app_name').value||'').trim(),
+    app_usage:  document.getElementById('nm-app_usage').value,
+    app_category: document.getElementById('nm-app_category').value,
   };
   const msgEl = document.getElementById('db-master-add-msg');
   try {
@@ -1888,11 +1944,14 @@ async function addDbMaster() {
     const d = await r.json();
     if (d.ok) {
       if (msgEl){msgEl.textContent=`✅ ${db_name} added successfully`;msgEl.style.color='#10b981';}
-      ['nm-db_name','nm-instance_name','nm-host_name','nm-description'].forEach(id=>{
+      ['nm-db_name','nm-instance_name','nm-host_name','nm-description',
+       'nm-app_name','nm-app_code'].forEach(id=>{
         const e=document.getElementById(id); if(e) e.value='';});
       document.getElementById('nm-inst_no').value='1';
       document.getElementById('nm-os_type').value='Linux';
       document.getElementById('nm-os_utility').value='SAR';
+      document.getElementById('nm-app_usage').value='OTHER';
+      document.getElementById('nm-app_category').value='OTHER';
       loadDbMaster();
     } else {
       if (msgEl){msgEl.textContent=`❌ ${d.error}`;msgEl.style.color='#ef4444';}
