@@ -25,6 +25,7 @@ from datetime import datetime, timezone
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "common"))
 from db import get_db_connection
 from logger_utils import get_logger
+from feature_flags import EXADATA_FEATURE_ENABLED
 
 logger = get_logger("analysis_report_generator")
 
@@ -472,25 +473,34 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
                 })
 
         # ── Exadata-specific data ────────────────────────────────
+        # Step 0: Master switch — see common/feature_flags.py. While the
+        #         Exadata parsers are paused, force exa_licensed False here
+        #         regardless of the portal_config DB value, so no Exadata
+        #         hotspots/recommendations/sections can leak into the report
+        #         even if that config value is still 'true' from earlier.
         # Step 1: Read license_exadata from portal_config.
-        # Step 2: Only if licensed, call _fetch_exadata_context which then
-        #         also auto-detects whether any Exadata data exists for these snaps.
+        # Step 2: Only if both the master switch is on AND licensed, call
+        #         _fetch_exadata_context which then also auto-detects
+        #         whether any Exadata data exists for these snaps.
         exa_licensed = False
-        try:
-            cur.execute(
-                "SELECT value FROM portal_config "
-                "WHERE key='license_exadata' LIMIT 1"
-            )
-            _lic_row = cur.fetchone()
-            if _lic_row:
-                _lic_val = str(_lic_row[0] or "").strip().lower()
-                exa_licensed = (_lic_val == "true")
-                logger.debug(f"license_exadata from portal_config: '{_lic_val}' → exa_licensed={exa_licensed}")
-            else:
-                logger.debug("license_exadata key not found in portal_config — defaulting to False")
-        except Exception as _lic_err:
-            logger.warning(f"Could not read license_exadata from portal_config: {_lic_err}")
-            exa_licensed = False
+        if not EXADATA_FEATURE_ENABLED:
+            logger.info("Exadata feature disabled (EXADATA_FEATURE_ENABLED=False) — skipping Exadata table queries")
+        else:
+            try:
+                cur.execute(
+                    "SELECT value FROM portal_config "
+                    "WHERE key='license_exadata' LIMIT 1"
+                )
+                _lic_row = cur.fetchone()
+                if _lic_row:
+                    _lic_val = str(_lic_row[0] or "").strip().lower()
+                    exa_licensed = (_lic_val == "true")
+                    logger.debug(f"license_exadata from portal_config: '{_lic_val}' → exa_licensed={exa_licensed}")
+                else:
+                    logger.debug("license_exadata key not found in portal_config — defaulting to False")
+            except Exception as _lic_err:
+                logger.warning(f"Could not read license_exadata from portal_config: {_lic_err}")
+                exa_licensed = False
 
         if exa_licensed:
             logger.info(f"Exadata licensed — fetching from 14 Exadata tables for {dbname}")

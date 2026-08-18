@@ -844,15 +844,10 @@ def _get_portal_url(request: Request = None) -> str:
         return "http://localhost:8000"
 
 # ── Exadata feature master switch ───────────────────────────────────────
-# The Wave 1-4 Exadata parsers were built/validated against synthetic AWR
-# reports modeled on the Mar-2024 Oracle whitepaper. Real customer Exadata
-# AWR reports use a materially different section structure (confirmed via
-# screenshots 2026-08-18), so several parsers/tables are unreliable and the
-# Exadata UI is paused until parsers are rebuilt against a real AWR HTML
-# source. Flip this single flag back to True to restore all Exadata UI
-# (home page card, Analysis Report section, Settings license controls)
-# once that work resumes — no other code changes should be needed.
-EXADATA_FEATURE_ENABLED = False
+# Shared with modules/analysis_report_generator.py via common/feature_flags.py
+# so both the UI gating and the report-content gating stay in sync from one
+# flag. See common/feature_flags.py for the full explanation.
+from feature_flags import EXADATA_FEATURE_ENABLED
 
 
 def _url_context(request: Request = None) -> dict:
