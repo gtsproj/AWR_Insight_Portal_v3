@@ -39,10 +39,11 @@ def _fnum(v, default=0.0):
         return default
 
 
-def _find_metric(profile: dict, *keywords) -> float:
+def _find_metric(profile: dict, *keywords, exclude=None) -> float:
+    exclude = exclude or []
     for label, val in profile.items():
         low = label.lower()
-        if all(k in low for k in keywords):
+        if all(k in low for k in keywords) and not any(x in low for x in exclude):
             return _fnum(val)
     return 0.0
 
@@ -168,8 +169,8 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
 
             snap_ids_sorted = sorted(per_snap_profile.keys())
 
-            def agg(*keywords):
-                vals = [_find_metric(per_snap_profile[s], *keywords)
+            def agg(*keywords, exclude=None):
+                vals = [_find_metric(per_snap_profile[s], *keywords, exclude=exclude)
                         for s in snap_ids_sorted]
                 vals = [v for v in vals if v is not None]
                 return sum(vals) / len(vals) if vals else 0.0
@@ -538,15 +539,36 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
             logger.warning(f"IO profile fetch: {e}")
 
         # ── Parsing pressure from load profile ────────────────────────
-        parses_ps   = agg("pars")
+        # exclude="hard" so this can never accidentally match the "Hard
+        # Parses (SQL)" row instead of "Parses (SQL)" — both labels contain
+        # the substring "pars", and _find_metric returns on first match, so
+        # without the exclusion this depended on incidental row order.
+        parses_ps   = agg("pars", exclude=["hard"])
         hard_ps     = agg("hard pars")
         parse_eff   = round((parses_ps - hard_ps) / parses_ps * 100, 1) if parses_ps > 0 else 100.0
 
         # ── Redo sizing from load profile ─────────────────────────────
         redo_size_ps = agg("redo size")   # bytes/s
         redo_mb_ps   = round(redo_size_ps / (1024*1024), 2) if redo_size_ps > 0 else 0
-        # Recommended log size = redo MB/s × 1200 s (20-min switch target)
-        recommended_log_mb = round(redo_mb_ps * 1200, 0) if redo_mb_ps > 0 else None
+        # Recommended log size = redo MB/s × 1200 s (20-min switch target),
+        # capped at a practical maximum. A single Oracle redo log file sized
+        # in the tens of GB (which the raw 20-min-target formula produces on
+        # high-redo-rate systems) is not a realistic recommendation — no DBA
+        # would size a redo log that large. Past the cap, the right guidance
+        # is to add more log GROUPS at the capped size (accepting more
+        # frequent switches) rather than one oversized file — see
+        # redo_switches_per_hour below, shown in the report when capped.
+        MAX_REDO_LOG_MB = 3072  # 3 GB — practical upper bound for one redo log file
+        _raw_recommended_log_mb = round(redo_mb_ps * 1200, 0) if redo_mb_ps > 0 else None
+        recommended_log_mb = (min(_raw_recommended_log_mb, MAX_REDO_LOG_MB)
+                               if _raw_recommended_log_mb else None)
+        redo_log_capped = bool(_raw_recommended_log_mb
+                                and _raw_recommended_log_mb > MAX_REDO_LOG_MB)
+        # Switches/hour implied by the (possibly capped) recommended size —
+        # only meaningful to show when the cap actually changed the number.
+        redo_switches_per_hour = (
+            round(redo_size_ps * 3600 / (recommended_log_mb * 1024 * 1024), 1)
+            if recommended_log_mb else None)
 
         # ── Session activity per snap ─────────────────────────────────
         user_calls_ps = agg("user call")
@@ -695,6 +717,8 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
     context["hard_ps"]      = round(hard_ps, 1)
     context["redo_mb_ps"]   = redo_mb_ps
     context["recommended_log_mb"] = recommended_log_mb
+    context["redo_log_capped"] = redo_log_capped
+    context["redo_switches_per_hour"] = redo_switches_per_hour
     context["user_calls_ps"]= round(user_calls_ps, 1)
     context["plan_unstable_sqls"] = plan_unstable_sqls
     context["conclusion"] = build_conclusion(context)

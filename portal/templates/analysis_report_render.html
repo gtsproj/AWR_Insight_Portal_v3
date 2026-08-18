@@ -1051,10 +1051,22 @@ tr:nth-child(even) td{background:#FAFBFE}
         <span style="font-size:11px;font-weight:600">Recommended log size</span>
         <span style="font-size:20px;font-weight:800;color:#1B2D5B">{{ (recommended_log_mb / 1024) | round(1) }} GB</span>
       </div>
+      {% if redo_log_capped %}
+      <div style="font-size:10px;color:#334155;line-height:1.5">
+        {{ redo_mb_ps }} MB/s × 1200 s (20-min target) would need a single
+        {{ (( redo_mb_ps * 1200 ) / 1024) | round(1) }} GB log file — capped at a practical
+        {{ (recommended_log_mb / 1024) | round(1) }} GB.
+        <strong style="color:#ea580c">At this redo rate, size log files at the cap and add
+        more log GROUPS instead of one oversized file</strong> — expect roughly
+        {{ redo_switches_per_hour }} switches/hour at this size; ensure enough
+        groups exist that ARCH/standby apply keeps up before a switch recurs.
+      </div>
+      {% else %}
       <div style="font-size:10px;color:#334155;line-height:1.5">
         {{ redo_mb_ps }} MB/s × 1200 s (20-min target) = {{ recommended_log_mb | int }} MB/log group.
         Aim for &lt;3 log switches/hour.
       </div>
+      {% endif %}
       {% else %}
       <div style="font-size:11px;color:#475569;padding:12px;text-align:center">Redo size metric not available for these snapshots.</div>
       {% endif %}
@@ -1065,7 +1077,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# ─────────────────────────────────────────────────────────── #}
 {# RCA TEMPLATE                                               #}
 {# ─────────────────────────────────────────────────────────── #}
-<div class="st"><span class="st-icon">📝</span> RCA Template — Root Cause Analysis</div>
+<div class="st"><span class="st-icon">📝</span> Root Cause Analysis</div>
 {# Editable version (screen only) #}
 <div class="rca-wrap" id="rca-editable" style="border:2px solid #dee2ec;background:#fff">
   <div class="no-print" style="font-size:10px;color:#475569;font-weight:600;margin-bottom:10px">
@@ -1076,8 +1088,6 @@ tr:nth-child(even) td{background:#FAFBFE}
     ('🎯 Root Cause', conclusion.hotspots[0] if conclusion.hotspots else 'See hotspot analysis'),
     ('🔎 Evidence',   'Snaps: '~(snap_id_list|join(', '))~' · Score: '~health.score~'/100 · Top SQL elapsed: '~(top_sql[0].total_elapsed|string if top_sql else 'N/A')~' s'),
     ('✅ Action Plan', conclusion.recommendations[0][0]~': '~conclusion.recommendations[0][1][:100] if conclusion.recommendations else ''),
-    ('📅 Timeline',   'Start: __ · Identified: __ · Resolved: __ · Duration: __'),
-    ('👤 Owner',      'DBA: __ · Change ref: __ · Status: Open / In-progress / Resolved'),
   ] %}
   {% for lbl, val in rca_rows %}
   <div class="rca-section">
@@ -1092,7 +1102,7 @@ tr:nth-child(even) td{background:#FAFBFE}
   <div style="font-size:10px;font-weight:700;color:#1B2D5B;margin-bottom:12px">
     🔬 ROOT CAUSE ANALYSIS — {{ dbname }}/{{ instance }} — Snaps: {{ snap_id_list|join(', ') }}
   </div>
-  {% for lbl in ['🔴 Symptoms','🎯 Root Cause','🔎 Evidence','✅ Action Plan','📅 Timeline','👤 Owner'] %}
+  {% for lbl in ['🔴 Symptoms','🎯 Root Cause','🔎 Evidence','✅ Action Plan'] %}
   <div class="rca-section">
     <div class="rca-lbl">{{ lbl }}</div>
     <div class="rca-val" style="min-height:28px">&nbsp;</div>
