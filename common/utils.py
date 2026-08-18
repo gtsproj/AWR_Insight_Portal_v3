@@ -145,12 +145,10 @@ def extract_workload_repo_metadata(soup):
     """
     Extract dbname, instance, instnum, begin_snap, snap_time from AWR HTML.
 
-    Handles two Oracle AWR formats:
-      Oracle 11g/12c (single instance table):
-        → DB Name | DB Id | Instance | Inst num | Startup Time | Release | RAC
-      Oracle 19c+ (two instance tables):
-        → Table 1: DB Name | DB Id | Unique Name | Role | Edition | Release | RAC | CDB
-        → Table 2: Instance | Inst Num | Startup Time | ...
+    Handles Oracle AWR formats (with or without summary= attributes):
+      Oracle 11g/12c : single table (DB Name | DB Id | Instance | Inst Num | ...)
+      Oracle 19c+    : two tables (DB-level, then instance-level)
+      Generated/test : plain <table border=1> under <h3>Database Summary</h3>
     """
     from io import StringIO
 
@@ -162,80 +160,158 @@ def extract_workload_repo_metadata(soup):
         "snap_time":  None,
     }
 
+    def _safe_str(v):
+        s = str(v).strip()
+        return None if s.lower() in ("nan", "none", "", "null") else s
+
+    def _try_parse_df(df):
+        """Try to pull dbname/instance/instnum from any DB-summary-style df."""
+        if df is None or df.empty:
+            return
+        cols = [str(c).lower() for c in df.columns]
+        row  = df.iloc[0]
+        # Strategy 1: use column names to find fields
+        for i, c in enumerate(cols):
+            if c in ("db name", "dbname", "db_name") and metadata["dbname"] is None:
+                metadata["dbname"] = _safe_str(row.iloc[i])
+            if c in ("instance", "instance name", "inst name") and metadata["instance"] is None:
+                metadata["instance"] = _safe_str(row.iloc[i])
+            if ("inst num" in c or c in ("inst num", "inst_num", "instnum")) and metadata["instnum"] is None:
+                try: metadata["instnum"] = int(float(str(row.iloc[i])))
+                except: pass
+        # Strategy 2: positional fallback (11g format: col0=dbname, col2=instance, col3=instnum)
+        if metadata["dbname"] is None and len(row) > 0:
+            metadata["dbname"] = _safe_str(row.iloc[0])
+        if metadata["instance"] is None and len(row) > 2:
+            metadata["instance"] = _safe_str(row.iloc[2])
+        if metadata["instnum"] is None and len(row) > 3:
+            try: metadata["instnum"] = int(float(str(row.iloc[3])))
+            except: pass
+
+    def _try_snap_df(df):
+        """Extract begin_snap and snap_time from a snapshot-summary df."""
+        if df is None or df.empty:
+            return
+        cols_l = [str(c).lower() for c in df.columns]
+        for _, row in df.iterrows():
+            vals = list(row)
+            label = _safe_str(vals[0]) or ""
+            label_l = label.lower()
+            if "begin snap" in label_l:
+                # Format A: Begin Snap | snap_id | snap_time
+                try: metadata["begin_snap"] = int(float(str(vals[1])))
+                except: pass
+                if len(vals) > 2:
+                    try:
+                        ts = _safe_str(vals[2])
+                        if ts:
+                            metadata["snap_time"] = pd.to_datetime(ts, errors="coerce", dayfirst=True)
+                    except: pass
+                return
+        # Format B: table header is Snap Id | Snap Time | ... (first data row = begin snap)
+        snap_id_col = snap_time_col = None
+        for i, c in enumerate(cols_l):
+            if "snap" in c and ("id" in c or c == "snap id"):
+                snap_id_col = i
+            if "snap" in c and "time" in c:
+                snap_time_col = i
+        if snap_id_col is not None and not df.empty:
+            row = df.iloc[0]
+            try: metadata["begin_snap"] = int(float(str(row.iloc[snap_id_col])))
+            except: pass
+            if snap_time_col is not None:
+                try:
+                    ts = _safe_str(row.iloc[snap_time_col])
+                    if ts:
+                        metadata["snap_time"] = pd.to_datetime(ts, errors="coerce", dayfirst=True)
+                except: pass
+
     try:
-        # ── All tables with instance info summary ───────────────────────
+        # ── PATH 1: Oracle tables with summary= attribute ─────────────────
         inst_tables = soup.find_all(
             "table",
             summary="This table displays database instance information"
         )
 
-        if len(inst_tables) == 1:
-            # Oracle 11g/12c: single table has DB Name + Instance + Inst Num
-            df = pd.read_html(StringIO(str(inst_tables[0])))[0]
-            if not df.empty:
-                row = df.iloc[0]
-                cols = [str(c).lower() for c in df.columns]
-                metadata["dbname"] = str(row.iloc[0]).strip()
-                # Instance at col 2, Inst num at col 3
-                if len(row) > 2:
-                    metadata["instance"] = str(row.iloc[2]).strip()
-                if len(row) > 3:
-                    try:
-                        metadata["instnum"] = int(float(str(row.iloc[3]).strip()))
-                    except Exception:
-                        metadata["instnum"] = None
-
-        elif len(inst_tables) >= 2:
-            # Oracle 19c+: first table = DB-level, second = instance-level
+        if len(inst_tables) >= 1:
             df1 = pd.read_html(StringIO(str(inst_tables[0])))[0]
-            if not df1.empty:
-                metadata["dbname"] = str(df1.iloc[0, 0]).strip()
+            if len(inst_tables) == 1:
+                _try_parse_df(df1)
+            else:
+                # 19c two-table format
+                metadata["dbname"] = _safe_str(df1.iloc[0, 0]) if not df1.empty else None
+                df2 = pd.read_html(StringIO(str(inst_tables[1])))[0]
+                _try_parse_df(df2)
+                # In 19c df2, instance is usually col0, instnum col1
+                if metadata["dbname"] and metadata["instance"] is None and not df2.empty:
+                    metadata["instance"] = _safe_str(df2.iloc[0, 0])
 
-            df2 = pd.read_html(StringIO(str(inst_tables[1])))[0]
-            if not df2.empty:
-                row2 = df2.iloc[0]
-                cols2 = [str(c).lower() for c in df2.columns]
-                # Find Instance and Inst Num columns by name
-                for i, col in enumerate(cols2):
-                    if col in ("instance",):
-                        metadata["instance"] = str(row2.iloc[i]).strip()
-                    if "inst num" in col or col == "inst_num":
-                        try:
-                            metadata["instnum"] = int(float(str(row2.iloc[i]).strip()))
-                        except Exception:
-                            metadata["instnum"] = None
-                # Fallback: positional (Instance col 0, Inst Num col 1)
-                if metadata["instance"] is None and len(row2) > 0:
-                    metadata["instance"] = str(row2.iloc[0]).strip()
-                if metadata["instnum"] is None and len(row2) > 1:
-                    try:
-                        metadata["instnum"] = int(float(str(row2.iloc[1]).strip()))
-                    except Exception:
-                        metadata["instnum"] = None
-
-        # ── Begin Snap ID and Snap Time ─────────────────────────────────
-        snap_table = soup.find(
-            "table",
-            summary="This table displays snapshot information"
-        )
+        snap_table = soup.find("table", summary="This table displays snapshot information")
         if snap_table is not None:
-            df = pd.read_html(StringIO(str(snap_table)))[0]
-            for _, row in df.iterrows():
-                label = str(row.iloc[0]).strip().lower()
-                if "begin snap" in label:
-                    snap_val = clean_number(row.iloc[1]) if len(row) > 1 else None
-                    try:
-                        metadata["begin_snap"] = int(snap_val) if snap_val is not None else None
-                    except Exception:
-                        metadata["begin_snap"] = None
-                    snap_time_raw = str(row.iloc[2]).strip() if len(row) > 2 else None
-                    if snap_time_raw and snap_time_raw.lower() not in ("nan", "none", ""):
-                        metadata["snap_time"] = pd.to_datetime(
-                            snap_time_raw, errors="coerce", dayfirst=True
-                        )
+            _try_snap_df(pd.read_html(StringIO(str(snap_table)))[0])
+
+        # ── PATH 2: Fallback — find by heading text (no summary= attribute) ─
+        if metadata["dbname"] is None:
+            for h in soup.find_all(["h2", "h3", "h4", "h5"]):
+                htxt = h.get_text(strip=True).lower()
+                if any(k in htxt for k in ("database summary", "db summary",
+                                            "database instance information")):
+                    # Look for the first table after this heading
+                    sib = h.find_next_sibling()
+                    while sib:
+                        if getattr(sib, "name", None) == "table":
+                            try:
+                                df = pd.read_html(StringIO(str(sib)))[0]
+                                _try_parse_df(df)
+                                if metadata["dbname"]:
+                                    break
+                            except: pass
+                        elif getattr(sib, "name", None) in ("h2", "h3"):
+                            break
+                        sib = sib.find_next_sibling()
+                if metadata["dbname"]:
                     break
+
+        if metadata["begin_snap"] is None:
+            for h in soup.find_all(["h2", "h3", "h4", "h5"]):
+                htxt = h.get_text(strip=True).lower()
+                if any(k in htxt for k in ("snapshot summary", "snap summary",
+                                            "snapshot information")):
+                    sib = h.find_next_sibling()
+                    while sib:
+                        if getattr(sib, "name", None) == "table":
+                            try:
+                                df = pd.read_html(StringIO(str(sib)))[0]
+                                _try_snap_df(df)
+                                if metadata["begin_snap"]:
+                                    break
+                            except: pass
+                        elif getattr(sib, "name", None) in ("h2", "h3"):
+                            break
+                        sib = sib.find_next_sibling()
+                if metadata["begin_snap"]:
+                    break
+
+        # ── PATH 3: h1 title fallback — "DB: EXADB Snap: 25039–25040" ────
+        if metadata["dbname"] is None or metadata["begin_snap"] is None:
+            h1 = soup.find("h1")
+            if h1:
+                txt = h1.get_text(separator=" ", strip=True)
+                # "DB: EXADB Snap: 25039–25040"
+                import re as _re
+                m_db  = _re.search(r"DB[:\s]+([A-Za-z0-9_]+)", txt)
+                m_sn  = _re.search(r"Snap[:\s]+(\d+)", txt)
+                m_ins = _re.search(r"Inst(?:ance)?[:\s]+([A-Za-z0-9_]+)", txt, _re.I)
+                if m_db  and not metadata["dbname"]:
+                    metadata["dbname"]  = m_db.group(1).strip()
+                if m_ins and not metadata["instance"]:
+                    metadata["instance"] = m_ins.group(1).strip()
+                if m_sn  and not metadata["begin_snap"]:
+                    try: metadata["begin_snap"] = int(m_sn.group(1))
+                    except: pass
 
     except Exception as e:
         print(f"[utils.extract_workload_repo_metadata] Failed: {e}")
 
     return metadata
+
