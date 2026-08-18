@@ -1,0 +1,95 @@
+<!DOCTYPE html><html><head>
+<title>WORKLOAD REPOSITORY report for DB: EXADB, Inst: EXADB1, Snaps: 25021-25022</title>
+<style>
+body{font-family:Arial,sans-serif;font-size:12px;margin:0 20px}
+table{border-collapse:collapse;width:100%;margin-bottom:14px}
+td,th{border:1px solid #ccc;padding:3px 8px}
+th{background:#e0e8f0;font-weight:bold}
+h1{font-size:18px;color:#003366}
+h2{background:#336699;color:#fff;padding:4px 10px;margin-top:22px;font-size:13px}
+h3{background:#bfd1e5;padding:3px 8px;margin-top:14px;font-size:12px}
+</style></head><body>
+<h1>WORKLOAD REPOSITORY report</h1>
+<p>Scenario: SCRUB IO ACTIVE</p>
+<h2>Database and Instance Information</h2>
+<table summary="This table displays database instance information">
+<tr><th>DB Name</th><th>DB Id</th><th>Instance</th><th>Inst Num</th><th>Startup Time</th><th>Release</th><th>RAC</th></tr>
+<tr><td>EXADB</td><td>3847291056</td><td>EXADB1</td><td>1</td><td>01-Aug-26 06:00:00</td><td>19.20.0.0.0</td><td>YES</td></tr>
+</table>
+<table summary="This table displays host information">
+<tr><th>Host Name</th><th>Platform</th><th>CPUs</th><th>Cores</th><th>Sockets</th><th>Memory (GB)</th></tr>
+<tr><td>exadb01.example.com</td><td>Exadata Database Machine X9M</td><td>96</td><td>48</td><td>2</td><td>768.00</td></tr>
+</table>
+<table summary="This table displays snapshot information">
+<tr><th>Snap Info</th><th>Snap Id</th><th>Snap Time</th></tr>
+<tr><td>Begin Snap:</td><td>25021</td><td>07-Aug-26 19:00:00</td></tr>
+<tr><td>End Snap:</td><td>25022</td><td>07-Aug-26 20:00:00</td></tr>
+<tr><td>Elapsed:</td><td colspan="2">60.00 (mins)</td></tr>
+<tr><td>DB Time:</td><td colspan="2">1358 (mins)</td></tr>
+</table>
+<h2>Wait Events Statistics</h2>
+<h3>Foreground Wait Events</h3>
+<table>
+<tr><td style="background:#d0e4f7;font-weight:bold">Event</td><td style="background:#d0e4f7;font-weight:bold">Waits</td><td style="background:#d0e4f7;font-weight:bold">% Time -outs</td><td style="background:#d0e4f7;font-weight:bold">Total Wait Time (s)</td><td style="background:#d0e4f7;font-weight:bold">Avg wait (ms)</td><td style="background:#d0e4f7;font-weight:bold">Waits /txn</td><td style="background:#d0e4f7;font-weight:bold">% DB time</td></tr>
+<tr><td>cell smart table scan</td><td align='right'>4,821,048</td><td align='right'>0</td><td align='right'>24444.0</td><td align='right'>8.2ms</td><td align='right'>2.42</td><td align='right'>30</td></tr>
+<tr><td>cell single block physical read</td><td align='right'>2,841,200</td><td align='right'>0</td><td align='right'>9777.6</td><td align='right'>18.4ms</td><td align='right'>1.42</td><td align='right'>12</td></tr>
+
+
+
+<tr><td>gc cr request</td><td align='right'>284,210</td><td align='right'>2</td><td align='right'>341.1</td><td align='right'>1.2ms</td><td align='right'>0.14</td><td align='right'>3.2</td></tr>
+<tr><td>log file sync</td><td align='right'>142,840</td><td align='right'>5</td><td align='right'>300.0</td><td align='right'>2.1ms</td><td align='right'>0.07</td><td align='right'>2.8</td></tr>
+</table>
+<h2>Exadata Statistics</h2>
+
+<h3>Exadata Performance Summary</h3>
+<table>
+<tr><th>Metric</th><th>Value</th></tr>
+<tr><td>% Database IOs serviced from Flash Cache</td><td align='right'>27.4%</td></tr>
+<tr><td>% Database IOs serviced from XRMEM Cache</td><td align='right'>68.9%</td></tr>
+<tr><td>% Database IOs via RDMA (subset of XRMEM Cache)</td><td align='right'>51.2%</td></tr>
+<tr><td>Flash Cache OLTP Hit % (User Reads)</td><td align='right'>88.2%</td></tr>
+<tr><td>Flash Cache Scan Hit % (User Reads)</td><td align='right'>82.8%</td></tr>
+<tr><td>Flash Cache Read Skips</td><td align='right'>142,840</td></tr>
+<tr><td>Flash Cache Write Skips</td><td align='right'>28,568</td></tr>
+<tr><td>Scrub IO (MB/s)</td><td align='right'>8.4</td></tr>
+<tr><td>Flash Cache Read Misses</td><td align='right'>1,284,200</td></tr>
+</table>
+
+<h3>Flash Cache Configuration</h3>
+<table><tr><th>Name</th><th>Status</th><th>Size</th></tr><tr><td>exacell01</td><td>normal</td><td align='right'>3,072 GB</td></tr><tr><td>exacell02</td><td>normal</td><td align='right'>3,072 GB</td></tr><tr><td>exacell03</td><td>normal</td><td align='right'>3,072 GB</td></tr><tr><td>exacell04</td><td>normal</td><td align='right'>3,072 GB</td></tr></table>
+
+<h3>Exadata Smart IO</h3>
+<table><tr><th>Name</th><th>Eligible (MB)</th><th>SI Savings (MB)</th><th>Flash (MB)</th><th>Disk (MB)</th><th>Passthru (MB)</th><th>Columnar Cache (MB)</th><th>Reverse Offload (MB)</th></tr><tr><td>All</td><td align='right'>16,032</td><td align='right'>5,612</td><td align='right'>13,216</td><td align='right'>1,348</td><td align='right'>96</td><td align='right'>0</td><td align='right'>0</td></tr><tr><td>exacell01</td><td align='right'>4,008</td><td align='right'>1,403</td><td align='right'>3,304</td><td align='right'>337</td><td align='right'>24</td><td align='right'>0</td><td align='right'>0</td></tr><tr><td>exacell02</td><td align='right'>4,008</td><td align='right'>1,403</td><td align='right'>3,304</td><td align='right'>337</td><td align='right'>24</td><td align='right'>0</td><td align='right'>0</td></tr><tr><td>exacell03</td><td align='right'>4,008</td><td align='right'>1,403</td><td align='right'>3,304</td><td align='right'>337</td><td align='right'>24</td><td align='right'>0</td><td align='right'>0</td></tr><tr><td>exacell04</td><td align='right'>4,008</td><td align='right'>1,403</td><td align='right'>3,304</td><td align='right'>337</td><td align='right'>24</td><td align='right'>0</td><td align='right'>0</td></tr></table>
+
+<h3>Flash Cache User Reads Per Second</h3>
+<table><tr><th>Name</th><th>OLTP Requests</th><th>OLTP Miss</th><th>Scan Requests</th><th>Scan Miss</th></tr><tr><td>exacell01</td><td align='right'>312</td><td align='right'>37</td><td align='right'>210</td><td align='right'>36</td></tr><tr><td>exacell02</td><td align='right'>312</td><td align='right'>37</td><td align='right'>210</td><td align='right'>36</td></tr><tr><td>exacell03</td><td align='right'>312</td><td align='right'>37</td><td align='right'>210</td><td align='right'>36</td></tr><tr><td>exacell04</td><td align='right'>312</td><td align='right'>37</td><td align='right'>210</td><td align='right'>36</td></tr></table>
+<h3>Flash Cache User Reads Efficiency</h3>
+<table><tr><th>Name</th><th>OLTP Hit</th><th>Scan Hit</th></tr><tr><td>exacell01</td><td align='right'>88.2%</td><td align='right'>82.8%</td></tr><tr><td>exacell02</td><td align='right'>88.2%</td><td align='right'>82.8%</td></tr><tr><td>exacell03</td><td align='right'>88.2%</td><td align='right'>82.8%</td></tr><tr><td>exacell04</td><td align='right'>88.2%</td><td align='right'>82.8%</td></tr></table>
+<h3>Flash Cache User Reads - Skips</h3>
+<table><tr><th>Name</th><th>Skip Count</th><th>Skip Reason</th></tr><tr><td>exacell01</td><td align='right'>35,710</td><td>storage clause (CELL_FLASH_CACHE NONE)</td></tr><tr><td>exacell02</td><td align='right'>35,710</td><td>storage clause (CELL_FLASH_CACHE NONE)</td></tr><tr><td>exacell03</td><td align='right'>35,710</td><td>storage clause (CELL_FLASH_CACHE NONE)</td></tr><tr><td>exacell04</td><td align='right'>35,710</td><td>storage clause (CELL_FLASH_CACHE NONE)</td></tr></table>
+
+<h3>Top Databases by IO Requests</h3>
+<table><tr><th>Database</th><th>Flash Req%</th><th>Disk Req%</th><th>Flash MB%</th><th>Disk MB%</th><th>Total Req</th></tr>
+<tr><td>EXADB</td><td align='right'>90%</td><td align='right'>10%</td>
+<td align='right'>88%</td><td align='right'>12%</td>
+<td align='right'>2,850,000</td></tr>
+</table>
+<h3>Top Databases by IO Requests - Details</h3>
+<table><tr><th>Database</th><th>Small Avg Lat</th><th>Large Avg Lat</th><th>IORM Queue</th></tr>
+<tr><td>EXADB</td><td align='right'>18.4ms</td>
+<td align='right'>8.2ms</td>
+<td align='right'>3.4ms</td></tr>
+</table>
+
+<h3>Exadata OS IO Statistics</h3>
+<table><tr><th>Name</th><th>Device</th><th>IOPs</th><th>Throughput MB/s</th><th>Util%</th><th>Service ms</th><th>Queue ms</th><th>Outlier</th><th>At Max Capacity</th></tr><tr><td>exacell01</td><td>Flash F/3.2TB</td><td align='right'>13,919</td><td align='right'>3.4</td><td align='right'>40.5%</td><td align='right'>8.5ms</td><td align='right'>2.0ms</td><td>No</td><td>No</td></tr><tr><td>exacell02</td><td>Flash F/3.2TB</td><td align='right'>13,919</td><td align='right'>3.4</td><td align='right'>40.5%</td><td align='right'>8.5ms</td><td align='right'>2.0ms</td><td>No</td><td>No</td></tr><tr><td>exacell03</td><td>Flash F/3.2TB</td><td align='right'>13,919</td><td align='right'>3.4</td><td align='right'>40.5%</td><td align='right'>8.5ms</td><td align='right'>2.0ms</td><td>No</td><td>No</td></tr><tr><td>exacell04</td><td>Flash F/3.2TB</td><td align='right'>13,919</td><td align='right'>3.4</td><td align='right'>40.5%</td><td align='right'>8.5ms</td><td align='right'>2.0ms</td><td>No</td><td>No</td></tr></table>
+
+<h3>IO Reasons by Requests</h3>
+<table><tr><th>Cell</th><th>Reason</th><th>Small Req</th><th>Large Req</th><th>Total Req</th><th>Small MB</th><th>Large MB</th><th>Total Req</th></tr><tr><td>All</td><td>Smart Scan</td><td align='right'>0</td><td align='right'>1,368,000</td><td align='right'>1,368,000</td><td align='right'>0.0</td><td align='right'>10954.7</td><td align='right'>1,368,000</td></tr><tr><td>All</td><td>Redo</td><td align='right'>359,100</td><td align='right'>39,900</td><td align='right'>399,000</td><td align='right'>2872.8</td><td align='right'>319.5</td><td align='right'>399,000</td></tr><tr><td>All</td><td>DBWR Checkpoint</td><td align='right'>-5,700</td><td align='right'>-51,300</td><td align='right'>-57,000</td><td align='right'>-45.6</td><td align='right'>-410.8</td><td align='right'>-57,000</td></tr><tr><td>All</td><td>Scrub IO</td><td align='right'>0</td><td align='right'>228,000</td><td align='right'>228,000</td><td align='right'>0.0</td><td align='right'>1825.8</td><td align='right'>228,000</td></tr><tr><td>All</td><td>Internal IO</td><td align='right'>547,200</td><td align='right'>364,800</td><td align='right'>912,000</td><td align='right'>4377.6</td><td align='right'>2921.2</td><td align='right'>912,000</td></tr></table>
+
+<h3>Flash Cache Space Usage</h3>
+<table><tr><th>Name</th><th>Total FC MB</th><th>OLTP Used MB</th><th>Scan Used MB</th><th>Large Write MB</th><th>Large Write%</th><th>Free MB</th></tr><tr><td>exacell01</td><td align='right'>3,145,728</td><td align='right'>1,321,206</td><td align='right'>1,195,377</td><td align='right'>132,121</td><td align='right'>4.2%</td><td align='right'>497,024</td></tr><tr><td>exacell02</td><td align='right'>3,145,728</td><td align='right'>1,321,206</td><td align='right'>1,195,377</td><td align='right'>132,121</td><td align='right'>4.2%</td><td align='right'>497,024</td></tr><tr><td>exacell03</td><td align='right'>3,145,728</td><td align='right'>1,321,206</td><td align='right'>1,195,377</td><td align='right'>132,121</td><td align='right'>4.2%</td><td align='right'>497,024</td></tr><tr><td>exacell04</td><td align='right'>3,145,728</td><td align='right'>1,321,206</td><td align='right'>1,195,377</td><td align='right'>132,121</td><td align='right'>4.2%</td><td align='right'>497,024</td></tr></table>
+
+<h3>Exadata Cell Server Statistics</h3>
+<table><tr><th>Name</th><th>Small Read IO</th><th>Small Write IO</th><th>Large Read IO</th><th>Large Write IO</th><th>Small Read MB</th><th>Small Write MB</th><th>Large Read MB</th><th>Large Write MB</th></tr><tr><td>exacell01</td><td align='right'>8,420</td><td align='right'>2,840</td><td align='right'>3,831</td><td align='right'>1,500</td><td align='right'>101.0</td><td align='right'>39.8</td><td align='right'>9194.4</td><td align='right'>4200.0</td></tr><tr><td>exacell02</td><td align='right'>8,420</td><td align='right'>2,840</td><td align='right'>3,831</td><td align='right'>1,500</td><td align='right'>101.0</td><td align='right'>39.8</td><td align='right'>9194.4</td><td align='right'>4200.0</td></tr><tr><td>exacell03</td><td align='right'>8,420</td><td align='right'>2,840</td><td align='right'>3,831</td><td align='right'>1,500</td><td align='right'>101.0</td><td align='right'>39.8</td><td align='right'>9194.4</td><td align='right'>4200.0</td></tr><tr><td>exacell04</td><td align='right'>8,420</td><td align='right'>2,840</td><td align='right'>3,831</td><td align='right'>1,500</td><td align='right'>101.0</td><td align='right'>39.8</td><td align='right'>9194.4</td><td align='right'>4200.0</td></tr></table>
+</body></html>

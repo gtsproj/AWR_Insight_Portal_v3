@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html><head><title>AWR Report — EXADB Snap 25041-25042 [healthy_analytics]</title></head><body>
+<h1>WORKLOAD REPOSITORY report for<br/>DB: EXADB Snap: 25041–25042</h1>
+<!-- Scenario: healthy_analytics — Healthy DWH — Smart Scan 100% flash, low passthru -->
+<h2>Main Report</h2>
+<h3>Database Summary</h3>
+<table border="1" summary="This table displays database instance information"><tr><th>DB Name</th><th>DB Id</th><th>Instance</th><th>Inst Num</th><th>Startup Time</th><th>Release</th><th>RAC</th></tr>
+<tr><td>EXADB</td><td>3729183842</td><td>EXADB1</td><td>1</td><td>14-Aug-26 09:00:00</td><td>19.20.0.0.0</td><td>YES</td></tr></table>
+<h3>Host Information</h3>
+<table border="1"><tr><th>Host Name</th><th>Platform</th><th>CPUs</th><th>Cores</th><th>Sockets</th><th>Memory (GB)</th></tr>
+<tr><td>exadb01.example.com</td><td>Exadata Database Machine X11M</td><td>96</td><td>48</td><td>2</td><td>768.0</td></tr></table>
+<h3>Snapshot Summary</h3>
+<table border="1" summary="This table displays snapshot information"><tr><th>Snap</th><th>Snap ID</th><th>Snap Time</th><th>Sessions</th></tr><tr><td>Begin Snap</td><td>25041</td><td>14-Aug-26 09:00:00</td><td>428</td></tr><tr><td>End Snap</td><td>25042</td><td>14-Aug-26 10:00:00</td><td>436</td></tr></table>
+<h3>Load Profile</h3>
+<table border="1"><tr><th>Stat Name</th><th>Per Second</th><th>Per Transaction</th></tr>
+<tr><td>DB Time(s):</td><td>31.2</td><td>0.282</td></tr>
+<tr><td>DB CPU(s):</td><td>9.1</td><td>0.091</td></tr>
+<tr><td>Redo size:</td><td>137800</td><td>1378</td></tr>
+<tr><td>Logical reads:</td><td>14250</td><td>142.5</td></tr>
+<tr><td>Physical reads:</td><td>792</td><td>7.92</td></tr>
+<tr><td>Physical writes:</td><td>120</td><td>1.20</td></tr>
+<tr><td>User calls:</td><td>284</td><td>2.84</td></tr>
+<tr><td>Parses:</td><td>2.4</td><td>0.024</td></tr>
+<tr><td>Hard parses:</td><td>0.0</td><td>0.000</td></tr>
+<tr><td>Executes:</td><td>48.2</td><td>0.482</td></tr>
+<tr><td>Transactions:</td><td>10.6</td><td>1.0</td></tr>
+</table>
+<h3>Instance Efficiency Percentages</h3>
+<table border="1"><tr><th>Metric</th><th>Value</th></tr>
+<tr><td>Buffer Hit %:</td><td>97.7</td></tr>
+<tr><td>Library Hit %:</td><td>99.1</td></tr>
+<tr><td>Soft Parse %:</td><td>99.4</td></tr>
+<tr><td>Execute to Parse %:</td><td>3.82</td></tr>
+<tr><td>Buffer Nowait %:</td><td>99.98</td></tr>
+</table>
+<h3>Top 10 Foreground Events by Total Wait Time</h3>
+<table border="1"><tr><th>Event</th><th>Waits</th><th>Time(s)</th><th>Avg wait (ms)</th><th>% DB time</th><th>Wait Class</th></tr>
+<tr><td>cell smart table scan</td><td>2882320</td><td>23840</td><td>8.27</td><td>26.2%</td><td>User I/O</td></tr><tr><td>cell single block physical read</td><td>1640372</td><td>38040</td><td>23.2</td><td>12.2%</td><td>User I/O</td></tr><tr><td>log file sync</td><td>206178</td><td>436</td><td>2.11</td><td>2.7%</td><td>Commit</td></tr><tr><td>DB CPU</td><td></td><td>32760</td><td></td><td>8.9%</td><td></td></tr>
+</table>
+<h3>Wait Classes by Total Wait Time</h3>
+<table border="1"><tr><th>Wait Class</th><th>Waits</th><th>Total Wait Time (s)</th><th>% DB time</th></tr>
+<tr><td>User I/O</td><td>4723456</td><td>61753</td><td>62.4</td></tr>
+<tr><td>Cluster</td><td>892410</td><td>8924</td><td>9.0</td></tr>
+<tr><td>Commit</td><td>206178</td><td>4124</td><td>4.2</td></tr>
+<tr><td>CPU</td><td></td><td>32760</td><td>8.9</td></tr>
+</table>
+<h3>OS Statistics</h3>
+<table border="1"><tr><th>Statistic</th><th>Value</th></tr>
+<tr><td>BUSY_TIME</td><td>23048</td></tr>
+<tr><td>IDLE_TIME</td><td>37608</td></tr>
+<tr><td>IOWAIT_TIME</td><td>7078</td></tr>
+</table>
+<h3>SQL ordered by Elapsed Time</h3>
+<table border="1"><tr><th>SQL Id</th><th>Elapsed Time(s)</th><th>Executions</th><th>Elapsed Time per Exec(s)</th><th>% Total DB Time</th><th>% CPU</th><th>% IO</th><th>SQL Module</th></tr>
+<tr><td>9xgt3ab2kqmnz</td><td>49714</td><td>480</td><td>103.57</td><td>44.3%</td><td>18.4</td><td>72.8</td><td>DWH.ETL_ENGINE</td></tr>
+<tr><td>2mkp9fdv8nrqt</td><td>28574</td><td>320</td><td>89.29</td><td>25.5%</td><td>24.4</td><td>68.2</td><td>DWH.REPORT_ENGINE</td></tr>
+</table>
+<h3>SQL ordered by CPU Time</h3>
+<table border="1"><tr><th>SQL Id</th><th>CPU Time(s)</th><th>Executions</th><th>CPU per Exec(s)</th><th>% Total DB Time</th></tr>
+<tr><td>9xgt3ab2kqmnz</td><td>14943</td><td>480</td><td>31.13</td><td>13.3%</td></tr>
+</table>
+<h3>SQL ordered by Gets</h3>
+<table border="1"><tr><th>SQL Id</th><th>Buffer Gets</th><th>Executions</th><th>Gets per Exec</th><th>% Total</th></tr>
+<tr><td>9xgt3ab2kqmnz</td><td>886080</td><td>480</td><td>1846</td><td>38.4%</td></tr>
+</table>
+<h3>SQL ordered by Reads</h3>
+<table border="1"><tr><th>SQL Id</th><th>Physical Reads</th><th>Executions</th><th>Reads per Exec</th><th>% Total</th></tr>
+<tr><td>9xgt3ab2kqmnz</td><td>885600</td><td>480</td><td>1845</td><td>42.1%</td></tr>
+</table>
+<h3>Segments by Logical Reads</h3>
+<table border="1"><tr><th>Owner</th><th>Tablespace</th><th>Object Name</th><th>Obj. Type</th><th>Logical Reads</th><th>%Total</th></tr>
+<tr><td>DWH</td><td>DWH_DATA</td><td>FACT_SALES</td><td>TABLE</td><td>299200000</td><td>33.3%</td></tr>
+</table>
+<h3>IOStat by Function Summary</h3>
+<table border="1"><tr><th>Function Name</th><th>Reads: Reqs /s</th><th>Reads: Data /s</th><th>Writes: Reqs /s</th><th>Writes: Data /s</th><th>Waits: Count</th><th>Waits: Avg Tm(ms)</th></tr>
+<tr><td>Smart Scan</td><td>284.2</td><td>142.4</td><td>0</td><td>0</td><td>2882320</td><td>8.27</td></tr>
+<tr><td>DBWR</td><td>0</td><td>0</td><td>120.4</td><td>18.4</td><td>42000</td><td>2.1</td></tr>
+<tr><td>Direct Reads</td><td>48.2</td><td>24.1</td><td>0</td><td>0</td><td>180420</td><td>5.4</td></tr>
+<tr><td>Buffer Cache Reads</td><td>240.8</td><td>28.9</td><td>0</td><td>0</td><td>1640372</td><td>23.2</td></tr>
+<tr><td>Log Writer</td><td>0</td><td>0</td><td>184.2</td><td>22.1</td><td>206178</td><td>2.11</td></tr>
+</table>
+<!-- ===== EXADATA CONFIGURATION AND STATISTICS ===== -->
+<h2>Exadata Configuration and Statistics</h2>
+<h3>Exadata Storage Server Model</h3>
+<table border="1"><tr><th>Model</th><th>CPU Count</th><th>Memory (GB)</th><th># Cells</th></tr>
+<tr><td>Oracle Corporation ORACLE SERVER X11-2L High Capacity</td><td>128/128</td><td>1513</td><td>7 (mexa1cell01..07)</td></tr>
+<tr><td>Oracle Corporation ORACLE SERVER X11-2L High Capacity</td><td>128/128</td><td>1450</td><td>1 mexa1cell08</td></tr>
+</table>
+<h3>Exadata Storage Server Version</h3>
+<table border="1"><tr><th>Package Type</th><th>Package Version</th><th>Cells</th></tr>
+<tr><td>Kernel</td><td>5.15.0-308.179.6.16.el8uek.x86_64</td><td>All (8)</td></tr>
+<tr><td>Cell</td><td>cell-25.2.5.0.0_LINUX.X64_251214-1.x86_64</td><td>All (8)</td></tr>
+<tr><td>Offload</td><td>cellofl-11.2.3.3.1_LINUX.X64_240415</td><td>All (8)</td></tr>
+<tr><td>Offload</td><td>cellofl-12.1.2.4.0_LINUX.X64_240604</td><td>All (8)</td></tr>
+</table>
+<h3>Exadata Storage Information</h3>
+<table border="1"><tr><th># Cells</th><th>Flash Cache (GB)</th><th>XRMEM Cache (GB)</th><th>Flash Log (GB)</th><th>Hard Disk</th><th>Flash</th><th># Griddisks</th><th># Celldisks</th></tr>
+<tr><td>7</td><td>25336.25</td><td>1255.00</td><td>0.50</td><td>12</td><td>4</td><td>360</td><td>mexa1cell01-07</td></tr>
+<tr><td>1</td><td>25336.25</td><td>1192.00</td><td>0.50</td><td>12</td><td>4</td><td>360</td><td>mexa1cell08</td></tr>
+<tr><td>Total (8)</td><td>202690.00</td><td>9977.00</td><td>4.00</td><td>96</td><td>32</td><td>2880</td><td>All (8)</td></tr>
+</table>
+<h3>Exadata Griddisks</h3>
+<table border="1"><tr><th>Griddisk Name Prefix</th><th>Caching Policy</th><th># Griddisks</th><th># CachedBy</th>
+<th>Griddisk (GB)</th><th>Cell Total (GB)</th><th>System Total (GB)</th><th>Disk Type</th><th>Cells</th></tr>
+<tr><td>DATAC1</td><td>default</td><td>12</td><td>4</td><td>1344.00</td><td>16128.00</td><td>129024.00</td><td>H/20.0T</td><td>All (8)</td></tr>
+<tr><td>DATAC2</td><td>default</td><td>12</td><td>4</td><td>1408.00</td><td>16896.00</td><td>135168.00</td><td>H/20.0T</td><td>All (8)</td></tr>
+<tr><td>RECOC1</td><td>default</td><td>12</td><td>4</td><td>448.00</td><td>5376.00</td><td>43008.00</td><td>H/20.0T</td><td>All (8)</td></tr>
+</table>
+<h3>Exadata Celldisks</h3>
+<table border="1"><tr><th>Disk Type</th><th>Celldisk Size (GB)</th><th># Celldisks</th><th>Cells</th></tr>
+<tr><td>F/6.2T</td><td>6334.23</td><td>4</td><td>All (8)</td></tr>
+<tr><td>H/20.0T</td><td>20490.00</td><td>12</td><td>All (8)</td></tr>
+</table>
+<h3>ASM Diskgroups</h3>
+<table border="1"><tr><th>Disk Group</th><th>Size (GB)</th><th>Used (GB)</th><th>% Used</th><th># Griddisks</th><th>Redundancy</th><th>State</th></tr>
+<tr><td>DATAC1</td><td>129024.00</td><td>97284.1</td><td>75.4%</td><td>96</td><td>HIGH</td><td>CONNECTED</td></tr>
+<tr><td>RECOC1</td><td>26110.50</td><td>1012.61</td><td>3.9%</td><td>96</td><td>HIGH</td><td>CONNECTED</td></tr>
+</table>
+<h3>IORM Objective</h3>
+<table border="1"><tr><th>Begin</th><th>End</th><th>Cells</th></tr>
+<tr><td>auto</td><td></td><td>All (8)</td></tr>
+</table>
+<h2>Exadata Server Health Report</h2>
+<h3>Exadata Alerts Summary</h3>
+<p>No open alerts.</p>
+<h2>Exadata Statistics</h2>
+<h3>Performance Summary</h3>
+<h4>I/O Summary</h4>
+<table border="1"><tr><th>Disk Type</th><th>Reads/s</th><th>Writes/s</th><th>Read MB/s</th><th>Write MB/s</th></tr>
+<tr><td>F/6.2T</td><td>20273.50</td><td>1773.26</td><td>2523.54</td><td>28.87</td></tr>
+<tr><td>H/20.0T</td><td>181.72</td><td>5.11</td><td>3.95</td><td>3.66</td></tr>
+</table>
+<h4>OS I/O Summary</h4>
+<table border="1"><tr><th>Disk Type</th><th>#Cells</th><th>#Disks</th><th>Total IOPs</th><th>IOPs per Cell</th><th>Total MB/s</th><th>MB/s per Cell</th><th>Service Time ms</th><th>Wait Time ms</th><th>%Disk Util</th></tr>
+<tr><td>F/6.2T</td><td>8</td><td>32</td><td>705946.62</td><td>88243.33</td><td>81679.41</td><td>10209.93</td><td>0.02</td><td>0.24</td><td>22.4</td></tr><tr><td>H/20.0T</td><td>8</td><td>96</td><td>18025.11</td><td>2253.14</td><td>649.90</td><td>81.24</td><td>2.20</td><td>3.37</td><td>1.8</td></tr>
+</table>
+<h4>Cell I/O Summary</h4>
+<table border="1"><tr><th>Disk Type</th><th>#Cells</th><th>#Disks</th><th>Total IOPs</th><th>Avg IOPs/Cell</th><th>Small Reads/s</th><th>Small Writes/s</th><th>Large Reads/s</th><th>Large Writes/s</th><th>Total MB/s</th><th>Avg MB/s per Cell</th></tr>
+<tr><td>F/6.2T</td><td>8</td><td>32</td><td>705496.07</td><td>88187.01</td><td>819.19</td><td>6743.26</td><td>80274.81</td><td>349.75</td><td>81677.17</td><td>10209.65</td></tr><tr><td>H/20.0T</td><td>8</td><td>96</td><td>17934.43</td><td>2241.80</td><td>2171.00</td><td>22.87</td><td>9.58</td><td>38.35</td><td>730.61</td><td>91.33</td></tr>
+</table>
+<h4>Cache Savings</h4>
+<table border="1"><tr><th>Metric</th><th>Value</th></tr>
+<tr><td>Database Flash Cache Hit%</td><td>72.4</td></tr>
+<tr><td>Database XRMEM Cache Hit%</td><td>100</td></tr>
+<tr><td>Database XRMEM Cache RDMA Hit%</td><td>84.2</td></tr>
+<tr><td>Cell Flash Cache OLTP Hit%</td><td>97.8</td></tr>
+<tr><td>Cell Flash Cache Scan Hit%</td><td>99.1</td></tr>
+<tr><td>Cell XRMEM Cache Hit%</td><td>97.86</td></tr>
+<tr><td>Disk Write savings/s</td><td>26100.54</td></tr>
+<tr><td>Large Writes/s</td><td>95.20</td></tr>
+</table>
+<h3>Flash Activity</h3>
+<table border="1"><tr><th>I/O Type</th><th>I/O per second</th><th>Total</th><th>per Cell</th></tr>
+<tr><td>Flash Log writes</td><td>1775.00</td><td>14200.00</td><td>1775.00</td></tr>
+<tr><td>Flash Cache OLTP reads</td><td>15.00</td><td>120.00</td><td>15.00</td></tr>
+<tr><td>Flash Cache scan reads</td><td>11980.00</td><td>95840.00</td><td>11980.00</td></tr>
+<tr><td>Columnar Cache reads</td><td>0.61</td><td>4.84</td><td>0.61</td></tr>
+<tr><td>Flash Cache user writes</td><td>2300.00</td><td>18400.00</td><td>2300.00</td></tr>
+<tr><td>Disk writer reads</td><td>207.12</td><td>1656.95</td><td>207.12</td></tr>
+<tr><td>Population writes</td><td>0.51</td><td>4.10</td><td>0.51</td></tr>
+<tr><td>Metadata writes</td><td>761.14</td><td>6089.09</td><td>761.14</td></tr>
+</table>
+<h3>Disk Activity</h3>
+<table border="1"><tr><th>I/O Type</th><th>I/O per second</th><th>Total</th><th>per Cell</th></tr>
+<tr><td>Redo log writes</td><td>2.1</td><td>16.80 (20559.57)</td><td>0.25 (2569.95)</td></tr>
+<tr><td>Flash Cache misses (OLTP)</td><td>0.8</td><td>6.40</td><td>0.80</td></tr>
+<tr><td>Flash Cache read skips</td><td>0.1</td><td>2.4</td><td>0.30</td></tr>
+<tr><td>Flash Cache write skips</td><td>0.05</td><td>1.2</td><td>0.05</td></tr>
+<tr><td>Flash Cache LW rejections (total)</td><td>0.0</td><td>0.00</td><td>0.00</td></tr>
+<tr><td>Disk writer writes</td><td>45.88</td><td>367.07</td><td>45.88</td></tr>
+<tr><td>Scrub IO</td><td>15.2</td><td>121.60</td><td>15.20</td></tr>
+</table>
+<h3>IO Reason Summary</h3>
+<table border="1"><tr><th>IO Reason</th><th>Reqs/s</th><th>per Cell</th></tr>
+<tr><td>smart scan</td><td>628361.18</td><td>78545.15</td></tr>
+<tr><td>redo log write</td><td>43271.13</td><td>5408.89</td></tr>
+<tr><td>cell disk scrub</td><td>121.60</td><td>15.20</td></tr>
+<tr><td>buffer cache reads</td><td>10960.18</td><td>1370.02</td></tr>
+</table>
+<h3>Single Block Reads</h3>
+<h4>Database IOs</h4>
+<table border="1"><tr><th>Stat Name</th><th>Value</th><th>per Sec</th></tr>
+<tr><td>physical read total IO requests</td><td>381670</td><td>419.88</td></tr>
+<tr><td>physical read IO requests</td><td>298820</td><td>328.73</td></tr>
+<tr><td>cell flash cache read hits</td><td>16888</td><td>18.58</td></tr>
+<tr><td>cell xrmem cache read hits</td><td>107233</td><td>117.97</td></tr>
+<tr><td>cell RDMA reads</td><td>259174</td><td>285.12</td></tr>
+</table>
+<h4>Small Reads Distribution</h4>
+<table border="1"><tr><th>Device Type</th><th>%Small Reads</th><th>Small Reads/s</th></tr>
+<tr><td>Flash</td><td>72.4</td><td>6371.2</td></tr>
+<tr><td>Disk</td><td>18.2</td><td>7826.0</td></tr>
+<tr><td>XRMEM Cache</td><td>9.4</td><td>4042.0</td></tr>
+</table>
+<h4>Small Reads - Flash</h4>
+<table border="1"><tr><th>Disk Type</th><th># Cells</th><th>Total Small Reads/s</th><th>Cell Small Reads/s</th></tr>
+<tr><td>F/6.2T</td><td>8</td><td>6553.51</td><td>819.19</td></tr>
+</table>
+<h4>Small Reads - Disk</h4>
+<table border="1"><tr><th>Disk Type</th><th># Cells</th><th>Total Small Reads/s</th><th>Cell Small Reads/s</th></tr>
+<tr><td>H/20.0T</td><td>8</td><td>17368.00</td><td>2171.00</td></tr>
+</table>
+<h4>Small Reads - XRMEM Cache</h4>
+<table border="1"><tr><th>Device</th><th># Cells</th><th>Total Small Reads/s</th><th>Cell Small Reads/s</th></tr>
+<tr><td>XRMEM Cache</td><td>8</td><td>17521.69</td><td>2190.21</td></tr>
+</table>
+<h3>Database IO Summary</h3>
+<table border="1"><tr><th>Database Name</th><th>Small IO Reqs/s</th><th>%Flash</th><th>%Disk</th>
+<th>Flash Latency</th><th>Disk Latency</th><th>Flash Queue Time</th><th>Disk Queue Time</th><th>Latency per Sec</th></tr>
+<tr><td>EXADB</td><td>4987.17</td><td>72.4</td><td>27.6</td>
+<td>173.80us</td><td>5.12ms</td><td>42.03us</td><td>1.18us</td><td>268.1us</td></tr>
+<tr><td>EXA_MAPS_IDC</td><td>436.55</td><td>99.2</td><td>0.8</td>
+<td>80.47us</td><td>59.86ms</td><td>211.99us</td><td>23.5us</td><td>268.1us</td></tr>
+<tr><td>AXPAYPRO_IDC</td><td>2914.92</td><td>99.46</td><td>0.54</td>
+<td>74.90us</td><td>3.24ms</td><td>49.00ns</td><td>4.04ms</td><td>8.9us</td></tr>
+</table>
+<h3>Smart Scan Summary</h3>
+<table border="1"><tr><th>Device Type</th><th>%MB</th><th>MB/s</th></tr>
+<tr><td>Flash</td><td>100.00</td><td>79732.36</td></tr>
+</table>
+<h3>Temp IO and Large Writes Summary</h3>
+<table border="1"><tr><th>Large Write Type</th><th>Large Writes/s</th></tr>
+<tr><td>Total</td><td>95.20</td></tr>
+<tr><td>Temp Spill</td><td>68.40</td></tr>
+<tr><td>Data/Temp Tables</td><td>-13.20</td></tr>
+<tr><td>Write Only</td><td>40.00</td></tr>
+</table>
+<table border="1"><tr><th>Metric</th><th>%Hit</th></tr>
+<tr><td>Database Flash Cache Temp Write Hit%</td><td>100.0</td></tr>
+</table>
+<h4>Cell Flash Cache Large Writes for Temp</h4>
+<table border="1"><tr><th>Total</th><th>per Sec</th></tr>
+<tr><td>1969920</td><td>68.40</td></tr>
+</table>
+<h3>Flash Cache Configuration</h3>
+<table border="1"><tr><th>Name</th><th>FC Size</th><th>FC Flushing</th><th>Flash Log Size</th></tr>
+<tr><td>mexa1cell01</td><td>8388608</td><td>NO</td><td>2097152</td></tr><tr><td>mexa1cell02</td><td>8388608</td><td>NO</td><td>2097152</td></tr><tr><td>mexa1cell03</td><td>8388608</td><td>NO</td><td>2097152</td></tr><tr><td>mexa1cell04</td><td>8388608</td><td>NO</td><td>2097152</td></tr><tr><td>mexa1cell05</td><td>8388608</td><td>NO</td><td>2097152</td></tr><tr><td>mexa1cell06</td><td>8388608</td><td>NO</td><td>2097152</td></tr><tr><td>mexa1cell07</td><td>8388608</td><td>NO</td><td>2097152</td></tr><tr><td>mexa1cell08</td><td>8388608</td><td>NO</td><td>2097152</td></tr></table>
+<h3>Exadata Performance Summary</h3>
+<table border="1"><tr><th>Name</th><th>FC OLTP Hit%</th><th>FC Scan Hit%</th><th>FC%</th><th>XRMEM%</th><th>RDMA%</th><th>Read Skips</th><th>Read Misses</th></tr>
+<tr><td>mexa1cell01</td><td>97.8%</td><td>99.1%</td><td>72.4%</td><td>100%</td><td>84.2%</td><td>124500</td><td>4200</td></tr><tr><td>mexa1cell02</td><td>97.8%</td><td>99.1%</td><td>72.4%</td><td>100%</td><td>84.2%</td><td>124500</td><td>4200</td></tr><tr><td>mexa1cell03</td><td>97.8%</td><td>99.1%</td><td>72.4%</td><td>100%</td><td>84.2%</td><td>124500</td><td>4200</td></tr><tr><td>mexa1cell04</td><td>97.8%</td><td>99.1%</td><td>72.4%</td><td>100%</td><td>84.2%</td><td>124500</td><td>4200</td></tr><tr><td>mexa1cell05</td><td>97.8%</td><td>99.1%</td><td>72.4%</td><td>100%</td><td>84.2%</td><td>124500</td><td>4200</td></tr><tr><td>mexa1cell06</td><td>97.8%</td><td>99.1%</td><td>72.4%</td><td>100%</td><td>84.2%</td><td>124500</td><td>4200</td></tr><tr><td>mexa1cell07</td><td>97.8%</td><td>99.1%</td><td>72.4%</td><td>100%</td><td>84.2%</td><td>124500</td><td>4200</td></tr><tr><td>mexa1cell08</td><td>97.8%</td><td>99.1%</td><td>72.4%</td><td>100%</td><td>84.2%</td><td>124500</td><td>4200</td></tr></table>
+<h3>Exadata Smart IO</h3>
+<table border="1"><tr><th>Name</th><th>Eligible MB</th><th>Flash MB</th><th>Disk MB</th><th>Passthru MB</th><th>Passthru%</th><th>Disk%</th><th>SI Savings MB</th></tr>
+<tr><td>mexa1cell01</td><td>18240</td><td>14892</td><td>4824</td><td>146</td><td>0.8%</td><td>26.8%</td><td>2400</td></tr><tr><td>mexa1cell02</td><td>18240</td><td>14892</td><td>4824</td><td>146</td><td>0.8%</td><td>26.8%</td><td>2400</td></tr><tr><td>mexa1cell03</td><td>18240</td><td>14892</td><td>4824</td><td>146</td><td>0.8%</td><td>26.8%</td><td>2400</td></tr><tr><td>mexa1cell04</td><td>18240</td><td>14892</td><td>4824</td><td>146</td><td>0.8%</td><td>26.8%</td><td>2400</td></tr><tr><td>mexa1cell05</td><td>18240</td><td>14892</td><td>4824</td><td>146</td><td>0.8%</td><td>26.8%</td><td>2400</td></tr><tr><td>mexa1cell06</td><td>18240</td><td>14892</td><td>4824</td><td>146</td><td>0.8%</td><td>26.8%</td><td>2400</td></tr><tr><td>mexa1cell07</td><td>18240</td><td>14892</td><td>4824</td><td>146</td><td>0.8%</td><td>26.8%</td><td>2400</td></tr><tr><td>mexa1cell08</td><td>18240</td><td>14892</td><td>4824</td><td>146</td><td>0.8%</td><td>26.8%</td><td>2400</td></tr></table>
+<h3>Flash Cache Read Hits</h3>
+<table border="1"><tr><th>Name</th><th>Hit%</th><th>IO Type</th></tr>
+<tr><td>mexa1cell01</td><td>97.8%</td><td>OLTP</td></tr><tr><td>mexa1cell01</td><td>99.1%</td><td>Scan</td></tr><tr><td>mexa1cell02</td><td>97.8%</td><td>OLTP</td></tr><tr><td>mexa1cell02</td><td>99.1%</td><td>Scan</td></tr><tr><td>mexa1cell03</td><td>97.8%</td><td>OLTP</td></tr><tr><td>mexa1cell03</td><td>99.1%</td><td>Scan</td></tr><tr><td>mexa1cell04</td><td>97.8%</td><td>OLTP</td></tr><tr><td>mexa1cell04</td><td>99.1%</td><td>Scan</td></tr><tr><td>mexa1cell05</td><td>97.8%</td><td>OLTP</td></tr><tr><td>mexa1cell05</td><td>99.1%</td><td>Scan</td></tr><tr><td>mexa1cell06</td><td>97.8%</td><td>OLTP</td></tr><tr><td>mexa1cell06</td><td>99.1%</td><td>Scan</td></tr><tr><td>mexa1cell07</td><td>97.8%</td><td>OLTP</td></tr><tr><td>mexa1cell07</td><td>99.1%</td><td>Scan</td></tr><tr><td>mexa1cell08</td><td>97.8%</td><td>OLTP</td></tr><tr><td>mexa1cell08</td><td>99.1%</td><td>Scan</td></tr></table>
+<h3>Exadata Top Database</h3>
+<table border="1"><tr><th>Database</th><th>IORM Queue ms</th><th>Avg Small Lat ms</th><th>Avg Large Lat ms</th><th>Flash Req%</th><th>Disk Req%</th></tr>
+<tr><td>EXADB</td><td>1.8</td><td>0.9</td><td>2.2</td><td>74.2%</td><td>25.8%</td></tr></table>
+<h3>Exadata Cell IO Statistics</h3>
+<table border="1"><tr><th>Name</th><th>IOPs</th><th>Throughput MB/s</th><th>Util%</th><th>Avg Svc ms</th><th>Outlier</th><th>At Max Cap</th></tr>
+<tr><td>mexa1cell01</td><td>88187</td><td>10209</td><td>22.4%</td><td>8.4</td><td>NO</td><td>NO</td></tr><tr><td>mexa1cell02</td><td>88187</td><td>10209</td><td>22.4%</td><td>8.4</td><td>NO</td><td>NO</td></tr><tr><td>mexa1cell03</td><td>88187</td><td>10209</td><td>22.4%</td><td>8.4</td><td>NO</td><td>NO</td></tr><tr><td>mexa1cell04</td><td>88187</td><td>10209</td><td>22.4%</td><td>8.4</td><td>NO</td><td>NO</td></tr><tr><td>mexa1cell05</td><td>88187</td><td>10209</td><td>22.4%</td><td>8.4</td><td>NO</td><td>NO</td></tr><tr><td>mexa1cell06</td><td>88187</td><td>10209</td><td>22.4%</td><td>8.4</td><td>NO</td><td>NO</td></tr><tr><td>mexa1cell07</td><td>88187</td><td>10209</td><td>22.4%</td><td>8.4</td><td>NO</td><td>NO</td></tr><tr><td>mexa1cell08</td><td>88187</td><td>10209</td><td>22.4%</td><td>8.4</td><td>NO</td><td>NO</td></tr></table>
+<h3>Exadata IO Reasons</h3>
+<table border="1"><tr><th>Name</th><th>IO Reason</th><th>Requests</th><th>MB</th></tr>
+<tr><td>All</td><td>smart scan</td><td>628361</td><td>78545</td></tr><tr><td>All</td><td>redo log write</td><td>43271</td><td>5408</td></tr><tr><td>All</td><td>cell disk scrub</td><td>54720</td><td>2182</td></tr><tr><td>All</td><td>buffer cache reads</td><td>10960</td><td>1370</td></tr></table>
+<h3>Flash Cache Space Usage</h3>
+<table border="1"><tr><th>Name</th><th>Large Write%</th><th>Max Large Write%</th><th>FC Size MB</th></tr>
+<tr><td>mexa1cell01</td><td>6.4%</td><td>7.6000000000000005%</td><td>8192</td></tr><tr><td>mexa1cell02</td><td>6.4%</td><td>7.6000000000000005%</td><td>8192</td></tr><tr><td>mexa1cell03</td><td>6.4%</td><td>7.6000000000000005%</td><td>8192</td></tr><tr><td>mexa1cell04</td><td>6.4%</td><td>7.6000000000000005%</td><td>8192</td></tr><tr><td>mexa1cell05</td><td>6.4%</td><td>7.6000000000000005%</td><td>8192</td></tr><tr><td>mexa1cell06</td><td>6.4%</td><td>7.6000000000000005%</td><td>8192</td></tr><tr><td>mexa1cell07</td><td>6.4%</td><td>7.6000000000000005%</td><td>8192</td></tr><tr><td>mexa1cell08</td><td>6.4%</td><td>7.6000000000000005%</td><td>8192</td></tr></table>
+<h3>Exadata Cell Server IO Requests</h3>
+<table border="1"><tr><th>Name</th><th>Small Read IOPs</th><th>Large Read IOPs</th><th>Small Write IOPs</th><th>Large Write IOPs</th></tr>
+<tr><td>mexa1cell01</td><td>819</td><td>80275</td><td>42</td><td>350</td></tr><tr><td>mexa1cell02</td><td>819</td><td>80275</td><td>42</td><td>350</td></tr><tr><td>mexa1cell03</td><td>819</td><td>80275</td><td>42</td><td>350</td></tr><tr><td>mexa1cell04</td><td>819</td><td>80275</td><td>42</td><td>350</td></tr><tr><td>mexa1cell05</td><td>819</td><td>80275</td><td>42</td><td>350</td></tr><tr><td>mexa1cell06</td><td>819</td><td>80275</td><td>42</td><td>350</td></tr><tr><td>mexa1cell07</td><td>819</td><td>80275</td><td>42</td><td>350</td></tr><tr><td>mexa1cell08</td><td>819</td><td>80275</td><td>42</td><td>350</td></tr></table>
+<h3>Flash Cache User Writes</h3>
+<table border="1"><tr><th>Name</th><th>Total Write Reqs</th><th>Partial Writes</th><th>Absorbed Writes</th><th>Rejected Writes</th><th>Partial Write%</th></tr>
+<tr><td>mexa1cell01</td><td>120000</td><td>24000</td><td>94000</td><td>0</td><td>20.0%</td></tr><tr><td>mexa1cell02</td><td>120000</td><td>24000</td><td>94000</td><td>0</td><td>20.0%</td></tr><tr><td>mexa1cell03</td><td>120000</td><td>24000</td><td>94000</td><td>0</td><td>20.0%</td></tr><tr><td>mexa1cell04</td><td>120000</td><td>24000</td><td>94000</td><td>0</td><td>20.0%</td></tr><tr><td>mexa1cell05</td><td>120000</td><td>24000</td><td>94000</td><td>0</td><td>20.0%</td></tr><tr><td>mexa1cell06</td><td>120000</td><td>24000</td><td>94000</td><td>0</td><td>20.0%</td></tr><tr><td>mexa1cell07</td><td>120000</td><td>24000</td><td>94000</td><td>0</td><td>20.0%</td></tr><tr><td>mexa1cell08</td><td>120000</td><td>24000</td><td>94000</td><td>0</td><td>20.0%</td></tr></table>
+</body></html>
