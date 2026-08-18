@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AWR Analysis — {{ dbname }}/{{ instance }}</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* ── Reset + Base ─────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:13px;
+     background:#F0F4F8;color:#1a2035;line-height:1.5}
+
+/* ── PDF / Print ──────────────────────────────────────────── */
+@media print{
+  /* No @page size override — browser prints exactly what it previews. */
+  body{background:#fff;font-size:11px;
+       -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .no-print{display:none!important}
+  /* Header: keep dark gradient — tick Background graphics in print dialog */
+  .hdr{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;
+       background:linear-gradient(135deg,#1B2D5B,#0C447C)!important}
+  /* Conclusion: already white bg + dark text on screen — no override needed */
+  .cc,.tc,.snap-card,.kpi-group,.health-bar{break-inside:avoid;page-break-inside:avoid}
+  .conc-body{grid-template-columns:1fr 1fr}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:1fr 1fr 1fr}
+  .footer{margin-top:8px;padding:6px 0}
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.hdr{background:linear-gradient(135deg,#1B2D5B 0%,#0C447C 100%);
+     color:#fff;padding:16px 26px}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;
+         margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.hdr h1{font-size:18px;font-weight:700;letter-spacing:-.3px}
+.hdr-sub{font-size:11px;color:#c8d8f0;margin-top:3px}
+.pdf-btn{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+         color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer;
+         font-size:11px;font-weight:600;letter-spacing:.3px;
+         transition:background .15s}
+.pdf-btn:hover{background:rgba(255,255,255,.28)}
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:7px}
+.mi{background:rgba(255,255,255,.1);border-radius:6px;padding:6px 10px}
+.ml{font-size:9px;color:#b8cce0;text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px}
+.mv{font-size:12px;font-weight:600}
+
+/* ── Page body ────────────────────────────────────────────── */
+.body{padding:16px 26px}
+
+/* ── Section label ────────────────────────────────────────── */
+.st{font-size:10px;font-weight:700;color:#1B2D5B;margin:16px 0 8px;
+    padding-bottom:5px;border-bottom:2px solid #E0E8F5;
+    text-transform:uppercase;letter-spacing:.8px;display:flex;
+    align-items:center;gap:6px}
+.st-icon{font-size:12px}
+
+/* ── KPI group (common header box) ───────────────────────── */
+.kpi-group{background:#fff;border:1px solid #dde;border-radius:10px;
+           padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,.05);
+           margin-bottom:16px}
+.kpi-group-hdr{font-size:10px;font-weight:700;color:#1B2D5B;
+               text-transform:uppercase;letter-spacing:.8px;
+               border-bottom:1px solid #E8EDF5;padding-bottom:7px;margin-bottom:10px;
+               display:flex;align-items:center;gap:6px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:9px}
+.kpi{background:#F7F9FC;border-radius:8px;padding:10px 12px;
+     border-left:3px solid #1B2D5B}
+.kpi.warn{border-left-color:#ea580c}
+.kpi.crit{border-left-color:#dc2626}
+.kpi-lbl{font-size:9px;color:#334155;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.kpi-val{font-size:19px;font-weight:700;color:#1B2D5B;margin:3px 0 1px}
+.kpi-val.warn{color:#ea580c}
+.kpi-val.crit{color:#dc2626}
+.kpi-sub{font-size:9px;color:#475569;font-weight:500}
+
+/* ── Grid layouts ─────────────────────────────────────────── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.gf{margin-bottom:14px}
+
+/* ── Chart card ───────────────────────────────────────────── */
+.cc{background:#fff;border:1px solid #dde;border-radius:9px;
+    padding:12px 14px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.cc h3{font-size:9px;font-weight:700;color:#334155;margin-bottom:10px;
+       text-transform:uppercase;letter-spacing:.5px}
+.cw{position:relative;height:200px}
+.cws{position:relative;height:160px}
+.cwt{position:relative;height:140px}
+
+/* ── Table card ───────────────────────────────────────────── */
+.tc{background:#fff;border:1px solid #dde;border-radius:9px;
+    padding:13px 14px;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:hidden}
+.tc.scroll{overflow-x:auto}
+
+/* ── Snapshot cards ───────────────────────────────────────── */
+.snap-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+            gap:9px;margin-bottom:16px}
+.snap-card{background:#fff;border:1px solid #dde;border-radius:9px;
+           padding:10px 12px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.snap-id{font-size:12px;font-weight:700;color:#1B2D5B;font-family:monospace}
+.snap-dt{font-size:9px;color:#475569;font-weight:500;margin-bottom:8px}
+.snap-kpis{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.sk{background:#F7F9FC;border-radius:4px;padding:4px 7px}
+.skl{font-size:8px;color:#4a5568;display:block;text-transform:uppercase;letter-spacing:.3px;font-weight:600}
+.skv{font-size:11px;font-weight:700;color:#1B2D5B}
+
+/* ── Tables ───────────────────────────────────────────────── */
+table{width:100%;border-collapse:collapse}
+th{background:#F2F5FA;font-size:10px;font-weight:700;color:#444;
+   padding:7px 10px;text-align:left;white-space:nowrap;
+   border-bottom:2px solid #E0E8F5}
+td{padding:6px 10px;font-size:11px;border-top:1px solid #F0F2F8;
+   vertical-align:middle}
+tr:nth-child(even) td{background:#FAFBFE}
+.num{text-align:right;font-variant-numeric:tabular-nums;font-family:monospace;font-size:11px}
+.mono{font-family:monospace;font-size:11px}
+.right{text-align:right}
+
+/* ── Severity badges ──────────────────────────────────────── */
+.sev{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;
+     border-radius:20px;letter-spacing:.4px;white-space:nowrap}
+
+/* ── Peak-value highlight in load profile table ──────────── */
+.peak-val{font-weight:700;color:#dc2626}
+
+/* ── Conclusion panel ─────────────────────────────────────── */
+.conc{background:#fff;
+      border:2px solid #1B2D5B;
+      border-radius:11px;padding:18px 22px;margin-top:18px}
+.ch{font-size:13px;font-weight:700;color:#1B2D5B;margin-bottom:14px;padding-bottom:9px;
+    border-bottom:2px solid #E0E8F5}
+.conc-body{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.conc-full{grid-column:1/-1}
+.ct{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+    color:#1B2D5B;margin-bottom:7px}
+.cv{color:#1a2035;font-size:12px;line-height:1.7}
+.hs{background:#fff8f0;border-left:3px solid #ca8a04;
+    border-radius:0 5px 5px 0;padding:6px 11px;margin:4px 0;
+    font-size:11px;color:#1a2035;font-weight:500}
+.rec{background:#f0fdf4;border-left:3px solid #0F6E56;
+     border-radius:0 5px 5px 0;padding:7px 11px;margin:5px 0}
+.rec-title{font-size:9px;font-weight:700;text-transform:uppercase;
+           color:#0F6E56;letter-spacing:.5px;margin-bottom:3px}
+.rec-body{font-size:11px;color:#1a2035;line-height:1.6}
+.rb{background:#fef2f2;border:1px solid #dc262640;
+    border-radius:7px;padding:9px 13px;font-size:11px;color:#991b1b}
+
+/* ── Source note ──────────────────────────────────────────── */
+.src-note{font-size:9px;color:#475569;margin-top:4px;font-style:italic;font-weight:500}
+
+/* ── Health Score bar ────────────────────────────────────────── */
+.health-bar{border-radius:10px;padding:14px 20px;
+            display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+            margin-bottom:16px}
+.hs-score{font-size:40px;font-weight:800;line-height:1;min-width:70px}
+.hs-rag{font-size:13px;font-weight:700;padding:3px 12px;border-radius:20px;
+        border:2px solid currentColor}
+.hs-bar-wrap{flex:1;min-width:200px}
+.hs-bar-bg{height:12px;background:#e5e7eb;border-radius:6px;overflow:hidden;margin:5px 0}
+.hs-bar-fg{height:100%;border-radius:6px;transition:width .6s}
+.hs-components{display:flex;gap:12px;flex-wrap:wrap;font-size:10px}
+.hs-comp{background:#F7F9FC;border-radius:6px;padding:4px 9px;text-align:center}
+.hs-comp-lbl{color:#64748b;display:block;text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+.hs-comp-val{font-weight:700;font-size:13px}
+
+/* ── IO Profile table ────────────────────────────────────────── */
+.io-fn-bar{display:inline-block;height:8px;border-radius:4px;
+           vertical-align:middle;margin-left:6px}
+
+/* ── RCA template ────────────────────────────────────────────── */
+.rca-wrap{background:#fff;border:1px solid #dde;border-radius:9px;
+          padding:16px 18px;margin-bottom:14px}
+.rca-section{margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #F0F2F8}
+.rca-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.rca-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+         color:#1B2D5B;margin-bottom:5px}
+.rca-val{font-size:11px;color:#444;line-height:1.7;background:#F7F9FC;
+         border-left:3px solid #1B2D5B;padding:7px 11px;border-radius:0 5px 5px 0}
+
+/* ── Footer ───────────────────────────────────────────────── */
+.footer{margin-top:20px;padding:12px 0;border-top:1px solid #dde;
+        font-size:10px;color:#555;text-align:center}
+</style>
+</head>
+<body>
+
+{# ── HEADER ──────────────────────────────────────────────── #}
+<div class="hdr">
+  <div class="hdr-top">
+    <div>
+      <h1>📊 AWR Analysis Report</h1>
+      <div class="hdr-sub">{{ dbname }} / {{ instance }}
+        · {{ snapshot_count }} snapshot{{ 's' if snapshot_count > 1 else '' }}
+        · Generated {{ generated_at }}
+      </div>
+    </div>
+    <button class="pdf-btn no-print" onclick="downloadPDF()">⬇ Download PDF</button>
+    <span class="no-print" style="font-size:9px;color:rgba(255,255,255,.8);margin-left:8px;max-width:160px;line-height:1.3">
+      Tip: in print dialog tick<br>✅ Background graphics
+    </span>
+  </div>
+  <div class="mg">
+    <div class="mi"><div class="ml">DB Name</div><div class="mv">{{ dbname }}</div></div>
+    <div class="mi"><div class="ml">Instance</div><div class="mv">{{ instance }}</div></div>
+    <div class="mi"><div class="ml">Release</div><div class="mv">{{ db_info.release or '—' }}</div></div>
+    <div class="mi"><div class="ml">Hostname</div><div class="mv">{{ db_info.host_name or '—' }}</div></div>
+    <div class="mi"><div class="ml">Platform</div>
+      <div class="mv" style="font-size:10px">{{ db_info.platform or '—' }}</div></div>
+    <div class="mi"><div class="ml">CPUs / Memory</div>
+      <div class="mv">{{ db_info.cpu or '?' }} / {{ db_info.memory or '?' }} GB</div></div>
+    <div class="mi"><div class="ml">RAC / CDB</div>
+      <div class="mv">{{ db_info.rac or '—' }} / {{ db_info.cdb or '—' }}</div></div>
+  </div>
+</div>
+
+<div class="body">
+
+{# ─────────────────────────────────────────────────────────── #}
+{# 0. HEALTH SCORE                                            #}
+{# ─────────────────────────────────────────────────────────── #}
+{% set h = health %}
+<div class="health-bar" style="background:{{ h.color }}18;border:2px solid {{ h.color }}40">
+  <div>
+    <div class="hs-score" style="color:{{ h.color }}">{{ h.score }}</div>
+    <div style="font-size:9px;color:#64748b;font-weight:600;margin-top:2px">/ 100</div>
+  </div>
+  <div>
+    <div class="hs-rag" style="color:{{ h.color }}">{{ h.rag }}</div>
+    <div style="font-size:9px;color:#64748b;font-weight:600;margin-top:4px">Health Score</div>
+  </div>
+  <div class="hs-bar-wrap">
+    <div style="font-size:10px;color:#334155;font-weight:700;margin-bottom:2px">Overall Database Health</div>
+    <div class="hs-bar-bg">
+      <div class="hs-bar-fg" style="width:{{ h.score }}%;background:{{ h.color }}"></div>
+    </div>
+    <div class="hs-components">
+      <div class="hs-comp">
+        <span class="hs-comp-lbl">Host CPU</span>
+        <span class="hs-comp-val" style="color:{{ h.color }}">{{ h.cpu_pts }}/25</span>
+      </div>
+      <div class="hs-comp">
+        <span class="hs-comp-lbl">Buffer Cache</span>
+        <span class="hs-comp-val" style="color:{{ h.color }}">{{ h.cache_pts }}/25</span>
+      </div>
+      <div class="hs-comp">
+        <span class="hs-comp-lbl">Wait Events</span>
+        <span class="hs-comp-val" style="color:{{ h.color }}">{{ h.wait_pts }}/25</span>
+      </div>
+      <div class="hs-comp">
+        <span class="hs-comp-lbl">Parse Pressure</span>
+        <span class="hs-comp-val" style="color:{{ h.color }}">{{ h.parse_pts }}/25</span>
+      </div>
+    </div>
+  </div>
+  <div style="font-size:10px;color:#475569;line-height:1.6;max-width:220px">
+    <div><strong>Scoring:</strong> CPU load · Buffer hit% · Wait dominance · Hard parse rate</div>
+    <div>GREEN ≥75 &nbsp;·&nbsp; AMBER 50–74 &nbsp;·&nbsp; RED &lt;50</div>
+  </div>
+</div>
+
+{# ─────────────────────────────────────────────────────────── #}
+{# 1. WORKLOAD PROFILE — KPIs with common header             #}
+{# ─────────────────────────────────────────────────────────── #}
+<div class="st"><span class="st-icon">📈</span> Workload Profile — Averages Across All Snapshots</div>
+<div class="kpi-group">
+  <div class="kpi-group-hdr">
+    ⚡ Performance KPIs
+    <span style="font-size:9px;font-weight:500;color:#475569;margin-left:auto">
+      All time metrics in seconds/second (s/s) &nbsp;·&nbsp;
+      Host CPU from <code>awr_os_statistics</code> (BUSY_TIME / total CPU time)
+    </span>
+  </div>
+  <div class="kpi-row">
+
+    {% set dt_class = 'crit' if kpi.db_time_ss > 50 else ('warn' if kpi.db_time_ss > 20 else '') %}
+    <div class="kpi {{ dt_class }}">
+      <div class="kpi-lbl">Avg DB Time</div>
+      <div class="kpi-val {{ dt_class }}">{{ kpi.db_time_ss }}</div>
+      <div class="kpi-sub">seconds / second (s/s)</div>
+    </div>
+
+    {% set cpu_class = 'crit' if kpi.db_cpu_ss > 40 else ('warn' if kpi.db_cpu_ss > 20 else '') %}
+    <div class="kpi {{ cpu_class }}">
+      <div class="kpi-lbl">Avg DB CPU</div>
+      <div class="kpi-val {{ cpu_class }}">{{ kpi.db_cpu_ss }}</div>
+      <div class="kpi-sub">seconds / second (s/s)</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-lbl">Avg TPS</div>
+      <div class="kpi-val">{{ kpi.tps }}</div>
+      <div class="kpi-sub">transactions / second</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-lbl">Avg Logical Reads</div>
+      <div class="kpi-val">{{ kpi.logical_reads | int }}</div>
+      <div class="kpi-sub">blocks / second</div>
+    </div>
+
+    {% set pr_class = 'warn' if kpi.physical_reads > 1000 else '' %}
+    <div class="kpi {{ pr_class }}">
+      <div class="kpi-lbl">Avg Physical Reads</div>
+      <div class="kpi-val {{ pr_class }}">{{ kpi.physical_reads | int }}</div>
+      <div class="kpi-sub">blocks / second</div>
+    </div>
+
+    {% set hp_class = 'warn' if kpi.hard_parses > 5 else '' %}
+    <div class="kpi {{ hp_class }}">
+      <div class="kpi-lbl">Avg Hard Parses</div>
+      <div class="kpi-val {{ hp_class }}">{{ kpi.hard_parses }}</div>
+      <div class="kpi-sub">per second</div>
+    </div>
+
+    {% if kpi.host_cpu_busy is not none %}
+    {% set hc_class = 'crit' if kpi.host_cpu_busy >= 90 else ('warn' if kpi.host_cpu_busy >= 70 else '') %}
+    <div class="kpi {{ hc_class }}">
+      <div class="kpi-lbl">Avg Host CPU</div>
+      <div class="kpi-val {{ hc_class }}">{{ kpi.host_cpu_busy }}%</div>
+      <div class="kpi-sub">busy%{% if kpi.host_io_wait %} · I/O wait {{ kpi.host_io_wait }}%{% endif %}</div>
+    </div>
+    {% endif %}
+
+  </div>
+  <div class="src-note" style="color:#475569">
+    ℹ DB Time &amp; DB CPU: from <code>awr_load_profile</code> (Oracle Load Profile per_sec column) &nbsp;·&nbsp;
+    Host CPU: derived from <code>awr_os_statistics</code> BUSY_TIME ÷ (BUSY_TIME + IDLE_TIME) per snapshot &nbsp;·&nbsp;
+    s/s = aggregate seconds of that resource consumed per 1 second of elapsed time (across all sessions)
+  </div>
+</div>
+
+{# ─────────────────────────────────────────────────────────── #}
+{# 2. AWR SNAPSHOT SUMMARY                                    #}
+{# ─────────────────────────────────────────────────────────── #}
+<div class="st"><span class="st-icon">🗂</span> AWR Snapshot Summary</div>
+<div class="snap-cards">
+{% for sc in snapshot_cards %}
+  <div class="snap-card" style="border-top:3px solid #1B2D5B">
+    <div class="snap-id">Snap {{ sc.snap_id }}</div>
+    <div class="snap-dt">{{ sc.snap_time }}</div>
+    <div class="snap-kpis">
+      <div class="sk"><span class="skl">DB Time (s/s)</span><span class="skv">{{ sc.db_time_ss }}</span></div>
+      <div class="sk"><span class="skl">DB CPU (s/s)</span><span class="skv">{{ sc.db_cpu_ss }}</span></div>
+      <div class="sk"><span class="skl">Transactions/s</span><span class="skv">{{ sc.tps }}</span></div>
+      <div class="sk"><span class="skl">Logical reads/s</span><span class="skv">{{ sc.logical_reads | int }}</span></div>
+      <div class="sk"><span class="skl">Physical reads/s</span><span class="skv">{{ sc.physical_reads | int }}</span></div>
+      <div class="sk"><span class="skl">Hard parses/s</span><span class="skv">{{ sc.hard_parses }}</span></div>
+      {% if sc.host_cpu_pct is not none %}
+      <div class="sk"><span class="skl">Host CPU busy%</span>
+        <span class="skv"
+          style="color:{% if sc.host_cpu_pct >= 90 %}#dc2626{% elif sc.host_cpu_pct >= 70 %}#ea580c{% else %}#1B2D5B{% endif %}">
+          {{ sc.host_cpu_pct }}%
+        </span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+{% endfor %}
+</div>
+
+{# ─────────────────────────────────────────────────────────── #}
+{# 3. TREND ACROSS SNAPSHOTS (moved here — per requirement)  #}
+{# ─────────────────────────────────────────────────────────── #}
+<div class="st"><span class="st-icon">📉</span> Trend Across Snapshots</div>
+<div class="g3">
+  <div class="cc"><h3>DB Time (s/s)</h3><div class="cwt"><canvas id="dbTimeChart"></canvas></div></div>
+  <div class="cc"><h3>DB CPU (s/s)</h3><div class="cwt"><canvas id="dbCpuChart"></canvas></div></div>
+  <div class="cc"><h3>Transactions / s</h3><div class="cwt"><canvas id="tpsChart"></canvas></div></div>
+</div>
+<div class="g3">
+  <div class="cc"><h3>Physical Reads / s</h3><div class="cwt"><canvas id="prChart"></canvas></div></div>
+  <div class="cc"><h3>Hard Parses / s</h3><div class="cwt"><canvas id="hpChart"></canvas></div></div>
+  <div class="cc"><h3>Host CPU Busy %</h3><div class="cwt"><canvas id="cpuChart"></canvas></div></div>
+</div>
+
+{# ─────────────────────────────────────────────────────────── #}
+{# 4. WAIT EVENTS                                             #}
+{# ─────────────────────────────────────────────────────────── #}
+<div class="st"><span class="st-icon">⏱</span> Performance Analysis — Wait Events</div>
+<div class="g2">
+  <div>
+    <div class="cc"><h3>Top Wait Events — Avg % of DB Time</h3><div class="cw"><canvas id="waitChart"></canvas></div></div>
+  </div>
+  <div>
+    <div class="cc"><h3>Wait Class Distribution — % of DB Time</h3><div class="cw"><canvas id="wcChart"></canvas></div></div>
+  </div>
+</div>
+
+<div class="g2">
+  <div>
+    <div class="tc">
+      <table>
+        <thead><tr>
+          <th style="width:42%">Event</th>
+          <th class="right">Total Waits</th>
+          <th class="right">Avg % DB Time</th>
+          <th class="right">Total Wait (s)</th>
+        </tr></thead>
+        <tbody>
+        {% for ev in wait_events %}
+          <tr><td>{{ ev.event }}</td>
+              <td class="num">{{ "{:,}".format(ev.waits) }}</td>
+              <td class="num" style="font-weight:{% if ev.pct_db_time > 10 %}700;color:#dc2626{% elif ev.pct_db_time > 5 %}600;color:#ea580c{% else %}400{% endif %}">{{ ev.pct_db_time }}%</td>
+              <td class="num">{{ ev.total_wait_s | round(1) }} s</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div>
+    <div class="tc">
+      <table>
+        <thead><tr><th>Cache Efficiency Metric</th><th class="right">Avg Value</th><th class="right">Status</th></tr></thead>
+        <tbody>
+        {% for lbl, key, good_above in [
+            ('Buffer Hit %',      'buffer_hit',    95),
+            ('Library Hit %',     'library_hit',   95),
+            ('Soft Parse %',      'soft_parse',    95),
+            ('Buffer Nowait %',   'buffer_nowait', 99),
+            ('Execute to Parse %','execute_to_parse', 80),
+          ] %}
+          {% set val = cache_ratios.get(key) %}
+          <tr><td>{{ lbl }}</td>
+              <td class="num" style="font-weight:600;color:{% if val is none %}#aaa{% elif val >= good_above %}#0F6E56{% else %}#dc2626{% endif %}">
+                {{ val if val is not none else '—' }}</td>
+              <td class="num" style="font-size:12px">
+                {% if val is none %}—
+                {% elif val >= good_above %}✅
+                {% else %}⚠️
+                {% endif %}
+              </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p class="src-note" style="color:#475569" style="margin-top:8px">Source: awr_instance_efficiency</p>
+    </div>
+  </div>
+</div>
+
+{# ── Exadata wait event annotation ── only when licensed + data present ─── #}
+{% if exa_licensed and exadata and exadata.is_exadata %}
+<div class="tc gf" style="border-left:3px solid #0F6E56">
+  <div style="font-size:9px;font-weight:700;color:#0F6E56;text-transform:uppercase;
+              letter-spacing:.8px;margin-bottom:8px;padding:4px 0">
+    ⚡ Exadata Wait Event Interpretation
+  </div>
+  <table>
+    <thead><tr>
+      <th style="width:22%">Wait Event</th>
+      <th style="width:14%">Exadata Type</th>
+      <th style="width:38%">Meaning on Exadata</th>
+      <th style="width:26%">Investigation Action</th>
+    </tr></thead>
+    <tbody>
+    {% set exa_matched = [] %}
+    {% for ev in wait_events %}
+      {% set exa_info = exa_wait_map.get(ev.event) %}
+      {% if exa_info %}
+      {% set _ = exa_matched.append(1) %}
+      <tr style="background:{% if 'passthru' in ev.event.lower() %}#fef2f2{% elif 'smart' in ev.event.lower() %}#f0fdf4{% else %}#f8fafc{% endif %}">
+        <td style="font-weight:600;color:#1a2035;font-size:11px">
+          <span style="font-size:13px">{{ exa_info.icon }}</span> {{ ev.event }}
+          <div style="font-size:9px;color:#475569;font-weight:400;margin-top:1px">
+            {{ ev.pct_db_time }}% of DB time · {{ "{:,}".format(ev.waits) }} waits
+          </div>
+        </td>
+        <td>
+          <span style="font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600;
+            background:{% if 'passthru' in ev.event.lower() %}#fecaca;color:#991b1b
+            {% elif 'smart' in ev.event.lower() %}#bbf7d0;color:#0F6E56
+            {% else %}#bfdbfe;color:#1e40af{% endif %}">
+            {{ exa_info.type }}
+          </span>
+        </td>
+        <td style="font-size:11px;color:#334155;line-height:1.55">{{ exa_info.meaning }}</td>
+        <td style="font-size:10px;color:#475569;line-height:1.55">{{ exa_info.action }}</td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+    {% if not exa_matched %}
+    <tr><td colspan="4" style="color:#64748b;font-style:italic;padding:8px;font-size:11px">
+      No recognised Exadata cell wait events in the top waits — workload may be
+      CPU-bound or the DB is not offloading queries to cells.
+    </td></tr>
+    {% endif %}
+    </tbody>
+  </table>
+  <p class="src-note" style="color:#475569;margin-top:6px">
+    Cross-reference with ⚡ Exadata Statistics section below — FC hit%, passthru% and IO Reasons confirm whether the wait events above indicate a storage, cache, or network issue.
+  </p>
+</div>
+{% endif %}
+
+{# ─────────────────────────────────────────────────────────── #}
+{# 5. SQL SEVERITY SUMMARY                                    #}
+{# ─────────────────────────────────────────────────────────── #}
+<div class="st"><span class="st-icon">🔍</span> SQL Severity Summary — Top SQL</div>
+
+{# Severity count banner #}
+<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+  {% for sev, col, bg in [('CRITICAL','#dc2626','#fef2f2'),('HIGH','#ea580c','#fff7ed'),
+                           ('MEDIUM','#ca8a04','#fefce8'),('LOW','#16a34a','#f0fdf4')] %}
+  <div style="background:{{ bg }};border:1px solid {{ col }}30;border-radius:7px;
+              padding:6px 12px;font-size:11px;display:flex;align-items:center;gap:6px">
+    <span class="sev" style="background:{{ col }};color:#fff">{{ sev }}</span>
+    <span style="font-weight:700;color:{{ col }}">{{ sql_sev_counts.get(sev, 0) }}</span>
+    <span style="color:#334155;font-weight:500">SQL{{ 's' if sql_sev_counts.get(sev, 0) != 1 else '' }}</span>
+  </div>
+  {% endfor %}
+</div>
+
+{% if plan_unstable_sqls %}
+<div style="background:#f5f0ff;border:1px solid #7C3AED40;border-radius:7px;
+            padding:8px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px">
+  <span style="font-size:14px">⚠️</span>
+  <span style="font-size:11px;color:#5b21b6;font-weight:600">
+    Plan Stability Alert — {{ plan_unstable_sqls | length }} SQL(s) show
+    &gt;50% elapsed-time variance across snapshots (possible plan flip or data skew).
+    SQL IDs: {{ plan_unstable_sqls | map(attribute='sql_id') | join(', ') }}
+  </span>
+</div>
+{% endif %}
+
+<div class="tc gf scroll">
+  <table>
+    <thead><tr>
+      <th>Severity</th>
+      <th>SQL ID</th>
+      <th>Module</th>
+      <th class="right">Executions</th>
+      <th class="right">Total Elapsed (s)</th>
+      <th class="right">Elapsed/Exec (s)</th>
+      <th class="right">Total CPU (s)</th>
+      <th class="right">CPU/Exec (s)</th>
+      <th class="right">Avg Gets/Exec</th>
+      <th class="right">Avg Reads/Exec</th>
+      <th class="right">% of Total</th>
+      <th>Plan</th>
+      <th>SQL Preview</th>
+    </tr></thead>
+    <tbody>
+    {% for sq in top_sql %}
+      <tr>
+        <td><span class="sev" style="background:{{ sq.sev_color }};color:#fff">{{ sq.severity }}</span></td>
+        <td class="mono">{{ sq.sql_id }}</td>
+        <td style="font-size:10px;color:#334155">{{ sq.module or '—' }}</td>
+        <td class="num">{{ "{:,}".format(sq.executions) }}</td>
+        <td class="num" style="font-weight:600">{{ sq.total_elapsed }} s</td>
+        <td class="num">{{ sq.elapsed_per_exec }} s</td>
+        <td class="num">{{ sq.total_cpu }} s</td>
+        <td class="num">{{ sq.cpu_per_exec }} s</td>
+        <td class="num" style="font-weight:600">{{ sq.avg_gets | int }}</td>
+        <td class="num" style="color:{% if sq.avg_reads > 100 %}#dc2626{% else %}#555{% endif %}">{{ sq.avg_reads | int }}</td>
+        <td class="num" style="font-weight:700;color:{{ sq.sev_color }}">{{ sq.pct_total }}%</td>
+        <td style="text-align:center">
+          {% if sq.plan_unstable %}
+            <span class="sev" style="background:#7C3AED;color:#fff" title="Elapsed time variance >50% across snaps — possible plan flip">⚠ Unstable</span>
+          {% else %}
+            <span style="font-size:10px;color:#16a34a">✓ Stable</span>
+          {% endif %}
+        </td>
+        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+                   font-size:10px;color:#475569" title="{{ sq.sql_text_preview }}">
+          {{ sq.sql_text_preview[:70] }}{% if sq.sql_text_preview | length > 70 %}…{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="src-note" style="color:#475569">Source: awr_sql_elapsed_time &nbsp;·&nbsp; Severity: CRITICAL ≥30% | HIGH 15–30% | MEDIUM 5–15% | LOW &lt;5%</p>
+</div>
+
+{# SQL Severity chart + SQL top bar chart side-by-side #}
+<div class="g2">
+  <div class="cc">
+    <h3>Top SQL Distribution by Severity</h3>
+    <div class="cws"><canvas id="sqlSevChart"></canvas></div>
+  </div>
+  <div class="cc">
+    <h3>Top SQL — Total Elapsed Time (s)</h3>
+    <div class="cws"><canvas id="sqlChart"></canvas></div>
+  </div>
+</div>
+
+{# ─────────────────────────────────────────────────────────── #}
+{# 6. SEGMENT SEVERITY SUMMARY                                #}
+{# ─────────────────────────────────────────────────────────── #}
+<div class="st"><span class="st-icon">🗃</span> Segment Severity Summary — Top Objects by Logical Reads</div>
+
+<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+  {% for sev, col, bg in [('HOT','#dc2626','#fef2f2'),('WARM','#ea580c','#fff7ed'),
+                           ('COOL','#ca8a04','#fefce8'),('NORMAL','#16a34a','#f0fdf4')] %}
+  <div style="background:{{ bg }};border:1px solid {{ col }}30;border-radius:7px;
+              padding:6px 12px;font-size:11px;display:flex;align-items:center;gap:6px">
+    <span class="sev" style="background:{{ col }};color:#fff">{{ sev }}</span>
+    <span style="font-weight:700;color:{{ col }}">{{ seg_sev_counts.get(sev, 0) }}</span>
+    <span style="color:#334155;font-weight:500">object{{ 's' if seg_sev_counts.get(sev, 0) != 1 else '' }}</span>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="tc gf">
+  <table>
+    <thead><tr>
+      <th>Severity</th>
+      <th>Owner</th>
+      <th>Object Name</th>
+      <th>Type</th>
+      <th class="right">Logical Reads</th>
+      <th class="right">% of Total</th>
+    </tr></thead>
+    <tbody>
+    {% for obj in top_objects %}
+      <tr>
+        <td><span class="sev" style="background:{{ obj.sev_color }};color:#fff">{{ obj.severity }}</span></td>
+        <td class="mono" style="font-size:11px">{{ obj.owner }}</td>
+        <td class="mono" style="font-size:11px">{{ obj.object_name }}</td>
+        <td style="font-size:10px;color:#334155">{{ obj.obj_type }}</td>
+        <td class="num">{{ "{:,}".format(obj.logical_reads) }}</td>
+        <td class="num" style="font-weight:700;color:{{ obj.sev_color }}">{{ obj.pct_total }}%</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="src-note" style="color:#475569">Source: awr_seg_logical_reads &nbsp;·&nbsp; Severity: HOT ≥30% | WARM 10–30% | COOL 5–10% | NORMAL &lt;5% of total logical reads</p>
+</div>
+
+{# ─────────────────────────────────────────────────────────── #}
+{# 7. LOAD PROFILE COMPARISON (moved below SQL+Segment)      #}
+{# ─────────────────────────────────────────────────────────── #}
+<div class="st"><span class="st-icon">📋</span> Load Profile Comparison Across Snapshots</div>
+<div class="tc gf scroll">
+  <table>
+    <thead>
+      <tr>
+        <th style="min-width:150px">Metric</th>
+        <th class="right" style="color:#334155;font-size:9px;font-weight:700">Unit</th>
+        {% for sc in snapshot_cards %}
+          <th class="right">{{ sc.short_label }}</th>
+        {% endfor %}
+        <th class="right" style="color:#B45309">Peak</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for row in load_profile_table %}
+      <tr>
+        <td style="font-weight:600;white-space:nowrap">{{ row.label }}</td>
+        <td class="num" style="color:#64748b;font-size:9px;font-weight:500">{{ row.unit }}</td>
+        {% set peak = row.peak %}
+        {% for v in row.vals %}
+          <td class="num {% if v == peak and peak > 0 %}peak-val{% endif %}">{{ v }}</td>
+        {% endfor %}
+        <td class="num" style="font-weight:700;color:#B45309">{{ peak }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="src-note" style="color:#475569">Source: awr_load_profile &nbsp;·&nbsp; Bold red = peak value across snapshots</p>
+</div>
+
+{# ─────────────────────────────────────────────────────────── #}
+{# 7b. EXADATA STATISTICS (only shown for Exadata databases) #}
+{# ─────────────────────────────────────────────────────────── #}
+{% if exa_licensed and exadata and exadata.is_exadata %}
+{# Only shown when: (a) license_exadata=true in portal_config AND (b) awr_exadata_perf_summary has data for selected snaps #}
+<div class="st"><span class="st-icon">⚡</span> Exadata Storage Statistics</div>
+
+{# ── Exadata KPI row ─────────────────────────────────────── #}
+<div class="kpi-group">
+  <div class="kpi-group-hdr">⚡ Exadata Flash Cache &amp; IO KPIs
+    <span style="font-size:9px;font-weight:500;color:#475569;margin-left:auto">
+      Avg across all selected snaps &nbsp;·&nbsp;
+      Sources: awr_exadata_perf_summary, awr_exadata_top_db, awr_exadata_fc_space
+    </span>
+  </div>
+  <div class="kpi-row">
+
+    {% set ps = exadata.perf_summary %}
+    {% set oh_cls = 'crit' if ps.avg_oltp_hit < 70 else ('warn' if ps.avg_oltp_hit < 80 else '') %}
+    <div class="kpi {{ oh_cls }}">
+      <div class="kpi-lbl">FC OLTP Hit %</div>
+      <div class="kpi-val {{ oh_cls }}">{{ ps.avg_oltp_hit }}%</div>
+      <div class="kpi-sub">Flash Cache user-read hit (OLTP)</div>
+    </div>
+
+    {% set sh_cls = 'crit' if ps.avg_scan_hit < 60 else ('warn' if ps.avg_scan_hit < 70 else '') %}
+    <div class="kpi {{ sh_cls }}">
+      <div class="kpi-lbl">FC Scan Hit %</div>
+      <div class="kpi-val {{ sh_cls }}">{{ ps.avg_scan_hit }}%</div>
+      <div class="kpi-sub">Flash Cache user-read hit (Scan)</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-lbl">FC % (DB IOs)</div>
+      <div class="kpi-val">{{ ps.avg_fc_pct }}%</div>
+      <div class="kpi-sub">IOs served from Flash Cache</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-lbl">XRMEM Cache %</div>
+      <div class="kpi-val">{{ ps.avg_xrmem_pct }}%</div>
+      <div class="kpi-sub">IOs served from XRMEM (incl. RDMA {{ ps.avg_rdma_pct }}%)</div>
+    </div>
+
+    {% set td = exadata.top_db %}
+    {% if td %}
+    {% set iq_cls = 'crit' if td.avg_iorm_ms > 14 else ('warn' if td.avg_iorm_ms > 5 else '') %}
+    <div class="kpi {{ iq_cls }}">
+      <div class="kpi-lbl">Avg IORM Queue</div>
+      <div class="kpi-val {{ iq_cls }}">{{ td.avg_iorm_ms }} ms</div>
+      <div class="kpi-sub">Large IO queue time (max {{ td.max_iorm_ms }} ms)</div>
+    </div>
+    {% endif %}
+
+    {% set lw_cls = 'crit' if exadata.avg_lw_pct > 28 else ('warn' if exadata.avg_lw_pct > 20 else '') %}
+    <div class="kpi {{ lw_cls }}">
+      <div class="kpi-lbl">FC Large Write %</div>
+      <div class="kpi-val {{ lw_cls }}">{{ exadata.avg_lw_pct | round(1) }}%</div>
+      <div class="kpi-sub">FC space used by large writes (threshold 20%)</div>
+    </div>
+
+    {% set fl_cnt = exadata.flushing_cells | length %}
+    {% set fl_cls = 'crit' if fl_cnt > 0 else '' %}
+    <div class="kpi {{ fl_cls }}">
+      <div class="kpi-lbl">Cells Flushing</div>
+      <div class="kpi-val {{ fl_cls }}">{{ fl_cnt }}</div>
+      <div class="kpi-sub">{{ exadata.flushing_cells | join(', ') if fl_cnt else 'None — all cells healthy' }}</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-lbl">SI Savings %</div>
+      <div class="kpi-val">{{ exadata.si_savings_pct }}%</div>
+      <div class="kpi-sub">Storage Index eligibility avoided</div>
+    </div>
+
+    {% if exadata.total_write_rejections > 0 %}
+    <div class="kpi crit">
+      <div class="kpi-lbl">Write Rejections</div>
+      <div class="kpi-val crit">{{ "{:,}".format(exadata.total_write_rejections) }}</div>
+      <div class="kpi-sub">FC Large Write Global Limit hits</div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+{# ── Cell IO + Smart IO side-by-side ─────────────────────── #}
+<div class="g2">
+  {# Flash Cache per-cell health table #}
+  <div>
+    <div class="st" style="margin-top:0"><span class="st-icon">🔋</span> Flash Cache — Per Cell Hit % &amp; Config</div>
+    <div class="tc">
+      <table>
+        <thead><tr>
+          <th>Cell</th><th class="right">OLTP Hit%</th><th class="right">Scan Hit%</th>
+          <th class="right">FC Size</th><th class="right">Flash Log</th><th>Status</th>
+        </tr></thead>
+        <tbody>
+        {% for cfg in exadata.cell_config %}
+          {% set is_flush = cfg.cell_name in exadata.flushing_cells %}
+          <tr>
+            <td class="mono">{{ cfg.cell_name }}</td>
+            <td class="num" style="color:{% if is_flush %}#dc2626{% else %}#1B2D5B{% endif %}">
+              {% set cr = exadata.fc_reads | selectattr('cell_name', 'equalto', cfg.cell_name) | first %}
+              {% if cr %}{{ cr.hits.get('OLTP', cr.hits.get('oltp', '—')) }}%{% else %}—{% endif %}
+            </td>
+            <td class="num" style="color:{% if is_flush %}#dc2626{% else %}#1B2D5B{% endif %}">
+              {% if cr %}{{ cr.hits.get('Scan', cr.hits.get('scan', '—')) }}%{% else %}—{% endif %}
+            </td>
+            <td class="num">{{ cfg.flash_cache_gb }} GB</td>
+            <td class="num">{% if cfg.has_flash_log %}✅ {{ cfg.flash_log_gb }} GB{% else %}❌ None{% endif %}</td>
+            <td>
+              {% if is_flush %}
+                <span class="sev" style="background:#dc2626;color:#fff">FLUSHING</span>
+              {% else %}
+                <span class="sev" style="background:#16a34a;color:#fff">NORMAL</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p class="src-note" style="color:#475569">awr_exadata_fc_reads · awr_exadata_config · awr_exadata_fc_config</p>
+    </div>
+  </div>
+
+  {# Cell IO statistics table #}
+  <div>
+    <div class="st" style="margin-top:0"><span class="st-icon">📡</span> Cell IO Statistics — Avg IOPs &amp; Utilisation</div>
+    <div class="tc">
+      <table>
+        <thead><tr>
+          <th>Cell</th><th class="right">Avg IOPs</th><th class="right">Avg Util%</th>
+          <th>Outlier</th><th>Max Cap</th>
+        </tr></thead>
+        <tbody>
+        {% for ci in exadata.cell_iostat %}
+          <tr>
+            <td class="mono">{{ ci.cell_name }}</td>
+            <td class="num">{{ ci.avg_iops | int | string | replace(',', '') }}</td>
+            <td class="num" style="color:{% if ci.avg_util > 80 %}#dc2626{% elif ci.avg_util > 60 %}#ea580c{% else %}#1B2D5B{% endif %}">
+              {{ ci.avg_util }}%</td>
+            <td>{% if ci.ever_outlier %}<span class="sev" style="background:#dc2626;color:#fff">YES</span>{% else %}—{% endif %}</td>
+            <td>{% if ci.ever_maxcap %}<span class="sev" style="background:#dc2626;color:#fff">YES</span>{% else %}—{% endif %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p class="src-note" style="color:#475569">awr_exadata_cell_iostat</p>
+    </div>
+  </div>
+</div>
+
+{# ── Smart IO + IO Reasons side-by-side ──────────────────── #}
+<div class="g2">
+  {# Smart IO — Flash vs Disk per cell #}
+  <div>
+    <div class="st" style="margin-top:0"><span class="st-icon">🔍</span> Smart IO — Flash / Disk / Passthru Split</div>
+    <div class="tc">
+      <table>
+        <thead><tr>
+          <th>Cell</th>
+          <th class="right">Eligible MB</th><th class="right">Flash MB</th>
+          <th class="right">Disk MB</th><th class="right">Disk %</th>
+          <th class="right">Passthru %</th><th class="right">SI Savings</th>
+        </tr></thead>
+        <tbody>
+        {% for si in exadata.smart_io %}
+          {% set total = si.avg_flash + si.avg_disk %}
+          <tr>
+            <td class="mono">{{ si.cell_name }}</td>
+            <td class="num">{{ si.avg_eligible | int }}</td>
+            <td class="num" style="color:#0F6E56">{{ si.avg_flash | int }}</td>
+            <td class="num" style="color:{% if si.avg_disk_pct > 30 %}#dc2626{% else %}#555{% endif %}">{{ si.avg_disk | int }}</td>
+            <td class="num" style="color:{% if si.avg_disk_pct > 30 %}#dc2626{% elif si.avg_disk_pct > 15 %}#ea580c{% else %}#555{% endif %}">
+              {{ si.avg_disk_pct }}%</td>
+            <td class="num" style="color:{% if si.avg_passthru_pct > 15 %}#dc2626{% else %}#555{% endif %}">
+              {{ si.avg_passthru_pct }}%</td>
+            <td class="num">{{ si.avg_si_savings | int }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p class="src-note" style="color:#475569">awr_exadata_smart_io — averages across selected snaps</p>
+    </div>
+  </div>
+
+  {# IO Reasons breakdown #}
+  <div>
+    <div class="st" style="margin-top:0"><span class="st-icon">📊</span> IO Reasons — Cell IO Request Breakdown</div>
+    <div class="tc">
+      <table>
+        <thead><tr>
+          <th>Reason</th><th class="right">Total Requests</th>
+          <th class="right">% of Cell IO</th><th class="right">Total MB</th>
+        </tr></thead>
+        <tbody>
+        {% for ir in exadata.io_reasons %}
+          <tr>
+            <td style="font-weight:{% if 'smart' in ir.reason | lower %}600{% else %}400{% endif %}">
+              {% if 'smart' in ir.reason | lower %}🟢 {% elif 'redo' in ir.reason | lower %}🔵 
+              {% elif 'internal' in ir.reason | lower %}🟡 {% elif 'scrub' in ir.reason | lower %}🟠 
+              {% else %}⚪ {% endif %}{{ ir.reason }}</td>
+            <td class="num">{{ "{:,}".format(ir.total_req) }}</td>
+            <td class="num">
+              <div style="display:flex;align-items:center;gap:6px;justify-content:flex-end">
+                {{ ir.pct_req }}%
+                <div style="width:{{ [ir.pct_req * 1.5, 60] | min }}px;height:6px;
+                            background:{% if 'smart' in ir.reason | lower %}#0F6E56
+                            {% elif ir.pct_req > 30 %}#dc2626
+                            {% else %}#1B2D5B{% endif %};
+                            border-radius:3px;min-width:2px"></div>
+              </div>
+            </td>
+            <td class="num">{{ ir.total_mb | round(0) | int }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p class="src-note" style="color:#475569">awr_exadata_io_reasons — 'All' cells aggregate</p>
+    </div>
+  </div>
+</div>
+
+{# ── FC Space + Write Rejections ─────────────────────────── #}
+<div class="g2">
+  <div>
+    <div class="st" style="margin-top:0"><span class="st-icon">💾</span> Flash Cache Space Usage — Large Write %</div>
+    <div class="tc">
+      <table>
+        <thead><tr>
+          <th>Cell</th><th class="right">FC Size (MB)</th>
+          <th class="right">Avg LW %</th><th class="right">Max LW %</th><th>Status</th>
+        </tr></thead>
+        <tbody>
+        {% for sp in exadata.fc_space %}
+          {% set lw_cls = 'crit' if sp.avg_lw_pct > 28 else ('warn' if sp.avg_lw_pct > 20 else '') %}
+          <tr>
+            <td class="mono">{{ sp.cell_name }}</td>
+            <td class="num">{{ sp.total_fc_mb | int }}</td>
+            <td class="num {% if lw_cls == 'crit' %}peak-val{% elif lw_cls == 'warn' %}{% endif %}"
+                style="{% if lw_cls %}font-weight:700;color:{% if lw_cls == 'crit' %}#dc2626{% else %}#ea580c{% endif %}{% endif %}">
+              {{ sp.avg_lw_pct }}%</td>
+            <td class="num" style="color:#334155;font-weight:500">{{ sp.max_lw_pct }}%</td>
+            <td>
+              {% if sp.avg_lw_pct > 28 %}<span class="sev" style="background:#dc2626;color:#fff">CRITICAL</span>
+              {% elif sp.avg_lw_pct > 20 %}<span class="sev" style="background:#ea580c;color:#fff">HIGH</span>
+              {% elif sp.avg_lw_pct > 15 %}<span class="sev" style="background:#ca8a04;color:#fff">WARN</span>
+              {% else %}<span class="sev" style="background:#16a34a;color:#fff">OK</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p class="src-note" style="color:#475569">awr_exadata_fc_space · Threshold: WARN &gt;15% | HIGH &gt;20% | CRITICAL &gt;28%</p>
+    </div>
+  </div>
+
+  {# Write rejections + disk outliers #}
+  <div>
+    {% if exadata.write_rejections %}
+    <div class="st" style="margin-top:0"><span class="st-icon">🚫</span> FC Write Rejections</div>
+    <div class="tc" style="margin-bottom:10px">
+      <table>
+        <thead><tr><th>Rejection Reason</th><th class="right">Count</th></tr></thead>
+        <tbody>
+        {% for rej in exadata.write_rejections %}
+          <tr><td style="color:#dc2626;font-weight:600">{{ rej.reason }}</td>
+              <td class="num peak-val">{{ "{:,}".format(rej.total_rej) }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p class="src-note" style="color:#475569">awr_exadata_fc_write_reject</p>
+    </div>
+    {% endif %}
+
+    {% if exadata.disk_outliers %}
+    <div class="st" style="margin-top:0"><span class="st-icon">⚠️</span> Disk-Level Outliers</div>
+    <div class="tc">
+      <table>
+        <thead><tr><th>Cell</th><th>Device</th><th class="right">Avg Util%</th></tr></thead>
+        <tbody>
+        {% for d in exadata.disk_outliers %}
+          <tr><td class="mono">{{ d.cell_name }}</td>
+              <td style="font-size:10px">{{ d.device_type }}</td>
+              <td class="num" style="color:#dc2626;font-weight:700">{{ d.avg_util }}%</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p class="src-note" style="color:#475569">awr_exadata_disk_iostat</p>
+    </div>
+    {% endif %}
+
+    {% if not exadata.write_rejections and not exadata.disk_outliers %}
+    <div class="tc" style="padding:18px;text-align:center;color:#0F6E56">
+      ✅ No write rejections detected &nbsp;·&nbsp; No disk-level outliers
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endif %}{# end exadata #}
+
+{# ─────────────────────────────────────────────────────────── #}
+{# I/O PROFILE BREAKDOWN                                      #}
+{# ─────────────────────────────────────────────────────────── #}
+{% if io_profile %}
+<div class="st"><span class="st-icon">💿</span> I/O Profile — Reads &amp; Writes by Function</div>
+{% set max_rps = (io_profile | map(attribute='avg_read_rps') | max) or 1 %}
+<div class="tc gf">
+  <table>
+    <thead><tr>
+      <th>I/O Function</th>
+      <th class="right">Avg Read Req/s</th>
+      <th class="right">Avg Read MB/s</th>
+      <th class="right">Avg Write Req/s</th>
+      <th class="right">Avg Write MB/s</th>
+      <th class="right">Avg Latency (ms)</th>
+      <th>Read Share</th>
+    </tr></thead>
+    <tbody>
+    {% for fn in io_profile %}
+      {% set bar_w = [((fn.avg_read_rps / max_rps) * 80) | int, 80] | min %}
+      <tr>
+        <td style="font-weight:600;white-space:nowrap">
+          {% if 'Smart' in fn.function_name %}🟢
+          {% elif 'Direct' in fn.function_name %}🔵
+          {% elif 'Buffer' in fn.function_name %}🟡
+          {% elif 'Redo' in fn.function_name or 'Log' in fn.function_name %}🟠
+          {% elif 'DBWR' in fn.function_name or 'LGWR' in fn.function_name %}🔴
+          {% else %}⚪{% endif %}
+          {{ fn.function_name }}
+        </td>
+        <td class="num">{{ fn.avg_read_rps }}</td>
+        <td class="num">{{ fn.avg_read_mbps }}</td>
+        <td class="num">{{ fn.avg_write_rps }}</td>
+        <td class="num">{{ fn.avg_write_mbps }}</td>
+        <td class="num" style="color:{% if fn.avg_latency_ms > 20 %}#dc2626{% elif fn.avg_latency_ms > 5 %}#ea580c{% else %}#555{% endif %}">{{ fn.avg_latency_ms }}</td>
+        <td><div style="width:{{ bar_w }}px;height:8px;border-radius:4px;background:{% if 'Smart' in fn.function_name %}#0F6E56{% elif 'Direct' in fn.function_name %}#1B2D5B{% else %}#aaa{% endif %}"></div></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="src-note" style="color:#475569">Source: awr_iostat_function &nbsp;·&nbsp; 🟢 Smart Scan 🔵 Direct Path 🟡 Buffer Cache 🟠 Redo 🔴 DBWR</p>
+</div>
+{% endif %}
+
+{# ─────────────────────────────────────────────────────────── #}
+{# PARSING PRESSURE + REDO SIZING                             #}
+{# ─────────────────────────────────────────────────────────── #}
+<div class="st"><span class="st-icon">🔬</span> Diagnostics — Parse Pressure &amp; Redo Sizing</div>
+<div class="g2">
+  <div class="cc">
+    <h3>Parsing Pressure Indicator</h3>
+    <div style="padding:4px 0">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:11px;color:#334155;font-weight:500">Total parses/s</span>
+        <span style="font-size:13px;font-weight:700">{{ parses_ps }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:11px;color:#334155;font-weight:500">Hard parses/s</span>
+        <span style="font-size:13px;font-weight:700;color:{% if hard_ps > 10 %}#dc2626{% elif hard_ps > 5 %}#ea580c{% else %}#16a34a{% endif %}">{{ hard_ps }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;
+                  padding:8px;background:#F7F9FC;border-radius:7px">
+        <span style="font-size:11px;font-weight:600">Soft Parse Efficiency</span>
+        <span style="font-size:20px;font-weight:800;color:{% if parse_eff >= 95 %}#16a34a{% elif parse_eff >= 85 %}#ca8a04{% else %}#dc2626{% endif %}">{{ parse_eff }}%</span>
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#475569;line-height:1.5">
+        Hard parses cause library cache misses and CPU overhead. Target ≥95% soft parse.
+        {% if parse_eff < 95 %}<strong style="color:#ea580c"> Review CURSOR_SHARING and bind variable usage.</strong>{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="cc">
+    <h3>Redo Log Sizing Recommendation</h3>
+    <div style="padding:4px 0">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:11px;color:#334155;font-weight:500">Avg redo generated</span>
+        <span style="font-size:13px;font-weight:700">{{ redo_mb_ps }} MB/s</span>
+      </div>
+      {% if recommended_log_mb %}
+      <div style="display:flex;justify-content:space-between;align-items:center;
+                  padding:8px;background:#F7F9FC;border-radius:7px;margin-bottom:8px">
+        <span style="font-size:11px;font-weight:600">Recommended log size</span>
+        <span style="font-size:20px;font-weight:800;color:#1B2D5B">{{ (recommended_log_mb / 1024) | round(1) }} GB</span>
+      </div>
+      <div style="font-size:10px;color:#334155;line-height:1.5">
+        {{ redo_mb_ps }} MB/s × 1200 s (20-min target) = {{ recommended_log_mb | int }} MB/log group.
+        Aim for &lt;3 log switches/hour.
+      </div>
+      {% else %}
+      <div style="font-size:11px;color:#475569;padding:12px;text-align:center">Redo size metric not available for these snapshots.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{# ─────────────────────────────────────────────────────────── #}
+{# RCA TEMPLATE                                               #}
+{# ─────────────────────────────────────────────────────────── #}
+<div class="st"><span class="st-icon">📝</span> RCA Template — Root Cause Analysis</div>
+{# Editable version (screen only) #}
+<div class="rca-wrap" id="rca-editable" style="border:2px solid #dee2ec;background:#fff">
+  <div class="no-print" style="font-size:10px;color:#475569;font-weight:600;margin-bottom:10px">
+    📝 Pre-filled from report data — click any field to edit before printing
+  </div>
+  {% set rca_rows = [
+    ('🔴 Symptoms',   dbname~'/'~instance~' degraded — top wait: '~top_wait_event~' · DB Time '~kpi.db_time_ss~' s/s · Health '~health.rag),
+    ('🎯 Root Cause', conclusion.hotspots[0] if conclusion.hotspots else 'See hotspot analysis'),
+    ('🔎 Evidence',   'Snaps: '~(snap_id_list|join(', '))~' · Score: '~health.score~'/100 · Top SQL elapsed: '~(top_sql[0].total_elapsed|string if top_sql else 'N/A')~' s'),
+    ('✅ Action Plan', conclusion.recommendations[0][0]~': '~conclusion.recommendations[0][1][:100] if conclusion.recommendations else ''),
+    ('📅 Timeline',   'Start: __ · Identified: __ · Resolved: __ · Duration: __'),
+    ('👤 Owner',      'DBA: __ · Change ref: __ · Status: Open / In-progress / Resolved'),
+  ] %}
+  {% for lbl, val in rca_rows %}
+  <div class="rca-section">
+    <div class="rca-lbl">{{ lbl }}</div>
+    <div class="rca-val" contenteditable="true" style="cursor:text;outline:none">{{ val }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+{# Print version of RCA #}
+<div class="rca-wrap" id="rca-print" style="display:none">
+  <div style="font-size:10px;font-weight:700;color:#1B2D5B;margin-bottom:12px">
+    🔬 ROOT CAUSE ANALYSIS — {{ dbname }}/{{ instance }} — Snaps: {{ snap_id_list|join(', ') }}
+  </div>
+  {% for lbl in ['🔴 Symptoms','🎯 Root Cause','🔎 Evidence','✅ Action Plan','📅 Timeline','👤 Owner'] %}
+  <div class="rca-section">
+    <div class="rca-lbl">{{ lbl }}</div>
+    <div class="rca-val" style="min-height:28px">&nbsp;</div>
+  </div>
+  {% endfor %}
+</div>
+<style>
+  @media print{
+    /* RCA editable version prints with its pre-filled data */
+    #rca-editable .rca-val{min-height:auto}
+    /* Remove orange border styling for clean print */
+    #rca-editable{border:1px solid #dee2ec!important;background:#fff!important}
+  }
+</style>
+
+
+  <div class="ch">📋 Conclusion &amp; Recommendations</div>
+  <div class="conc-body">
+
+    <div class="conc-section conc-full">
+      <div class="ct">🎯 Conclusion</div>
+      <div class="cv">{{ conclusion.text }}</div>
+    </div>
+
+    <div class="conc-section">
+      <div class="ct">🔥 Hotspot Areas</div>
+      {% for h in conclusion.hotspots %}
+      <div class="hs">{{ h }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="conc-section">
+      <div class="ct">✅ Recommendations</div>
+      {% for title, detail in conclusion.recommendations %}
+      <div class="rec">
+        <div class="rec-title">{{ title }}</div>
+        <div class="rec-body">{{ detail }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="conc-section conc-full">
+      <div class="ct">⚡ Risk if Unresolved</div>
+      <div class="rb">{{ conclusion.risk }}</div>
+    </div>
+
+  </div>
+</div>
+
+</div>{# /body #}
+<div class="footer">
+  AWR Insight Portal &nbsp;·&nbsp; Analysis Report &nbsp;·&nbsp;
+  {{ dbname }}/{{ instance }} &nbsp;·&nbsp; Generated: {{ generated_at }}
+</div>
+
+<script>
+// ── PDF filename ────────────────────────────────────────────
+var _pdfName = "{{ pdf_filename | e }}";
+function downloadPDF(){
+  var orig = document.title;
+  document.title = _pdfName;
+  // Tip: in Chrome print dialog, tick "Background graphics" to preserve
+  // the dark header and conclusion panel colours in the saved PDF.
+  window.print();
+  setTimeout(function(){ document.title = orig; }, 3000);
+}
+
+// ── Chart defaults ──────────────────────────────────────────
+Chart.defaults.font.size = 10;
+Chart.defaults.font.family = "system-ui,sans-serif";
+var iX  = {mode:"index", intersect:false};
+var xO  = {ticks:{maxTicksLimit:12, font:{size:9}}, grid:{color:"#F5F5F5"}};
+var yN  = {grid:{color:"#F5F5F5"}, ticks:{font:{size:9}}};
+var COL = ["#1B2D5B","#dc2626","#0F6E56","#B45309","#7C3AED",
+           "#0C447C","#6B2D5E","#1D6A45","#334155","#0369A1"];
+
+// ── Trend line charts ───────────────────────────────────────
+(function(){
+  var labels = {{ trend.labels | tojson }};
+  var opts = {responsive:true, maintainAspectRatio:false, interaction:iX,
+    plugins:{legend:{display:false}}, scales:{x:xO, y:yN}};
+
+  function lc(id, label, data, color){
+    if(!document.getElementById(id)) return;
+    new Chart(document.getElementById(id), {type:"line",
+      data:{labels:labels, datasets:[{label:label, data:data,
+        borderColor:color, backgroundColor:color+"22",
+        fill:true, tension:0.3, pointRadius:3, borderWidth:2}]},
+      options:opts});
+  }
+
+  lc("dbTimeChart", "DB Time (s/s)",      {{ trend.db_time      | tojson }}, "#1B2D5B");
+  lc("dbCpuChart",  "DB CPU (s/s)",       {{ trend.db_cpu       | tojson }}, "#0F6E56");
+  lc("tpsChart",    "Transactions/s",     {{ trend.tps          | tojson }}, "#0F6E56");
+  lc("prChart",     "Physical reads/s",   {{ trend.physical_reads| tojson }}, "#B45309");
+  lc("hpChart",     "Hard parses/s",      {{ trend.hard_parses  | tojson }}, "#dc2626");
+
+  // Host CPU — with 0-100 y-axis and % ticks
+  if(document.getElementById("cpuChart")) {
+    new Chart(document.getElementById("cpuChart"), {type:"line",
+      data:{labels:labels, datasets:[{label:"CPU busy%",
+        data:{{ trend.host_cpu | tojson }}, borderColor:"#7C3AED",
+        backgroundColor:"rgba(124,58,237,.1)", fill:true,
+        tension:0.3, pointRadius:3, borderWidth:2}]},
+      options:{responsive:true, maintainAspectRatio:false, interaction:iX,
+        plugins:{legend:{display:false}},
+        scales:{x:xO, y:{...yN, min:0, max:100,
+          ticks:{callback:function(v){return v+"%"}, font:{size:9}}}}}});
+  }
+})();
+
+// ── Wait events horizontal bar ──────────────────────────────
+(function(){
+  var wl = {{ wait_events | map(attribute='event')      | list | tojson }};
+  var wd = {{ wait_events | map(attribute='pct_db_time') | list | tojson }};
+  if(!wl.length || !document.getElementById("waitChart")) return;
+  new Chart(document.getElementById("waitChart"), {type:"bar",
+    data:{labels:wl, datasets:[{label:"Avg % DB time", data:wd,
+      backgroundColor:wl.map(function(_,i){return COL[i%COL.length]}),
+      borderWidth:0, borderRadius:3}]},
+    options:{responsive:true, maintainAspectRatio:false, indexAxis:"y",
+      plugins:{legend:{display:false}},
+      scales:{x:{ticks:{callback:function(v){return v+"%"},font:{size:9}},
+                 grid:{color:"#F5F5F5"}},
+              y:{grid:{display:false}, ticks:{font:{size:9}}}}}});
+})();
+
+// ── Wait class doughnut ─────────────────────────────────────
+(function(){
+  var wl = {{ wait_classes | map(attribute='wait_class')   | list | tojson }};
+  var wd = {{ wait_classes | map(attribute='pct_db_time')  | list | tojson }};
+  if(!wl.length || !document.getElementById("wcChart")) return;
+  new Chart(document.getElementById("wcChart"), {type:"doughnut",
+    data:{labels:wl, datasets:[{data:wd,
+      backgroundColor:COL.slice(0, wl.length),
+      borderWidth:2, borderColor:"#fff"}]},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:"right",
+        labels:{boxWidth:10, font:{size:9}}},
+        tooltip:{callbacks:{label:function(ctx){
+          return ctx.label+": "+ctx.parsed.toFixed(1)+"%";}}}}}});
+})();
+
+// ── SQL severity doughnut ───────────────────────────────────
+(function(){
+  var data = [
+    {{ sql_sev_counts.get('CRITICAL', 0) }},
+    {{ sql_sev_counts.get('HIGH',     0) }},
+    {{ sql_sev_counts.get('MEDIUM',   0) }},
+    {{ sql_sev_counts.get('LOW',      0) }}
+  ];
+  if(!data.some(function(v){return v>0;})) return;
+  if(!document.getElementById("sqlSevChart")) return;
+  new Chart(document.getElementById("sqlSevChart"), {type:"doughnut",
+    data:{labels:["Critical","High","Medium","Low"],
+      datasets:[{data:data,
+        backgroundColor:["#dc2626","#ea580c","#ca8a04","#16a34a"],
+        borderWidth:2, borderColor:"#fff"}]},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:"right",
+        labels:{boxWidth:10, font:{size:9}}}}}});
+})();
+
+// ── SQL top bar chart ───────────────────────────────────────
+(function(){
+  var sl = {{ top_sql | map(attribute='sql_id')        | list | tojson }};
+  var sd = {{ top_sql | map(attribute='total_elapsed') | list | tojson }};
+  if(!sl.length || !document.getElementById("sqlChart")) return;
+  new Chart(document.getElementById("sqlChart"), {type:"bar",
+    data:{labels:sl, datasets:[{label:"Total elapsed (s)", data:sd,
+      backgroundColor:"#1B2D5B", borderWidth:0, borderRadius:3}]},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false}, ticks:{font:{size:9}}},
+              y:{grid:{color:"#F5F5F5"}, ticks:{font:{size:9}}}}}});
+})();
+</script>
+</body>
+</html>

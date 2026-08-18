@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+{% block title %} — Analysis Report{% endblock %}
+
+{% block content %}
+<style>
+.trends-wrap{max-width:1400px;margin:0 auto;padding:20px 24px}
+.sel-bar{background:var(--surface);border:1px solid var(--border);
+         border-radius:var(--radius);padding:14px 18px;margin-bottom:22px;
+         display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.sel-group{display:flex;flex-direction:column;gap:4px}
+.sel-group label{font-size:.75rem;color:var(--text2);font-weight:500}
+.sel-group select{background:var(--surface2);border:1px solid var(--border);
+                  color:var(--text);padding:6px 10px;border-radius:var(--radius);
+                  font-size:.82rem;font-family:inherit;outline:none;cursor:pointer}
+.sel-group select:focus{border-color:var(--accent)}
+.sel-btn{padding:7px 16px;background:var(--accent);color:#000;border:none;
+         border-radius:var(--radius);font-size:.82rem;font-weight:600;
+         cursor:pointer;white-space:nowrap;transition:.15s;align-self:flex-end}
+.sel-btn:hover{background:#fbbf24}
+.sel-btn:disabled{opacity:.45;cursor:not-allowed}
+.sel-btn.sec{background:var(--surface2);color:var(--text2);
+             border:1px solid var(--border)}
+.sel-btn.sec:hover{background:var(--surface)}
+#sel-status{font-size:.75rem;align-self:flex-end;padding-bottom:7px;
+            font-weight:500;transition:.3s}
+#sel-status.ready{color:var(--accent2,#10b981)}
+#sel-status.waiting{color:var(--text2)}
+#sel-status.error{color:#ef4444}
+.sec-block{margin-bottom:28px}
+.sec-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;
+            padding-bottom:8px;border-bottom:1px solid var(--border)}
+.sec-icon{width:30px;height:30px;border-radius:8px;display:flex;
+          align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.sec-title{font-size:.92rem;font-weight:600;color:var(--text)}
+.sec-badge{font-size:.7rem;background:rgba(16,185,129,.15);color:#10b981;
+           padding:1px 8px;border-radius:4px;font-weight:600;margin-left:6px}
+.sec-desc{font-size:.75rem;color:var(--text2);margin-top:1px}
+.snap-list{display:flex;flex-wrap:wrap;gap:5px;max-height:200px;
+           overflow-y:auto;padding:4px 0}
+.snap-chip{display:flex;align-items:center;gap:5px;padding:4px 10px;
+           background:var(--surface2);border:1px solid var(--border);
+           border-radius:20px;cursor:pointer;font-size:.8rem;
+           transition:background .1s,border-color .1s;user-select:none}
+.snap-chip input[type=checkbox]{accent-color:var(--accent);cursor:pointer}
+.snap-chip:hover{background:var(--surface);border-color:var(--accent)}
+.snap-chip.checked{background:rgba(251,191,36,.12);border-color:var(--accent)}
+.snap-chip .snap-id{font-weight:600;color:var(--text);font-family:monospace}
+.snap-chip .snap-dt{color:var(--text2)}
+.preview-wrap{margin-top:20px}
+.preview-hdr{display:flex;align-items:center;justify-content:space-between;
+             margin-bottom:10px}
+.preview-hdr h2{font-size:.95rem;font-weight:600;color:var(--text)}
+</style>
+
+<div class="trends-wrap">
+
+  <div style="margin-bottom:18px">
+    <h1 style="font-size:1.2rem;font-weight:700;color:var(--accent);margin-bottom:3px">
+      📑 AWR Analysis Report
+    </h1>
+    <p style="font-size:.82rem;color:var(--text2)">
+      Generate an on-demand multi-snapshot analysis — Health Score, KPIs, wait events,
+      SQL &amp; segment severity, I/O profile, Exadata statistics, trend charts,
+      RCA template and rule-based recommendations.
+    </p>
+  </div>
+
+  {# ── Selector bar ── #}
+  <div class="sel-bar">
+    <div class="sel-group" style="min-width:200px">
+      <label>Database</label>
+      <select id="ar-dbname" onchange="arLoadInstances()">
+        <option value="">— Select database —</option>
+        {% for db in dbs %}<option>{{ db }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="sel-group" style="min-width:160px">
+      <label>Instance</label>
+      <select id="ar-instance" onchange="arLoadSnaps()">
+        <option value="">— Select DB first —</option>
+      </select>
+    </div>
+    <div class="sel-group" style="min-width:140px">
+      <label>Snap range — From</label>
+      <select id="ar-start"><option value="">— All —</option></select>
+    </div>
+    <div class="sel-group" style="min-width:140px">
+      <label>To</label>
+      <select id="ar-end"><option value="">— All —</option></select>
+    </div>
+    {# Load Snaps = filter + auto-select-all #}
+    <button class="sel-btn" onclick="arLoadSnaps()">Load snaps</button>
+    {# Clear = full reset #}
+    <button class="sel-btn sec" onclick="arClearAll()">Clear</button>
+    <button class="sel-btn" id="ar-generate-btn" onclick="arGenerate()"
+            style="background:#10b981;color:#fff;margin-left:4px">
+      ⚡ Generate
+    </button>
+    <span id="sel-status" class="waiting">Select database and instance to begin</span>
+  </div>
+
+  {# ── Snapshot picker ── #}
+  <div class="sec-block" id="snap-section" style="display:none">
+    <div class="sec-header">
+      <div class="sec-icon" style="background:rgba(24,95,165,.18)">🗂</div>
+      <div>
+        <span class="sec-title">Snapshots</span>
+        <span class="sec-badge" id="snap-count-badge">0 loaded</span>
+        <div class="sec-desc">
+          Click chips to toggle individual snaps &nbsp;·&nbsp;
+          <span id="snap-selected-count" style="font-weight:600;color:var(--accent)">0</span>
+          selected
+        </div>
+      </div>
+    </div>
+    <div class="snap-list" id="snap-list"></div>
+  </div>
+
+  {# ── Info cards ── #}
+  <div class="sec-block">
+    <div class="sec-header">
+      <div class="sec-icon" style="background:rgba(83,74,183,.18)">📋</div>
+      <div>
+        <span class="sec-title">What this report contains</span>
+        <div class="sec-desc">All data sourced from tables populated by the AWR upload pipeline</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px">
+      {% for icon, title, desc in [
+        ('🏥','Health Score (RAG)','0–100 weighted composite — CPU · Cache · Wait · Parse → GREEN/AMBER/RED'),
+        ('📈','Workload KPIs','DB Time · DB CPU · TPS · Logical &amp; Physical Reads · Hard Parses · Host CPU%'),
+        ('⏱','Wait Event Analysis','Top wait events · Wait class donut · Cache &amp; parse efficiency'),
+        ('🔍','SQL Severity — Top SQL','Elapsed · CPU · Gets · Reads · Severity + plan stability variance flag'),
+        ('🗃','Segment Severity','HOT/WARM/COOL/NORMAL by logical read share'),
+        ('💿','I/O Profile Breakdown','By function: Buffer Cache · Direct Reads · Smart Scan · Redo · DBWR'),
+        ('📉','Trend Charts','6 metrics across all selected snapshots'),
+        ('⚡','Exadata Statistics','FC hit% · IORM · Smart IO · IO Reasons · FC Space (Exadata DBs only)'),
+        ('📋','Load Profile Comparison','All 8 metrics × all snapshots · Peak highlighted'),
+        ('🔬','RCA Template','Structured: Symptoms → Root Cause → Evidence → Action Plan'),
+        ('🎯','Recommendations','Rule-based hotspot analysis · Prioritised remediation + risk'),
+      ] %}
+      <div style="background:var(--surface);border:1px solid var(--border);
+                  border-radius:var(--radius);padding:11px 14px">
+        <div style="font-size:15px;margin-bottom:5px">{{ icon }}</div>
+        <div style="font-size:.84rem;font-weight:600;color:var(--text);margin-bottom:3px">{{ title }}</div>
+        <div style="font-size:.75rem;color:var(--text2);line-height:1.5">{{ desc }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# ── Preview ── #}
+  <div class="preview-wrap" id="ar-preview-wrap" style="display:none">
+    <div class="preview-hdr">
+      <h2>📄 Generated Report</h2>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="sel-btn sec" onclick="arOpenFull()">🔗 Open full page</button>
+        <button class="sel-btn" onclick="arDownloadPDF()" style="background:#10b981;color:#fff">
+          ⬇ Download PDF
+        </button>
+      </div>
+    </div>
+    <iframe id="ar-preview"
+            style="width:100%;height:82vh;border:1px solid var(--border);
+                   border-radius:var(--radius);background:#fff"></iframe>
+  </div>
+
+</div>
+
+<script>
+var _allSnaps = [];
+var _blobUrl  = null;
+
+function status(msg, cls) {
+  var el = document.getElementById('sel-status');
+  el.textContent = msg; el.className = cls || 'waiting';
+}
+function selectedSnaps() {
+  return Array.from(document.querySelectorAll('.snap-chip input:checked'))
+              .map(function(cb){ return cb.value; });
+}
+function updateSelectedCount() {
+  var n = selectedSnaps().length;
+  document.getElementById('snap-selected-count').textContent = n;
+  status(n > 0 ? n+' snapshot'+(n>1?'s':'')+' selected — click Generate'
+                : 'Select at least one snapshot', n > 0 ? 'ready' : 'waiting');
+}
+
+async function arLoadInstances() {
+  var db = document.getElementById('ar-dbname').value;
+  var is = document.getElementById('ar-instance');
+  is.innerHTML = '<option>Loading…</option>';
+  document.getElementById('snap-section').style.display = 'none';
+  if (!db) { is.innerHTML = '<option value="">— Select DB first —</option>'; return; }
+  try {
+    var r = await fetch('/api/instances?dbname='+encodeURIComponent(db));
+    var rows = await r.json();
+    is.innerHTML = '<option value="">— Select instance —</option>'+
+      rows.map(function(i){ return '<option>'+i+'</option>'; }).join('');
+    status('Select an instance', 'waiting');
+  } catch(e) { is.innerHTML='<option value="">Failed</option>'; }
+}
+
+async function arLoadSnaps() {
+  var db = document.getElementById('ar-dbname').value;
+  var inst = document.getElementById('ar-instance').value;
+  if (!db || !inst) return;
+  var start = document.getElementById('ar-start').value;
+  var end   = document.getElementById('ar-end').value;
+  status('Loading snapshots…', 'waiting');
+  try {
+    var r = await fetch('/api/snaps?dbname='+encodeURIComponent(db)+'&instance='+encodeURIComponent(inst));
+    var rows = await r.json();
+    _allSnaps = rows;
+    // Populate range selects (only on fresh load, not on filter)
+    if (!start && !end) {
+      var opts = '<option value="">— All —</option>'+
+        rows.map(function(s){ return '<option value="'+s.snap_id+'">'+s.label+'</option>'; }).join('');
+      document.getElementById('ar-start').innerHTML = opts;
+      document.getElementById('ar-end').innerHTML   = opts;
+    }
+    // Filter by From/To
+    var filtered = rows.filter(function(s){
+      if (start && s.snap_id < parseInt(start)) return false;
+      if (end   && s.snap_id > parseInt(end))   return false;
+      return true;
+    });
+    _renderChips(filtered, true);  // true = auto-check all
+    document.getElementById('snap-section').style.display = 'block';
+    document.getElementById('snap-count-badge').textContent = filtered.length + ' loaded';
+    updateSelectedCount();
+  } catch(e) { status('Error loading snapshots', 'error'); }
+}
+
+function _renderChips(rows, autoCheck) {
+  var list = document.getElementById('snap-list');
+  list.innerHTML = rows.map(function(s){
+    var chk = autoCheck ? ' checked' : '';
+    var cls  = autoCheck ? ' checked' : '';
+    return '<label class="snap-chip'+cls+'" id="chip-'+s.snap_id+'">'+
+      '<input type="checkbox" value="'+s.snap_id+'"'+chk+' onchange="chipToggle(this)">'+
+      '<span class="snap-id">'+s.snap_id+'</span>'+
+      '<span class="snap-dt">'+(s.snap_time||s.label||'')+'</span>'+
+      '</label>';
+  }).join('');
+}
+
+function chipToggle(cb) {
+  var chip = document.getElementById('chip-'+cb.value);
+  if (chip) chip.className = 'snap-chip'+(cb.checked?' checked':'');
+  updateSelectedCount();
+}
+
+// Full reset: clears DB selection, instance, range, chips, snap section
+function arClearAll() {
+  document.getElementById('ar-dbname').value = '';
+  document.getElementById('ar-instance').innerHTML = '<option value="">— Select DB first —</option>';
+  document.getElementById('ar-start').innerHTML = '<option value="">— All —</option>';
+  document.getElementById('ar-end').innerHTML   = '<option value="">— All —</option>';
+  document.getElementById('snap-list').innerHTML = '';
+  document.getElementById('snap-section').style.display = 'none';
+  document.getElementById('ar-preview-wrap').style.display = 'none';
+  _allSnaps = []; _blobUrl = null;
+  status('Select database and instance to begin', 'waiting');
+}
+
+async function arGenerate() {
+  var db = document.getElementById('ar-dbname').value;
+  var inst = document.getElementById('ar-instance').value;
+  var ids = selectedSnaps();
+  if (!db||!inst){ status('Select a database and instance first.','error'); return; }
+  if (!ids.length){ status('Select at least one snapshot.','error'); return; }
+  var btn = document.getElementById('ar-generate-btn');
+  btn.disabled=true; btn.textContent='⏳ Generating…';
+  status('Generating report for '+ids.length+' snapshot(s)…','waiting');
+  try {
+    var url='/api/analysis-report/generate?dbname='+encodeURIComponent(db)+
+            '&instance='+encodeURIComponent(inst)+'&snap_ids='+ids.join(',');
+    var r = await fetch(url);
+    if (!r.ok) {
+      var t=await r.text();
+      var d=''; try{d=JSON.parse(t).detail||t;}catch(_){d=t;}
+      throw new Error(d);
+    }
+    var html = await r.text();
+    if (_blobUrl) URL.revokeObjectURL(_blobUrl);
+    _blobUrl = URL.createObjectURL(new Blob([html],{type:'text/html'}));
+    document.getElementById('ar-preview').src = _blobUrl;
+    document.getElementById('ar-preview-wrap').style.display = 'block';
+    status('✅ Report ready — '+ids.length+' snapshot(s)','ready');
+    document.getElementById('ar-preview-wrap').scrollIntoView({behavior:'smooth'});
+  } catch(e) {
+    status('❌ '+e.message.substring(0,120),'error');
+  } finally {
+    btn.disabled=false; btn.textContent='⚡ Generate';
+  }
+}
+function arDownloadPDF() {
+  var f=document.getElementById('ar-preview');
+  if (!f.src||f.src==='about:blank') return;
+  f.contentWindow.downloadPDF ? f.contentWindow.downloadPDF() : f.contentWindow.print();
+}
+function arOpenFull() { if (_blobUrl) window.open(_blobUrl,'_blank'); }
+</script>
+{% endblock %}
