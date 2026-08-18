@@ -157,11 +157,29 @@
   </div>
 </div>
 
-{# ── Main dashboard grid ── #}
-{# Row 1: AWR Analysis (+ Exadata Analysis when exadata_enabled — see app.py EXADATA_FEATURE_ENABLED) #}
-<div style="display:grid;grid-template-columns:{{ 'repeat(2,1fr)' if exadata_enabled else '1fr' }};gap:10px;margin-bottom:10px">
+{# ── Main dashboard grid ──────────────────────────────────────────────
+   Single fixed 2-column grid, cards in a fixed DOM order: AWR, Exadata,
+   SAR, NMON. Each card keeps its original ~half-width size always (no
+   stretching) — a card that isn't rendered/visible just leaves its grid
+   cell empty rather than the others resizing to fill it.
 
-  {# AWR Analysis #}
+   This one mechanism produces every layout Ganesh asked for, purely from
+   which cards happen to be present, with no per-case branching needed:
+     AWR + SAR only            → AWR | SAR                (row 1 only)
+     AWR + SAR + NMON          → AWR | SAR  /  NMON | ·    (NMON under AWR)
+     AWR + SAR + Exadata       → AWR | Exadata  /  SAR | · (SAR under AWR)
+     All 4 licensed            → AWR | Exadata  /  SAR | NMON   (2×2)
+
+   Exadata's presence is a build-time flag (EXADATA_FEATURE_ENABLED) so
+   it's fine to omit it from the DOM entirely with {% if %}. NMON's
+   license can change live without a restart, so that card stays in the
+   DOM always and is shown/hidden with display:none/block (as before) —
+   a display:none grid item is automatically excluded from grid flow, so
+   no extra JS is needed to keep the layout correct when it toggles.
+#}
+<div id="dashboard-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px">
+
+  {# AWR Analysis — always shown #}
   <div class="dash-card" data-accent="awr">
     <div class="dash-hdr">
       <span class="icon-badge">📊</span>
@@ -211,10 +229,11 @@
      see /areas/awr-insight-portal.md 2026-08-18 finding. Flip that one flag
      to restore this card; the markup below is otherwise unchanged.
 
-     Option C: card always occupies its grid position (no layout shift).
-     When licensed  → active card with dashboard links.
-     When unlicensed → muted locked placeholder with admin shortcut.
-     Both states controlled server-side (Jinja2) + JS for live refresh.
+     Option C: card always occupies its grid position (no layout shift)
+     while the feature itself is enabled. When licensed → active card
+     with dashboard links. When unlicensed → muted locked placeholder
+     with admin shortcut. Both states controlled server-side (Jinja2) +
+     JS for live refresh.
   #}
   {% if exadata_enabled %}
   <div id="exadata-card" class="dash-card" data-accent="exadata"
@@ -288,14 +307,6 @@
   </div>
   {% endif %}
 
-</div>
-
-{# Row 2: SAR & Correlation (+ NMON & Correlation when licensed — mirrors
-   Row 1's exadata_enabled pattern so there's no dead half-column when NMON
-   isn't licensed; grid-template-columns set server-side AND kept in sync
-   live by refreshStats() below if the license changes without a reload) #}
-<div id="sar-nmon-row" style="display:grid;grid-template-columns:{{ 'repeat(2,1fr)' if stats.license_nmon else '1fr' }};gap:10px;margin-bottom:14px">
-
   {# ── SAR & Correlation ────────────────────────────────────────────────
      Visibility: ALWAYS visible — no license check required.
      display:block is set explicitly so no JS or CSS can hide it.
@@ -332,6 +343,8 @@
      Visibility: hidden by default; shown ONLY when license_nmon_count > 0
      in portal_config. Controlled server-side (Jinja2) for initial render
      and client-side (JS refreshStats) for live updates without page reload.
+     Stays in the DOM (4th grid item) so display:none/block toggling alone
+     is enough to keep the 2-column grid correct — no JS grid math needed.
   #}
   <div id="nmon-card" class="dash-card" data-accent="nmon"
        style="{{ 'display:block' if stats.license_nmon else 'display:none' }}">
@@ -455,15 +468,12 @@
       if (exaActive) exaActive.style.display = exaLicensed ? ''     : 'none';
       if (exaLocked) exaLocked.style.display = exaLicensed ? 'none' : '';
 
-      // NMON card: shown only when license_nmon = true (nmon_count > 0)
+      // NMON card: shown only when license_nmon = true (nmon_count > 0).
+      // The #dashboard-grid columns are fixed (repeat(2,1fr)) — a
+      // display:none grid item is automatically excluded from grid flow,
+      // so toggling this alone is enough to keep the layout correct.
       const nmonCard = document.getElementById('nmon-card');
       if (nmonCard) nmonCard.style.display = d.license_nmon ? 'block' : 'none';
-
-      // Keep the SAR/NMON row grid in sync so SAR doesn't leave a dead
-      // half-empty column when NMON isn't licensed (mirrors server-side
-      // Jinja render of #sar-nmon-row on initial page load).
-      const sarNmonRow = document.getElementById('sar-nmon-row');
-      if (sarNmonRow) sarNmonRow.style.gridTemplateColumns = d.license_nmon ? 'repeat(2,1fr)' : '1fr';
 
       // NMON stat tiles in the stats bar — show/hide with license
       ['nmon-stat-pending','nmon-stat-processing',
