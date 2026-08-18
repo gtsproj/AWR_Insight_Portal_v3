@@ -1354,27 +1354,42 @@ def _license_flags_for_ui() -> dict:
     """Return boolean license flags consumed by the home-page Jinja2 template
     and JS refresh loop.  Always returns the two keys — never raises.
 
-    Default (fresh install / no portal_config entries):
+    Default (fresh install / no license key / no portal_config entries):
         license_exadata = False  →  Exadata card hidden
         license_nmon    = False  →  NMON card hidden
+
+    IMPORTANT: NMON licensing is derived from the validated license KEY
+    (via _check_license(), same as /api/portal-info and /api/license/status)
+    — NOT from the raw portal_config.license_nmon_count row. That row is
+    only ever written manually and is never re-synced when a new license
+    key is saved (the license-key-save handler only derives db/sar counts
+    into portal_config, not nmon — see api_settings_save()), so reading it
+    directly here could silently disagree with what the license key
+    actually grants. Reading the same live-decoded value everywhere is
+    what keeps the NMON card from flickering (previously this function and
+    base.html's info-strip script computed NMON licensing two different
+    ways and raced to control the same #nmon-card element — fixed
+    2026-08-18, see /areas/awr-insight-portal.md).
+
+    Exadata has no such split — license_exadata is a plain admin-set
+    portal_config flag with no license-key encoding, so reading it
+    directly here is correct and unambiguous.
     """
     try:
         conn = get_db_connection()
         with conn.cursor() as cur:
-            cur.execute(
-                "SELECT key, value FROM portal_config "
-                "WHERE key IN ('license_exadata','license_nmon_count')"
-            )
-            rows = cur.fetchall()
+            cur.execute("SELECT value FROM portal_config WHERE key='license_exadata'")
+            row = cur.fetchone()
         conn.close()
-        cfg = {r[0]: (r[1] or "").strip().lower() for r in rows}
-        nmon_count = int(cfg.get("license_nmon_count", "0") or "0")
-        exa_flag   = cfg.get("license_exadata", "false") == "true"
-        # nmon_count: -1 = unlimited (v2 key or ENT), 0 = none, >0 = count
+        exa_flag = (row and (row[0] or "").strip().lower() == "true")
+
+        lic = _check_license()
+        nmon_limit = lic.get("nmon_limit", 0)
+        # nmon_limit: -1 = unlimited (v2 key or ENT), 0 = none, >0 = count
         # All non-zero values = NMON is licensed
         return {
             "license_exadata": exa_flag,
-            "license_nmon":    nmon_count != 0,
+            "license_nmon":    nmon_limit != 0,
         }
     except Exception:
         # DB unavailable or table missing — default to all hidden (safe)
@@ -3000,6 +3015,13 @@ async def api_settings_save(request: Request):
                     "license_tier":      ki.get("tier", ""),
                     "license_db_count":  str(ki.get("db_limit", "")),
                     "license_sar_count": str(ki.get("sar_limit", "")),
+                    # nmon_limit was previously missing from this sync, so
+                    # portal_config.license_nmon_count could silently drift
+                    # out of sync with what the license key actually grants
+                    # (only ever updated by a separate manual Settings save
+                    # — see _license_flags_for_ui() docstring). Kept in sync
+                    # here now for the same reason db/sar counts already are.
+                    "license_nmon_count": str(ki.get("nmon_limit", "")),
                     "license_expiry":    ki.get("expiry").isoformat()
                                          if ki.get("expiry") else "",
                 }

@@ -317,20 +317,16 @@ pre{background:var(--surface2);padding:14px;border-radius:var(--radius);overflow
       const st = ld.status;
       const dl = ld.days_left;
 
-      // ── NMON/SAR card & counter toggling based on license ──────────
-      // Show NMON stats cards and dashboard card only when NMON license > 0
-      const hasNmon = (ld.nmon_limit !== 0);
-      const hasSar  = (ld.sar_limit  !== 0);
-      ['nmon-stat-pending','nmon-stat-processing','nmon-stat-done',
-       'nmon-stat-failed','nmon-stat-hosts'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = hasNmon ? '' : 'none';
-      });
-      const nmonCard = document.getElementById('nmon-card');
-      if (nmonCard) nmonCard.style.display = hasNmon ? '' : 'none';
-      // SAR card — hide only if customer is NMON-only (no SAR license)
-      const sarCard = document.getElementById('sar-card');
-      if (sarCard) sarCard.style.display = hasSar ? '' : 'none';
+      // NOTE: NMON/SAR card + stat-tile visibility on the home page is
+      // owned entirely by home.html's refreshStats() loop (polls
+      // /api/queue-stats every 15s). It used to also be set here from
+      // /api/license/status's ld.nmon_limit/ld.sar_limit — but that is a
+      // separate one-shot computation that could disagree with (and race
+      // against) home.html's repeating one, which made the NMON card
+      // flicker between visible/hidden. Removed 2026-08-18 — see
+      // /areas/awr-insight-portal.md. Do not re-add DOM manipulation for
+      // #nmon-card/#sar-card/#nmon-stat-* here; those elements don't even
+      // exist on most pages this script runs on.
 
       // Colour config per status
       const cfg = {
