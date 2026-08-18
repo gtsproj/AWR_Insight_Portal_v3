@@ -1870,6 +1870,97 @@ async def api_queue_stats_hyphen():
     return JSONResponse(_queue_stats())
 
 
+
+
+# ── Colleague additions: Analysis Report + DB Backup routes ─────────────
+
+@app.get("/analysis-report", response_class=HTMLResponse)
+async def analysis_report_page(request: Request):
+    """AWR Analysis Report picker — pick a DB/instance/snapshot(s) and generate
+    an on-demand HTML report from already-parsed AWR data."""
+    dbs = _db_list()
+    return templates.TemplateResponse(request, "analysis_report.html",
+        context={"page": "analysis_report", "dbs": dbs, **_url_context(request)})
+
+
+@app.get("/api/analysis-report/generate", response_class=HTMLResponse)
+async def api_analysis_report_generate(request: Request, dbname: str = "",
+                                        instance: str = "", snap_ids: str = ""):
+    """Generate the AWR Analysis Report HTML for the given DB/instance and
+    selected snapshot(s). Returns the rendered HTML directly (for inline
+    preview in an iframe, or download)."""
+    if not dbname or not instance or not snap_ids:
+        raise HTTPException(400, "dbname, instance and snap_ids are required")
+    try:
+        ids = [int(s) for s in snap_ids.split(",") if s.strip()]
+    except ValueError:
+        raise HTTPException(400, "snap_ids must be a comma-separated list of integers")
+    if not ids:
+        raise HTTPException(400, "At least one snapshot id is required")
+
+    from modules.analysis_report_generator import build_report_context
+    try:
+        ctx = build_report_context(dbname, instance, ids)
+    except Exception as e:
+        logger.error(f"analysis_report generate failed: {e}")
+        raise HTTPException(500, f"Failed to generate report: {e}")
+
+    return templates.TemplateResponse(request, "analysis_report_render.html", context=ctx)
+
+
+@app.get("/api/backup/history")
+async def api_backup_history(request: Request):
+    """Return recent backup/restore run history for the Settings UI."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cur:
+            cur.execute("""
+                ALTER TABLE portal_backup_log ADD COLUMN IF NOT EXISTS run_type TEXT DEFAULT 'backup'
+            """)
+            cur.execute("""
+                SELECT id, run_type, file_name, file_size_mb, status,
+                       message, started_at, finished_at, triggered_by
+                FROM portal_backup_log
+                ORDER BY started_at DESC
+                LIMIT 30
+            """)
+            rows = cur.fetchall()
+        conn.close()
+        runs = [{
+            "id": r[0], "run_type": r[1], "file_name": r[2] or "",
+            "file_size_mb": float(r[3]) if r[3] is not None else None,
+            "status": r[4], "message": r[5] or "",
+            "started_at": r[6].isoformat() if r[6] else "",
+            "finished_at": r[7].isoformat() if r[7] else "",
+            "triggered_by": r[8] or "",
+        } for r in rows]
+        return JSONResponse({"ok": True, "runs": runs})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e), "runs": []}, status_code=500)
+
+
+@app.post("/api/backup/run")
+async def api_backup_run(request: Request):
+    """Trigger an on-demand backup (same script the daily scheduler calls)."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    session  = _get_session(request)
+    username = session.get("username", "admin")
+    try:
+        script = os.path.join(os.path.dirname(os.path.dirname(__file__)), "backup_database.py")
+        result = subprocess.run(
+            [sys.executable, script, "--triggered-by", username],
+            capture_output=True, text=True, timeout=3700
+        )
+        if result.returncode != 0:
+            return JSONResponse({"ok": False, "error": result.stdout.strip() or result.stderr.strip()},
+                                 status_code=500)
+        return JSONResponse({"ok": True, "output": result.stdout.strip()})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
 # ── Service names managed by NSSM ─────────────────────────────────────
 _SERVICES = {
     "portal":    "AWRPortal",
