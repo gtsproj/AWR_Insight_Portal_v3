@@ -1087,7 +1087,7 @@ tr:nth-child(even) td{background:#FAFBFE}
     ('🔴 Symptoms',   dbname~'/'~instance~' degraded — top wait: '~top_wait_event~' · DB Time '~kpi.db_time_ss~' s/s · Health '~health.rag),
     ('🎯 Root Cause', conclusion.hotspots[0] if conclusion.hotspots else 'See hotspot analysis'),
     ('🔎 Evidence',   'Snaps: '~(snap_id_list|join(', '))~' · Score: '~health.score~'/100 · Top SQL elapsed: '~(top_sql[0].total_elapsed|string if top_sql else 'N/A')~' s'),
-    ('✅ Action Plan', conclusion.recommendations[0][0]~': '~conclusion.recommendations[0][1][:100] if conclusion.recommendations else ''),
+    ('✅ Action Plan', conclusion.recommendations[0][0]~': '~conclusion.recommendations[0][1] if conclusion.recommendations else ''),
   ] %}
   {% for lbl, val in rca_rows %}
   <div class="rca-section">
