@@ -147,7 +147,10 @@
 </div>
 {% endif %}
 
-{# ══ NMON QUEUES ══════════════════════════════════════════════════════ #}
+{# ══ NMON QUEUES ══════════════════════════════════════════════════════
+   Hidden entirely unless NMON is licensed (license_nmon_count > 0) — see
+   portal/app.py _license_flags_for_ui(). #}
+{% if license_nmon %}
 <div style="font-size:.8rem;color:var(--text2);font-weight:600;letter-spacing:.05em;margin:16px 0 8px">NMON QUEUES</div>
 
 {% for host, items in nmon_queues.items() %}
@@ -188,6 +191,7 @@
   <p style="color:var(--text2)">No NMON queue files found. Drop NMON files into nmon_drop\&lt;HOSTNAME&gt;\ to get started.</p>
 </div>
 {% endif %}
+{% endif %}{# end license_nmon #}
 
 <script>
 (function () {

@@ -441,7 +441,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 </div>
 
 {# ── Exadata wait event annotation ── only when licensed + data present ─── #}
-{% if exa_licensed and exadata and exadata.is_exadata %}
+{% if exadata_enabled and exa_licensed and exadata and exadata.is_exadata %}
 <div class="tc gf" style="border-left:3px solid #0F6E56">
   <div style="font-size:9px;font-weight:700;color:#0F6E56;text-transform:uppercase;
               letter-spacing:.8px;margin-bottom:8px;padding:4px 0">
@@ -664,7 +664,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# ─────────────────────────────────────────────────────────── #}
 {# 7b. EXADATA STATISTICS (only shown for Exadata databases) #}
 {# ─────────────────────────────────────────────────────────── #}
-{% if exa_licensed and exadata and exadata.is_exadata %}
+{% if exadata_enabled and exa_licensed and exadata and exadata.is_exadata %}
 {# Only shown when: (a) license_exadata=true in portal_config AND (b) awr_exadata_perf_summary has data for selected snaps #}
 <div class="st"><span class="st-icon">⚡</span> Exadata Storage Statistics</div>
 

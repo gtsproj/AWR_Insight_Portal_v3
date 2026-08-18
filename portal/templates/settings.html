@@ -1066,10 +1066,12 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
             <div class="lic-val" id="lic-nmon-used">—</div>
             <div class="lic-label">NMON servers used / <span id="lic-nmon-limit">—</span> licensed</div>
           </div>
+          {% if exadata_enabled %}
           <div class="lic-stat">
             <div class="lic-val" id="lic-exa-status" style="font-size:.9rem">—</div>
             <div class="lic-label">Exadata Analysis</div>
           </div>
+          {% endif %}
           <div class="lic-stat">
             <div class="lic-val" style="font-size:1rem" id="lic-expiry">{{ cfg.license_expiry or '—' }}</div>
             <div class="lic-label">Expiry — <span id="lic-days-left"></span></div>
@@ -1144,7 +1146,13 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
           </div>
         </div>
 
-        {# ── Exadata Analysis License ── #}
+        {# ── Exadata Analysis License ──────────────────────────────────────
+           Hidden while EXADATA_FEATURE_ENABLED = False in app.py (Exadata UI
+           paused pending parser rework against a real AWR source — see
+           /areas/awr-insight-portal.md 2026-08-18). The underlying
+           portal_config.license_exadata value is untouched; only the admin
+           control is hidden. Flip the flag in app.py to restore this. #}
+        {% if exadata_enabled %}
         <div class="s-row" style="margin-top:12px">
           <div class="s-field">
             <label class="s-label">Exadata Analysis License
@@ -1167,6 +1175,7 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
             </div>
           </div>
         </div>
+        {% endif %}
         <div class="s-row">
           <div class="s-field">
             <label class="s-label">Monthly Cloud AI Limit</label>

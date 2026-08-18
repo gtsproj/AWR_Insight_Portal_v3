@@ -131,8 +131,8 @@
 </div>
 
 {# ── Main dashboard grid ── #}
-{# Row 1: AWR Analysis + Exadata Analysis (2-column) #}
-<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px">
+{# Row 1: AWR Analysis (+ Exadata Analysis when exadata_enabled — see app.py EXADATA_FEATURE_ENABLED) #}
+<div style="display:grid;grid-template-columns:{{ 'repeat(2,1fr)' if exadata_enabled else '1fr' }};gap:10px;margin-bottom:10px">
 
   {# AWR Analysis #}
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
@@ -179,11 +179,17 @@
   </div>
 
   {# ── Exadata Analysis ─────────────────────────────────────────────────
+     Entire card paused behind exadata_enabled (app.py EXADATA_FEATURE_ENABLED)
+     until the Exadata parsers are rebuilt against a real AWR HTML source —
+     see /areas/awr-insight-portal.md 2026-08-18 finding. Flip that one flag
+     to restore this card; the markup below is otherwise unchanged.
+
      Option C: card always occupies its grid position (no layout shift).
      When licensed  → active card with dashboard links.
      When unlicensed → muted locked placeholder with admin shortcut.
      Both states controlled server-side (Jinja2) + JS for live refresh.
   #}
+  {% if exadata_enabled %}
   <div id="exadata-card"
        style="display:block;
               background:var(--surface);
@@ -259,6 +265,7 @@
     </div>
 
   </div>
+  {% endif %}
 
 </div>
 

@@ -60,7 +60,7 @@
     </h1>
     <p style="font-size:.82rem;color:var(--text2)">
       Generate an on-demand multi-snapshot analysis — Health Score, KPIs, wait events,
-      SQL &amp; segment severity, I/O profile, Exadata statistics, trend charts,
+      SQL &amp; segment severity, I/O profile{{ ', Exadata statistics,' if exadata_enabled else ',' }} trend charts,
       RCA template and rule-based recommendations.
     </p>
   </div>
@@ -126,7 +126,7 @@
       </div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px">
-      {% for icon, title, desc in [
+      {% set report_contents = [
         ('🏥','Health Score (RAG)','0–100 weighted composite — CPU · Cache · Wait · Parse → GREEN/AMBER/RED'),
         ('📈','Workload KPIs','DB Time · DB CPU · TPS · Logical &amp; Physical Reads · Hard Parses · Host CPU%'),
         ('⏱','Wait Event Analysis','Top wait events · Wait class donut · Cache &amp; parse efficiency'),
@@ -134,11 +134,14 @@
         ('🗃','Segment Severity','HOT/WARM/COOL/NORMAL by logical read share'),
         ('💿','I/O Profile Breakdown','By function: Buffer Cache · Direct Reads · Smart Scan · Redo · DBWR'),
         ('📉','Trend Charts','6 metrics across all selected snapshots'),
-        ('⚡','Exadata Statistics','FC hit% · IORM · Smart IO · IO Reasons · FC Space (Exadata DBs only)'),
         ('📋','Load Profile Comparison','All 8 metrics × all snapshots · Peak highlighted'),
         ('🔬','RCA Template','Structured: Symptoms → Root Cause → Evidence → Action Plan'),
         ('🎯','Recommendations','Rule-based hotspot analysis · Prioritised remediation + risk'),
       ] %}
+      {% if exadata_enabled %}
+        {% set report_contents = report_contents + [('⚡','Exadata Statistics','FC hit% · IORM · Smart IO · IO Reasons · FC Space (Exadata DBs only)')] %}
+      {% endif %}
+      {% for icon, title, desc in report_contents %}
       <div style="background:var(--surface);border:1px solid var(--border);
                   border-radius:var(--radius);padding:11px 14px">
         <div style="font-size:15px;margin-bottom:5px">{{ icon }}</div>

@@ -843,11 +843,24 @@ def _get_portal_url(request: Request = None) -> str:
     except Exception:
         return "http://localhost:8000"
 
+# ── Exadata feature master switch ───────────────────────────────────────
+# The Wave 1-4 Exadata parsers were built/validated against synthetic AWR
+# reports modeled on the Mar-2024 Oracle whitepaper. Real customer Exadata
+# AWR reports use a materially different section structure (confirmed via
+# screenshots 2026-08-18), so several parsers/tables are unreliable and the
+# Exadata UI is paused until parsers are rebuilt against a real AWR HTML
+# source. Flip this single flag back to True to restore all Exadata UI
+# (home page card, Analysis Report section, Settings license controls)
+# once that work resumes — no other code changes should be needed.
+EXADATA_FEATURE_ENABLED = False
+
+
 def _url_context(request: Request = None) -> dict:
     """Return URL context for template injection. Always fresh from DB."""
     return {
         "grafana_url": _get_grafana_url(),
         "portal_url":  _get_portal_url(request),
+        "exadata_enabled": EXADATA_FEATURE_ENABLED,
     }
 
 def _refresh_url_globals():
@@ -1634,7 +1647,8 @@ async def queue_monitor(request: Request):
     nmon_queues = _all_nmon_queues()
     return templates.TemplateResponse(request, "queue_monitor.html",
         context={"page": "queues", "queues": queues,
-                 "sar_queues": sar_queues, "nmon_queues": nmon_queues})
+                 "sar_queues": sar_queues, "nmon_queues": nmon_queues,
+                 **_license_flags_for_ui()})
 
 
 @app.post("/queues/retry/{db_name}", response_class=RedirectResponse)
@@ -1904,6 +1918,11 @@ async def api_analysis_report_generate(request: Request, dbname: str = "",
     except Exception as e:
         logger.error(f"analysis_report generate failed: {e}")
         raise HTTPException(500, f"Failed to generate report: {e}")
+
+    # Master switch — see EXADATA_FEATURE_ENABLED above. Always enforced here
+    # regardless of what the generator returns, so the Exadata sections in
+    # analysis_report_render.html stay hidden while the feature is paused.
+    ctx["exadata_enabled"] = EXADATA_FEATURE_ENABLED
 
     return templates.TemplateResponse(request, "analysis_report_render.html", context=ctx)
 
@@ -2948,6 +2967,7 @@ async def settings_page(request: Request):
         "users":      users,
         "mac_address": _get_mac(),
         "is_admin":   _is_admin(request),
+        "exadata_enabled": EXADATA_FEATURE_ENABLED,
     })
 
 
