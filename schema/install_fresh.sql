@@ -364,11 +364,15 @@ CREATE TABLE IF NOT EXISTS awr_db_master (
     added_by                       TEXT DEFAULT 'admin'::text,
     os_type                        TEXT DEFAULT 'Linux'::text,
     os_utility                     TEXT DEFAULT 'SAR'::text,
+    app_name                       TEXT,
+    app_code                       TEXT,
+    app_usage                      TEXT DEFAULT 'OTHER'::text,
+    app_category                   TEXT DEFAULT 'OTHER'::text,
     CONSTRAINT awr_db_master_pkey PRIMARY KEY (id),
     CONSTRAINT uq_db_master_db_inst UNIQUE (db_name, inst_no),
-    CONSTRAINT awr_db_master_os_type_check CHECK ((os_type = ANY (ARRAY['Linux'::text, 'IBM AIX'::text, 'Other'::text]))),
-    CONSTRAINT awr_db_master_os_utility_check CHECK ((os_utility = ANY (ARRAY['SAR'::text, 'NMON'::text, 'None'::text])))
-) tablespace awrparser;
+    CONSTRAINT awr_db_master_os_type_check CHECK ((os_type = ANY (ARRAY['Linux'::text, 'IBM AIX'::text, 'Windows'::text]))),
+    CONSTRAINT awr_db_master_os_utility_check CHECK ((os_utility = ANY (ARRAY['SAR'::text, 'NMON'::text, 'NONE'::text])))
+);
 COMMENT ON TABLE awr_db_master IS 'Licensed database registry. Only DBs in this table will be parsed by the queue processor.';
 
 -- Table: awr_enqueue_statistics
@@ -392,6 +396,585 @@ CREATE TABLE IF NOT EXISTS awr_enqueue_statistics (
     CONSTRAINT awr_enqueue_statistics_pkey PRIMARY KEY (id),
     CONSTRAINT uq_awr_enqueue_stats UNIQUE (dbname, instance, begin_snap, row_hash)
 ) TABLESPACE awrparser;
+
+-- Table: awr_exadata_alerts
+CREATE TABLE IF NOT EXISTS awr_exadata_alerts (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    begin_snap                     INTEGER NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    alert_count                    INTEGER DEFAULT 0,
+    has_open_alerts                BOOLEAN DEFAULT false,
+    alert_text                     TEXT,
+    row_hash                       TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    CONSTRAINT awr_exadata_alerts_pkey PRIMARY KEY (id),
+    CONSTRAINT awr_exadata_alerts_dbname_begin_snap_key UNIQUE (dbname, begin_snap)
+) TABLESPACE awrparser;
+
+-- Table: awr_exadata_asm_diskgroups
+CREATE TABLE IF NOT EXISTS awr_exadata_asm_diskgroups (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    begin_snap                     INTEGER NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    disk_group                     TEXT NOT NULL,
+    size_gb                        NUMERIC(14,2),
+    used_gb                        NUMERIC(14,2),
+    pct_used                       NUMERIC(6,2),
+    n_griddisks                    INTEGER,
+    redundancy                     TEXT,
+    state                          TEXT,
+    row_hash                       TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    CONSTRAINT awr_exadata_asm_diskgroups_pkey PRIMARY KEY (id),
+    CONSTRAINT awr_exadata_asm_diskgroups_dbname_begin_snap_disk_group_key UNIQUE (dbname, begin_snap, disk_group)
+) TABLESPACE awrparser;
+
+-- Table: awr_exadata_cell_io_summary
+CREATE TABLE IF NOT EXISTS awr_exadata_cell_io_summary (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    disk_type                      TEXT NOT NULL,
+    n_cells                        INTEGER,
+    n_disks                        INTEGER,
+    total_iops                     NUMERIC(18,2),
+    avg_iops_per_cell              NUMERIC(18,2),
+    small_reads_ps                 NUMERIC(14,2),
+    small_writes_ps                NUMERIC(14,2),
+    large_reads_ps                 NUMERIC(14,2),
+    large_writes_ps                NUMERIC(14,2),
+    total_mbps                     NUMERIC(12,2),
+    avg_mbps_per_cell              NUMERIC(12,2),
+    row_hash                       TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    CONSTRAINT awr_exadata_cell_io_summary_pkey PRIMARY KEY (id),
+    CONSTRAINT awr_exadata_cell_io_summary_dbname_instance_begin_snap_disk_key UNIQUE (dbname, instance, begin_snap, disk_type)
+) TABLESPACE awrparser;
+
+-- Table: awr_exadata_cell_iostat
+CREATE TABLE IF NOT EXISTS awr_exadata_cell_iostat (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    cell_name                      TEXT NOT NULL,
+    device_type                    TEXT,
+    iops                           NUMERIC,
+    throughput_mbps                NUMERIC,
+    util_pct                       NUMERIC,
+    service_ms                     NUMERIC,
+    queue_ms                       NUMERIC,
+    is_outlier                     BOOLEAN DEFAULT false,
+    at_max_capacity                BOOLEAN DEFAULT false,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_cell_iostat_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_cell_iostat UNIQUE (dbname, begin_snap, cell_name, device_type, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_cell_iostat IS 'OS IO Statistics for Exadata storage cells from AWR Outlier Cells section. is_outlier=TRUE means this cell is performing significantly more IO than its peers. at_max_capacity=TRUE is a HIGH alert — the cell is throttling IOs.';
+
+-- Table: awr_exadata_cell_server
+CREATE TABLE IF NOT EXISTS awr_exadata_cell_server (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    cell_name                      TEXT NOT NULL,
+    small_read_iops                NUMERIC,
+    small_write_iops               NUMERIC,
+    large_read_iops                NUMERIC,
+    large_write_iops               NUMERIC,
+    small_read_mbps                NUMERIC,
+    small_write_mbps               NUMERIC,
+    large_read_mbps                NUMERIC,
+    large_write_mbps               NUMERIC,
+    total_iops                     NUMERIC,
+    large_write_pct_iops           NUMERIC,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_cell_server_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_cell_server UNIQUE (dbname, begin_snap, cell_name, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_cell_server IS 'Cell Server IO statistics per cell from Exadata AWR. Breaks down IO into small/large read/write for each cell. High large_write_pct_iops signals temp spill pressure or checkpoint storm. Cross-cell imbalance (one cell doing 2x others) indicates uneven data distribution.';
+
+-- Table: awr_exadata_celldisks
+CREATE TABLE IF NOT EXISTS awr_exadata_celldisks (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    begin_snap                     INTEGER NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    disk_type                      TEXT NOT NULL,
+    celldisk_size_gb               NUMERIC(12,2),
+    n_celldisks                    INTEGER,
+    cells                          TEXT,
+    row_hash                       TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    CONSTRAINT awr_exadata_celldisks_pkey PRIMARY KEY (id),
+    CONSTRAINT awr_exadata_celldisks_dbname_begin_snap_disk_type_key UNIQUE (dbname, begin_snap, disk_type)
+) TABLESPACE awrparser;
+
+-- Table: awr_exadata_config
+CREATE TABLE IF NOT EXISTS awr_exadata_config (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    cell_name                      TEXT NOT NULL,
+    model                          TEXT,
+    storage_version                TEXT,
+    flash_cache_mb                 NUMERIC,
+    flash_log_mb                   NUMERIC,
+    cell_disks                     INTEGER,
+    grid_disks                     INTEGER,
+    has_flash_log                  BOOLEAN DEFAULT false,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_config_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_config UNIQUE (dbname, begin_snap, cell_name, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_config IS 'Exadata cell hardware config. Inconsistent flash_cache_mb or missing flash_log across cells is a MEDIUM alert.';
+
+-- Table: awr_exadata_db_io_summary
+CREATE TABLE IF NOT EXISTS awr_exadata_db_io_summary (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    db_name_consumer               TEXT NOT NULL,
+    small_io_reqs_ps               NUMERIC(14,2),
+    pct_flash                      NUMERIC(6,2),
+    pct_disk                       NUMERIC(6,2),
+    flash_latency_us               NUMERIC(12,2),
+    disk_latency_us                NUMERIC(12,2),
+    flash_queue_time_us            NUMERIC(12,2),
+    disk_queue_time_us             NUMERIC(12,2),
+    latency_per_sec_us             NUMERIC(12,2),
+    row_hash                       TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    CONSTRAINT awr_exadata_db_io_summary_pkey PRIMARY KEY (id),
+    CONSTRAINT awr_exadata_db_io_summary_dbname_instance_begin_snap_db_nam_key UNIQUE (dbname, instance, begin_snap, db_name_consumer)
+) TABLESPACE awrparser;
+
+-- Table: awr_exadata_disk_activity
+CREATE TABLE IF NOT EXISTS awr_exadata_disk_activity (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    redo_writes_ps                 NUMERIC(14,2),
+    redo_writes_total              NUMERIC(18,2),
+    fc_miss_oltp_ps                NUMERIC(14,2),
+    fc_read_skips_ps               NUMERIC(14,2),
+    fc_write_skips_ps              NUMERIC(14,2),
+    fc_lw_rejections_ps            NUMERIC(14,2),
+    disk_writer_writes_ps          NUMERIC(14,2),
+    scrub_io_ps                    NUMERIC(14,2),
+    row_hash                       TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    CONSTRAINT awr_exadata_disk_activity_pkey PRIMARY KEY (id),
+    CONSTRAINT awr_exadata_disk_activity_dbname_instance_begin_snap_key UNIQUE (dbname, instance, begin_snap)
+) TABLESPACE awrparser;
+
+-- Table: awr_exadata_disk_iostat
+CREATE TABLE IF NOT EXISTS awr_exadata_disk_iostat (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    cell_name                      TEXT,
+    disk_name                      TEXT,
+    device_type                    TEXT,
+    iops                           NUMERIC,
+    throughput_mbps                NUMERIC,
+    util_pct                       NUMERIC,
+    service_ms                     NUMERIC,
+    is_outlier                     BOOLEAN DEFAULT false,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_disk_iostat_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_disk_iostat UNIQUE (dbname, begin_snap, cell_name, device_type, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_disk_iostat IS 'Per-disk IO stats from Outlier Disks section. is_outlier within a healthy cell may indicate a degraded disk.';
+
+-- Table: awr_exadata_fc_config
+CREATE TABLE IF NOT EXISTS awr_exadata_fc_config (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    cell_name                      TEXT NOT NULL,
+    fc_status                      TEXT,
+    fc_size_gb                     NUMERIC,
+    fl_size_mb                     NUMERIC,
+    is_flushing                    BOOLEAN DEFAULT false,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_fc_config_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_fc_config UNIQUE (dbname, begin_snap, cell_name, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_fc_config IS 'Per-cell Exadata Flash Cache configuration and status from AWR reports. is_flushing=TRUE is a CRITICAL condition: Flash Cache is actively flushing to disk and IOs on that cell are redirected to hard disk, causing severe latency.';
+
+-- Table: awr_exadata_fc_internal
+CREATE TABLE IF NOT EXISTS awr_exadata_fc_internal (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    cell_name                      TEXT NOT NULL,
+    io_direction                   TEXT NOT NULL,
+    request_count                  BIGINT,
+    io_type                        TEXT,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_fc_internal_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_fc_internal UNIQUE (dbname, begin_snap, cell_name, io_direction, io_type, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_fc_internal IS 'Flash Cache Internal Reads/Writes. Internal Reads spike during flushing. Absence of Internal Writes is also a flushing diagnostic.';
+
+-- Table: awr_exadata_fc_reads
+CREATE TABLE IF NOT EXISTS awr_exadata_fc_reads (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    cell_name                      TEXT NOT NULL,
+    io_type                        TEXT NOT NULL,
+    req_per_sec                    NUMERIC,
+    miss_per_sec                   NUMERIC,
+    hit_pct                        NUMERIC,
+    skip_count                     BIGINT,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_fc_reads_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_fc_reads UNIQUE (dbname, begin_snap, cell_name, io_type, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_fc_reads IS 'Per-cell Exadata Flash Cache read performance from AWR. hit_pct < 80% for OLTP or < 70% for Scan = HIGH alert. Cells with lower hit_pct than peers indicate Flash Cache flushing or size/configuration differences across cells.';
+
+-- Table: awr_exadata_fc_space
+CREATE TABLE IF NOT EXISTS awr_exadata_fc_space (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    cell_name                      TEXT NOT NULL,
+    total_fc_mb                    NUMERIC,
+    oltp_used_mb                   NUMERIC,
+    scan_used_mb                   NUMERIC,
+    large_write_mb                 NUMERIC,
+    large_write_pct                NUMERIC,
+    free_mb                        NUMERIC,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_fc_space_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_fc_space UNIQUE (dbname, begin_snap, cell_name, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_fc_space IS 'Flash Cache space usage per cell from Exadata AWR. large_write_pct > 15% = Global Limit pressure; > 20% = HIGH alert. Large writes come from PGA spills (temp), direct-path inserts, and DBWR. When large_write_pct is high, OLTP and Scan data are being evicted.';
+
+-- Table: awr_exadata_fc_write_reject
+CREATE TABLE IF NOT EXISTS awr_exadata_fc_write_reject (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    cell_name                      TEXT NOT NULL,
+    reason                         TEXT NOT NULL,
+    rejection_count                BIGINT,
+    rejection_pct                  NUMERIC,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_fc_write_reject_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_fc_write_reject UNIQUE (dbname, begin_snap, cell_name, reason, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_fc_write_reject IS 'Flash Cache Large Write Rejection reasons. reason=Global Limit means FC large-write space ceiling was hit — direct-path/temp writes go to disk.';
+
+-- Table: awr_exadata_fc_writes
+CREATE TABLE IF NOT EXISTS awr_exadata_fc_writes (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    cell_name                      TEXT NOT NULL,
+    write_section                  TEXT NOT NULL,
+    total_write_reqs               BIGINT,
+    partial_writes                 BIGINT,
+    absorbed_writes                BIGINT,
+    rejected_writes                BIGINT,
+    partial_write_pct              NUMERIC,
+    large_write_count              BIGINT,
+    large_write_type               TEXT,
+    skip_count                     BIGINT,
+    skip_reason                    TEXT,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_fc_writes_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_fc_writes UNIQUE (dbname, begin_snap, cell_name, write_section, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_fc_writes IS 'Flash Cache User Write stats — normal writes, large writes (temp spills/direct path), write skips. High rejected_writes means Global Limit hit.';
+
+-- Table: awr_exadata_flash_activity
+CREATE TABLE IF NOT EXISTS awr_exadata_flash_activity (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    flash_log_writes_ps            NUMERIC(14,2),
+    flash_log_writes_total         NUMERIC(18,2),
+    flash_log_writes_per_cell      NUMERIC(14,2),
+    fc_oltp_reads_ps               NUMERIC(14,2),
+    fc_oltp_reads_total            NUMERIC(18,2),
+    fc_scan_reads_ps               NUMERIC(14,2),
+    fc_scan_reads_total            NUMERIC(18,2),
+    columnar_reads_ps              NUMERIC(14,2),
+    columnar_reads_total           NUMERIC(18,2),
+    fc_user_writes_ps              NUMERIC(14,2),
+    fc_user_writes_total           NUMERIC(18,2),
+    disk_writer_reads_ps           NUMERIC(14,2),
+    population_writes_ps           NUMERIC(14,2),
+    metadata_writes_ps             NUMERIC(14,2),
+    row_hash                       TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    CONSTRAINT awr_exadata_flash_activity_pkey PRIMARY KEY (id),
+    CONSTRAINT awr_exadata_flash_activity_dbname_instance_begin_snap_key UNIQUE (dbname, instance, begin_snap)
+) TABLESPACE awrparser;
+
+-- Table: awr_exadata_griddisks
+CREATE TABLE IF NOT EXISTS awr_exadata_griddisks (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    begin_snap                     INTEGER NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    griddisk_prefix                TEXT NOT NULL,
+    caching_policy                 TEXT,
+    n_griddisks                    INTEGER,
+    n_cached_by                    INTEGER,
+    griddisk_size_gb               NUMERIC(12,2),
+    cell_total_gb                  NUMERIC(14,2),
+    system_total_gb                NUMERIC(14,2),
+    disk_type                      TEXT,
+    cells                          TEXT,
+    row_hash                       TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    CONSTRAINT awr_exadata_griddisks_pkey PRIMARY KEY (id),
+    CONSTRAINT awr_exadata_griddisks_dbname_begin_snap_griddisk_prefix_key UNIQUE (dbname, begin_snap, griddisk_prefix)
+) TABLESPACE awrparser;
+
+-- Table: awr_exadata_io_reasons
+CREATE TABLE IF NOT EXISTS awr_exadata_io_reasons (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    cell_name                      TEXT NOT NULL,
+    reason                         TEXT NOT NULL,
+    small_req                      BIGINT,
+    large_req                      BIGINT,
+    total_req                      BIGINT,
+    small_mb                       NUMERIC,
+    large_mb                       NUMERIC,
+    total_mb                       NUMERIC,
+    pct_of_total_req               NUMERIC,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_io_reasons_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_io_reasons UNIQUE (dbname, begin_snap, cell_name, reason, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_io_reasons IS 'IO Reasons breakdown from Exadata AWR — why IOs occur on storage cells. reason = Smart Scan is the most valuable (Exadata value adds). High Redo% = log-write intensive; High Internal IO% = maintenance activity.';
+
+-- Table: awr_exadata_iorm_objective
+CREATE TABLE IF NOT EXISTS awr_exadata_iorm_objective (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    begin_snap                     INTEGER NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    iorm_begin                     TEXT,
+    iorm_end                       TEXT,
+    cells                          TEXT,
+    row_hash                       TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    CONSTRAINT awr_exadata_iorm_objective_pkey PRIMARY KEY (id),
+    CONSTRAINT awr_exadata_iorm_objective_dbname_begin_snap_key UNIQUE (dbname, begin_snap)
+) TABLESPACE awrparser;
+
+-- Table: awr_exadata_os_io_summary
+CREATE TABLE IF NOT EXISTS awr_exadata_os_io_summary (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    disk_type                      TEXT NOT NULL,
+    n_cells                        INTEGER,
+    n_disks                        INTEGER,
+    total_iops                     NUMERIC(18,2),
+    iops_per_cell                  NUMERIC(18,2),
+    total_mbps                     NUMERIC(12,2),
+    mbps_per_cell                  NUMERIC(12,2),
+    service_time_ms                NUMERIC(10,4),
+    wait_time_ms                   NUMERIC(10,4),
+    pct_disk_util                  NUMERIC(8,2),
+    row_hash                       TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    CONSTRAINT awr_exadata_os_io_summary_pkey PRIMARY KEY (id),
+    CONSTRAINT awr_exadata_os_io_summary_dbname_instance_begin_snap_disk_t_key UNIQUE (dbname, instance, begin_snap, disk_type)
+) TABLESPACE awrparser;
+
+-- Table: awr_exadata_perf_summary
+CREATE TABLE IF NOT EXISTS awr_exadata_perf_summary (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    fc_pct_of_db_ios               NUMERIC,
+    xrmem_pct_of_db_ios            NUMERIC,
+    rdma_pct_of_db_ios             NUMERIC,
+    fc_hit_oltp_pct                NUMERIC,
+    fc_hit_scan_pct                NUMERIC,
+    fc_read_skip_count             BIGINT,
+    fc_write_skip_count            BIGINT,
+    scrub_io_mbps                  NUMERIC,
+    fc_read_miss_count             BIGINT,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_perf_summary_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_perf_summary UNIQUE (dbname, begin_snap, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_perf_summary IS 'System-level Exadata cache efficiency from AWR Performance Summary section. fc_pct_of_db_ios + xrmem_pct_of_db_ios describe where DB IOs are served from. Low hit% or high skip counts indicate cache pressure or misconfiguration.';
+
+-- Table: awr_exadata_single_block_reads
+CREATE TABLE IF NOT EXISTS awr_exadata_single_block_reads (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    phys_read_total_io             INTEGER,
+    phys_read_io_reqs              INTEGER,
+    fc_read_hits                   INTEGER,
+    xrmem_cache_hits               INTEGER,
+    cell_rdma_reads                INTEGER,
+    phys_read_total_ps             NUMERIC(12,2),
+    phys_read_io_reqs_ps           NUMERIC(12,2),
+    fc_read_hits_ps                NUMERIC(12,2),
+    xrmem_hits_ps                  NUMERIC(12,2),
+    rdma_reads_ps                  NUMERIC(12,2),
+    pct_flash                      NUMERIC(6,2),
+    pct_disk                       NUMERIC(6,2),
+    pct_xrmem                      NUMERIC(6,2),
+    small_reads_flash_ps           NUMERIC(14,2),
+    small_reads_disk_ps            NUMERIC(14,2),
+    small_reads_xrmem_ps           NUMERIC(14,2),
+    row_hash                       TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    CONSTRAINT awr_exadata_single_block_reads_pkey PRIMARY KEY (id),
+    CONSTRAINT awr_exadata_single_block_reads_dbname_instance_begin_snap_key UNIQUE (dbname, instance, begin_snap)
+) TABLESPACE awrparser;
+
+-- Table: awr_exadata_smart_io
+CREATE TABLE IF NOT EXISTS awr_exadata_smart_io (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    cell_name                      TEXT NOT NULL,
+    eligible_mbps                  NUMERIC,
+    si_savings_mbps                NUMERIC,
+    flash_read_mbps                NUMERIC,
+    disk_read_mbps                 NUMERIC,
+    passthru_mbps                  NUMERIC,
+    col_cache_mbps                 NUMERIC,
+    reverse_offload_mbps           NUMERIC,
+    passthru_pct                   NUMERIC,
+    disk_pct                       NUMERIC,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_smart_io_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_smart_io UNIQUE (dbname, begin_snap, cell_name, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_smart_io IS 'Per-cell Exadata Smart IO statistics from AWR. passthru_pct > 15% is a HIGH alert — smart scans are not offloading. disk_pct > 40% means most scans are hitting hard disk, not Flash Cache. Outlier cells (diff from peers) indicate cell-level Flash Cache issues.';
+
+-- Table: awr_exadata_storage_info
+CREATE TABLE IF NOT EXISTS awr_exadata_storage_info (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    begin_snap                     INTEGER NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    n_cells                        INTEGER,
+    flash_cache_gb                 NUMERIC(12,2),
+    xrmem_cache_gb                 NUMERIC(12,2),
+    flash_log_gb                   NUMERIC(10,2),
+    n_hard_disk                    INTEGER,
+    n_flash_disk                   INTEGER,
+    n_griddisks                    INTEGER,
+    n_celldisks                    INTEGER,
+    cell_list                      TEXT,
+    row_hash                       TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    CONSTRAINT awr_exadata_storage_info_pkey PRIMARY KEY (id),
+    CONSTRAINT awr_exadata_storage_info_dbname_begin_snap_n_cells_key UNIQUE (dbname, begin_snap, n_cells)
+) TABLESPACE awrparser;
+
+-- Table: awr_exadata_temp_io_lw
+CREATE TABLE IF NOT EXISTS awr_exadata_temp_io_lw (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER NOT NULL,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    large_writes_total_ps          NUMERIC(14,2),
+    lw_temp_spill_ps               NUMERIC(14,2),
+    lw_data_temp_ps                NUMERIC(14,2),
+    lw_write_only_ps               NUMERIC(14,2),
+    db_temp_io_hit_pct             NUMERIC(6,2),
+    fc_lw_for_temp_total           NUMERIC(18,0),
+    fc_lw_for_temp_ps              NUMERIC(14,2),
+    row_hash                       TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    CONSTRAINT awr_exadata_temp_io_lw_pkey PRIMARY KEY (id),
+    CONSTRAINT awr_exadata_temp_io_lw_dbname_instance_begin_snap_key UNIQUE (dbname, instance, begin_snap)
+) TABLESPACE awrparser;
+
+-- Table: awr_exadata_top_db
+CREATE TABLE IF NOT EXISTS awr_exadata_top_db (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    begin_snap                     INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    target_dbname                  TEXT NOT NULL,
+    flash_req_pct                  NUMERIC,
+    disk_req_pct                   NUMERIC,
+    small_avg_lat_ms               NUMERIC,
+    large_avg_lat_ms               NUMERIC,
+    iorm_queue_ms                  NUMERIC,
+    total_req                      BIGINT,
+    flash_mb_pct                   NUMERIC,
+    disk_mb_pct                    NUMERIC,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_exadata_top_db_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_exadata_top_db UNIQUE (dbname, begin_snap, target_dbname, row_hash)
+) TABLESPACE awrparser;
+COMMENT ON TABLE awr_exadata_top_db IS 'Top Databases by IO Requests from Exadata AWR. Shows per-database IO distribution across Flash Cache and Hard Disk, with average latencies and IORM queue times. High iorm_queue_ms (>5ms) on large IOs indicates IORM resource contention.';
 
 -- Table: awr_execution_plans
 CREATE TABLE IF NOT EXISTS awr_execution_plans (
@@ -806,7 +1389,7 @@ CREATE TABLE IF NOT EXISTS awr_remote_db_paths (
     CONSTRAINT uq_awr_remote_db_per_server UNIQUE (server_id, db_name),
     CONSTRAINT awr_remote_db_paths_server_id_fkey FOREIGN KEY (server_id)
         REFERENCES awr_remote_servers (id) ON DELETE CASCADE
-) TABLESPACE awrparser;
+) TABLESPACE awrparser_idx;
 COMMENT ON TABLE awr_remote_db_paths IS 'OPTIONAL per-database override for a server. Only needed to rename a folder, give one database its own interval, or list databases explicitly when a server has auto_discover=FALSE. Full remote location = server.root_path + / + remote_subpath. Files are copied to awr_reports/<db_name>/ and picked up by the queue processor.';
 
 -- Table: awr_remote_servers
@@ -1557,412 +2140,6 @@ CREATE TABLE IF NOT EXISTS exec_plan_headers (
     CONSTRAINT exec_plan_headers_pkey PRIMARY KEY (id)
 ) TABLESPACE awrparser;
 
-CREATE TABLE IF NOT EXISTS awr_exadata_fc_config (
-    id              SERIAL,
-    dbname          TEXT        NOT NULL,
-    instance        TEXT        NOT NULL,
-    begin_snap      INTEGER,
-    snap_time       TIMESTAMP   WITHOUT TIME ZONE,
-    cell_name       TEXT        NOT NULL,   -- e.g. celadm01 or 'All'
-    fc_status       TEXT,                  -- normal | normal-flushing | etc.
-    fc_size_gb      NUMERIC,               -- Flash Cache size in GB
-    fl_size_mb      NUMERIC,               -- Flash Log size in MB (NULL = no FL)
-    is_flushing     BOOLEAN     DEFAULT false,  -- derived: 'flushing' in status
-    row_hash        CHAR(32)    NOT NULL,
-    created_at      TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT awr_exadata_fc_config_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_exadata_fc_config
-        UNIQUE (dbname, begin_snap, cell_name, row_hash)
-) TABLESPACE awrparser;
-
-COMMENT ON TABLE awr_exadata_fc_config IS
-'Per-cell Exadata Flash Cache configuration and status from AWR reports. '
-'is_flushing=TRUE is a CRITICAL condition: Flash Cache is actively flushing '
-'to disk and IOs on that cell are redirected to hard disk, causing severe latency.';
-
-CREATE INDEX IF NOT EXISTS idx_exadata_fc_config_snap
-    ON awr_exadata_fc_config (dbname, begin_snap) TABLESPACE awrparser_idx;
-
-CREATE INDEX IF NOT EXISTS idx_exadata_fc_config_flushing
-    ON awr_exadata_fc_config (dbname, is_flushing) TABLESPACE awrparser_idx
-    WHERE is_flushing = true ;
-
-CREATE TABLE IF NOT EXISTS awr_exadata_perf_summary (
-    id                      SERIAL,
-    dbname                  TEXT        NOT NULL,
-    instance                TEXT        NOT NULL,
-    begin_snap              INTEGER,
-    snap_time               TIMESTAMP   WITHOUT TIME ZONE,
-    -- Cache Savings
-    fc_pct_of_db_ios        NUMERIC,   -- % DB IOs from Flash Cache
-    xrmem_pct_of_db_ios     NUMERIC,   -- % DB IOs from XRMEM Cache
-    rdma_pct_of_db_ios      NUMERIC,   -- % DB IOs via RDMA (subset of XRMEM)
-    fc_hit_oltp_pct         NUMERIC,   -- Flash Cache hit% for OLTP reads
-    fc_hit_scan_pct         NUMERIC,   -- Flash Cache hit% for Scan reads
-    -- Disk Activity
-    fc_read_skip_count      BIGINT,    -- Flash Cache read skips (reads bypassing FC)
-    fc_write_skip_count     BIGINT,    -- Flash Cache write skips
-    scrub_io_mbps           NUMERIC,   -- Disk scrub IO MB/s (expected on idle disk)
-    fc_read_miss_count      BIGINT,    -- Flash Cache read misses (went to disk)
-    row_hash                CHAR(32)   NOT NULL,
-    created_at              TIMESTAMP  WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT awr_exadata_perf_summary_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_exadata_perf_summary
-        UNIQUE (dbname, begin_snap, row_hash)
-) TABLESPACE awrparser;
-
-COMMENT ON TABLE awr_exadata_perf_summary IS
-'System-level Exadata cache efficiency from AWR Performance Summary section. '
-'fc_pct_of_db_ios + xrmem_pct_of_db_ios describe where DB IOs are served from. '
-'Low hit% or high skip counts indicate cache pressure or misconfiguration.';
-
-CREATE INDEX IF NOT EXISTS idx_exadata_perf_summary_snap
-    ON awr_exadata_perf_summary (dbname, begin_snap) TABLESPACE awrparser_idx;
-
-
-CREATE TABLE IF NOT EXISTS awr_exadata_smart_io (
-    id                  SERIAL,
-    dbname              TEXT        NOT NULL,
-    instance            TEXT        NOT NULL,
-    begin_snap          INTEGER,
-    snap_time           TIMESTAMP   WITHOUT TIME ZONE,
-    cell_name           TEXT        NOT NULL,   -- 'All' or cell hostname
-    eligible_mbps       NUMERIC,    -- MB/s eligible for Smart Scan offload
-    si_savings_mbps     NUMERIC,    -- MB/s saved by Storage Index elimination
-    flash_read_mbps     NUMERIC,    -- MB/s satisfied from Flash Cache (Smart Scan)
-    disk_read_mbps      NUMERIC,    -- MB/s read from hard disk (Smart Scan)
-    passthru_mbps       NUMERIC,    -- MB/s in passthru (not offloaded)
-    col_cache_mbps      NUMERIC,    -- MB/s from Columnar Cache
-    reverse_offload_mbps NUMERIC,   -- MB/s in reverse offload mode
-    passthru_pct        NUMERIC,    -- passthru_mbps / eligible_mbps * 100
-    disk_pct            NUMERIC,    -- disk_read_mbps / eligible_mbps * 100
-    row_hash            CHAR(32)    NOT NULL,
-    created_at          TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT awr_exadata_smart_io_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_exadata_smart_io
-        UNIQUE (dbname, begin_snap, cell_name, row_hash)
-) TABLESPACE awrparser;
-
-COMMENT ON TABLE awr_exadata_smart_io IS
-'Per-cell Exadata Smart IO statistics from AWR. '
-'passthru_pct > 15% is a HIGH alert — smart scans are not offloading. '
-'disk_pct > 40% means most scans are hitting hard disk, not Flash Cache. '
-'Outlier cells (diff from peers) indicate cell-level Flash Cache issues.';
-
-CREATE INDEX IF NOT EXISTS idx_exadata_smart_io_snap
-    ON awr_exadata_smart_io (dbname, begin_snap) TABLESPACE awrparser_idx;
-
-CREATE INDEX IF NOT EXISTS idx_exadata_smart_io_passthru
-    ON awr_exadata_smart_io (dbname, begin_snap, passthru_pct DESC) TABLESPACE awrparser_idx
-    WHERE passthru_pct IS NOT NULL ;
-
-
-CREATE TABLE IF NOT EXISTS awr_exadata_fc_reads (
-    id              SERIAL,
-    dbname          TEXT        NOT NULL,
-    instance        TEXT        NOT NULL,
-    begin_snap      INTEGER,
-    snap_time       TIMESTAMP   WITHOUT TIME ZONE,
-    cell_name       TEXT        NOT NULL,   -- cell hostname or 'All'
-    io_type         TEXT        NOT NULL,   -- OLTP | Scan | Total
-    req_per_sec     NUMERIC,    -- read requests per second to Flash Cache
-    miss_per_sec    NUMERIC,    -- cache miss rate (requests going to disk/XRMEM)
-    hit_pct         NUMERIC,    -- Flash Cache hit percentage
-    skip_count      BIGINT,     -- reads that bypassed Flash Cache entirely
-    row_hash        CHAR(32)    NOT NULL,
-    created_at      TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT awr_exadata_fc_reads_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_exadata_fc_reads
-        UNIQUE (dbname, begin_snap, cell_name, io_type, row_hash)
-) TABLESPACE awrparser;
-
-COMMENT ON TABLE awr_exadata_fc_reads IS
-'Per-cell Exadata Flash Cache read performance from AWR. '
-'hit_pct < 80% for OLTP or < 70% for Scan = HIGH alert. '
-'Cells with lower hit_pct than peers indicate Flash Cache flushing or '
-'size/configuration differences across cells.';
-
-CREATE INDEX IF NOT EXISTS idx_exadata_fc_reads_snap
-    ON awr_exadata_fc_reads (dbname, begin_snap) TABLESPACE awrparser_idx;
-
-CREATE INDEX IF NOT EXISTS idx_exadata_fc_reads_hit
-    ON awr_exadata_fc_reads (dbname, begin_snap, io_type, hit_pct) TABLESPACE awrparser_idx;
-
-CREATE TABLE IF NOT EXISTS awr_exadata_top_db (
-    id                  SERIAL,
-    dbname              TEXT        NOT NULL,
-    instance            TEXT        NOT NULL,
-    begin_snap          INTEGER,
-    snap_time           TIMESTAMP   WITHOUT TIME ZONE,
-    target_dbname       TEXT        NOT NULL,  -- database being reported (Global AWR: could differ)
-    flash_req_pct       NUMERIC,               -- % IO requests from Flash Cache
-    disk_req_pct        NUMERIC,               -- % IO requests from Hard Disk
-    small_avg_lat_ms    NUMERIC,               -- avg latency for small IOs (ms)
-    large_avg_lat_ms    NUMERIC,               -- avg latency for large IOs (ms)
-    iorm_queue_ms       NUMERIC,               -- IORM queue time for large IOs (ms)
-    total_req           BIGINT,                -- total IO request count
-    flash_mb_pct        NUMERIC,               -- % IO MB from Flash
-    disk_mb_pct         NUMERIC,               -- % IO MB from Disk
-    row_hash            CHAR(32)    NOT NULL,
-    created_at          TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT awr_exadata_top_db_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_exadata_top_db UNIQUE (dbname, begin_snap, target_dbname, row_hash)
-) TABLESPACE awrparser;
-
-COMMENT ON TABLE awr_exadata_top_db IS
-'Top Databases by IO Requests from Exadata AWR. Shows per-database IO distribution across '
-'Flash Cache and Hard Disk, with average latencies and IORM queue times. '
-'High iorm_queue_ms (>5ms) on large IOs indicates IORM resource contention.';
-
-CREATE INDEX IF NOT EXISTS idx_exadata_top_db_snap
-    ON awr_exadata_top_db (dbname, begin_snap) TABLESPACE awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_exadata_top_db_iorm
-    ON awr_exadata_top_db (dbname, begin_snap, iorm_queue_ms DESC) TABLESPACE awrparser_idx;
-
-
-CREATE TABLE IF NOT EXISTS awr_exadata_cell_iostat (
-    id                  SERIAL,
-    dbname              TEXT        NOT NULL,
-    instance            TEXT        NOT NULL,
-    begin_snap          INTEGER,
-    snap_time           TIMESTAMP   WITHOUT TIME ZONE,
-    cell_name           TEXT        NOT NULL,
-    device_type         TEXT,                  -- 'Flash' or 'HardDisk' (with size suffix)
-    iops                NUMERIC,               -- IO operations per second
-    throughput_mbps     NUMERIC,               -- MB/s throughput
-    util_pct            NUMERIC,               -- utilization %
-    service_ms          NUMERIC,               -- average service time (ms)
-    queue_ms            NUMERIC,               -- average queue time (ms)
-    is_outlier          BOOLEAN DEFAULT false, -- marked as IO outlier vs peers
-    at_max_capacity     BOOLEAN DEFAULT false, -- at maximum device capacity
-    row_hash            CHAR(32)    NOT NULL,
-    created_at          TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT awr_exadata_cell_iostat_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_exadata_cell_iostat UNIQUE (dbname, begin_snap, cell_name, device_type, row_hash)
-) TABLESPACE awrparser;
-
-COMMENT ON TABLE awr_exadata_cell_iostat IS
-'OS IO Statistics for Exadata storage cells from AWR Outlier Cells section. '
-'is_outlier=TRUE means this cell is performing significantly more IO than its peers. '
-'at_max_capacity=TRUE is a HIGH alert — the cell is throttling IOs.';
-
-CREATE INDEX IF NOT EXISTS idx_exadata_cell_iostat_snap
-    ON awr_exadata_cell_iostat (dbname, begin_snap) TABLESPACE awrparser_idx;
-	
-CREATE INDEX IF NOT EXISTS idx_exadata_cell_iostat_outlier
-    ON awr_exadata_cell_iostat (dbname, is_outlier)  TABLESPACE awrparser_idx
-    WHERE is_outlier = true;
-CREATE INDEX IF NOT EXISTS idx_exadata_cell_iostat_maxcap
-    ON awr_exadata_cell_iostat (dbname, at_max_capacity)  TABLESPACE awrparser_idx
-    WHERE at_max_capacity = truec;
-
-CREATE TABLE IF NOT EXISTS awr_exadata_io_reasons (
-    id                  SERIAL,
-    dbname              TEXT        NOT NULL,
-    instance            TEXT        NOT NULL,
-    begin_snap          INTEGER,
-    snap_time           TIMESTAMP   WITHOUT TIME ZONE,
-    cell_name           TEXT        NOT NULL,  -- 'All' for system aggregate
-    reason              TEXT        NOT NULL,  -- Smart Scan | Redo | DBWR | Scrub | Internal IO | etc.
-    small_req           BIGINT,                -- small IO request count
-    large_req           BIGINT,                -- large IO request count
-    total_req           BIGINT,                -- total requests
-    small_mb            NUMERIC,               -- MB from small IOs
-    large_mb            NUMERIC,               -- MB from large IOs
-    total_mb            NUMERIC,               -- total MB
-    pct_of_total_req    NUMERIC,               -- % of all cell requests
-    row_hash            CHAR(32)    NOT NULL,
-    created_at          TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT awr_exadata_io_reasons_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_exadata_io_reasons UNIQUE (dbname, begin_snap, cell_name, reason, row_hash)
-) TABLESPACE awrparser;
-
-COMMENT ON TABLE awr_exadata_io_reasons IS
-'IO Reasons breakdown from Exadata AWR — why IOs occur on storage cells. '
-'reason = Smart Scan is the most valuable (Exadata value adds). '
-'High Redo% = log-write intensive; High Internal IO% = maintenance activity.';
-
-CREATE INDEX IF NOT EXISTS idx_exadata_io_reasons_snap
-    ON awr_exadata_io_reasons (dbname, begin_snap) TABLESPACE awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_exadata_io_reasons_reason
-    ON awr_exadata_io_reasons (dbname, begin_snap, reason) TABLESPACE awrparser_idx;
-
-CREATE TABLE IF NOT EXISTS awr_exadata_fc_space (
-    id                  SERIAL,
-    dbname              TEXT        NOT NULL,
-    instance            TEXT        NOT NULL,
-    begin_snap          INTEGER,
-    snap_time           TIMESTAMP   WITHOUT TIME ZONE,
-    cell_name           TEXT        NOT NULL,  -- 'All' or cell hostname
-    total_fc_mb         NUMERIC,               -- total Flash Cache size (MB)
-    oltp_used_mb        NUMERIC,               -- MB used for OLTP reads
-    scan_used_mb        NUMERIC,               -- MB used for Smart Scan reads
-    large_write_mb      NUMERIC,               -- MB used for Large Writes (temp/direct)
-    large_write_pct     NUMERIC,               -- large_write_mb / total_fc_mb * 100
-    free_mb             NUMERIC,               -- free Flash Cache space
-    row_hash            CHAR(32)    NOT NULL,
-    created_at          TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT awr_exadata_fc_space_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_exadata_fc_space UNIQUE (dbname, begin_snap, cell_name, row_hash)
-) TABLESPACE awrparser;
-
-COMMENT ON TABLE awr_exadata_fc_space IS
-'Flash Cache space usage per cell from Exadata AWR. '
-'large_write_pct > 15% = Global Limit pressure; > 20% = HIGH alert. '
-'Large writes come from PGA spills (temp), direct-path inserts, and DBWR. '
-'When large_write_pct is high, OLTP and Scan data are being evicted.';
-
-CREATE INDEX IF NOT EXISTS idx_exadata_fc_space_snap
-    ON awr_exadata_fc_space (dbname, begin_snap) TABLESPACE awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_exadata_fc_space_lw
-    ON awr_exadata_fc_space (dbname, begin_snap, large_write_pct DESC) TABLESPACE awrparser_idx;
-
-
-CREATE TABLE IF NOT EXISTS awr_exadata_cell_server (
-    id                  SERIAL,
-    dbname              TEXT        NOT NULL,
-    instance            TEXT        NOT NULL,
-    begin_snap          INTEGER,
-    snap_time           TIMESTAMP   WITHOUT TIME ZONE,
-    cell_name           TEXT        NOT NULL,
-    small_read_iops     NUMERIC,               -- small read IO/s
-    small_write_iops    NUMERIC,               -- small write IO/s
-    large_read_iops     NUMERIC,               -- large read IO/s
-    large_write_iops    NUMERIC,               -- large write IO/s
-    small_read_mbps     NUMERIC,               -- small read MB/s
-    small_write_mbps    NUMERIC,               -- small write MB/s
-    large_read_mbps     NUMERIC,               -- large read MB/s
-    large_write_mbps    NUMERIC,               -- large write MB/s
-    total_iops          NUMERIC,               -- derived: sum of all iops
-    large_write_pct_iops NUMERIC,              -- large_write_iops/total_iops*100
-    row_hash            CHAR(32)    NOT NULL,
-    created_at          TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT awr_exadata_cell_server_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_exadata_cell_server UNIQUE (dbname, begin_snap, cell_name, row_hash)
-) TABLESPACE awrparser;
-
-COMMENT ON TABLE awr_exadata_cell_server IS
-'Cell Server IO statistics per cell from Exadata AWR. '
-'Breaks down IO into small/large read/write for each cell. '
-'High large_write_pct_iops signals temp spill pressure or checkpoint storm. '
-'Cross-cell imbalance (one cell doing 2x others) indicates uneven data distribution.';
-
-CREATE INDEX IF NOT EXISTS idx_exadata_cell_server_snap
-    ON awr_exadata_cell_server (dbname, begin_snap) TABLESPACE awrparser_idx;
-
--- awr_exadata_fc_writes
-CREATE TABLE IF NOT EXISTS awr_exadata_fc_writes (
-    id                SERIAL,
-    dbname            TEXT        NOT NULL,
-    instance          TEXT        NOT NULL,
-    begin_snap        INTEGER,
-    snap_time         TIMESTAMP   WITHOUT TIME ZONE,
-    cell_name         TEXT        NOT NULL,
-    write_section     TEXT        NOT NULL,
-    total_write_reqs  BIGINT,
-    partial_writes    BIGINT,
-    absorbed_writes   BIGINT,
-    rejected_writes   BIGINT,
-    partial_write_pct NUMERIC,
-    large_write_count BIGINT,
-    large_write_type  TEXT,
-    skip_count        BIGINT,
-    skip_reason       TEXT,
-    row_hash          CHAR(32)    NOT NULL,
-    created_at        TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT awr_exadata_fc_writes_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_exadata_fc_writes UNIQUE (dbname, begin_snap, cell_name, write_section, row_hash)
-) TABLESPACE awrparser;
-COMMENT ON TABLE awr_exadata_fc_writes IS 'Flash Cache User Write stats — normal writes, large writes (temp spills/direct path), write skips. High rejected_writes means Global Limit hit.';
-CREATE INDEX IF NOT EXISTS idx_exadata_fc_writes_snap ON awr_exadata_fc_writes (dbname, begin_snap) TABLESPACE awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_exadata_fc_writes_rejects ON awr_exadata_fc_writes (dbname, begin_snap, rejected_writes DESC) TABLESPACE awrparser_idx WHERE rejected_writes IS NOT NULL;
-
--- awr_exadata_fc_write_reject
-CREATE TABLE IF NOT EXISTS awr_exadata_fc_write_reject (
-    id               SERIAL,
-    dbname           TEXT        NOT NULL,
-    instance         TEXT        NOT NULL,
-    begin_snap       INTEGER,
-    snap_time        TIMESTAMP   WITHOUT TIME ZONE,
-    cell_name        TEXT        NOT NULL,
-    reason           TEXT        NOT NULL,
-    rejection_count  BIGINT,
-    rejection_pct    NUMERIC,
-    row_hash         CHAR(32)    NOT NULL,
-    created_at       TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT awr_exadata_fc_write_reject_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_exadata_fc_write_reject UNIQUE (dbname, begin_snap, cell_name, reason, row_hash)
-) TABLESPACE awrparser;
-COMMENT ON TABLE awr_exadata_fc_write_reject IS 'Flash Cache Large Write Rejection reasons. reason=Global Limit means FC large-write space ceiling was hit — direct-path/temp writes go to disk.';
-CREATE INDEX IF NOT EXISTS idx_exadata_fc_write_reject_snap ON awr_exadata_fc_write_reject (dbname, begin_snap) TABLESPACE awrparser_idx;
-
--- awr_exadata_config
-CREATE TABLE IF NOT EXISTS awr_exadata_config (
-    id               SERIAL,
-    dbname           TEXT        NOT NULL,
-    instance         TEXT        NOT NULL,
-    begin_snap       INTEGER,
-    snap_time        TIMESTAMP   WITHOUT TIME ZONE,
-    cell_name        TEXT        NOT NULL,
-    model            TEXT,
-    storage_version  TEXT,
-    flash_cache_mb   NUMERIC,
-    flash_log_mb     NUMERIC,
-    cell_disks       INTEGER,
-    grid_disks       INTEGER,
-    has_flash_log    BOOLEAN     DEFAULT false,
-    row_hash         CHAR(32)    NOT NULL,
-    created_at       TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT awr_exadata_config_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_exadata_config UNIQUE (dbname, begin_snap, cell_name, row_hash)
-) TABLESPACE awrparser;
-COMMENT ON TABLE awr_exadata_config IS 'Exadata cell hardware config. Inconsistent flash_cache_mb or missing flash_log across cells is a MEDIUM alert.';
-CREATE INDEX IF NOT EXISTS idx_exadata_config_snap ON awr_exadata_config (dbname, begin_snap) TABLESPACE awrparser_idx;
-
--- awr_exadata_disk_iostat
-CREATE TABLE IF NOT EXISTS awr_exadata_disk_iostat (
-    id               SERIAL,
-    dbname           TEXT        NOT NULL,
-    instance         TEXT        NOT NULL,
-    begin_snap       INTEGER,
-    snap_time        TIMESTAMP   WITHOUT TIME ZONE,
-    cell_name        TEXT,
-    disk_name        TEXT,
-    device_type      TEXT,
-    iops             NUMERIC,
-    throughput_mbps  NUMERIC,
-    util_pct         NUMERIC,
-    service_ms       NUMERIC,
-    is_outlier       BOOLEAN     DEFAULT false,
-    row_hash         CHAR(32)    NOT NULL,
-    created_at       TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT awr_exadata_disk_iostat_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_exadata_disk_iostat UNIQUE (dbname, begin_snap, cell_name, device_type, row_hash)
-) TABLESPACE awrparser;
-COMMENT ON TABLE awr_exadata_disk_iostat IS 'Per-disk IO stats from Outlier Disks section. is_outlier within a healthy cell may indicate a degraded disk.';
-CREATE INDEX IF NOT EXISTS idx_exadata_disk_iostat_snap ON awr_exadata_disk_iostat (dbname, begin_snap) TABLESPACE awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_exadata_disk_iostat_outlier ON awr_exadata_disk_iostat (dbname, is_outlier) TABLESPACE awrparser_idx WHERE is_outlier = true;
-
--- awr_exadata_fc_internal
-CREATE TABLE IF NOT EXISTS awr_exadata_fc_internal (
-    id               SERIAL,
-    dbname           TEXT        NOT NULL,
-    instance         TEXT        NOT NULL,
-    begin_snap       INTEGER,
-    snap_time        TIMESTAMP   WITHOUT TIME ZONE,
-    cell_name        TEXT        NOT NULL,
-    io_direction     TEXT        NOT NULL,
-    request_count    BIGINT,
-    io_type          TEXT,
-    row_hash         CHAR(32)    NOT NULL,
-    created_at       TIMESTAMP   WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT awr_exadata_fc_internal_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_exadata_fc_internal UNIQUE (dbname, begin_snap, cell_name, io_direction, io_type, row_hash)
-) TABLESPACE awrparser;
-COMMENT ON TABLE awr_exadata_fc_internal IS 'Flash Cache Internal Reads/Writes. Internal Reads spike during flushing. Absence of Internal Writes is also a flushing diagnostic.';
-CREATE INDEX IF NOT EXISTS idx_exadata_fc_internal_snap ON awr_exadata_fc_internal (dbname, begin_snap) TABLESPACE awrparser_idx;
-
-
 -- Table: nmon_anomalies
 CREATE TABLE IF NOT EXISTS nmon_anomalies (
     id                             SERIAL,
@@ -2132,6 +2309,22 @@ CREATE TABLE IF NOT EXISTS nmon_ssh_connections (
     CONSTRAINT nmon_ssh_connections_hostname_key UNIQUE (hostname)
 ) TABLESPACE awrparser;
 COMMENT ON TABLE nmon_ssh_connections IS 'SSH pull configuration for NMON files from IBM AIX servers. Mirrors sar_ssh_connections. Files pulled via SFTP and deposited under nmon_drop/<hostname>/ for the NMONWatcher service to pick up.';
+
+-- Table: portal_backup_log
+CREATE TABLE IF NOT EXISTS portal_backup_log (
+    id                             SERIAL,
+    run_type                       TEXT DEFAULT 'backup'::text NOT NULL,
+    file_name                      TEXT,
+    file_path                      TEXT,
+    file_size_mb                   NUMERIC(12,2),
+    status                         TEXT DEFAULT 'running'::text NOT NULL,
+    message                        TEXT,
+    started_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    finished_at                    TIMESTAMP WITHOUT TIME ZONE,
+    triggered_by                   TEXT DEFAULT 'scheduler'::text,
+    CONSTRAINT portal_backup_log_pkey PRIMARY KEY (id)
+) TABLESPACE awrparser;
+COMMENT ON TABLE portal_backup_log IS 'History of daily database backup and restore operations run by backup_database.py / restore_database.py.';
 
 -- Table: portal_config
 CREATE TABLE IF NOT EXISTS portal_config (
@@ -2392,7 +2585,7 @@ CREATE TABLE IF NOT EXISTS wait_event_trend (
     total_wait_time_s              DOUBLE PRECISION,
     db_time_pct                    DOUBLE PRECISION,
     avg_wait                       TEXT
-) tablespace awrparser;
+);
 
 
 -- ============================================================
@@ -2401,127 +2594,184 @@ CREATE TABLE IF NOT EXISTS wait_event_trend (
 -- INDEXES (74 indexes)
 -- ============================================================
 
-CREATE INDEX IF NOT EXISTS idx_ai_rec_dbname awr_ai_recommendations USING btree (dbname, begin_snap) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_ai_rec_status awr_ai_recommendations USING btree (status) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_ai_rec_trigger awr_ai_recommendations USING btree (trigger_type, trigger_value) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_ai_rec_dbname ON public.awr_ai_recommendations USING btree (dbname, begin_snap);
+CREATE INDEX IF NOT EXISTS idx_ai_rec_status ON public.awr_ai_recommendations USING btree (status);
+CREATE INDEX IF NOT EXISTS idx_ai_rec_trigger ON public.awr_ai_recommendations USING btree (trigger_type, trigger_value);
 
-CREATE INDEX IF NOT EXISTS idx_awr_anomaly_db_snap awr_anomalies USING btree (dbname, instance, begin_snap, severity) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_awr_anomaly_time awr_anomalies USING btree (snap_time DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_awr_anomaly_db_snap ON public.awr_anomalies USING btree (dbname, instance, begin_snap, severity);
+CREATE INDEX IF NOT EXISTS idx_awr_anomaly_time ON public.awr_anomalies USING btree (snap_time DESC);
 
-CREATE INDEX IF NOT EXISTS idx_change_log_db_time awr_change_log USING btree (dbname, event_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_change_log_db_time ON public.awr_change_log USING btree (dbname, event_time);
 
-CREATE INDEX IF NOT EXISTS idx_db_master_db_name awr_db_master USING btree (db_name, active) tablespace awrparser_idx;
-CREATE UNIQUE INDEX IF NOT EXISTS uq_awr_db_master_host_utility awr_db_master USING btree (host_name, os_utility) WHERE ((active = true) AND (host_name IS NOT NULL) AND (host_name <> ''::text)) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_db_master_app_category ON public.awr_db_master USING btree (app_category);
+CREATE INDEX IF NOT EXISTS idx_db_master_app_code ON public.awr_db_master USING btree (app_code);
+CREATE INDEX IF NOT EXISTS idx_db_master_app_usage ON public.awr_db_master USING btree (app_usage);
+CREATE INDEX IF NOT EXISTS idx_db_master_db_name ON public.awr_db_master USING btree (db_name, active);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_awr_db_master_host_utility ON public.awr_db_master USING btree (host_name, os_utility) WHERE ((active = true) AND (host_name IS NOT NULL) AND (host_name <> ''::text));
 
-CREATE INDEX IF NOT EXISTS idx_exec_plan_fts awr_execution_plans USING gin (to_tsvector('english'::regconfig, ((COALESCE(object_name, ''::text) || ' '::text) || COALESCE(operation, ''::text)))) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_exec_plan_obj awr_execution_plans USING btree (object_owner, object_name) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_exec_plan_snap awr_execution_plans USING btree (dbname, begin_snap) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_exec_plan_sql awr_execution_plans USING btree (dbname, sql_id) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exa_asm_snap ON public.awr_exadata_asm_diskgroups USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_awrfw_pdb awr_foreground_wait_events USING btree (dbname, pdb_name, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exa_cell_io_snap ON public.awr_exadata_cell_io_summary USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_lic_audit_time awr_license_audit USING btree (event_time DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_cell_iostat_outlier ON public.awr_exadata_cell_iostat USING btree (dbname, is_outlier) WHERE (is_outlier = true);
+CREATE INDEX IF NOT EXISTS idx_exadata_cell_iostat_snap ON public.awr_exadata_cell_iostat USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_obj_meta_db awr_object_metadata USING btree (dbname) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_obj_meta_owner awr_object_metadata USING btree (owner, object_name) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_obj_meta_type awr_object_metadata USING btree (object_type) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_cell_server_snap ON public.awr_exadata_cell_server USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_oracle_conn_enabled awr_oracle_connections USING btree (enabled, db_name) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_config_snap ON public.awr_exadata_config USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_failed_snaps_pending awr_oracle_failed_snaps USING btree (conn_id, resolved, retry_count) WHERE (resolved = false) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exa_dbio_snap ON public.awr_exadata_db_io_summary USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_awr_rec_category awr_recommendations USING btree (category, severity) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_awr_rec_db_snap awr_recommendations USING btree (dbname, begin_snap, end_snap) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_awr_rec_severity awr_recommendations USING btree (severity, created_at DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exa_da_snap ON public.awr_exadata_disk_activity USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_awr_remote_db_enabled awr_remote_db_paths USING btree (enabled, server_id) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_disk_iostat_outlier ON public.awr_exadata_disk_iostat USING btree (dbname, is_outlier) WHERE (is_outlier = true);
+CREATE INDEX IF NOT EXISTS idx_exadata_disk_iostat_snap ON public.awr_exadata_disk_iostat USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_repo_scan_db awr_repo_scan_log USING btree (db_name, status) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_repo_scan_status awr_repo_scan_log USING btree (status, scanned_at) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_config_flushing ON public.awr_exadata_fc_config USING btree (dbname, is_flushing) WHERE (is_flushing = true);
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_config_snap ON public.awr_exadata_fc_config USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_awrseg_pdb awr_seg_logical_reads USING btree (dbname, pdb_name, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_internal_snap ON public.awr_exadata_fc_internal USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_cluster awr_sql_cluster_wait_time USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_reads_hit ON public.awr_exadata_fc_reads USING btree (dbname, begin_snap, io_type, hit_pct);
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_reads_snap ON public.awr_exadata_fc_reads USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_cpu awr_sql_cpu_time USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_space_lw ON public.awr_exadata_fc_space USING btree (dbname, begin_snap, large_write_pct DESC);
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_space_snap ON public.awr_exadata_fc_space USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_awrsql_pdb awr_sql_elapsed_time USING btree (dbname, pdb_name, snap_time) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_elapsed awr_sql_elapsed_time USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_write_reject_snap ON public.awr_exadata_fc_write_reject USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_gets awr_sql_gets USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_writes_rejects ON public.awr_exadata_fc_writes USING btree (dbname, begin_snap, rejected_writes DESC) WHERE (rejected_writes IS NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_exadata_fc_writes_snap ON public.awr_exadata_fc_writes USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_parse awr_sql_parsed_calls USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exa_fa_snap ON public.awr_exadata_flash_activity USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_phy awr_sql_phy_reads_unopt USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_io_reasons_reason ON public.awr_exadata_io_reasons USING btree (dbname, begin_snap, reason);
+CREATE INDEX IF NOT EXISTS idx_exadata_io_reasons_snap ON public.awr_exadata_io_reasons USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_reads awr_sql_reads USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exa_os_io_snap ON public.awr_exadata_os_io_summary USING btree (dbname, begin_snap);
 
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX IF NOT EXISTS idx_exadata_perf_summary_snap ON public.awr_exadata_perf_summary USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_sql_text_trgm awr_sql_text USING gin (sql_text gin_trgm_ops) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS ix_sql_text_snap awr_sql_text USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exa_sbr_snap ON public.awr_exadata_single_block_reads USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_uio awr_sql_user_io_time USING btree (dbname, instance, sql_id, begin_snap) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_smart_io_passthru ON public.awr_exadata_smart_io USING btree (dbname, begin_snap, passthru_pct DESC) WHERE (passthru_pct IS NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_exadata_smart_io_snap ON public.awr_exadata_smart_io USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_awr_unc_enabled awr_unc_connections USING btree (enabled, db_name) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exa_tilw_snap ON public.awr_exadata_temp_io_lw USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_plan_hdr_created exec_plan_headers USING btree (created_at DESC) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_plan_hdr_dbname exec_plan_headers USING btree (dbname) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_plan_hdr_sql exec_plan_headers USING btree (sql_id) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exadata_top_db_iorm ON public.awr_exadata_top_db USING btree (dbname, begin_snap, iorm_queue_ms DESC);
+CREATE INDEX IF NOT EXISTS idx_exadata_top_db_snap ON public.awr_exadata_top_db USING btree (dbname, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_nmon_cpu_host_time nmon_cpu_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_nmon_cpu_wait nmon_cpu_stats USING btree (hostname, wait_pct DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_exec_plan_fts ON public.awr_execution_plans USING gin (to_tsvector('english'::regconfig, ((COALESCE(object_name, ''::text) || ' '::text) || COALESCE(operation, ''::text))));
+CREATE INDEX IF NOT EXISTS idx_exec_plan_obj ON public.awr_execution_plans USING btree (object_owner, object_name);
+CREATE INDEX IF NOT EXISTS idx_exec_plan_snap ON public.awr_execution_plans USING btree (dbname, begin_snap);
+CREATE INDEX IF NOT EXISTS idx_exec_plan_sql ON public.awr_execution_plans USING btree (dbname, sql_id);
 
-CREATE INDEX IF NOT EXISTS idx_nmon_ctxsw_host_time nmon_ctxswitch_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_awrfw_pdb ON public.awr_foreground_wait_events USING btree (dbname, pdb_name, snap_time);
 
-CREATE INDEX IF NOT EXISTS idx_nmon_disk_busy nmon_disk_stats USING btree (hostname, busy_pct DESC) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_nmon_disk_host_time nmon_disk_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_lic_audit_time ON public.awr_license_audit USING btree (event_time DESC);
 
-CREATE INDEX IF NOT EXISTS idx_nmon_mem_host_time nmon_memory_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_obj_meta_db ON public.awr_object_metadata USING btree (dbname);
+CREATE INDEX IF NOT EXISTS idx_obj_meta_owner ON public.awr_object_metadata USING btree (owner, object_name);
+CREATE INDEX IF NOT EXISTS idx_obj_meta_type ON public.awr_object_metadata USING btree (object_type);
 
-CREATE INDEX IF NOT EXISTS idx_nmon_net_host_time nmon_network_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_oracle_conn_enabled ON public.awr_oracle_connections USING btree (enabled, db_name);
 
-CREATE INDEX IF NOT EXISTS idx_nmon_page_host_time nmon_paging_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_failed_snaps_pending ON public.awr_oracle_failed_snaps USING btree (conn_id, resolved, retry_count) WHERE (resolved = false);
 
-CREATE INDEX IF NOT EXISTS idx_nmon_runq_host_time nmon_runqueue_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_awr_rec_category ON public.awr_recommendations USING btree (category, severity);
+CREATE INDEX IF NOT EXISTS idx_awr_rec_db_snap ON public.awr_recommendations USING btree (dbname, begin_snap, end_snap);
+CREATE INDEX IF NOT EXISTS idx_awr_rec_severity ON public.awr_recommendations USING btree (severity, created_at DESC);
 
-CREATE INDEX IF NOT EXISTS idx_nmon_ssh_enabled nmon_ssh_connections USING btree (enabled, hostname) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_awr_remote_db_enabled ON public.awr_remote_db_paths USING btree (enabled, server_id);
 
-CREATE INDEX IF NOT EXISTS idx_fetch_log_src remote_fetch_log USING btree (source_type, source_id, fetched_at DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_repo_scan_db ON public.awr_repo_scan_log USING btree (db_name, status);
+CREATE INDEX IF NOT EXISTS idx_repo_scan_status ON public.awr_repo_scan_log USING btree (status, scanned_at);
 
-CREATE INDEX IF NOT EXISTS idx_sar_anomaly_host_time sar_anomalies USING btree (hostname, snap_time DESC, severity) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_sar_anomaly_severity sar_anomalies USING btree (severity, snap_time DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_awrseg_pdb ON public.awr_seg_logical_reads USING btree (dbname, pdb_name, snap_time);
 
-CREATE INDEX IF NOT EXISTS idx_sar_cpu_host_time sar_cpu_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_sar_cpu_iowait sar_cpu_stats USING btree (hostname, iowait_pct DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_cluster ON public.awr_sql_cluster_wait_time USING btree (dbname, instance, sql_id, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_sar_ctxswitch_cswch sar_ctxswitch_stats USING btree (hostname, cswch_per_sec DESC) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_sar_ctxswitch_host_time sar_ctxswitch_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_cpu ON public.awr_sql_cpu_time USING btree (dbname, instance, sql_id, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_sar_disk_host_time sar_disk_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_sar_disk_util sar_disk_stats USING btree (hostname, util_pct DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_awrsql_pdb ON public.awr_sql_elapsed_time USING btree (dbname, pdb_name, snap_time);
+CREATE INDEX IF NOT EXISTS idx_elapsed ON public.awr_sql_elapsed_time USING btree (dbname, instance, sql_id, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_sar_hugepage_host_time sar_hugepage_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_sar_hugepage_pct sar_hugepage_stats USING btree (hostname, hugused_pct DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_gets ON public.awr_sql_gets USING btree (dbname, instance, sql_id, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_sar_loadavg_blocked sar_loadavg_stats USING btree (hostname, blocked DESC) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_sar_loadavg_host_time sar_loadavg_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_sar_loadavg_runq sar_loadavg_stats USING btree (hostname, runq_sz DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_parse ON public.awr_sql_parsed_calls USING btree (dbname, instance, sql_id, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_sar_mem_host_time sar_memory_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_phy ON public.awr_sql_phy_reads_unopt USING btree (dbname, instance, sql_id, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_sar_network_host_time sar_network_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_sar_network_iface sar_network_stats USING btree (iface) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_reads ON public.awr_sql_reads USING btree (dbname, instance, sql_id, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_sar_paging_host_time sar_paging_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_sar_paging_majflt sar_paging_stats USING btree (hostname, majflt_per_sec DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_sql_text_trgm ON public.awr_sql_text USING gin (sql_text gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS ix_sql_text_snap ON public.awr_sql_text USING btree (dbname, instance, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_sar_socket_host_time sar_socket_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_sar_socket_tcptw sar_socket_stats USING btree (hostname, tcp_tw DESC) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_uio ON public.awr_sql_user_io_time USING btree (dbname, instance, sql_id, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_sar_ssh_enabled sar_ssh_connections USING btree (enabled, hostname) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_awr_unc_enabled ON public.awr_unc_connections USING btree (enabled, db_name);
 
-CREATE INDEX IF NOT EXISTS idx_sar_swap_host_time sar_swap_stats USING btree (hostname, snap_time) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_plan_hdr_created ON public.exec_plan_headers USING btree (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_plan_hdr_dbname ON public.exec_plan_headers USING btree (dbname);
+CREATE INDEX IF NOT EXISTS idx_plan_hdr_sql ON public.exec_plan_headers USING btree (sql_id);
+
+CREATE INDEX IF NOT EXISTS idx_nmon_cpu_host_time ON public.nmon_cpu_stats USING btree (hostname, snap_time);
+CREATE INDEX IF NOT EXISTS idx_nmon_cpu_wait ON public.nmon_cpu_stats USING btree (hostname, wait_pct DESC);
+
+CREATE INDEX IF NOT EXISTS idx_nmon_ctxsw_host_time ON public.nmon_ctxswitch_stats USING btree (hostname, snap_time);
+
+CREATE INDEX IF NOT EXISTS idx_nmon_disk_busy ON public.nmon_disk_stats USING btree (hostname, busy_pct DESC);
+CREATE INDEX IF NOT EXISTS idx_nmon_disk_host_time ON public.nmon_disk_stats USING btree (hostname, snap_time);
+
+CREATE INDEX IF NOT EXISTS idx_nmon_mem_host_time ON public.nmon_memory_stats USING btree (hostname, snap_time);
+
+CREATE INDEX IF NOT EXISTS idx_nmon_net_host_time ON public.nmon_network_stats USING btree (hostname, snap_time);
+
+CREATE INDEX IF NOT EXISTS idx_nmon_page_host_time ON public.nmon_paging_stats USING btree (hostname, snap_time);
+
+CREATE INDEX IF NOT EXISTS idx_nmon_runq_host_time ON public.nmon_runqueue_stats USING btree (hostname, snap_time);
+
+CREATE INDEX IF NOT EXISTS idx_nmon_ssh_enabled ON public.nmon_ssh_connections USING btree (enabled, hostname);
+
+CREATE INDEX IF NOT EXISTS idx_backup_log_started_at ON public.portal_backup_log USING btree (started_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_fetch_log_src ON public.remote_fetch_log USING btree (source_type, source_id, fetched_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_sar_anomaly_host_time ON public.sar_anomalies USING btree (hostname, snap_time DESC, severity);
+CREATE INDEX IF NOT EXISTS idx_sar_anomaly_severity ON public.sar_anomalies USING btree (severity, snap_time DESC);
+
+CREATE INDEX IF NOT EXISTS idx_sar_cpu_host_time ON public.sar_cpu_stats USING btree (hostname, snap_time);
+CREATE INDEX IF NOT EXISTS idx_sar_cpu_iowait ON public.sar_cpu_stats USING btree (hostname, iowait_pct DESC);
+
+CREATE INDEX IF NOT EXISTS idx_sar_ctxswitch_cswch ON public.sar_ctxswitch_stats USING btree (hostname, cswch_per_sec DESC);
+CREATE INDEX IF NOT EXISTS idx_sar_ctxswitch_host_time ON public.sar_ctxswitch_stats USING btree (hostname, snap_time);
+
+CREATE INDEX IF NOT EXISTS idx_sar_disk_host_time ON public.sar_disk_stats USING btree (hostname, snap_time);
+CREATE INDEX IF NOT EXISTS idx_sar_disk_util ON public.sar_disk_stats USING btree (hostname, util_pct DESC);
+
+CREATE INDEX IF NOT EXISTS idx_sar_hugepage_host_time ON public.sar_hugepage_stats USING btree (hostname, snap_time);
+CREATE INDEX IF NOT EXISTS idx_sar_hugepage_pct ON public.sar_hugepage_stats USING btree (hostname, hugused_pct DESC);
+
+CREATE INDEX IF NOT EXISTS idx_sar_loadavg_blocked ON public.sar_loadavg_stats USING btree (hostname, blocked DESC);
+CREATE INDEX IF NOT EXISTS idx_sar_loadavg_host_time ON public.sar_loadavg_stats USING btree (hostname, snap_time);
+CREATE INDEX IF NOT EXISTS idx_sar_loadavg_runq ON public.sar_loadavg_stats USING btree (hostname, runq_sz DESC);
+
+CREATE INDEX IF NOT EXISTS idx_sar_mem_host_time ON public.sar_memory_stats USING btree (hostname, snap_time);
+
+CREATE INDEX IF NOT EXISTS idx_sar_network_host_time ON public.sar_network_stats USING btree (hostname, snap_time);
+CREATE INDEX IF NOT EXISTS idx_sar_network_iface ON public.sar_network_stats USING btree (iface);
+
+CREATE INDEX IF NOT EXISTS idx_sar_paging_host_time ON public.sar_paging_stats USING btree (hostname, snap_time);
+CREATE INDEX IF NOT EXISTS idx_sar_paging_majflt ON public.sar_paging_stats USING btree (hostname, majflt_per_sec DESC);
+
+CREATE INDEX IF NOT EXISTS idx_sar_socket_host_time ON public.sar_socket_stats USING btree (hostname, snap_time);
+CREATE INDEX IF NOT EXISTS idx_sar_socket_tcptw ON public.sar_socket_stats USING btree (hostname, tcp_tw DESC);
+
+CREATE INDEX IF NOT EXISTS idx_sar_ssh_enabled ON public.sar_ssh_connections USING btree (enabled, hostname);
+
+CREATE INDEX IF NOT EXISTS idx_sar_swap_host_time ON public.sar_swap_stats USING btree (hostname, snap_time);
+
 
 
 -- ============================================================
@@ -2540,7 +2790,7 @@ CREATE OR REPLACE VIEW awr_seg_score_by_snap AS
     awr_segment_summary_mv.obj_type,
     avg(awr_segment_summary_mv.severity_score) AS seg_score_snap
    FROM awr_segment_summary_mv
-  GROUP BY awr_segment_summary_mv.dbname, awr_segment_summary_mv.instance, awr_segment_summary_mv.begin_snap, (lower(awr_segment_summary_mv.owner)), (lower(awr_segment_summary_mv.object_name)), awr_segment_summary_mv.obj_type;
+  GROUP BY awr_segment_summary_mv.dbname, awr_segment_summary_mv.instance, awr_segment_summary_mv.begin_snap, (lower(awr_segment_summary_mv.owner)), (lower(awr_segment_summary_mv.object_name)), awr_segment_summary_mv.obj_type;;
 
 -- View: awr_sql_score_by_snap
 CREATE OR REPLACE VIEW awr_sql_score_by_snap AS
@@ -2550,7 +2800,9 @@ CREATE OR REPLACE VIEW awr_sql_score_by_snap AS
     lower(awr_sql_summary_mv.sql_id) AS sql_id,
     avg(awr_sql_summary_mv.severity_score) AS sql_score_snap
    FROM awr_sql_summary_mv
-  GROUP BY awr_sql_summary_mv.dbname, awr_sql_summary_mv.instance, awr_sql_summary_mv.begin_snap, (lower(awr_sql_summary_mv.sql_id));
+  GROUP BY awr_sql_summary_mv.dbname, awr_sql_summary_mv.instance, awr_sql_summary_mv.begin_snap, (lower(awr_sql_summary_mv.sql_id));;
+
+
 
 
 -- ============================================================
@@ -2560,9 +2812,7 @@ CREATE OR REPLACE VIEW awr_sql_score_by_snap AS
 -- ============================================================
 
 -- Materialized View: awr_bg_wait_event_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_event_summary_mv 
-tablespace awrparser
-AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_event_summary_mv AS
  SELECT e.dbname,
     e.instance,
     e.begin_snap,
@@ -2586,12 +2836,10 @@ AS
      LEFT JOIN awr_wait_event_master m ON ((btrim(lower(e.event)) = btrim(lower(m.event)))))
   WHERE (e.pct_db_time > (5)::numeric)
   GROUP BY e.dbname, e.instance, e.begin_snap, m.wait_class, e.event;
-WITH DATA ;
+WITH DATA;
 
 -- Materialized View: awr_bg_wait_event_summary_mv1
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_event_summary_mv1 
-tablespace awrparser
-AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_event_summary_mv1 AS
  SELECT e.dbname,
     e.instance,
     e.begin_snap,
@@ -2618,9 +2866,7 @@ AS
 WITH DATA;
 
 -- Materialized View: awr_bg_wait_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_summary_mv 
-tablespace awrparser
-AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_bg_wait_summary_mv AS
  WITH bg_waits AS (
          SELECT awr_background_wait_events.dbname,
             awr_background_wait_events.instance,
@@ -2656,9 +2902,7 @@ AS
 WITH DATA;
 
 -- Materialized View: awr_fg_wait_event_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_fg_wait_event_summary_mv 
-tablespace awrparser
-AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_fg_wait_event_summary_mv AS
  SELECT e.dbname,
     e.instance,
     e.begin_snap,
@@ -2685,9 +2929,7 @@ AS
 WITH DATA;
 
 -- Materialized View: awr_fg_wait_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_fg_wait_summary_mv 
-tablespace awrparser
-AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_fg_wait_summary_mv AS
  WITH fg_waits AS (
          SELECT awr_foreground_wait_events.dbname,
             awr_foreground_wait_events.instance,
@@ -2723,9 +2965,7 @@ AS
 WITH DATA;
 
 -- Materialized View: awr_seg_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_seg_summary_mv 
-tablespace awrparser
-AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_seg_summary_mv AS
  WITH logical_reads AS (
          SELECT awr_seg_logical_reads.dbname,
             awr_seg_logical_reads.instance,
@@ -2966,9 +3206,7 @@ AS
 WITH DATA;
 
 -- Materialized View: awr_segment_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_segment_summary_mv 
-tablespace awrparser
-AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_segment_summary_mv AS
  WITH logical_reads AS (
          SELECT t.dbname,
             t.instance,
@@ -3207,9 +3445,7 @@ AS
 WITH DATA;
 
 -- Materialized View: awr_sql_object_map_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_object_map_mv 
-tablespace awrparser
-AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_object_map_mv AS
  WITH t AS (
          SELECT awr_sql_text_norm.sql_id,
             awr_sql_text_norm.sql_text_clean
@@ -3257,9 +3493,7 @@ AS
 WITH DATA;
 
 -- Materialized View: awr_sql_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_summary_mv 
-tablespace awrparser
-AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_summary_mv AS
  WITH elapsed AS (
          SELECT awr_sql_elapsed_time.dbname,
             awr_sql_elapsed_time.instance,
@@ -3372,9 +3606,7 @@ AS
 WITH DATA;
 
 -- Materialized View: awr_sql_text_norm
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_text_norm 
-tablespace awrparser
-AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_text_norm AS
  WITH src AS (
          SELECT DISTINCT lower(awr_sql_text.sql_id) AS sql_id,
             awr_sql_text.sql_text
@@ -3390,9 +3622,7 @@ AS
 WITH DATA;
 
 -- Materialized View: awr_sql_text_norm_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_text_norm_mv 
-tablespace awrparser
-AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_sql_text_norm_mv AS
  WITH src AS (
          SELECT DISTINCT lower(awr_sql_text.sql_id) AS sql_id,
             awr_sql_text.sql_text
@@ -3409,9 +3639,7 @@ AS
 WITH DATA;
 
 -- Materialized View: awr_wait_summary_mv
-CREATE MATERIALIZED VIEW IF NOT EXISTS awr_wait_summary_mv 
-tablespace awrparser
-AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS awr_wait_summary_mv AS
  WITH fg AS (
          SELECT e.dbname,
             e.instance,
@@ -3491,53 +3719,50 @@ AS
   ORDER BY (round((((COALESCE(combined.pct_time, (0)::numeric) * 0.7) + ((COALESCE(combined.total_wait_time_s, (0)::numeric) / 100.0) * 0.2)) + ((COALESCE(combined.avg_wait_ms, (0)::numeric) / 10.0) * 0.1)), 2)) DESC;
 WITH DATA;
 
-
 -- ============================================================
 
 
 -- MATERIALIZED VIEW INDEXES
 -- ============================================================
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_bg_wait_event_summary_mv_id awr_bg_wait_event_summary_mv USING btree (mv_id) tablespace awrparser_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_bg_wait_event_summary_mv_id ON public.awr_bg_wait_event_summary_mv USING btree (mv_id);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_bg_wait_summary_mv_id awr_bg_wait_summary_mv USING btree (mv_id) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_bg_wait_summary_dbinstsnap awr_bg_wait_summary_mv USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_bg_wait_summary_mv_id ON public.awr_bg_wait_summary_mv USING btree (mv_id);
+CREATE INDEX IF NOT EXISTS idx_bg_wait_summary_dbinstsnap ON public.awr_bg_wait_summary_mv USING btree (dbname, instance, begin_snap);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_fg_wait_event_summary_mv_id awr_fg_wait_event_summary_mv USING btree (mv_id) tablespace awrparser_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_fg_wait_event_summary_mv_id ON public.awr_fg_wait_event_summary_mv USING btree (mv_id);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_fg_wait_summary_mv_id awr_fg_wait_summary_mv USING btree (mv_id) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_fg_wait_summary_dbinstsnap awr_fg_wait_summary_mv USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_fg_wait_summary_mv_id ON public.awr_fg_wait_summary_mv USING btree (mv_id);
+CREATE INDEX IF NOT EXISTS idx_fg_wait_summary_dbinstsnap ON public.awr_fg_wait_summary_mv USING btree (dbname, instance, begin_snap);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_seg_summary_mv_id awr_seg_summary_mv USING btree (mv_id) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_seg_summary_dbinstsnap awr_seg_summary_mv USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_seg_summary_score awr_seg_summary_mv USING btree (severity_score DESC) tablespace awrparser_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_seg_summary_mv_id ON public.awr_seg_summary_mv USING btree (mv_id);
+CREATE INDEX IF NOT EXISTS idx_seg_summary_dbinstsnap ON public.awr_seg_summary_mv USING btree (dbname, instance, begin_snap);
+CREATE INDEX IF NOT EXISTS idx_seg_summary_score ON public.awr_seg_summary_mv USING btree (severity_score DESC);
 
-CREATE INDEX IF NOT EXISTS idx_seg_summary_mv_dbname_snap awr_segment_summary_mv USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_seg_summary_mv_owner_object awr_segment_summary_mv USING btree (dbname, owner, object_name) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_seg_summary_mv_severity awr_segment_summary_mv USING btree (dbname, instance, begin_snap, severity_score DESC) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS ix_seg_mv_snap awr_segment_summary_mv USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
-CREATE UNIQUE INDEX IF NOT EXISTS uq_seg_mv_id awr_segment_summary_mv USING btree (mv_id) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_seg_summary_mv_dbname_snap ON public.awr_segment_summary_mv USING btree (dbname, instance, begin_snap);
+CREATE INDEX IF NOT EXISTS idx_seg_summary_mv_owner_object ON public.awr_segment_summary_mv USING btree (dbname, owner, object_name);
+CREATE INDEX IF NOT EXISTS idx_seg_summary_mv_severity ON public.awr_segment_summary_mv USING btree (dbname, instance, begin_snap, severity_score DESC);
+CREATE INDEX IF NOT EXISTS ix_seg_mv_snap ON public.awr_segment_summary_mv USING btree (dbname, instance, begin_snap);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_seg_mv_id ON public.awr_segment_summary_mv USING btree (mv_id);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_sql_object_map_mv_id awr_sql_object_map_mv USING btree (mv_id) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_awr_sql_object_map_obj awr_sql_object_map_mv USING btree (object) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_awr_sql_object_map_sql awr_sql_object_map_mv USING btree (sql_id) tablespace awrparser_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_sql_object_map_mv_id ON public.awr_sql_object_map_mv USING btree (mv_id);
+CREATE INDEX IF NOT EXISTS idx_awr_sql_object_map_obj ON public.awr_sql_object_map_mv USING btree (object);
+CREATE INDEX IF NOT EXISTS idx_awr_sql_object_map_sql ON public.awr_sql_object_map_mv USING btree (sql_id);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_sql_summary_mv_id awr_sql_summary_mv USING btree (mv_id) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS ix_sql_summary_snap awr_sql_summary_mv USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_sql_summary_mv_id ON public.awr_sql_summary_mv USING btree (mv_id);
+CREATE INDEX IF NOT EXISTS ix_sql_summary_snap ON public.awr_sql_summary_mv USING btree (dbname, instance, begin_snap);
 
-CREATE INDEX IF NOT EXISTS idx_awr_sql_text_norm_id awr_sql_text_norm USING btree (sql_id) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_awr_sql_text_norm_mv_sql_id awr_sql_text_norm USING btree (sql_id) tablespace awrparser_idx;
+CREATE INDEX IF NOT EXISTS idx_awr_sql_text_norm_id ON public.awr_sql_text_norm USING btree (sql_id);
+CREATE INDEX IF NOT EXISTS idx_awr_sql_text_norm_mv_sql_id ON public.awr_sql_text_norm USING btree (sql_id);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_sql_text_norm_mv_id awr_sql_text_norm_mv USING btree (mv_id) tablespace awrparser_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_sql_text_norm_mv_id ON public.awr_sql_text_norm_mv USING btree (mv_id);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_wait_summary_mv_id awr_wait_summary_mv USING btree (mv_id) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS idx_wait_summary_dbinstsnap awr_wait_summary_mv USING btree (dbname, instance, begin_snap, wait_scope, wait_class) tablespace awrparser_idx;
-CREATE INDEX IF NOT EXISTS ix_wait_mv_snap awr_wait_summary_mv USING btree (dbname, instance, begin_snap) tablespace awrparser_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_awr_wait_summary_mv_id ON public.awr_wait_summary_mv USING btree (mv_id);
+CREATE INDEX IF NOT EXISTS idx_wait_summary_dbinstsnap ON public.awr_wait_summary_mv USING btree (dbname, instance, begin_snap, wait_scope, wait_class);
+CREATE INDEX IF NOT EXISTS ix_wait_mv_snap ON public.awr_wait_summary_mv USING btree (dbname, instance, begin_snap);
 
 
 -- ============================================================
-
-
 -- REFRESH MATERIALIZED VIEWS
 -- ============================================================
 
