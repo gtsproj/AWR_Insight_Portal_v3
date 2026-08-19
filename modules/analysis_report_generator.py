@@ -101,6 +101,50 @@ def _get_rule_engine_findings(dbname: str, instance: str,
         return []
 
 
+def _resolve_ollama_model(url: str, model: str) -> str:
+    """Resolve a bare model name (e.g. 'llama3.1', as stored in Settings)
+    to the exact tag Ollama actually has pulled (e.g. 'llama3.1:latest').
+
+    Root cause this works around: Settings' "Test Connection" button
+    (portal/app.py api_test_ollama) checks `/api/tags` with a lenient
+    substring match ("llama3.1" matches "llama3.1:latest") and reports
+    Connected — but Ollama's /api/generate endpoint requires an EXACT
+    tag match and 404s on the bare name. That mismatch is exactly what
+    made "Connected — llama3.1" in Settings look fine while every real
+    report generation 404'd (confirmed 2026-08-19 against Ganesh's
+    server). Doing the same lookup here, and using the resolved full
+    tag for the actual call, means the generate call succeeds whenever
+    Test Connection says Connected — no Settings change needed.
+
+    Falls back to the original name unchanged if /api/tags is
+    unreachable or nothing matches, so this never blocks the actual
+    generate call from at least being attempted with what was configured.
+    """
+    try:
+        import urllib.request, json as _json
+        req = urllib.request.Request(f"{url}/api/tags", method="GET")
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = _json.loads(resp.read())
+        available = [m.get("name", "") for m in data.get("models", [])]
+        if model in available:
+            return model  # already an exact tag
+        prefix_matches = [m for m in available if m.split(":")[0] == model]
+        if prefix_matches:
+            resolved = sorted(prefix_matches)[0]
+            logger.info(f"Resolved Ollama model '{model}' -> '{resolved}' via /api/tags")
+            return resolved
+        substr_matches = [m for m in available if model in m]
+        if substr_matches:
+            resolved = sorted(substr_matches)[0]
+            logger.info(f"Resolved Ollama model '{model}' -> '{resolved}' via /api/tags (substring match)")
+            return resolved
+        logger.warning(f"Ollama model '{model}' not found in /api/tags "
+                        f"(available: {', '.join(available[:5])}) — trying as-is")
+    except Exception as e:
+        logger.warning(f"Could not query {url}/api/tags to resolve model name: {e}")
+    return model
+
+
 def _call_ai_narrative(findings: list, dbname: str, instance: str,
                         snap_range: str, ai_settings: dict) -> dict:
     """Generate an AI narrative summary of the rule engine's top findings,
@@ -143,9 +187,11 @@ def _call_ai_narrative(findings: list, dbname: str, instance: str,
         if ai_mode == "local_ai":
             url   = (ai_settings["ai_local_url"] or "http://localhost:11434").rstrip("/")
             model = ai_settings["ai_local_model"] or "llama3.1:8b"
-            logger.info(f"Calling Local AI (Ollama) at {url} model={model} for AI narrative")
+            resolved_model = _resolve_ollama_model(url, model)
+            logger.info(f"Calling Local AI (Ollama) at {url} model={resolved_model} "
+                        f"(configured as '{model}') for AI narrative")
             payload = _json.dumps({
-                "model": model, "prompt": prompt, "stream": False,
+                "model": resolved_model, "prompt": prompt, "stream": False,
                 "options": {"temperature": 0.3, "num_predict": 900},
             }).encode()
             req = urllib.request.Request(
@@ -155,7 +201,7 @@ def _call_ai_narrative(findings: list, dbname: str, instance: str,
                 text = _json.loads(resp.read()).get("response", "").strip()
             if text:
                 logger.info(f"Local AI narrative received ({len(text)} chars)")
-                return {"text": text, "provider": "Local AI (Ollama)", "model": model,
+                return {"text": text, "provider": "Local AI (Ollama)", "model": resolved_model,
                         "attempted": True, "error": ""}
             logger.warning("Local AI (Ollama) returned an empty response")
             return {**empty, "attempted": True, "error": "Ollama returned an empty response"}
