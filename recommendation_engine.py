@@ -93,59 +93,97 @@ def _fetch_wait_metrics(conn, dbname: str, begin_snap: int, end_snap: int) -> li
         return []
 
 
-def _fetch_sql_metrics(conn, dbname: str, begin_snap: int, end_snap: int) -> dict:
+def _fetch_sql_metrics(conn, dbname: str, begin_snap: int, end_snap: int,
+                        instance: str = None) -> dict:
     """
     Fetch SQL performance metrics aggregated by sql_id.
+
+    IMPORTANT (fixed 2026-08-19 — see /areas/awr-insight-portal.md for the
+    full writeup): this used to rank/threshold on AVG(elapsed_time_per_exec_s)
+    and AVG(cpu_per_exec_s) — average PER-EXECUTION cost — while labeling the
+    resulting rule findings "High Total Elapsed Time SQL" / "CPU-Intensive
+    SQL". Those are not the same thing: a SQL that ran exactly once but took
+    1690s in that one execution would outrank (and mask) a SQL responsible
+    for 57%+ of ALL captured DB time across 67,000+ executions, because the
+    dominant SQL's average per-execution cost (2.87s) is much lower. That's
+    exactly what Ganesh's real data showed (query1-3.csv, 2026-08-19):
+    sql_id 9p0fw9b20bv86 = 194,116s total / 57.6% of all captured elapsed
+    time across 67,352 executions, but only 2.87s AVG per exec — so it never
+    tripped the old "elapsed_time_s > 60" per-exec threshold at all, while a
+    single-execution outlier (3ar3d0bajgprm, ran once, took 1690s) did.
+
+    Now computes BOTH signals, correctly separated:
+      - total_elapsed_s / total_cpu_time_s / pct_of_total_elapsed /
+        pct_of_total_cpu — TRUE cumulative impact, matching exactly how
+        modules/analysis_report_generator.py's own SQL Severity table ranks
+        SQL (SUM(elapsed_time_s), % of total captured elapsed time) — this
+        is what SQL_001/SQL_002 now threshold on, so those two rules can
+        only ever point at the same dominant SQL the report itself shows,
+        instead of silently diverging.
+      - avg_elapsed_per_exec_s / avg_cpu_per_exec_s — kept separately for
+        the genuinely different "single very slow execution" signal, now
+        its own distinctly-titled rule (SQL_006) rather than being
+        conflated with total-impact rules under a misleading title.
+
     Elapsed + parse metrics from awr_sql_elapsed_time.
     CPU metrics from awr_sql_cpu_time (separate table, LEFT JOINed).
     """
+    instance_filter = "AND instance = %s" if instance else ""
     # ── Step 1: elapsed time + executions from awr_sql_elapsed_time ──
-    sql_elapsed = """
+    sql_elapsed = f"""
         SELECT sql_id,
-               avg(elapsed_time_per_exec_s) AS elapsed_time_s,
-               avg(executions)              AS executions
+               SUM(elapsed_time_s)             AS total_elapsed_s,
+               AVG(elapsed_time_per_exec_s)    AS avg_elapsed_per_exec_s,
+               SUM(executions)                 AS executions
         FROM awr_sql_elapsed_time
-        WHERE dbname = %s AND begin_snap BETWEEN %s AND %s
+        WHERE dbname = %s {instance_filter} AND begin_snap BETWEEN %s AND %s
         GROUP BY sql_id
-        ORDER BY elapsed_time_s DESC NULLS LAST
+        ORDER BY total_elapsed_s DESC NULLS LAST
         LIMIT 20
     """
-    # ── Step 2: CPU time from awr_sql_cpu_time ─────────────────────
-    sql_cpu = """
+    # ── Step 2: CPU time from awr_sql_cpu_time — cpu_time_s is already the
+    # TOTAL per-snap CPU (same table shape as elapsed_time_s above); the old
+    # query used cpu_per_exec_s (a per-execution average) instead even
+    # though the correct total-cpu column was sitting right there.
+    sql_cpu = f"""
         SELECT sql_id,
-               avg(cpu_per_exec_s) AS cpu_time_s
+               SUM(cpu_time_s)          AS total_cpu_time_s,
+               AVG(cpu_per_exec_s)      AS avg_cpu_per_exec_s
         FROM awr_sql_cpu_time
-        WHERE dbname = %s AND begin_snap BETWEEN %s AND %s
+        WHERE dbname = %s {instance_filter} AND begin_snap BETWEEN %s AND %s
         GROUP BY sql_id
     """
     # ── Step 3: parse calls from awr_sql_parsed_calls ──────────────
-    sql_parse = """
+    sql_parse = f"""
         SELECT sql_id,
                sum(parse_calls) AS parse_calls
         FROM awr_sql_parsed_calls
-        WHERE dbname = %s AND begin_snap BETWEEN %s AND %s
+        WHERE dbname = %s {instance_filter} AND begin_snap BETWEEN %s AND %s
         GROUP BY sql_id
     """
-    results = {"top_elapsed": [], "high_parse": [], "high_cpu": []}
+    results = {"top_elapsed": [], "high_parse": [], "high_cpu": [], "long_single_exec": []}
     try:
+        elapsed_params = ([dbname, instance, begin_snap, end_snap] if instance
+                           else [dbname, begin_snap, end_snap])
         with conn.cursor() as cur:
-            cur.execute(sql_elapsed, (dbname, begin_snap, end_snap))
+            cur.execute(sql_elapsed, elapsed_params)
             cols = [d[0] for d in cur.description]
             rows = {r[0]: dict(zip(cols, r)) for r in cur.fetchall()}  # keyed by sql_id
 
         try:
             with conn.cursor() as cur:
-                cur.execute(sql_cpu, (dbname, begin_snap, end_snap))
+                cur.execute(sql_cpu, elapsed_params)
                 for r in cur.fetchall():
                     if r[0] in rows:
-                        rows[r[0]]["cpu_time_s"] = float(r[1] or 0)
+                        rows[r[0]]["total_cpu_time_s"]    = float(r[1] or 0)
+                        rows[r[0]]["avg_cpu_per_exec_s"]   = float(r[2] or 0)
         except Exception as e:
             conn.rollback()
             logger.warning(f"SQL CPU metrics fetch failed: {e}")
 
         try:
             with conn.cursor() as cur:
-                cur.execute(sql_parse, (dbname, begin_snap, end_snap))
+                cur.execute(sql_parse, elapsed_params)
                 for r in cur.fetchall():
                     if r[0] in rows:
                         rows[r[0]]["parse_calls"] = float(r[1] or 0)
@@ -153,18 +191,34 @@ def _fetch_sql_metrics(conn, dbname: str, begin_snap: int, end_snap: int) -> dic
             conn.rollback()
             logger.warning(f"SQL parse metrics fetch failed: {e}")
 
-        for r in rows.values():
-            elapsed = float(r.get("elapsed_time_s") or 0)
-            cpu     = float(r.get("cpu_time_s") or 0)
-            execs   = float(r.get("executions") or 1)
-            parses  = float(r.get("parse_calls") or 0)
+        total_elapsed_all = sum(float(r.get("total_elapsed_s") or 0) for r in rows.values()) or 1.0
+        total_cpu_all     = sum(float(r.get("total_cpu_time_s") or 0) for r in rows.values()) or 1.0
 
-            if elapsed > 60:
+        for r in rows.values():
+            total_elapsed   = float(r.get("total_elapsed_s") or 0)
+            avg_elapsed     = float(r.get("avg_elapsed_per_exec_s") or 0)
+            total_cpu       = float(r.get("total_cpu_time_s") or 0)
+            avg_cpu         = float(r.get("avg_cpu_per_exec_s") or 0)
+            execs           = float(r.get("executions") or 1)
+            parses          = float(r.get("parse_calls") or 0)
+            r["pct_of_total_elapsed"] = round(total_elapsed / total_elapsed_all * 100, 1)
+            r["pct_of_total_cpu"]     = round(total_cpu / total_cpu_all * 100, 1)
+
+            if r["pct_of_total_elapsed"] >= 15:
                 results["top_elapsed"].append(r)
-            if cpu > 30:
+            if r["pct_of_total_cpu"] >= 15:
                 results["high_cpu"].append(r)
             if execs > 0 and (parses / execs) > 0.8 and parses > 1000:
                 results["high_parse"].append(r)
+            # Distinct signal: ran very few times but each execution was
+            # very slow — worth flagging (ad-hoc query, blocking/lock wait
+            # bleeding into elapsed time, a bad plan for one bind value)
+            # even though its TOTAL contribution may be small.
+            if execs <= 3 and avg_elapsed > 300:
+                results["long_single_exec"].append(r)
+
+        for key in results:
+            results[key].sort(key=lambda r: r.get("total_elapsed_s", 0), reverse=True)
 
     except Exception as e:
         conn.rollback()
@@ -636,10 +690,24 @@ class RuleEngine:
         findings = []
         sql_rules = [r for r in self.rules if r.get("category") == "sql"]
 
+        # Field names updated 2026-08-19 to total-based metrics (see
+        # _fetch_sql_metrics docstring) so SQL_001/SQL_002 can only ever
+        # point at the same dominant SQL the report's own SQL Severity
+        # table shows. "long_single_execution" is a new, separately-framed
+        # signal (SQL_006) for a genuinely different case: few executions,
+        # each very slow — kept distinct from total-impact rules so it's
+        # never mistaken for "this is the top overall consumer".
         mappings = [
-            ("high_elapsed_time", "top_elapsed",  {"elapsed_time_s": "elapsed_time_s", "executions": "executions"}),
-            ("high_cpu",          "high_cpu",     {"cpu_time_s": "cpu_time_s", "executions": "executions"}),
-            ("high_parse_calls",  "high_parse",   {"parse_calls": "parse_calls", "executions": "executions"}),
+            ("high_elapsed_time",      "top_elapsed",
+             {"pct_of_total_elapsed": "pct_of_total_elapsed",
+              "total_elapsed_s": "total_elapsed_s", "executions": "executions"}),
+            ("high_cpu",               "high_cpu",
+             {"pct_of_total_cpu": "pct_of_total_cpu",
+              "total_cpu_time_s": "total_cpu_time_s", "executions": "executions"}),
+            ("high_parse_calls",       "high_parse",
+             {"parse_calls": "parse_calls", "executions": "executions"}),
+            ("long_single_execution",  "long_single_exec",
+             {"avg_elapsed_per_exec_s": "avg_elapsed_per_exec_s", "executions": "executions"}),
         ]
 
         for pattern_key, metric_key, field_map in mappings:
@@ -1414,7 +1482,7 @@ class RecommendationEngine:
         conn = get_db_connection()
         try:
             wait_metrics     = _fetch_wait_metrics(conn, dbname, begin_snap, end_snap)
-            sql_metrics      = _fetch_sql_metrics(conn, dbname, begin_snap, end_snap)
+            sql_metrics      = _fetch_sql_metrics(conn, dbname, begin_snap, end_snap, instance)
             efficiency       = _fetch_instance_efficiency(conn, dbname, begin_snap, end_snap)
             seg_metrics      = _fetch_segment_metrics(conn, dbname, begin_snap, end_snap)
             exadata_metrics  = _fetch_exadata_metrics(conn, dbname, begin_snap, end_snap)

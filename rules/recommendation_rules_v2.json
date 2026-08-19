@@ -352,7 +352,7 @@
       "rule_id": "SQL_001",
       "category": "sql",
       "event_pattern": "high_elapsed_time",
-      "condition": "elapsed_time_s > 60 AND executions > 0",
+      "condition": "pct_of_total_elapsed >= 15 AND executions > 0",
       "severity": "high",
       "oracle_versions": ["19c", "21c"],
       "title": "High Total Elapsed Time SQL",
@@ -377,7 +377,7 @@
       "rule_id": "SQL_002",
       "category": "sql",
       "event_pattern": "high_cpu",
-      "condition": "cpu_time_s > 30 AND executions > 0",
+      "condition": "pct_of_total_cpu >= 15 AND executions > 0",
       "severity": "high",
       "oracle_versions": ["19c", "21c"],
       "title": "CPU-Intensive SQL",
@@ -394,6 +394,27 @@
         "-- CPU-heavy SQLs in last AWR period\nSELECT sql_id, elapsed_time_s, cpu_time_s,\n       ROUND(cpu_time_s/NULLIF(elapsed_time_s,0)*100,1) AS cpu_pct,\n       executions\nFROM awr_sql_cpu_time\nWHERE dbname = :dbname AND begin_snap BETWEEN :start_snap AND :end_snap\nORDER BY cpu_time_s DESC FETCH FIRST 15 ROWS ONLY;"
       ],
       "related_rules": ["SQL_001", "SQL_004"]
+    },
+
+    {
+      "rule_id": "SQL_006",
+      "category": "sql",
+      "event_pattern": "long_single_execution",
+      "condition": "avg_elapsed_per_exec_s > 300 AND executions <= 3",
+      "severity": "medium",
+      "oracle_versions": ["19c", "21c"],
+      "title": "Long-Running Single Execution",
+      "root_cause": "This SQL ran only a handful of times in the window, but each execution took a very long time — a different problem from a SQL that is expensive because of high execution volume (see SQL_001/SQL_002, which flag total cumulative impact instead). Typical causes: a one-off ad-hoc query or batch job; a lock/blocking wait bleeding into the SQL's own elapsed time (check enq: TX contention around the same time); a parameter-sensitive plan that went bad for this particular bind value (bind variable peeking); or a large one-time data load/migration step.",
+      "resolution_steps": [
+        "1. Check whether this execution overlapped with row-lock or enqueue waits at the same time — a blocked SQL's elapsed time includes the wait, not just its own work.",
+        "2. Pull the execution plan actually used for this run: SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(:sql_id, NULL, 'ALLSTATS LAST')) and compare against other plans for the same SQL_ID in V$SQL_PLAN_STATISTICS_ALL.",
+        "3. If this is a known one-off batch/migration query, this finding can usually be acknowledged rather than tuned.",
+        "4. If it recurs on future reports, treat it like SQL_001 — investigate execution plan and statistics as the query is clearly not a one-off."
+      ],
+      "diagnostic_sql": [
+        "-- Was this SQL blocked by row-lock contention around its execution?\nSELECT sql_id, event, total_wait_time_s\nFROM awr_foreground_wait_events\nWHERE dbname = :dbname AND begin_snap BETWEEN :start_snap AND :end_snap\n  AND event LIKE 'enq: TX%'\nORDER BY total_wait_time_s DESC;"
+      ],
+      "related_rules": ["SQL_001", "WAIT_001"]
     },
 
     {
