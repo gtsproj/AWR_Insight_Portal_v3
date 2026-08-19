@@ -139,7 +139,7 @@ def _call_ai_narrative(findings: list, dbname: str, instance: str,
     )
 
     try:
-        import urllib.request, json as _json
+        import urllib.request, urllib.error, json as _json
         if ai_mode == "local_ai":
             url   = (ai_settings["ai_local_url"] or "http://localhost:11434").rstrip("/")
             model = ai_settings["ai_local_model"] or "llama3.1:8b"
@@ -205,6 +205,18 @@ def _call_ai_narrative(findings: list, dbname: str, instance: str,
                     return {"text": text, "provider": "Cloud AI (Claude)",
                              "model": model or "claude-haiku-4-5", "attempted": True, "error": ""}
                 return {**empty, "attempted": True, "error": "Claude returned an empty response"}
+    except urllib.error.HTTPError as e:
+        # Surface the actual response body (Ollama/Anthropic/OpenAI all return a
+        # JSON error explaining WHY — e.g. "model 'llama3.1' not found, try
+        # pulling it first" for a 404 from Ollama) instead of just urllib's
+        # generic "HTTP Error 404: Not Found", which gave no actionable detail.
+        try:
+            body = e.read().decode("utf-8", errors="replace")[:500]
+        except Exception:
+            body = ""
+        err_msg = f"HTTP {e.code} {e.reason}" + (f" — {body}" if body else "")
+        logger.warning(f"AI narrative call failed ({ai_mode}): {err_msg}")
+        return {**empty, "attempted": True, "error": err_msg}
     except Exception as e:
         logger.warning(f"AI narrative call failed ({ai_mode}): {e}")
         return {**empty, "attempted": True, "error": str(e)}
