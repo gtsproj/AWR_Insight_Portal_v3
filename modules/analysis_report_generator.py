@@ -1499,13 +1499,21 @@ def build_conclusion(ctx: dict) -> dict:
                      f"Physical reads at {int(kpi['physical_reads'])} blocks/s — review buffer cache "
                      "hit ratio and SGA sizing using the SGA Target Advisory."))
 
-    if ctx["top_sql"] and ctx["top_sql"][0]["pct_total"] >= 15:
-        recs.append(("SQL Tuning Priority",
-                     f"SQL ID {ctx['top_sql'][0]['sql_id']} accounts for "
-                     f"{ctx['top_sql'][0]['pct_total']}% of this Top-15 group's combined "
-                     "severity score (composite of elapsed time, CPU, buffer gets, disk "
-                     "reads and other factors — see SQL Severity Summary) — "
-                     "review its execution plan and bind variable usage."))
+    # NOTE: no separate "SQL Tuning Priority" heuristic here anymore (removed
+    # 2026-08-19). It used to read ctx["top_sql"][0]["sql_id"] directly — but
+    # since 95a546f, top_sql is ranked by awr_sql_summary_mv.severity_score,
+    # a per-execution-quality composite that a rare-but-severe single
+    # execution (e.g. an EOD/BOD batch job) can legitimately top even though
+    # it isn't the biggest cumulative contributor. Per Ganesh: that's not a
+    # bug in the mview — a once-a-day job taking 1690s in its one run IS a
+    # genuinely bad execution and deserves to rank high on "how bad is one
+    # run of this SQL". But it meant this heuristic could silently name a
+    # DIFFERENT sql_id than the rule engine's SQL_001 "High Total Elapsed
+    # Time SQL" (which correctly targets cumulative/volume-based impact),
+    # producing two conflicting "the important SQL is X" claims in the same
+    # Recommendations list. SQL_001/SQL_002 (via the rule_findings loop
+    # below) already cover the volume-based case with accurate framing, so
+    # this heuristic was pure duplication once it stopped being reliable.
 
     recs.append(("Comparative Analysis",
                  "Run a comparison between peak-load and off-peak snapshots to isolate "

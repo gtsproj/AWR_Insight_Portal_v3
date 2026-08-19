@@ -507,6 +507,15 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# 5. SQL SEVERITY SUMMARY                                    #}
 {# ─────────────────────────────────────────────────────────── #}
 <div class="st"><span class="st-icon">🔍</span> SQL Severity Summary — Top SQL</div>
+<p style="font-size:10px;color:#64748b;margin:-4px 0 10px;line-height:1.5">
+  Ranks each SQL by how severe a <em>single execution</em> of it is across several dimensions at
+  once (elapsed time, CPU, I/O, parsing) — not by how much it has cost in total. A rarely-run
+  statement (e.g. a once-daily EOD/BOD batch job) can legitimately rank #1 here if that one run is
+  genuinely severe, even though a much more frequent statement costs more in aggregate — that
+  cumulative/volume view is what the Hotspot Areas and Recommendations below are based on instead,
+  so the two can name different SQL IDs without either being wrong — they're answering different
+  questions.
+</p>
 
 {# Severity count banner #}
 <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
