@@ -190,14 +190,21 @@ def _call_ai_narrative(findings: list, dbname: str, instance: str,
             resolved_model = _resolve_ollama_model(url, model)
             logger.info(f"Calling Local AI (Ollama) at {url} model={resolved_model} "
                         f"(configured as '{model}') for AI narrative")
+            # num_predict trimmed from 900->600 and timeout raised 45s->120s:
+            # CPU-bound Ollama inference (no GPU) took ~47s for an 8B model at
+            # 900 tokens on Ganesh's server -- right at the old 45s timeout
+            # edge, confirmed via logs/analysis_report_generator.log 2026-08-19
+            # ("AI narrative call failed (local_ai): timed out"). Cloud
+            # providers below are unaffected -- they're consistently fast, no
+            # need to loosen those timeouts.
             payload = _json.dumps({
                 "model": resolved_model, "prompt": prompt, "stream": False,
-                "options": {"temperature": 0.3, "num_predict": 900},
+                "options": {"temperature": 0.3, "num_predict": 600},
             }).encode()
             req = urllib.request.Request(
                 f"{url}/api/generate", data=payload,
                 headers={"Content-Type": "application/json"})
-            with urllib.request.urlopen(req, timeout=45) as resp:
+            with urllib.request.urlopen(req, timeout=120) as resp:
                 text = _json.loads(resp.read()).get("response", "").strip()
             if text:
                 logger.info(f"Local AI narrative received ({len(text)} chars)")
@@ -261,6 +268,20 @@ def _call_ai_narrative(findings: list, dbname: str, instance: str,
         except Exception:
             body = ""
         err_msg = f"HTTP {e.code} {e.reason}" + (f" — {body}" if body else "")
+        logger.warning(f"AI narrative call failed ({ai_mode}): {err_msg}")
+        return {**empty, "attempted": True, "error": err_msg}
+    except TimeoutError:
+        # socket.timeout / TimeoutError from urlopen — str(e) alone is just
+        # "timed out" with zero context, which isn't actionable. CPU-bound
+        # Ollama inference on a larger model is the most common cause here
+        # (confirmed on Ganesh's server: an 8B model took ~47s, right at the
+        # old 45s timeout — see the timeout bump in the local_ai branch above).
+        err_msg = ("Timed out waiting for a response"
+                   + (f" from Ollama at {ai_settings.get('ai_local_url','')}"
+                      " — CPU-based inference can be slow for larger models; "
+                      "try a smaller model (e.g. a 3B/7B variant) or run "
+                      "Ollama with GPU acceleration if available"
+                      if ai_mode == "local_ai" else " from the Cloud AI provider"))
         logger.warning(f"AI narrative call failed ({ai_mode}): {err_msg}")
         return {**empty, "attempted": True, "error": err_msg}
     except Exception as e:
