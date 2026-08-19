@@ -543,37 +543,54 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
                 "pct_non_parse_cpu":eff_pick("non-parse") or eff_pick("non parse"),
             }
 
-            # ── Top SQL — joined across SQL stat tables ──────────────────
-            # awr_sql_cpu_time has the real cpu_time_s column
-            # awr_sql_gets/reads add buffer gets and physical reads per exec
+            # ── Top SQL — ranked by awr_sql_summary_mv.severity_score ────
+            # Changed 2026-08-19 per Ganesh: previously ranked purely by
+            # SUM(elapsed_time_s) from awr_sql_elapsed_time. Now uses the
+            # same materialized view and ranking basis as the
+            # awr_SQLSummaryTop10BySeverity Grafana dashboard —
+            # severity_score is a weighted composite across ALL SQL
+            # statistics sections (elapsed 25%, cpu 25%, buffer gets 15%,
+            # disk reads 10%, user I/O wait 10%, unoptimized reads 5%,
+            # parse calls 5%, cluster wait 5% — see that dashboard's
+            # "Severity Score Calculation" panel), so the SQL surfaced
+            # here is "most problematic across all sections", not just
+            # "biggest single contributor to elapsed time".
+            # Aggregated with AVG(severity_score) across the selected snap
+            # range (the dashboard panel itself doesn't aggregate — it
+            # shows raw per-snapshot rows — but a multi-snapshot report
+            # needs one row per SQL, not one per SQL-per-snapshot; AVG
+            # matches the aggregation the companion Segment Severity
+            # dashboard already uses for the same reason).
             cur.execute(f"""
-                SELECT
-                    e.sql_id,
-                    e.sql_module,
-                    SUM(e.executions)                        AS execs,
-                    SUM(e.elapsed_time_s)                    AS total_elapsed,
-                    SUM(COALESCE(c.cpu_time_s,
-                        e.elapsed_time_s * e.pct_cpu / 100.0)) AS total_cpu,
-                    AVG(e.elapsed_time_per_exec_s)           AS avg_elapsed,
-                    AVG(COALESCE(g.gets_per_exec, 0))        AS avg_gets,
-                    AVG(COALESCE(r.reads_per_exec, 0))       AS avg_reads
-                FROM awr_sql_elapsed_time e
-                LEFT JOIN awr_sql_cpu_time c
-                    ON c.sql_id=e.sql_id AND c.dbname=e.dbname
-                    AND c.begin_snap=e.begin_snap AND c.instance=e.instance
-                LEFT JOIN awr_sql_gets g
-                    ON g.sql_id=e.sql_id AND g.dbname=e.dbname
-                    AND g.begin_snap=e.begin_snap AND g.instance=e.instance
-                LEFT JOIN awr_sql_reads r
-                    ON r.sql_id=e.sql_id AND r.dbname=e.dbname
-                    AND r.begin_snap=e.begin_snap AND r.instance=e.instance
-                WHERE e.dbname=%s AND e.instance=%s AND e.begin_snap IN ({ph})
-                GROUP BY e.sql_id, e.sql_module
-                ORDER BY total_elapsed DESC NULLS LAST
+                SELECT sql_id,
+                       AVG(severity_score)             AS severity_score,
+                       SUM(executions)                  AS execs,
+                       AVG(elapsed_time_per_exec_s)     AS avg_elapsed,
+                       AVG(cpu_per_exec_s)               AS avg_cpu,
+                       AVG(buffer_gets_per_exec)         AS avg_gets,
+                       AVG(disk_reads_per_exec)          AS avg_reads
+                FROM awr_sql_summary_mv
+                WHERE dbname=%s AND instance=%s AND begin_snap IN ({ph})
+                GROUP BY sql_id
+                ORDER BY severity_score DESC NULLS LAST
                 LIMIT 15
             """, p)
             sql_rows = cur.fetchall()
-            total_elapsed_all = sum(_fnum(r[3]) for r in sql_rows) or 1.0
+            total_severity_all = sum(_fnum(r[1]) for r in sql_rows) or 1.0
+
+            # Module isn't in awr_sql_summary_mv — small follow-up lookup
+            # for just these ranked sql_ids.
+            sql_modules = {}
+            if sql_rows:
+                ranked_ids = [r[0] for r in sql_rows]
+                cur.execute(f"""
+                    SELECT DISTINCT ON (sql_id) sql_id, sql_module
+                    FROM awr_sql_elapsed_time
+                    WHERE dbname=%s AND instance=%s
+                      AND sql_id IN ({','.join(['%s']*len(ranked_ids))})
+                    ORDER BY sql_id, begin_snap DESC
+                """, [dbname, instance] + ranked_ids)
+                sql_modules = {r[0]: r[1] for r in cur.fetchall()}
 
             # Plan stability proxy: variance in elapsed_per_exec across snaps
             plan_unstable_ids = set()
@@ -595,25 +612,32 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
 
             top_sql = []
             for row in sql_rows:
-                sql_id, module = row[0], row[1]
-                execs    = _fnum(row[2])
-                total_e  = _fnum(row[3])
-                total_c  = _fnum(row[4])
-                avg_e    = _fnum(row[5])
-                avg_gets = _fnum(row[6])
-                avg_reads= _fnum(row[7])
-                pct      = round(total_e / total_elapsed_all * 100, 1)
+                sql_id       = row[0]
+                severity_val = _fnum(row[1])
+                execs        = _fnum(row[2])
+                avg_e        = _fnum(row[3])
+                avg_c        = _fnum(row[4])
+                avg_gets     = _fnum(row[5])
+                avg_reads    = _fnum(row[6])
+                # Total elapsed/CPU approximated as avg-per-exec x total
+                # executions — consistent with the mview itself being
+                # built from per-exec averages (it has no total_elapsed
+                # column of its own).
+                total_e = avg_e * execs
+                total_c = avg_c * execs
+                pct      = round(severity_val / total_severity_all * 100, 1)
                 sev_label, sev_color, sev_bg = _sql_severity(pct)
                 top_sql.append({
                     "sql_id":          sql_id,
-                    "module":          module or "",
+                    "module":          sql_modules.get(sql_id) or "",
                     "executions":      int(execs),
                     "total_elapsed":   round(total_e, 1),
                     "total_cpu":       round(total_c, 1),
                     "elapsed_per_exec":round(avg_e, 3),
-                    "cpu_per_exec":    round(total_c / execs, 3) if execs else 0,
+                    "cpu_per_exec":    round(avg_c, 3),
                     "avg_gets":        round(avg_gets, 0),
                     "avg_reads":       round(avg_reads, 0),
+                    "severity_score":  round(severity_val, 2),
                     "pct_total":       pct,
                     "severity":        sev_label,
                     "sev_color":       sev_color,
@@ -639,28 +663,45 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
             for s in top_sql:
                 sev_counts[s["severity"]] = sev_counts.get(s["severity"], 0) + 1
 
-            # ── Top segments — with severity + % ─────────────────────
+            # ── Top segments — ranked by awr_segment_summary_mv.severity_score
+            # Changed 2026-08-19 per Ganesh: previously ranked purely by
+            # SUM(logical_reads) from awr_seg_logical_reads. Now uses the
+            # same materialized view and ranking basis as the
+            # awr_SegmentSummary_Top10_Severity Grafana dashboard —
+            # severity_score is a weighted composite of an IO Group (60%:
+            # physical reads 15%, direct IO 10%, logical reads 10%,
+            # CR+current blocks received 10%, table scans 5%, unoptimized
+            # reads 5%, read/write requests 3%, optimized reads 2%) and a
+            # Contention Group (40%: DB block changes 10%, row lock waits
+            # 10%, ITL waits 5%, buffer busy waits 10%, GC buffer busy 5%)
+            # — see that dashboard's "Severity Score Calculation" panel.
+            # AVG(severity_score) across the snap range, GROUP BY object
+            # identity, matches that dashboard's own query exactly.
             cur.execute(f"""
-                SELECT owner, object_name, obj_type, SUM(logical_reads) AS lr
-                FROM awr_seg_logical_reads
+                SELECT owner, object_name, obj_type,
+                       AVG(severity_score) AS severity_score,
+                       AVG(logical_reads)  AS lr
+                FROM awr_segment_summary_mv
                 WHERE dbname=%s AND instance=%s AND begin_snap IN ({ph})
-                GROUP BY owner, object_name, obj_type
-                ORDER BY lr DESC NULLS LAST
+                GROUP BY owner, object_name, obj_type, tablespace_name, subobject_name
+                ORDER BY severity_score DESC NULLS LAST
                 LIMIT 15
             """, p)
             seg_rows = cur.fetchall()
-            total_lr_all = sum(_fnum(r[3]) for r in seg_rows) or 1
+            total_severity_all_seg = sum(_fnum(r[3]) for r in seg_rows) or 1.0
 
             top_objects = []
-            for owner, obj_name, obj_type, lr in seg_rows:
+            for owner, obj_name, obj_type, severity_val, lr in seg_rows:
+                severity_val = _fnum(severity_val)
                 lr  = int(_fnum(lr))
-                pct = round(lr / total_lr_all * 100, 1)
+                pct = round(severity_val / total_severity_all_seg * 100, 1)
                 sev_label, sev_color, sev_bg = _seg_severity(pct)
                 top_objects.append({
                     "owner":        owner,
                     "object_name":  obj_name,
                     "obj_type":     obj_type or "",
                     "logical_reads":lr,
+                    "severity_score": round(severity_val, 2),
                     "pct_total":    pct,
                     "severity":     sev_label,
                     "sev_color":    sev_color,
@@ -1402,7 +1443,9 @@ def build_conclusion(ctx: dict) -> dict:
     if ctx["top_sql"] and ctx["top_sql"][0]["pct_total"] >= 15:
         recs.append(("SQL Tuning Priority",
                      f"SQL ID {ctx['top_sql'][0]['sql_id']} accounts for "
-                     f"{ctx['top_sql'][0]['pct_total']}% of captured elapsed time — "
+                     f"{ctx['top_sql'][0]['pct_total']}% of this Top-15 group's combined "
+                     "severity score (composite of elapsed time, CPU, buffer gets, disk "
+                     "reads and other factors — see SQL Severity Summary) — "
                      "review its execution plan and bind variable usage."))
 
     recs.append(("Comparative Analysis",

@@ -546,6 +546,7 @@ tr:nth-child(even) td{background:#FAFBFE}
       <th class="right">CPU/Exec (s)</th>
       <th class="right">Avg Gets/Exec</th>
       <th class="right">Avg Reads/Exec</th>
+      <th class="right">Severity Score</th>
       <th class="right">% of Total</th>
       <th>Plan</th>
       <th>SQL Preview</th>
@@ -563,6 +564,7 @@ tr:nth-child(even) td{background:#FAFBFE}
         <td class="num">{{ sq.cpu_per_exec }} s</td>
         <td class="num" style="font-weight:600">{{ sq.avg_gets | int }}</td>
         <td class="num" style="color:{% if sq.avg_reads > 100 %}#dc2626{% else %}#555{% endif %}">{{ sq.avg_reads | int }}</td>
+        <td class="num" style="font-weight:600;color:#334155">{{ sq.severity_score }}</td>
         <td class="num" style="font-weight:700;color:{{ sq.sev_color }}">{{ sq.pct_total }}%</td>
         <td style="text-align:center">
           {% if sq.plan_unstable %}
@@ -579,7 +581,7 @@ tr:nth-child(even) td{background:#FAFBFE}
     {% endfor %}
     </tbody>
   </table>
-  <p class="src-note" style="color:#475569">Source: awr_sql_elapsed_time &nbsp;·&nbsp; Severity: CRITICAL ≥30% | HIGH 15–30% | MEDIUM 5–15% | LOW &lt;5%</p>
+  <p class="src-note" style="color:#475569">Source: awr_sql_summary_mv &nbsp;·&nbsp; Ranked by severity_score — a weighted composite across all SQL statistics sections (elapsed 25% · CPU 25% · buffer gets 15% · disk reads 10% · user I/O wait 10% · unoptimized reads 5% · parse calls 5% · cluster wait 5%), same basis as the AWR SQL Summary Top 10 By Severity dashboard &nbsp;·&nbsp; % of Total = share of this Top-15 group's combined severity score &nbsp;·&nbsp; Severity: CRITICAL ≥30% | HIGH 15–30% | MEDIUM 5–15% | LOW &lt;5%</p>
 </div>
 
 {# SQL Severity chart + SQL top bar chart side-by-side #}
@@ -597,7 +599,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# ─────────────────────────────────────────────────────────── #}
 {# 6. SEGMENT SEVERITY SUMMARY                                #}
 {# ─────────────────────────────────────────────────────────── #}
-<div class="st"><span class="st-icon">🗃</span> Segment Severity Summary — Top Objects by Logical Reads</div>
+<div class="st"><span class="st-icon">🗃</span> Segment Severity Summary — Top Objects by I/O &amp; Contention Severity</div>
 
 <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
   {% for sev, col, bg in [('HOT','#dc2626','#fef2f2'),('WARM','#ea580c','#fff7ed'),
@@ -619,6 +621,7 @@ tr:nth-child(even) td{background:#FAFBFE}
       <th>Object Name</th>
       <th>Type</th>
       <th class="right">Logical Reads</th>
+      <th class="right">Severity Score</th>
       <th class="right">% of Total</th>
     </tr></thead>
     <tbody>
@@ -629,12 +632,13 @@ tr:nth-child(even) td{background:#FAFBFE}
         <td class="mono" style="font-size:11px">{{ obj.object_name }}</td>
         <td style="font-size:10px;color:#334155">{{ obj.obj_type }}</td>
         <td class="num">{{ "{:,}".format(obj.logical_reads) }}</td>
+        <td class="num" style="font-weight:600;color:#334155">{{ obj.severity_score }}</td>
         <td class="num" style="font-weight:700;color:{{ obj.sev_color }}">{{ obj.pct_total }}%</td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
-  <p class="src-note" style="color:#475569">Source: awr_seg_logical_reads &nbsp;·&nbsp; Severity: HOT ≥30% | WARM 10–30% | COOL 5–10% | NORMAL &lt;5% of total logical reads</p>
+  <p class="src-note" style="color:#475569">Source: awr_segment_summary_mv &nbsp;·&nbsp; Ranked by severity_score — a weighted composite of an I/O Group (60%: physical reads 15% · direct I/O 10% · logical reads 10% · CR+current blocks received 10% · table scans 5% · unoptimized reads 5% · read/write requests 3% · optimized reads 2%) and a Contention Group (40%: DB block changes 10% · row lock waits 10% · ITL waits 5% · buffer busy waits 10% · GC buffer busy 5%), same basis as the AWR Segment Summary Top 10 By Severity dashboard &nbsp;·&nbsp; Logical Reads shown is the per-snapshot average &nbsp;·&nbsp; Severity: HOT ≥30% | WARM 10–30% | COOL 5–10% | NORMAL &lt;5% of this Top-15 group's combined severity score</p>
 </div>
 
 {# ─────────────────────────────────────────────────────────── #}
