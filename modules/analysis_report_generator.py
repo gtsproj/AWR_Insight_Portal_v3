@@ -662,137 +662,137 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
                     "vals":  row_vals, "peak": peak,
                 })
 
-        # ── Exadata-specific data ────────────────────────────────
-        # Step 0: Master switch — see common/feature_flags.py. While the
-        #         Exadata parsers are paused, force exa_licensed False here
-        #         regardless of the portal_config DB value, so no Exadata
-        #         hotspots/recommendations/sections can leak into the report
-        #         even if that config value is still 'true' from earlier.
-        # Step 1: Read license_exadata from portal_config.
-        # Step 2: Only if both the master switch is on AND licensed, call
-        #         _fetch_exadata_context which then also auto-detects
-        #         whether any Exadata data exists for these snaps.
-        exa_licensed = False
-        if not EXADATA_FEATURE_ENABLED:
-            logger.info("Exadata feature disabled (EXADATA_FEATURE_ENABLED=False) — skipping Exadata table queries")
-        else:
+            # ── Exadata-specific data ────────────────────────────────
+            # Step 0: Master switch — see common/feature_flags.py. While the
+            #         Exadata parsers are paused, force exa_licensed False here
+            #         regardless of the portal_config DB value, so no Exadata
+            #         hotspots/recommendations/sections can leak into the report
+            #         even if that config value is still 'true' from earlier.
+            # Step 1: Read license_exadata from portal_config.
+            # Step 2: Only if both the master switch is on AND licensed, call
+            #         _fetch_exadata_context which then also auto-detects
+            #         whether any Exadata data exists for these snaps.
+            exa_licensed = False
+            if not EXADATA_FEATURE_ENABLED:
+                logger.info("Exadata feature disabled (EXADATA_FEATURE_ENABLED=False) — skipping Exadata table queries")
+            else:
+                try:
+                    cur.execute(
+                        "SELECT value FROM portal_config "
+                        "WHERE key='license_exadata' LIMIT 1"
+                    )
+                    _lic_row = cur.fetchone()
+                    if _lic_row:
+                        _lic_val = str(_lic_row[0] or "").strip().lower()
+                        exa_licensed = (_lic_val == "true")
+                        logger.debug(f"license_exadata from portal_config: '{_lic_val}' → exa_licensed={exa_licensed}")
+                    else:
+                        logger.debug("license_exadata key not found in portal_config — defaulting to False")
+                except Exception as _lic_err:
+                    logger.warning(f"Could not read license_exadata from portal_config: {_lic_err}")
+                    exa_licensed = False
+
+            if exa_licensed:
+                logger.info(f"Exadata licensed — fetching from 14 Exadata tables for {dbname}")
+                exa_ctx = _fetch_exadata_context(cur, dbname, instance,
+                                                  snap_ids_sorted, ph, p)
+                logger.info(f"Exadata fetch complete: is_exadata={exa_ctx.get('is_exadata')}")
+            else:
+                logger.info(f"Exadata not licensed — skipping Exadata table queries for {dbname}")
+                exa_ctx = {"is_exadata": False, "license_disabled": True}
+
+            # ── I/O Profile from awr_iostat_function ─────────────────────
+            io_profile = []
             try:
-                cur.execute(
-                    "SELECT value FROM portal_config "
-                    "WHERE key='license_exadata' LIMIT 1"
-                )
-                _lic_row = cur.fetchone()
-                if _lic_row:
-                    _lic_val = str(_lic_row[0] or "").strip().lower()
-                    exa_licensed = (_lic_val == "true")
-                    logger.debug(f"license_exadata from portal_config: '{_lic_val}' → exa_licensed={exa_licensed}")
-                else:
-                    logger.debug("license_exadata key not found in portal_config — defaulting to False")
-            except Exception as _lic_err:
-                logger.warning(f"Could not read license_exadata from portal_config: {_lic_err}")
-                exa_licensed = False
+                cur.execute(f"""
+                    SELECT function_name,
+                           AVG(reads_reqs_per_sec)    AS avg_read_rps,
+                           AVG(reads_data_per_sec_mb) AS avg_read_mbps,
+                           AVG(writes_reqs_per_sec)   AS avg_write_rps,
+                           AVG(writes_data_per_sec_mb)AS avg_write_mbps,
+                           AVG(avg_time_ms)            AS avg_latency_ms
+                    FROM awr_iostat_function
+                    WHERE dbname=%s AND instance=%s AND begin_snap IN ({ph})
+                    GROUP BY function_name
+                    ORDER BY avg_read_rps DESC NULLS LAST
+                """, p)
+                io_profile = [{
+                    "function_name":  r[0],
+                    "avg_read_rps":   round(float(r[1] or 0), 1),
+                    "avg_read_mbps":  round(float(r[2] or 0), 1),
+                    "avg_write_rps":  round(float(r[3] or 0), 1),
+                    "avg_write_mbps": round(float(r[4] or 0), 1),
+                    "avg_latency_ms": round(float(r[5] or 0), 2),
+                } for r in cur.fetchall()]
+            except Exception as e:
+                logger.warning(f"IO profile fetch: {e}")
 
-        if exa_licensed:
-            logger.info(f"Exadata licensed — fetching from 14 Exadata tables for {dbname}")
-            exa_ctx = _fetch_exadata_context(cur, dbname, instance,
-                                              snap_ids_sorted, ph, p)
-            logger.info(f"Exadata fetch complete: is_exadata={exa_ctx.get('is_exadata')}")
-        else:
-            logger.info(f"Exadata not licensed — skipping Exadata table queries for {dbname}")
-            exa_ctx = {"is_exadata": False, "license_disabled": True}
+            # ── Parsing pressure from load profile ────────────────────────
+            # exclude="hard" so this can never accidentally match the "Hard
+            # Parses (SQL)" row instead of "Parses (SQL)" — both labels contain
+            # the substring "pars", and _find_metric returns on first match, so
+            # without the exclusion this depended on incidental row order.
+            parses_ps   = agg("pars", exclude=["hard"])
+            hard_ps     = agg("hard pars")
+            parse_eff   = round((parses_ps - hard_ps) / parses_ps * 100, 1) if parses_ps > 0 else 100.0
 
-        # ── I/O Profile from awr_iostat_function ─────────────────────
-        io_profile = []
-        try:
-            cur.execute(f"""
-                SELECT function_name,
-                       AVG(reads_reqs_per_sec)    AS avg_read_rps,
-                       AVG(reads_data_per_sec_mb) AS avg_read_mbps,
-                       AVG(writes_reqs_per_sec)   AS avg_write_rps,
-                       AVG(writes_data_per_sec_mb)AS avg_write_mbps,
-                       AVG(avg_time_ms)            AS avg_latency_ms
-                FROM awr_iostat_function
-                WHERE dbname=%s AND instance=%s AND begin_snap IN ({ph})
-                GROUP BY function_name
-                ORDER BY avg_read_rps DESC NULLS LAST
-            """, p)
-            io_profile = [{
-                "function_name":  r[0],
-                "avg_read_rps":   round(float(r[1] or 0), 1),
-                "avg_read_mbps":  round(float(r[2] or 0), 1),
-                "avg_write_rps":  round(float(r[3] or 0), 1),
-                "avg_write_mbps": round(float(r[4] or 0), 1),
-                "avg_latency_ms": round(float(r[5] or 0), 2),
-            } for r in cur.fetchall()]
-        except Exception as e:
-            logger.warning(f"IO profile fetch: {e}")
+            # ── Redo sizing from load profile ─────────────────────────────
+            redo_size_ps = agg("redo size")   # bytes/s
+            redo_mb_ps   = round(redo_size_ps / (1024*1024), 2) if redo_size_ps > 0 else 0
+            # Recommended log size = redo MB/s × 1200 s (20-min switch target),
+            # capped at a practical maximum. A single Oracle redo log file sized
+            # in the tens of GB (which the raw 20-min-target formula produces on
+            # high-redo-rate systems) is not a realistic recommendation — no DBA
+            # would size a redo log that large. Past the cap, the right guidance
+            # is to add more log GROUPS at the capped size (accepting more
+            # frequent switches) rather than one oversized file — see
+            # redo_switches_per_hour below, shown in the report when capped.
+            MAX_REDO_LOG_MB = 3072  # 3 GB — practical upper bound for one redo log file
+            _raw_recommended_log_mb = round(redo_mb_ps * 1200, 0) if redo_mb_ps > 0 else None
+            recommended_log_mb = (min(_raw_recommended_log_mb, MAX_REDO_LOG_MB)
+                                   if _raw_recommended_log_mb else None)
+            redo_log_capped = bool(_raw_recommended_log_mb
+                                    and _raw_recommended_log_mb > MAX_REDO_LOG_MB)
+            # Switches/hour implied by the (possibly capped) recommended size —
+            # only meaningful to show when the cap actually changed the number.
+            redo_switches_per_hour = (
+                round(redo_size_ps * 3600 / (recommended_log_mb * 1024 * 1024), 1)
+                if recommended_log_mb else None)
 
-        # ── Parsing pressure from load profile ────────────────────────
-        # exclude="hard" so this can never accidentally match the "Hard
-        # Parses (SQL)" row instead of "Parses (SQL)" — both labels contain
-        # the substring "pars", and _find_metric returns on first match, so
-        # without the exclusion this depended on incidental row order.
-        parses_ps   = agg("pars", exclude=["hard"])
-        hard_ps     = agg("hard pars")
-        parse_eff   = round((parses_ps - hard_ps) / parses_ps * 100, 1) if parses_ps > 0 else 100.0
+            # ── Session activity per snap ─────────────────────────────────
+            user_calls_ps = agg("user call")
+            db_cpu_count  = db_info.get("cpu") or 1
 
-        # ── Redo sizing from load profile ─────────────────────────────
-        redo_size_ps = agg("redo size")   # bytes/s
-        redo_mb_ps   = round(redo_size_ps / (1024*1024), 2) if redo_size_ps > 0 else 0
-        # Recommended log size = redo MB/s × 1200 s (20-min switch target),
-        # capped at a practical maximum. A single Oracle redo log file sized
-        # in the tens of GB (which the raw 20-min-target formula produces on
-        # high-redo-rate systems) is not a realistic recommendation — no DBA
-        # would size a redo log that large. Past the cap, the right guidance
-        # is to add more log GROUPS at the capped size (accepting more
-        # frequent switches) rather than one oversized file — see
-        # redo_switches_per_hour below, shown in the report when capped.
-        MAX_REDO_LOG_MB = 3072  # 3 GB — practical upper bound for one redo log file
-        _raw_recommended_log_mb = round(redo_mb_ps * 1200, 0) if redo_mb_ps > 0 else None
-        recommended_log_mb = (min(_raw_recommended_log_mb, MAX_REDO_LOG_MB)
-                               if _raw_recommended_log_mb else None)
-        redo_log_capped = bool(_raw_recommended_log_mb
-                                and _raw_recommended_log_mb > MAX_REDO_LOG_MB)
-        # Switches/hour implied by the (possibly capped) recommended size —
-        # only meaningful to show when the cap actually changed the number.
-        redo_switches_per_hour = (
-            round(redo_size_ps * 3600 / (recommended_log_mb * 1024 * 1024), 1)
-            if recommended_log_mb else None)
+            # ── Health Score (0–100 RAG composite) ────────────────────────
+            host_cpu_v   = host_cpu_busy or 50
+            buf_hit_v    = (cache_ratios.get("buffer_hit") or 90)
+            top_wait_pct = wait_events[0]["pct_db_time"] if wait_events else 50
+            hard_p_v     = hard_parses or 0
 
-        # ── Session activity per snap ─────────────────────────────────
-        user_calls_ps = agg("user call")
-        db_cpu_count  = db_info.get("cpu") or 1
+            cpu_pts   = max(0, 25.0 * (1 - host_cpu_v  / 100))
+            cache_pts = max(0, 25.0 * min(buf_hit_v / 100, 1.0))
+            wait_pts  = max(0, 25.0 * (1 - top_wait_pct / 100))
+            parse_pts = max(0, 25.0 * (1 - min(hard_p_v / 50, 1.0)))
+            health_score = round(cpu_pts + cache_pts + wait_pts + parse_pts, 1)
+            if   health_score >= 75: health_rag, health_color = "GREEN", "#16a34a"
+            elif health_score >= 50: health_rag, health_color = "AMBER", "#ca8a04"
+            else:                    health_rag, health_color = "RED",   "#dc2626"
 
-        # ── Health Score (0–100 RAG composite) ────────────────────────
-        host_cpu_v   = host_cpu_busy or 50
-        buf_hit_v    = (cache_ratios.get("buffer_hit") or 90)
-        top_wait_pct = wait_events[0]["pct_db_time"] if wait_events else 50
-        hard_p_v     = hard_parses or 0
+            health = {
+                "score":  health_score,
+                "rag":    health_rag,
+                "color":  health_color,
+                "cpu_pts":   round(cpu_pts,  1),
+                "cache_pts": round(cache_pts,1),
+                "wait_pts":  round(wait_pts, 1),
+                "parse_pts": round(parse_pts,1),
+            }
 
-        cpu_pts   = max(0, 25.0 * (1 - host_cpu_v  / 100))
-        cache_pts = max(0, 25.0 * min(buf_hit_v / 100, 1.0))
-        wait_pts  = max(0, 25.0 * (1 - top_wait_pct / 100))
-        parse_pts = max(0, 25.0 * (1 - min(hard_p_v / 50, 1.0)))
-        health_score = round(cpu_pts + cache_pts + wait_pts + parse_pts, 1)
-        if   health_score >= 75: health_rag, health_color = "GREEN", "#16a34a"
-        elif health_score >= 50: health_rag, health_color = "AMBER", "#ca8a04"
-        else:                    health_rag, health_color = "RED",   "#dc2626"
+            # ── Plan stability summary ────────────────────────────────────
+            plan_unstable_sqls = [s for s in top_sql if s.get("plan_unstable")]
 
-        health = {
-            "score":  health_score,
-            "rag":    health_rag,
-            "color":  health_color,
-            "cpu_pts":   round(cpu_pts,  1),
-            "cache_pts": round(cache_pts,1),
-            "wait_pts":  round(wait_pts, 1),
-            "parse_pts": round(parse_pts,1),
-        }
-
-        # ── Plan stability summary ────────────────────────────────────
-        plan_unstable_sqls = [s for s in top_sql if s.get("plan_unstable")]
-
-        # ── Rules/AI mode settings (read while cur is still open) ──────
-        ai_settings = _get_ai_settings(cur)
+            # ── Rules/AI mode settings (read while cur is still open) ──────
+            ai_settings = _get_ai_settings(cur)
 
     finally:
         conn.close()
