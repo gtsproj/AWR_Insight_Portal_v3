@@ -105,15 +105,25 @@ def _call_ai_narrative(findings: list, dbname: str, instance: str,
                         snap_range: str, ai_settings: dict) -> dict:
     """Generate an AI narrative summary of the rule engine's top findings,
     using the SAME provider config the rest of the portal's AI features use
-    (see _get_ai_settings). Returns {"text": ..., "provider": ..., "model": ...}
-    — text is empty ("") in rules mode, on any failure, or with no findings,
-    so callers never need special-case error handling; the report simply
-    omits the AI panel. Bounded timeout so a slow/unreachable AI endpoint
-    can't hang report generation indefinitely."""
+    (see _get_ai_settings). Returns {"text": ..., "provider": ..., "model": ...,
+    "attempted": bool, "error": str} — text is empty ("") in rules mode, on
+    any failure, or with no findings. "attempted"/"error" let the template
+    distinguish "Rules mode was actually selected" from "AI mode was
+    selected but the call didn't produce usable text" — without this, both
+    cases looked identical (silently fell back to the Rules Mode badge),
+    which is what made this hard to diagnose. Bounded timeout so a slow/
+    unreachable AI endpoint can't hang report generation indefinitely."""
     ai_mode = ai_settings["ai_mode"]
-    empty = {"text": "", "provider": "", "model": ""}
-    if ai_mode not in ("local_ai", "cloud_ai") or not findings:
+    empty = {"text": "", "provider": "", "model": "", "attempted": False, "error": ""}
+    logger.info(f"AI narrative check: ai_mode='{ai_mode}' (from portal_config), "
+                f"rule_findings={len(findings)} for {dbname}/{instance} snaps {snap_range}")
+    if ai_mode not in ("local_ai", "cloud_ai"):
         return empty
+    if not findings:
+        logger.info("AI mode selected but rule engine returned 0 findings — "
+                     "nothing to summarise, skipping AI call")
+        return {**empty, "attempted": False,
+                "error": "Rule engine returned no findings for this snap range"}
 
     top = findings[:6]
     prompt = (
@@ -133,6 +143,7 @@ def _call_ai_narrative(findings: list, dbname: str, instance: str,
         if ai_mode == "local_ai":
             url   = (ai_settings["ai_local_url"] or "http://localhost:11434").rstrip("/")
             model = ai_settings["ai_local_model"] or "llama3.1:8b"
+            logger.info(f"Calling Local AI (Ollama) at {url} model={model} for AI narrative")
             payload = _json.dumps({
                 "model": model, "prompt": prompt, "stream": False,
                 "options": {"temperature": 0.3, "num_predict": 900},
@@ -142,15 +153,24 @@ def _call_ai_narrative(findings: list, dbname: str, instance: str,
                 headers={"Content-Type": "application/json"})
             with urllib.request.urlopen(req, timeout=45) as resp:
                 text = _json.loads(resp.read()).get("response", "").strip()
-            return {"text": text, "provider": "Local AI (Ollama)", "model": model} if text else empty
+            if text:
+                logger.info(f"Local AI narrative received ({len(text)} chars)")
+                return {"text": text, "provider": "Local AI (Ollama)", "model": model,
+                        "attempted": True, "error": ""}
+            logger.warning("Local AI (Ollama) returned an empty response")
+            return {**empty, "attempted": True, "error": "Ollama returned an empty response"}
 
         elif ai_mode == "cloud_ai":
             provider = (ai_settings["ai_cloud_provider"] or "claude").lower()
             api_key  = ai_settings["ai_cloud_api_key"]
             model    = ai_settings["ai_cloud_model"]
             if not api_key:
-                logger.info("Cloud AI selected but no API key configured — skipping AI narrative")
-                return empty
+                logger.warning("Cloud AI selected but no API key configured in Settings — "
+                                "skipping AI narrative")
+                return {**empty, "attempted": False,
+                        "error": "No Cloud AI API key configured in Settings"}
+            logger.info(f"Calling Cloud AI ({provider}) model={model or '(default)'} "
+                        f"for AI narrative")
             if provider == "openai":
                 payload = _json.dumps({
                     "model": model or "gpt-4o-mini", "max_tokens": 900,
@@ -163,7 +183,11 @@ def _call_ai_narrative(findings: list, dbname: str, instance: str,
                              "Authorization": f"Bearer {api_key}"})
                 with urllib.request.urlopen(req, timeout=30) as resp:
                     text = _json.loads(resp.read())["choices"][0]["message"]["content"].strip()
-                return {"text": text, "provider": "Cloud AI (OpenAI)", "model": model or "gpt-4o-mini"} if text else empty
+                if text:
+                    logger.info(f"Cloud AI (OpenAI) narrative received ({len(text)} chars)")
+                    return {"text": text, "provider": "Cloud AI (OpenAI)",
+                             "model": model or "gpt-4o-mini", "attempted": True, "error": ""}
+                return {**empty, "attempted": True, "error": "OpenAI returned an empty response"}
             else:
                 payload = _json.dumps({
                     "model": model or "claude-haiku-4-5", "max_tokens": 900,
@@ -176,10 +200,14 @@ def _call_ai_narrative(findings: list, dbname: str, instance: str,
                              "anthropic-version": "2023-06-01"})
                 with urllib.request.urlopen(req, timeout=30) as resp:
                     text = _json.loads(resp.read())["content"][0]["text"].strip()
-                return {"text": text, "provider": "Cloud AI (Claude)", "model": model or "claude-haiku-4-5"} if text else empty
+                if text:
+                    logger.info(f"Cloud AI (Claude) narrative received ({len(text)} chars)")
+                    return {"text": text, "provider": "Cloud AI (Claude)",
+                             "model": model or "claude-haiku-4-5", "attempted": True, "error": ""}
+                return {**empty, "attempted": True, "error": "Claude returned an empty response"}
     except Exception as e:
         logger.warning(f"AI narrative call failed ({ai_mode}): {e}")
-        return empty
+        return {**empty, "attempted": True, "error": str(e)}
     return empty
 
 

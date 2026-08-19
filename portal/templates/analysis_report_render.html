@@ -153,6 +153,7 @@ tr:nth-child(even) td{background:#FAFBFE}
     vertical-align:middle}
 .mode-badge.rules{background:#eef2ff;color:#3730a3}
 .mode-badge.ai{background:#ecfdf5;color:#0F6E56}
+.mode-badge.ai-warn{background:#fffbeb;color:#92400e;cursor:help}
 
 /* ── Source note ──────────────────────────────────────────── */
 .src-note{font-size:9px;color:#475569;margin-top:4px;font-style:italic;font-weight:500}
@@ -1130,6 +1131,10 @@ tr:nth-child(even) td{background:#FAFBFE}
   <div class="ch">📋 Conclusion &amp; Recommendations
     {% if ai_narrative and ai_narrative.text %}
     <span class="mode-badge ai">🤖 {{ ai_narrative.provider }}</span>
+    {% elif ai_mode in ('local_ai','cloud_ai') %}
+    <span class="mode-badge ai-warn" title="{{ ai_narrative.error if ai_narrative else 'AI narrative unavailable' }}">
+      ⚠️ {{ 'Local AI' if ai_mode == 'local_ai' else 'Cloud AI' }} selected — narrative unavailable
+    </span>
     {% else %}
     <span class="mode-badge rules">⚙️ Rules Mode</span>
     {% endif %}
@@ -1150,6 +1155,20 @@ tr:nth-child(even) td{background:#FAFBFE}
       <div style="font-size:9px;color:#94a3b8;margin-top:5px">
         AI-generated narrative summarising the rule-engine findings below — not a replacement for them.
         Verify against the Hotspot Areas and Recommendations before acting.
+      </div>
+    </div>
+    {% elif ai_mode in ('local_ai','cloud_ai') and ai_narrative and ai_narrative.error %}
+    <div class="conc-section conc-full">
+      <div class="ct">⚠️ AI Narrative Unavailable</div>
+      <div class="ai-panel" style="background:#fffbeb;border-left-color:#ca8a04">
+        <div class="cv">
+          {{ 'Local AI (Ollama)' if ai_mode == 'local_ai' else 'Cloud AI' }} is selected in Settings, but
+          this report's narrative summary could not be generated: <strong>{{ ai_narrative.error }}</strong>.
+          The Hotspot Areas and Recommendations below are unaffected — they come from the rule engine,
+          not the AI call. Check <code>logs/analysis_report_generator.log</code> for details, or verify
+          {{ 'Ollama is running and reachable at the configured URL' if ai_mode == 'local_ai' else 'the API key and provider settings' }}
+          in Settings → AI Mode.
+        </div>
       </div>
     </div>
     {% endif %}
