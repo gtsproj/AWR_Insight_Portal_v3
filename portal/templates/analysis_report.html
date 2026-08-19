@@ -61,7 +61,8 @@
     <p style="font-size:.82rem;color:var(--text2)">
       Generate an on-demand multi-snapshot analysis — Health Score, KPIs, wait events,
       SQL &amp; segment severity, I/O profile{{ ', Exadata statistics,' if exadata_enabled else ',' }} trend charts,
-      root cause analysis and rule-based recommendations.
+      root cause analysis and recommendations from the same rule engine and AI mode
+      (Rules / Local AI / Cloud AI) configured in Settings.
     </p>
   </div>
 
@@ -136,7 +137,7 @@
         ('📉','Trend Charts','6 metrics across all selected snapshots'),
         ('📋','Load Profile Comparison','All 8 metrics × all snapshots · Peak highlighted'),
         ('🔬','Root Cause Analysis','Structured: Symptoms → Root Cause → Evidence → Action Plan'),
-        ('🎯','Recommendations','Rule-based hotspot analysis · Prioritised remediation + risk'),
+        ('🎯','Recommendations','60+-rule engine · AI narrative in Local/Cloud AI mode · Prioritised remediation + risk'),
       ] %}
       {% if exadata_enabled %}
         {% set report_contents = report_contents + [('⚡','Exadata Statistics','FC hit% · IORM · Smart IO · IO Reasons · FC Space (Exadata DBs only)')] %}

@@ -145,6 +145,14 @@ tr:nth-child(even) td{background:#FAFBFE}
 .rec-body{font-size:11px;color:#1a2035;line-height:1.6}
 .rb{background:#fef2f2;border:1px solid #dc262640;
     border-radius:7px;padding:9px 13px;font-size:11px;color:#991b1b}
+.ai-panel{background:#f0f4ff;border-left:3px solid #6366f1;
+    border-radius:0 5px 5px 0;padding:10px 13px}
+.ai-panel .cv{white-space:pre-wrap}
+.mode-badge{display:inline-block;font-size:9px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.5px;padding:3px 9px;border-radius:999px;margin-left:8px;
+    vertical-align:middle}
+.mode-badge.rules{background:#eef2ff;color:#3730a3}
+.mode-badge.ai{background:#ecfdf5;color:#0F6E56}
 
 /* ── Source note ──────────────────────────────────────────── */
 .src-note{font-size:9px;color:#475569;margin-top:4px;font-style:italic;font-weight:500}
@@ -1119,13 +1127,32 @@ tr:nth-child(even) td{background:#FAFBFE}
 </style>
 
 
-  <div class="ch">📋 Conclusion &amp; Recommendations</div>
+  <div class="ch">📋 Conclusion &amp; Recommendations
+    {% if ai_narrative and ai_narrative.text %}
+    <span class="mode-badge ai">🤖 {{ ai_narrative.provider }}</span>
+    {% else %}
+    <span class="mode-badge rules">⚙️ Rules Mode</span>
+    {% endif %}
+  </div>
   <div class="conc-body">
 
     <div class="conc-section conc-full">
       <div class="ct">🎯 Conclusion</div>
       <div class="cv">{{ conclusion.text }}</div>
     </div>
+
+    {% if ai_narrative and ai_narrative.text %}
+    <div class="conc-section conc-full">
+      <div class="ct">🤖 AI Analysis Summary — {{ ai_narrative.provider }} ({{ ai_narrative.model }})</div>
+      <div class="ai-panel">
+        <div class="cv">{{ ai_narrative.text }}</div>
+      </div>
+      <div style="font-size:9px;color:#94a3b8;margin-top:5px">
+        AI-generated narrative summarising the rule-engine findings below — not a replacement for them.
+        Verify against the Hotspot Areas and Recommendations before acting.
+      </div>
+    </div>
+    {% endif %}
 
     <div class="conc-section">
       <div class="ct">🔥 Hotspot Areas</div>

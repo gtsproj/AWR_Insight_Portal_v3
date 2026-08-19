@@ -27,7 +27,168 @@ from db import get_db_connection
 from logger_utils import get_logger
 from feature_flags import EXADATA_FEATURE_ENABLED
 
+# recommendation_engine.py lives at the repo root, not in modules/ or common/
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 logger = get_logger("analysis_report_generator")
+
+
+# ── Rules/AI mode recommendation integration ──────────────────────────────
+# Mirrors the portal's Rules / Local AI / Cloud AI mode used elsewhere
+# (AWR Intelligence dashboard, /ai-recommendations page): the 60+-rule
+# engine in recommendation_engine.py always runs first regardless of mode
+# (it's the "rules" data), and AI mode adds a narrative supplement on top
+# of the rule findings — it does not replace them. Same design recommendation_engine.py
+# itself documents and follows.
+#
+# IMPORTANT config-source note: recommendation_engine.py reads its own
+# AI_MODE from config/settings.yaml at import time (common/config_loader.py)
+# — a static file, separate from portal_config in the database. The
+# Settings UI's AI Mode tab (and every other ai_mode check in this portal,
+# including the Analysis Report picker's own ai_mode in ('local_ai','cloud_ai')
+# checks) reads/writes portal_config via _get_config()/_set_config() in
+# portal/app.py instead. Those two sources are not kept in sync. To make
+# the Analysis Report actually follow the mode an admin selects in
+# Settings, this integration reads portal_config directly (see
+# _get_ai_settings() below) and does its own AI call using the same
+# provider config keys portal/app.py's /api/ai/generate already uses,
+# rather than trusting recommendation_engine.py's internal AI_MODE/
+# _call_ollama/_call_anthropic (which would silently use settings.yaml's
+# value instead of what the admin actually picked).
+
+def _get_ai_settings(cur) -> dict:
+    """Read AI mode + provider settings from portal_config — the same
+    source the Settings UI's AI Mode tab writes to. Never raises."""
+    try:
+        cur.execute(
+            "SELECT key, value FROM portal_config WHERE key IN "
+            "('ai_mode','ai_local_url','ai_local_model',"
+            "'ai_cloud_provider','ai_cloud_api_key','ai_cloud_model')"
+        )
+        cfg = {k: (v or "") for k, v in cur.fetchall()}
+    except Exception as e:
+        logger.warning(f"Could not read AI settings from portal_config: {e}")
+        cfg = {}
+    return {
+        "ai_mode":          cfg.get("ai_mode", "rules") or "rules",
+        "ai_local_url":     cfg.get("ai_local_url", "http://localhost:11434"),
+        "ai_local_model":   cfg.get("ai_local_model", "llama3.1:8b"),
+        "ai_cloud_provider":cfg.get("ai_cloud_provider", "claude"),
+        "ai_cloud_api_key": cfg.get("ai_cloud_api_key", ""),
+        "ai_cloud_model":   cfg.get("ai_cloud_model", ""),
+    }
+
+
+def _get_rule_engine_findings(dbname: str, instance: str,
+                               begin_snap: int, end_snap: int) -> list:
+    """Run the full 60+-rule engine (recommendation_engine.py) for this
+    DB/snap range and return its findings list. Never raises — an import
+    failure, missing table, or rule-file problem falls back to an empty
+    list so the report still generates with its existing KPI-threshold
+    hotspots/recommendations rather than failing outright."""
+    try:
+        from recommendation_engine import RecommendationEngine
+        result = RecommendationEngine().evaluate(
+            dbname=dbname, begin_snap=begin_snap, end_snap=end_snap,
+            instance=instance)
+        findings = result.get("findings", [])
+        logger.info(f"Rule engine: {len(findings)} findings for {dbname} "
+                    f"snaps {begin_snap}-{end_snap}")
+        return findings
+    except Exception as e:
+        logger.warning(f"Rule engine evaluation failed, falling back to "
+                        f"built-in hotspot/recommendation logic only: {e}")
+        return []
+
+
+def _call_ai_narrative(findings: list, dbname: str, instance: str,
+                        snap_range: str, ai_settings: dict) -> dict:
+    """Generate an AI narrative summary of the rule engine's top findings,
+    using the SAME provider config the rest of the portal's AI features use
+    (see _get_ai_settings). Returns {"text": ..., "provider": ..., "model": ...}
+    — text is empty ("") in rules mode, on any failure, or with no findings,
+    so callers never need special-case error handling; the report simply
+    omits the AI panel. Bounded timeout so a slow/unreachable AI endpoint
+    can't hang report generation indefinitely."""
+    ai_mode = ai_settings["ai_mode"]
+    empty = {"text": "", "provider": "", "model": ""}
+    if ai_mode not in ("local_ai", "cloud_ai") or not findings:
+        return empty
+
+    top = findings[:6]
+    prompt = (
+        f"You are an Oracle DBA expert reviewing an AWR analysis for "
+        f"database {dbname}/{instance} (snapshots {snap_range}). "
+        f"The rule engine below already identified these findings — do not "
+        f"repeat them verbatim. Instead, in 3-4 short paragraphs: "
+        f"1) summarise the overall performance state in plain language, "
+        f"2) call out the top 3 most urgent items in priority order and why, "
+        f"3) note any cross-finding pattern (e.g. one root cause explaining "
+        f"several findings). Be concise and factual — no generic filler.\n\n"
+        f"Findings:\n" + _json_dumps_safe(top)
+    )
+
+    try:
+        import urllib.request, json as _json
+        if ai_mode == "local_ai":
+            url   = (ai_settings["ai_local_url"] or "http://localhost:11434").rstrip("/")
+            model = ai_settings["ai_local_model"] or "llama3.1:8b"
+            payload = _json.dumps({
+                "model": model, "prompt": prompt, "stream": False,
+                "options": {"temperature": 0.3, "num_predict": 900},
+            }).encode()
+            req = urllib.request.Request(
+                f"{url}/api/generate", data=payload,
+                headers={"Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=45) as resp:
+                text = _json.loads(resp.read()).get("response", "").strip()
+            return {"text": text, "provider": "Local AI (Ollama)", "model": model} if text else empty
+
+        elif ai_mode == "cloud_ai":
+            provider = (ai_settings["ai_cloud_provider"] or "claude").lower()
+            api_key  = ai_settings["ai_cloud_api_key"]
+            model    = ai_settings["ai_cloud_model"]
+            if not api_key:
+                logger.info("Cloud AI selected but no API key configured — skipping AI narrative")
+                return empty
+            if provider == "openai":
+                payload = _json.dumps({
+                    "model": model or "gpt-4o-mini", "max_tokens": 900,
+                    "temperature": 0.3,
+                    "messages": [{"role": "user", "content": prompt}],
+                }).encode()
+                req = urllib.request.Request(
+                    "https://api.openai.com/v1/chat/completions", data=payload,
+                    headers={"Content-Type": "application/json",
+                             "Authorization": f"Bearer {api_key}"})
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    text = _json.loads(resp.read())["choices"][0]["message"]["content"].strip()
+                return {"text": text, "provider": "Cloud AI (OpenAI)", "model": model or "gpt-4o-mini"} if text else empty
+            else:
+                payload = _json.dumps({
+                    "model": model or "claude-haiku-4-5", "max_tokens": 900,
+                    "messages": [{"role": "user", "content": prompt}],
+                }).encode()
+                req = urllib.request.Request(
+                    "https://api.anthropic.com/v1/messages", data=payload,
+                    headers={"Content-Type": "application/json",
+                             "x-api-key": api_key,
+                             "anthropic-version": "2023-06-01"})
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    text = _json.loads(resp.read())["content"][0]["text"].strip()
+                return {"text": text, "provider": "Cloud AI (Claude)", "model": model or "claude-haiku-4-5"} if text else empty
+    except Exception as e:
+        logger.warning(f"AI narrative call failed ({ai_mode}): {e}")
+        return empty
+    return empty
+
+
+def _json_dumps_safe(obj) -> str:
+    import json
+    try:
+        return json.dumps(obj, indent=2, default=str)
+    except Exception:
+        return str(obj)
 
 
 # ── helpers ─────────────────────────────────────────────────────────────
@@ -602,6 +763,9 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
         # ── Plan stability summary ────────────────────────────────────
         plan_unstable_sqls = [s for s in top_sql if s.get("plan_unstable")]
 
+        # ── Rules/AI mode settings (read while cur is still open) ──────
+        ai_settings = _get_ai_settings(cur)
+
     finally:
         conn.close()
 
@@ -620,6 +784,15 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
         f"{'_' + first_date if first_date else ''}"
         f"_Snaps_{snap_range_str}"
     )
+
+    # ── Rule engine (always) + AI narrative (local_ai/cloud_ai only) ───
+    # See the module-level comment near _get_ai_settings() for why this
+    # reads portal_config directly instead of trusting
+    # recommendation_engine.py's own settings.yaml-based AI_MODE.
+    rule_findings = _get_rule_engine_findings(
+        dbname, instance, snap_ids_sorted[0], snap_ids_sorted[-1])
+    ai_narrative = _call_ai_narrative(
+        rule_findings, dbname, instance, snap_range_str, ai_settings)
 
     context = {
         "dbname": dbname, "instance": instance,
@@ -721,6 +894,9 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
     context["redo_switches_per_hour"] = redo_switches_per_hour
     context["user_calls_ps"]= round(user_calls_ps, 1)
     context["plan_unstable_sqls"] = plan_unstable_sqls
+    context["ai_mode"]      = ai_settings["ai_mode"]
+    context["rule_findings"]= rule_findings
+    context["ai_narrative"] = ai_narrative
     context["conclusion"] = build_conclusion(context)
     return context
 
@@ -1037,6 +1213,27 @@ def build_conclusion(ctx: dict) -> dict:
         hotspots.append(
             f"Hard parses — avg {kpi['hard_parses']}/s — literal SQL or cursor sharing issue")
 
+    # ── Rule engine hotspots (critical/high severity findings) ─────────
+    # rule_findings comes from recommendation_engine.py's 60+-rule set —
+    # see _get_rule_engine_findings(). Runs in both Rules and AI mode
+    # (AI mode supplements this, never replaces it — see module header).
+    # Only critical/high severity surfaces as a hotspot; medium/low still
+    # feed the Recommendations list below.
+    SEV_ICON = {"critical": "🔴", "high": "🟠"}
+    for f in ctx.get("rule_findings", []):
+        sev = f.get("severity")
+        if sev not in SEV_ICON:
+            continue
+        label = f"{SEV_ICON[sev]} {f.get('title','')}"
+        detail_bits = []
+        if f.get("event"):  detail_bits.append(f.get("event"))
+        if f.get("sql_id"): detail_bits.append(f"SQL {f.get('sql_id')}")
+        if f.get("object"): detail_bits.append(f.get("object"))
+        if detail_bits:
+            label += f" ({', '.join(detail_bits)})"
+        if label not in hotspots:
+            hotspots.append(label)
+
     # ── Exadata-specific hotspots ─────────────────────────────────────────
     exa = ctx.get("exadata", {})
     if exa.get("is_exadata"):
@@ -1104,6 +1301,34 @@ def build_conclusion(ctx: dict) -> dict:
     recs.append(("Comparative Analysis",
                  "Run a comparison between peak-load and off-peak snapshots to isolate "
                  "SQL and wait events that deteriorate specifically under load."))
+
+    # ── Rule engine recommendations (Rules mode: only source beyond the
+    # top-wait/buffer-cache/SQL-tuning heuristics above; AI mode: same,
+    # plus the AI narrative panel — see ctx["ai_narrative"] and the
+    # module header comment on why AI supplements rather than replaces
+    # rule output). Already sorted critical-first by the engine; capped
+    # here so the report stays readable rather than dumping all 60+
+    # possible rules. Skipped if the rule engine returned nothing
+    # (import/DB failure — see _get_rule_engine_findings) so the report
+    # still shows the KPI-threshold recommendations above on their own.
+    existing_titles = {t for t, _ in recs}
+    rule_rec_count = 0
+    MAX_RULE_RECS = 6
+    for f in ctx.get("rule_findings", []):
+        if rule_rec_count >= MAX_RULE_RECS:
+            break
+        title = f.get("title", "")
+        if not title or title in existing_titles:
+            continue
+        detail = f.get("root_cause", "")
+        steps = f.get("resolution") or []
+        if steps:
+            detail = (detail + " " if detail else "") + f"Next step: {steps[0]}"
+        if not detail:
+            continue
+        recs.append((title, detail))
+        existing_titles.add(title)
+        rule_rec_count += 1
 
     # ── Exadata-specific recommendations ─────────────────────────────────
     if exa.get("is_exadata"):
