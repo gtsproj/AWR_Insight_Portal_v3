@@ -677,10 +677,36 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
             # — see that dashboard's "Severity Score Calculation" panel.
             # AVG(severity_score) across the snap range, GROUP BY object
             # identity, matches that dashboard's own query exactly.
+            #
+            # Column set widened 2026-08-19 to match the dashboard's own
+            # full metric list (physical reads/writes, direct IO, block
+            # requests, CR/current blocks, table scans, optimized/
+            # unoptimized reads, and the Contention Group metrics) — see
+            # _SEG_OPTIONAL_COLS below. A column is only rendered in the
+            # report if at least one of the displayed Top-15 rows has a
+            # non-zero value for it, so a table for a database with no
+            # contention issues doesn't show 5 all-zero contention columns
+            # just because the mview has them.
             cur.execute(f"""
                 SELECT owner, object_name, obj_type,
-                       AVG(severity_score) AS severity_score,
-                       AVG(logical_reads)  AS lr
+                       AVG(severity_score)          AS severity_score,
+                       AVG(logical_reads)            AS logical_reads,
+                       AVG(physical_reads)           AS physical_reads,
+                       AVG(physical_writes)          AS physical_writes,
+                       AVG(direct_reads)             AS direct_reads,
+                       AVG(direct_writes)            AS direct_writes,
+                       AVG(phys_read_requests)       AS phys_read_requests,
+                       AVG(phys_write_requests)      AS phys_write_requests,
+                       AVG(cr_blocks_received)       AS cr_blocks_received,
+                       AVG(current_blocks_received)  AS current_blocks_received,
+                       AVG(table_scans)              AS table_scans,
+                       AVG(unoptimized_reads)        AS unoptimized_reads,
+                       AVG(optimized_reads)          AS optimized_reads,
+                       AVG(db_block_changes)         AS db_block_changes,
+                       AVG(row_lock_waits)           AS row_lock_waits,
+                       AVG(itl_waits)                AS itl_waits,
+                       AVG(buffer_busy_waits)        AS buffer_busy_waits,
+                       AVG(gc_buffer_busy)           AS gc_buffer_busy
                 FROM awr_segment_summary_mv
                 WHERE dbname=%s AND instance=%s AND begin_snap IN ({ph})
                 GROUP BY owner, object_name, obj_type, tablespace_name, subobject_name
@@ -690,13 +716,34 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
             seg_rows = cur.fetchall()
             total_severity_all_seg = sum(_fnum(r[3]) for r in seg_rows) or 1.0
 
+            # (mview column position -> (key, label, group)); position 0-2
+            # are owner/object_name/obj_type, 3 is severity_score, 4 is
+            # logical_reads (both always shown) — this list covers 5..17.
+            _SEG_OPTIONAL_COLS = [
+                ("physical_reads",          "Physical Reads",       "io"),
+                ("physical_writes",         "Physical Writes",      "io"),
+                ("direct_reads",            "Direct Reads",         "io"),
+                ("direct_writes",           "Direct Writes",        "io"),
+                ("phys_read_requests",      "Phys Read Req",        "io"),
+                ("phys_write_requests",     "Phys Write Req",       "io"),
+                ("cr_blocks_received",      "CR Blocks Recv",       "io"),
+                ("current_blocks_received", "Current Blocks Recv",  "io"),
+                ("table_scans",             "Table Scans",          "io"),
+                ("unoptimized_reads",       "Unoptimized Reads",    "io"),
+                ("optimized_reads",         "Optimized Reads",      "io"),
+                ("db_block_changes",        "DB Block Changes",     "contention"),
+                ("row_lock_waits",          "Row Lock Waits",       "contention"),
+                ("itl_waits",               "ITL Waits",            "contention"),
+                ("buffer_busy_waits",       "Buffer Busy Waits",    "contention"),
+                ("gc_buffer_busy",          "GC Buffer Busy",       "contention"),
+            ]
+
             top_objects = []
-            for owner, obj_name, obj_type, severity_val, lr in seg_rows:
-                severity_val = _fnum(severity_val)
-                lr  = int(_fnum(lr))
+            for row in seg_rows:
+                owner, obj_name, obj_type, severity_val, lr = row[0], row[1], row[2], _fnum(row[3]), int(_fnum(row[4]))
                 pct = round(severity_val / total_severity_all_seg * 100, 1)
                 sev_label, sev_color, sev_bg = _seg_severity(pct)
-                top_objects.append({
+                obj_dict = {
                     "owner":        owner,
                     "object_name":  obj_name,
                     "obj_type":     obj_type or "",
@@ -706,7 +753,18 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
                     "severity":     sev_label,
                     "sev_color":    sev_color,
                     "sev_bg":       sev_bg,
-                })
+                }
+                for i, (key, _label, _grp) in enumerate(_SEG_OPTIONAL_COLS):
+                    obj_dict[key] = int(_fnum(row[5 + i]))
+                top_objects.append(obj_dict)
+
+            # Only render a column in the report if at least one displayed
+            # row has a non-zero value for it.
+            seg_extra_columns = [
+                {"key": key, "label": label, "group": grp}
+                for key, label, grp in _SEG_OPTIONAL_COLS
+                if any(obj.get(key) for obj in top_objects)
+            ]
 
             seg_sev_counts = {"HOT": 0, "WARM": 0, "COOL": 0, "NORMAL": 0}
             for o in top_objects:
@@ -969,6 +1027,7 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
         "top_sql":       top_sql,
         "sql_sev_counts":sev_counts,
         "top_objects":   top_objects,
+        "seg_extra_columns": seg_extra_columns,
         "seg_sev_counts":seg_sev_counts,
         "snapshot_cards":snapshot_cards,
         "trend":         trend,
