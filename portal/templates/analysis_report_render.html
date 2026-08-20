@@ -55,6 +55,22 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:13px;
     align-items:center;gap:6px}
 .st-icon{font-size:12px}
 
+/* ── Section help tooltip — CSS-only, hidden in print (a hover
+   tooltip has no meaning on a printed/PDF page) ─────────────── */
+.help-icon{display:inline-flex;align-items:center;justify-content:center;
+    width:13px;height:13px;border-radius:50%;flex-shrink:0;
+    background:#cbd5e1;color:#334155;font-size:9px;font-weight:700;
+    line-height:1;cursor:help;position:relative;text-transform:none;
+    letter-spacing:normal}
+.help-icon:hover{background:#1B2D5B;color:#fff}
+.help-icon .tip{visibility:hidden;opacity:0;position:absolute;z-index:100;
+    left:0;top:19px;width:270px;background:#1B2D5B;color:#fff;
+    font-size:10px;font-weight:400;line-height:1.55;padding:8px 10px;
+    border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.28);
+    transition:opacity .12s;text-transform:none;letter-spacing:normal}
+.help-icon:hover .tip{visibility:visible;opacity:1}
+@media print{.help-icon{display:none}}
+
 /* ── KPI group (common header box) ───────────────────────── */
 .kpi-group{background:#fff;border:1px solid #dde;border-radius:10px;
            padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,.05);
@@ -223,6 +239,11 @@ tr:nth-child(even) td{background:#FAFBFE}
   </div>
 </div>
 
+{# Section help tooltip — used next to every section heading. Text kept to
+   1-3 short sentences: what this section shows + the one thing worth
+   knowing to read it correctly (not a full re-explanation of the report). #}
+{% macro help(text) %}<span class="help-icon">?<span class="tip">{{ text }}</span></span>{% endmacro %}
+
 <div class="body">
 
 {# ─────────────────────────────────────────────────────────── #}
@@ -239,7 +260,7 @@ tr:nth-child(even) td{background:#FAFBFE}
     <div style="font-size:9px;color:#64748b;font-weight:600;margin-top:4px">Health Score</div>
   </div>
   <div class="hs-bar-wrap">
-    <div style="font-size:10px;color:#334155;font-weight:700;margin-bottom:2px">Overall Database Health</div>
+    <div style="font-size:10px;color:#334155;font-weight:700;margin-bottom:2px">Overall Database Health {{ help("A single 0-100 score combining CPU load, buffer cache efficiency, wait-event dominance, and parse pressure — 25 points each. GREEN (≥75) is healthy, AMBER (50-74) needs attention, RED (<50) needs immediate investigation. Use it as a quick signal, not a full diagnosis — the sections below explain what's actually driving it.") }}</div>
     <div class="hs-bar-bg">
       <div class="hs-bar-fg" style="width:{{ h.score }}%;background:{{ h.color }}"></div>
     </div>
@@ -271,7 +292,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# ─────────────────────────────────────────────────────────── #}
 {# 1. WORKLOAD PROFILE — KPIs with common header             #}
 {# ─────────────────────────────────────────────────────────── #}
-<div class="st"><span class="st-icon">📈</span> Workload Profile — Averages Across All Snapshots</div>
+<div class="st"><span class="st-icon">📈</span> Workload Profile — Averages Across All Snapshots {{ help("Averages for DB Time, DB CPU, throughput, and I/O across every snapshot in this report. DB Time noticeably higher than DB CPU usually means the database is waiting on something (I/O, locks) rather than doing useful work.") }}</div>
 <div class="kpi-group">
   <div class="kpi-group-hdr">
     ⚡ Performance KPIs
@@ -342,7 +363,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# ─────────────────────────────────────────────────────────── #}
 {# 2. AWR SNAPSHOT SUMMARY                                    #}
 {# ─────────────────────────────────────────────────────────── #}
-<div class="st"><span class="st-icon">🗂</span> AWR Snapshot Summary</div>
+<div class="st"><span class="st-icon">🗂</span> AWR Snapshot Summary {{ help("One card per AWR snapshot in this report, each with its own DB Time, transactions, and reads at that point in time. Scan for a card that stands out from its neighbours — that's the snapshot worth investigating first.") }}</div>
 <div class="snap-cards">
 {% for sc in snapshot_cards %}
   <div class="snap-card" style="border-top:3px solid #1B2D5B">
@@ -371,7 +392,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# ─────────────────────────────────────────────────────────── #}
 {# 3. TREND ACROSS SNAPSHOTS (moved here — per requirement)  #}
 {# ─────────────────────────────────────────────────────────── #}
-<div class="st"><span class="st-icon">📉</span> Trend Across Snapshots</div>
+<div class="st"><span class="st-icon">📉</span> Trend Across Snapshots {{ help("The same metrics as the cards above, plotted over time. A steady climb points to a growing problem; a brief spike points to a one-off event — that distinction changes what's worth investigating.") }}</div>
 <div class="g3">
   <div class="cc"><h3>DB Time (s/s)</h3><div class="cwt"><canvas id="dbTimeChart"></canvas></div></div>
   <div class="cc"><h3>DB CPU (s/s)</h3><div class="cwt"><canvas id="dbCpuChart"></canvas></div></div>
@@ -386,7 +407,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# ─────────────────────────────────────────────────────────── #}
 {# 4. WAIT EVENTS                                             #}
 {# ─────────────────────────────────────────────────────────── #}
-<div class="st"><span class="st-icon">⏱</span> Performance Analysis — Wait Events</div>
+<div class="st"><span class="st-icon">⏱</span> Performance Analysis — Wait Events {{ help("What the database spent its time waiting on, ranked by share of total DB time. A single dominant wait event is usually the best place to start tuning; many smaller waits with no clear leader points to broader, systemic pressure instead.") }}</div>
 <div class="g2">
   <div>
     <div class="cc"><h3>Top Wait Events — Avg % of DB Time</h3><div class="cw"><canvas id="waitChart"></canvas></div></div>
@@ -513,7 +534,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# ─────────────────────────────────────────────────────────── #}
 {# 5. SQL SEVERITY SUMMARY                                    #}
 {# ─────────────────────────────────────────────────────────── #}
-<div class="st"><span class="st-icon">🔍</span> SQL Severity Summary — Top SQL</div>
+<div class="st"><span class="st-icon">🔍</span> SQL Severity Summary — Top SQL {{ help("Ranks SQL by how severe a single execution is across several factors at once (elapsed time, CPU, I/O, parsing) — see the note just below. A rarely-run statement can rank high here even if it isn't the biggest overall contributor; for that cumulative view, check the % of Elapsed Time column or the Hotspot Areas/Recommendations sections.") }}</div>
 <p style="font-size:10px;color:#64748b;margin:-4px 0 10px;line-height:1.5">
   Ranks each SQL by how severe a <em>single execution</em> of it is across several dimensions at
   once (elapsed time, CPU, I/O, parsing) — not by how much it has cost in total. A rarely-run
@@ -617,7 +638,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# ─────────────────────────────────────────────────────────── #}
 {# 6. SEGMENT SEVERITY SUMMARY                                #}
 {# ─────────────────────────────────────────────────────────── #}
-<div class="st"><span class="st-icon">🗃</span> Segment Severity Summary — Top Objects by I/O &amp; Contention Severity</div>
+<div class="st"><span class="st-icon">🗃</span> Segment Severity Summary — Top Objects by I/O &amp; Contention Severity {{ help("Ranks database objects (tables/indexes) by a combined I/O and lock-contention severity score. High scorers are the objects most worth checking for missing indexes, full scans, or row-lock contention.") }}</div>
 
 <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
   {% for sev, col, bg in [('HOT','#dc2626','#fef2f2'),('WARM','#ea580c','#fff7ed'),
@@ -668,7 +689,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# ─────────────────────────────────────────────────────────── #}
 {# 7. LOAD PROFILE COMPARISON (moved below SQL+Segment)      #}
 {# ─────────────────────────────────────────────────────────── #}
-<div class="st"><span class="st-icon">📋</span> Load Profile Comparison Across Snapshots</div>
+<div class="st"><span class="st-icon">📋</span> Load Profile Comparison Across Snapshots {{ help("The same workload metrics as the top KPI cards, laid out side-by-side per snapshot so you can see exactly how the workload shifted from one snapshot to the next. Bold red marks the peak value for each metric across the whole window.") }}</div>
 <div class="tc gf scroll">
   <table>
     <thead>
@@ -703,7 +724,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# ─────────────────────────────────────────────────────────── #}
 {% if exadata_enabled and exa_licensed and exadata and exadata.is_exadata %}
 {# Only shown when: (a) license_exadata=true in portal_config AND (b) awr_exadata_perf_summary has data for selected snaps #}
-<div class="st"><span class="st-icon">⚡</span> Exadata Storage Statistics</div>
+<div class="st"><span class="st-icon">⚡</span> Exadata Storage Statistics {{ help("Exadata-specific storage-tier statistics — Smart Scan efficiency, Flash Cache hit rates, cell-level IO — layered on top of the standard database-side analysis above. Only shown for licensed Exadata databases.") }}</div>
 
 {# ── Exadata KPI row ─────────────────────────────────────── #}
 <div class="kpi-group">
@@ -788,7 +809,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 <div class="g2">
   {# Flash Cache per-cell health table #}
   <div>
-    <div class="st" style="margin-top:0"><span class="st-icon">🔋</span> Flash Cache — Per Cell Hit % &amp; Config</div>
+    <div class="st" style="margin-top:0"><span class="st-icon">🔋</span> Flash Cache — Per Cell Hit % &amp; Config {{ help("Flash Cache hit rate per storage cell, plus current configuration. A cell showing 'flushing' status will have degraded hit rates while it clears — that's expected during a flush, not necessarily a fault.") }}</div>
     <div class="tc">
       <table>
         <thead><tr>
@@ -826,7 +847,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 
   {# Cell IO statistics table #}
   <div>
-    <div class="st" style="margin-top:0"><span class="st-icon">📡</span> Cell IO Statistics — Avg IOPs &amp; Utilisation</div>
+    <div class="st" style="margin-top:0"><span class="st-icon">📡</span> Cell IO Statistics — Avg IOPs &amp; Utilisation {{ help("Average IOPs and utilisation per storage cell. Cells should be roughly even — one cell running noticeably hotter than the others can indicate an imbalanced grid disk layout or a hardware issue on that cell.") }}</div>
     <div class="tc">
       <table>
         <thead><tr>
@@ -855,7 +876,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 <div class="g2">
   {# Smart IO — Flash vs Disk per cell #}
   <div>
-    <div class="st" style="margin-top:0"><span class="st-icon">🔍</span> Smart IO — Flash / Disk / Passthru Split</div>
+    <div class="st" style="margin-top:0"><span class="st-icon">🔍</span> Smart IO — Flash / Disk / Passthru Split {{ help("How much I/O was offloaded to Smart Scan versus served from Flash Cache, disk, or fell back to passthru mode. A high passthru share usually means Smart Scan couldn't be used — often due to row-level security, function calls in the WHERE clause, or chained rows.") }}</div>
     <div class="tc">
       <table>
         <thead><tr>
@@ -887,7 +908,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 
   {# IO Reasons breakdown #}
   <div>
-    <div class="st" style="margin-top:0"><span class="st-icon">📊</span> IO Reasons — Cell IO Request Breakdown</div>
+    <div class="st" style="margin-top:0"><span class="st-icon">📊</span> IO Reasons — Cell IO Request Breakdown {{ help("Why the storage cells were asked to do IO — e.g. buffer cache reads, redo log writes, backups. Useful for telling whether cell load is coming from normal application activity or from a maintenance/backup job.") }}</div>
     <div class="tc">
       <table>
         <thead><tr>
@@ -925,7 +946,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# ── FC Space + Write Rejections ─────────────────────────── #}
 <div class="g2">
   <div>
-    <div class="st" style="margin-top:0"><span class="st-icon">💾</span> Flash Cache Space Usage — Large Write %</div>
+    <div class="st" style="margin-top:0"><span class="st-icon">💾</span> Flash Cache Space Usage — Large Write % {{ help("How much of Flash Cache space is consumed by large writes. A consistently high percentage can mean Flash Cache is undersized for the write volume, or that writes are evicting reusable read data sooner than ideal.") }}</div>
     <div class="tc">
       <table>
         <thead><tr>
@@ -960,7 +981,7 @@ tr:nth-child(even) td{background:#FAFBFE}
   {# Write rejections + disk outliers #}
   <div>
     {% if exadata.write_rejections %}
-    <div class="st" style="margin-top:0"><span class="st-icon">🚫</span> FC Write Rejections</div>
+    <div class="st" style="margin-top:0"><span class="st-icon">🚫</span> FC Write Rejections {{ help("Writes that Flash Cache rejected rather than absorbed, and why. Frequent rejections mean more writes are going straight to disk instead of being cached — worth investigating if disk write latency is also elevated.") }}</div>
     <div class="tc" style="margin-bottom:10px">
       <table>
         <thead><tr><th>Rejection Reason</th><th class="right">Count</th></tr></thead>
@@ -977,7 +998,7 @@ tr:nth-child(even) td{background:#FAFBFE}
     {% endif %}
 
     {% if exadata.disk_outliers %}
-    <div class="st" style="margin-top:0"><span class="st-icon">⚠️</span> Disk-Level Outliers</div>
+    <div class="st" style="margin-top:0"><span class="st-icon">⚠️</span> Disk-Level Outliers {{ help("Individual disks whose utilisation or latency stands out from their peers within the same cell — often the earliest sign of a failing or degraded physical disk before it triggers a hardware alert.") }}</div>
     <div class="tc">
       <table>
         <thead><tr><th>Cell</th><th>Device</th><th class="right">Avg Util%</th></tr></thead>
@@ -1008,7 +1029,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# I/O PROFILE BREAKDOWN                                      #}
 {# ─────────────────────────────────────────────────────────── #}
 {% if io_profile %}
-<div class="st"><span class="st-icon">💿</span> I/O Profile — Reads &amp; Writes by Function</div>
+<div class="st"><span class="st-icon">💿</span> I/O Profile — Reads &amp; Writes by Function {{ help("Breaks I/O down by where it's coming from (buffer cache reads, direct reads, redo writes, etc.) instead of one overall number — useful for telling whether I/O pressure is normal buffered activity or something else, like heavy direct-path reads or redo generation.") }}</div>
 {% set max_rps = (io_profile | map(attribute='avg_read_rps') | max) or 1 %}
 <div class="tc gf">
   <table>
@@ -1051,7 +1072,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# ─────────────────────────────────────────────────────────── #}
 {# PARSING PRESSURE + REDO SIZING                             #}
 {# ─────────────────────────────────────────────────────────── #}
-<div class="st"><span class="st-icon">🔬</span> Diagnostics — Parse Pressure &amp; Redo Sizing</div>
+<div class="st"><span class="st-icon">🔬</span> Diagnostics — Parse Pressure &amp; Redo Sizing {{ help("Two independent checks: whether the database is doing too much hard parsing (CPU and library cache overhead), and whether the current redo log size fits the observed redo generation rate. Unrelated to each other — read them separately.") }}</div>
 <div class="g2">
   <div class="cc">
     <h3>Parsing Pressure Indicator</h3>
@@ -1114,7 +1135,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 {# ─────────────────────────────────────────────────────────── #}
 {# RCA TEMPLATE                                               #}
 {# ─────────────────────────────────────────────────────────── #}
-<div class="st"><span class="st-icon">📝</span> Root Cause Analysis</div>
+<div class="st"><span class="st-icon">📝</span> Root Cause Analysis {{ help("A structured Symptoms → Root Cause → Evidence → Action Plan summary, pre-filled from this report's data. Click into any field below to edit it before printing or sharing — it's a starting draft for an incident writeup, not a final answer.") }}</div>
 {# Editable version (screen only) #}
 <div class="rca-wrap" id="rca-editable" style="border:2px solid #dee2ec;background:#fff">
   <div class="no-print" style="font-size:10px;color:#475569;font-weight:600;margin-bottom:10px">
@@ -1157,6 +1178,7 @@ tr:nth-child(even) td{background:#FAFBFE}
 
 
   <div class="ch">📋 Conclusion &amp; Recommendations
+    {{ help("A plain-language summary plus a prioritised action list. Hotspot Areas and Recommendations come from fixed thresholds and the rule engine described in the SQL/Segment Severity Summary sections. In Local AI/Cloud AI mode, an AI-generated narrative sits above them — it summarises the same findings, it doesn't replace them.") }}
     {% if ai_narrative and ai_narrative.text %}
     <span class="mode-badge ai">🤖 {{ ai_narrative.provider }}</span>
     {% elif ai_mode in ('local_ai','cloud_ai') %}
