@@ -611,7 +611,8 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
                 pass
 
             top_sql = []
-            for row in sql_rows:
+            total_elapsed_all = sum(_fnum(r[3]) * _fnum(r[2]) for r in sql_rows) or 1.0
+            for rank, row in enumerate(sql_rows, start=1):
                 sql_id       = row[0]
                 severity_val = _fnum(row[1])
                 execs        = _fnum(row[2])
@@ -626,6 +627,14 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
                 total_e = avg_e * execs
                 total_c = avg_c * execs
                 pct      = round(severity_val / total_severity_all * 100, 1)
+                # Cumulative-impact % — a SEPARATE lens from severity_score's
+                # per-execution-severity %, shown alongside it (2026-08-19,
+                # per Ganesh: a SQL can legitimately rank low on one and high
+                # on the other — e.g. a rare-but-severe EOD/BOD job vs a
+                # frequent-but-mild one — showing both in one row means a
+                # reader never has to cross-reference two tables to see why
+                # a SQL mentioned in Hotspots isn't #1 here.)
+                pct_elapsed = round(total_e / total_elapsed_all * 100, 1)
                 sev_label, sev_color, sev_bg = _sql_severity(pct)
                 top_sql.append({
                     "sql_id":          sql_id,
@@ -638,7 +647,9 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
                     "avg_gets":        round(avg_gets, 0),
                     "avg_reads":       round(avg_reads, 0),
                     "severity_score":  round(severity_val, 2),
+                    "severity_rank":   rank,
                     "pct_total":       pct,
+                    "pct_elapsed":     pct_elapsed,
                     "severity":        sev_label,
                     "sev_color":       sev_color,
                     "sev_bg":          sev_bg,
@@ -1427,6 +1438,14 @@ def build_conclusion(ctx: dict) -> dict:
     # Only critical/high severity surfaces as a hotspot; medium/low still
     # feed the Recommendations list below.
     SEV_ICON = {"critical": "🔴", "high": "🟠"}
+    # sql_id -> its row in the SQL Severity Summary table, so a Hotspot
+    # naming a SQL by cumulative impact (SQL_001/002) can point to where
+    # that same SQL sits in the (separately per-execution-ranked) severity
+    # table — otherwise a reader who goes looking for it there, expecting
+    # it near the top, can be confused when it's ranked much lower (see
+    # the note under the SQL Severity Summary heading for why that's
+    # expected, not a bug).
+    top_sql_by_id = {s["sql_id"]: s for s in ctx.get("top_sql", [])}
     for f in ctx.get("rule_findings", []):
         sev = f.get("severity")
         if sev not in SEV_ICON:
@@ -1434,7 +1453,13 @@ def build_conclusion(ctx: dict) -> dict:
         label = f"{SEV_ICON[sev]} {f.get('title','')}"
         detail_bits = []
         if f.get("event"):  detail_bits.append(f.get("event"))
-        if f.get("sql_id"): detail_bits.append(f"SQL {f.get('sql_id')}")
+        if f.get("sql_id"):
+            sql_bit = f"SQL {f.get('sql_id')}"
+            sref = top_sql_by_id.get(f.get("sql_id"))
+            if sref:
+                sql_bit += (f" — #{sref['severity_rank']} in SQL Severity Summary, "
+                            f"score {sref['severity_score']}")
+            detail_bits.append(sql_bit)
         if f.get("object"): detail_bits.append(f.get("object"))
         if detail_bits:
             label += f" ({', '.join(detail_bits)})"

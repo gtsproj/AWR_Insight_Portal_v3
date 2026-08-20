@@ -556,7 +556,8 @@ tr:nth-child(even) td{background:#FAFBFE}
       <th class="right">Avg Gets/Exec</th>
       <th class="right">Avg Reads/Exec</th>
       <th class="right">Severity Score</th>
-      <th class="right">% of Total</th>
+      <th class="right">% of Sev. Score</th>
+      <th class="right">% of Elapsed Time</th>
       <th>Plan</th>
       <th>SQL Preview</th>
     </tr></thead>
@@ -575,6 +576,7 @@ tr:nth-child(even) td{background:#FAFBFE}
         <td class="num" style="color:{% if sq.avg_reads > 100 %}#dc2626{% else %}#555{% endif %}">{{ sq.avg_reads | int }}</td>
         <td class="num" style="font-weight:600;color:#334155">{{ sq.severity_score }}</td>
         <td class="num" style="font-weight:700;color:{{ sq.sev_color }}">{{ sq.pct_total }}%</td>
+        <td class="num" style="color:#64748b" title="This SQL's share of the Top-15 group's combined total elapsed time — the same lens Hotspot Areas and Recommendations use, shown here so it's never a surprise if it differs from the Severity Score rank to its left">{{ sq.pct_elapsed }}%</td>
         <td style="text-align:center">
           {% if sq.plan_unstable %}
             <span class="sev" style="background:#7C3AED;color:#fff" title="Elapsed time variance >50% across snaps — possible plan flip">⚠ Unstable</span>
@@ -590,7 +592,7 @@ tr:nth-child(even) td{background:#FAFBFE}
     {% endfor %}
     </tbody>
   </table>
-  <p class="src-note" style="color:#475569">Source: awr_sql_summary_mv &nbsp;·&nbsp; Ranked by severity_score — a weighted composite across all SQL statistics sections (elapsed 25% · CPU 25% · buffer gets 15% · disk reads 10% · user I/O wait 10% · unoptimized reads 5% · parse calls 5% · cluster wait 5%), same basis as the AWR SQL Summary Top 10 By Severity dashboard &nbsp;·&nbsp; % of Total = share of this Top-15 group's combined severity score &nbsp;·&nbsp; Severity: CRITICAL ≥30% | HIGH 15–30% | MEDIUM 5–15% | LOW &lt;5%</p>
+  <p class="src-note" style="color:#475569">Source: awr_sql_summary_mv &nbsp;·&nbsp; Ranked by severity_score — a weighted composite across all SQL statistics sections (elapsed 25% · CPU 25% · buffer gets 15% · disk reads 10% · user I/O wait 10% · unoptimized reads 5% · parse calls 5% · cluster wait 5%), same basis as the AWR SQL Summary Top 10 By Severity dashboard &nbsp;·&nbsp; % of Sev. Score = share of this Top-15 group's combined severity score (drives the row order and Severity badge) &nbsp;·&nbsp; % of Elapsed Time = this SQL's share of the same group's combined total elapsed time — the cumulative-impact lens used in Hotspot Areas/Recommendations instead &nbsp;·&nbsp; Severity: CRITICAL ≥30% | HIGH 15–30% | MEDIUM 5–15% | LOW &lt;5% of severity score</p>
 </div>
 
 {# SQL Severity chart + SQL top bar chart side-by-side #}
