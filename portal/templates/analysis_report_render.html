@@ -13,7 +13,13 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:13px;
 
 /* ── PDF / Print ──────────────────────────────────────────── */
 @media print{
-  /* No @page size override — browser prints exactly what it previews. */
+  /* Force landscape by default — the SQL/Segment Severity tables can have
+     14-23 columns and need every inch available. Previously there was no
+     @page override (browser printed whatever the user's dialog was set to)
+     — but Ganesh found that manually picking landscape in the print dialog
+     still wasn't enough on its own; the real fix is the column-width
+     reduction below, this just gives it the most room to work with. */
+  @page{size:landscape}
   body{background:#fff;font-size:11px;
        -webkit-print-color-adjust:exact;print-color-adjust:exact}
   .no-print{display:none!important}
@@ -26,6 +32,40 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:13px;
   .g2{grid-template-columns:1fr 1fr}
   .g3{grid-template-columns:1fr 1fr 1fr}
   .footer{margin-top:8px;padding:6px 0}
+
+  /* ── Wide-table fix (SQL Severity Summary / Segment Severity Summary) ──
+     .tc.scroll relies on overflow-x:auto for on-screen scrolling, but a
+     printed page can't be horizontally scrolled — content past the page
+     edge was previously just cut off (this is what Ganesh reported; simply
+     switching to landscape in the print dialog wasn't enough on its own,
+     since these tables have 14-23 columns at normal font size regardless
+     of orientation). Three changes together close the gap:
+       1. overflow-x:visible so nothing is silently clipped by the
+          container's own box once the table below fits within the page.
+       2. th white-space:normal so column headers can wrap onto 2 lines
+          instead of forcing each column to be at least as wide as its full
+          unwrapped label — usually the single biggest space saver.
+       3. A much smaller print-only font/padding for just these two wide
+          tables (other, narrower tables in the report keep their normal
+          11px print size — this reduction is scoped to .tc.scroll only).
+     !important is required here because several of these cells (SQL
+     Preview, Owner, Object Name) already carry an inline font-size/
+     max-width style, which otherwise always wins over any stylesheet
+     rule regardless of selector specificity. */
+  .tc.scroll{overflow-x:visible!important}
+  .tc.scroll table{font-size:6.5px!important}
+  .tc.scroll th{white-space:normal!important;font-size:6.5px!important;
+      padding:3px 2px!important;line-height:1.15!important}
+  .tc.scroll td{font-size:6.5px!important;padding:2px 3px!important}
+  .tc.scroll .num,.tc.scroll .mono{font-size:6.5px!important}
+  /* Long free-text columns (SQL preview, owner/object names) would
+     otherwise dominate the remaining width on their own — cap them
+     tightly for print; the full value is still one click away on-screen
+     (hover for the SQL preview's title tooltip, or view the HTML report
+     directly) where space isn't constrained the same way. */
+  .tc.scroll .sql-preview{max-width:70px!important}
+  .tc.scroll td.mono{max-width:60px!important;overflow:hidden!important;
+      text-overflow:ellipsis!important;white-space:nowrap!important}
 }
 
 /* ── Header ───────────────────────────────────────────────── */
@@ -612,7 +652,7 @@ tr:nth-child(even) td{background:#FAFBFE}
             <span style="font-size:10px;color:#16a34a">✓ Stable</span>
           {% endif %}
         </td>
-        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+        <td class="sql-preview" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
                    font-size:10px;color:#475569" title="{{ sq.sql_text_preview }}">
           {{ sq.sql_text_preview[:70] }}{% if sq.sql_text_preview | length > 70 %}…{% endif %}
         </td>
