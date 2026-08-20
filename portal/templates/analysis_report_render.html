@@ -423,12 +423,19 @@ tr:nth-child(even) td{background:#FAFBFE}
       <table>
         <thead><tr><th>Cache Efficiency Metric</th><th class="right">Avg Value</th><th class="right">Status</th></tr></thead>
         <tbody>
-        {% for lbl, key, good_above in [
+        {# Thresholds below are intentionally kept identical to the rule engine's
+   INST_001-004 conditions (recommendation_rules_v2.json) so this table's
+   ✅/⚠️ status can never contradict a "Low X Ratio" finding elsewhere in
+   the report for the same metric — found genuinely mismatched 2026-08-19
+   (Library Hit was 95 here vs rule's <99, Execute-to-Parse was 80 here vs
+   rule's <90) and fixed to match. Buffer Nowait has no corresponding rule
+   so its threshold (99) isn't cross-checked against anything. #}
+{% for lbl, key, good_above in [
             ('Buffer Hit %',      'buffer_hit',    95),
-            ('Library Hit %',     'library_hit',   95),
+            ('Library Hit %',     'library_hit',   99),
             ('Soft Parse %',      'soft_parse',    95),
             ('Buffer Nowait %',   'buffer_nowait', 99),
-            ('Execute to Parse %','execute_to_parse', 80),
+            ('Execute to Parse %','execute_to_parse', 90),
           ] %}
           {% set val = cache_ratios.get(key) %}
           <tr><td>{{ lbl }}</td>
@@ -444,7 +451,7 @@ tr:nth-child(even) td{background:#FAFBFE}
         {% endfor %}
         </tbody>
       </table>
-      <p class="src-note" style="color:#475569" style="margin-top:8px">Source: awr_instance_efficiency</p>
+      <p class="src-note" style="color:#475569;margin-top:8px">Source: awr_instance_efficiency</p>
     </div>
   </div>
 </div>
