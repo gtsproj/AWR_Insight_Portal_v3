@@ -19,7 +19,17 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:13px;
      — but Ganesh found that manually picking landscape in the print dialog
      still wasn't enough on its own; the real fix is the column-width
      reduction below, this just gives it the most room to work with. */
-  @page{size:landscape}
+  @page{size:A4 landscape}
+  /* Using the bare keyword `size:landscape` (no named page size) is a
+     documented Chromium/Edge "Print to PDF" quirk: it correctly resizes
+     the page box and lays out content wide (which is why the columns fit
+     — the fix from the previous commit worked), but doesn't always
+     correctly signal the *rotation* to the PDF-generation backend, so the
+     saved PDF's actual page ends up needing a manual 90° rotation to view
+     upright even though the content itself is laid out correctly — this
+     is exactly what Ganesh reported. Pairing the keyword with an explicit
+     named size (A4 here; browsers substitute the closest match for US
+     Letter printers automatically) is the standard, documented fix. */
   body{background:#fff;font-size:11px;
        -webkit-print-color-adjust:exact;print-color-adjust:exact}
   .no-print{display:none!important}
