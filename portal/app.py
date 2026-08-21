@@ -25,6 +25,20 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Optional
 
+# Windows: Playwright launches Chromium (and its own Node-based driver
+# process) via asyncio subprocess creation, which raises NotImplementedError
+# under the default SelectorEventLoop on Windows — only ProactorEventLoop
+# supports subprocess creation there. This is a well-documented, standard
+# fix for exactly that combination (FastAPI/uvicorn + Playwright + Windows)
+# and must run before uvicorn creates its own event loop, so it's set here
+# at module import time rather than inside the PDF export route itself. A
+# no-op on Linux/Mac, where WindowsProactorEventLoopPolicy doesn't exist.
+# Added 2026-08-19 after /api/analysis-report/pdf returned a bare 500 with
+# no further detail on Ganesh's Windows Server deployment.
+if sys.platform == "win32":
+    import asyncio
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+
 from fastapi import FastAPI, Request, UploadFile, File, Form, HTTPException, Cookie
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -1975,9 +1989,18 @@ async def api_analysis_report_pdf(request: Request, dbname: str = "",
     try:
         ctx = build_report_context(dbname, instance, ids)
     except Exception as e:
-        logger.error(f"analysis_report PDF generate failed: {e}")
-        raise HTTPException(500, f"Failed to generate report: {e}")
+        logger.exception(f"analysis_report PDF generate failed for {dbname}/{instance}")
+        raise HTTPException(500, f"Failed to generate report: {type(e).__name__}: {e}")
 
+    ctx["exadata_enabled"] = EXADATA_FEATURE_ENABLED
+    # ctx["request"] explicitly set: unlike templates.TemplateResponse(request,
+    # ...), calling templates.env.get_template(...).render() directly does
+    # NOT auto-inject request into the context, so {{ request.base_url }}
+    # (used by the report's own downloadPDF() JS) would otherwise render as
+    # undefined here. Doesn't affect the PDF itself (Playwright captures a
+    # static snapshot, never executes that JS), but keeping this render path
+    # consistent with the HTML-serving route avoids any latent Jinja error.
+    ctx["request"] = request
     ctx["exadata_enabled"] = EXADATA_FEATURE_ENABLED
     html = templates.env.get_template("analysis_report_render.html").render(**ctx)
 
@@ -2013,8 +2036,20 @@ async def api_analysis_report_pdf(request: Request, dbname: str = "",
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Playwright PDF generation failed for {dbname}/{instance}: {e}")
-        raise HTTPException(500, f"PDF generation failed: {e}")
+        # logger.exception (not logger.error) so the FULL traceback lands in
+        # logs/portal_stderr.log or logs/portal_stdout.log (NSSM AppStdout/
+        # AppStderr) even if the HTTP response's detail text ends up terse
+        # for some reason — 2026-08-19: a prior version of this handler
+        # produced an alert that just said "HTTP:500" with no further
+        # detail, which this + the type(e).__name__ prefix below are meant
+        # to prevent from recurring. type(e).__name__ matters specifically
+        # because some exceptions (e.g. NotImplementedError, which is what
+        # Playwright raises on Windows when the active asyncio event loop
+        # doesn't support subprocess creation — see the ProactorEventLoop
+        # policy fix near the bottom of this file) carry NO message text at
+        # all, so str(e) alone can render as an empty, unhelpful string.
+        logger.exception(f"Playwright PDF generation failed for {dbname}/{instance}")
+        raise HTTPException(500, f"PDF generation failed: {type(e).__name__}: {e}")
 
     filename = (ctx.get("pdf_filename") or "AWR_Analysis_Report") + ".pdf"
     return Response(
