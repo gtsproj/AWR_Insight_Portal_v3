@@ -22,7 +22,9 @@
         "4. Run the diagnostic SQL below to identify top objects causing single-block reads.",
         "5. Check storage latency: if avg_wait_ms > 20ms, escalate to storage team for I/O response time review.",
         "6. Consider caching hot small tables/indexes using ALTER TABLE ... CACHE or KEEP buffer pool.",
-        "7. For 19c+: verify Automatic Indexing recommendations in DBA_ADVISOR_FINDINGS."
+        "7. For 19c+: verify Automatic Indexing recommendations in DBA_ADVISOR_FINDINGS.",
+        "8. Check DBA_INDEXES.CLUSTERING_FACTOR for indexes on the hot table — if it approaches the number of ROWS (not blocks), the table's rows are randomly ordered relative to the index, forcing extra I/O; rebuilding the table so rows are ordered by the index key (then rebuilding the index) improves the clustering factor.",
+        "9. Verify OPTIMIZER_INDEX_COST_ADJ and OPTIMIZER_INDEX_CACHING are set appropriately — these can influence the optimizer to favour an index access path (nested loops) over a full table scan when index access is genuinely more efficient."
       ],
       "diagnostic_sql": [
         "-- Top objects causing db file sequential read in current AWR snap range\nSELECT owner, object_name, object_type, value AS physical_reads\nFROM v$segment_statistics\nWHERE statistic_name = 'physical reads'\nORDER BY value DESC FETCH FIRST 15 ROWS ONLY;",
@@ -68,7 +70,9 @@
         "2. Check if parallel query is being over-used: look for PARALLEL operations in top SQL plans.",
         "3. Verify PGA aggregate target is adequate — check V$PGASTAT for 'cache hit percentage' (target > 95%).",
         "4. For expected large analytical queries, ensure PARALLEL_DEGREE_POLICY is set appropriately.",
-        "5. If object is small and still causing direct reads, check _SMALL_TABLE_THRESHOLD parameter."
+        "5. If object is small and still causing direct reads, check _SMALL_TABLE_THRESHOLD parameter.",
+        "6. If driven by sort operations: prefer UNION ALL over UNION, HASH JOIN over SORT MERGE, and NESTED LOOPS over HASH JOIN where the access pattern allows — each avoids an unnecessary sort.",
+        "7. Check whether a composite index's column order can be rearranged to match the query's ORDER BY clause — this can let the optimizer avoid the sort (and its temp spill) entirely."
       ],
       "diagnostic_sql": [
         "-- PGA usage and hit ratio\nSELECT name, value FROM v$pgastat\nWHERE name IN ('aggregate PGA target parameter','total PGA inuse','cache hit percentage','over allocation count');"
@@ -205,7 +209,10 @@
         "2. For sequential-key indexes: consider hash-partitioning the index or using a reverse key index.",
         "3. Increase INITRANS on the hot segment to reduce buffer pin contention.",
         "4. Consider partitioning the underlying table to spread block access across partition boundaries.",
-        "5. For header block waits on sequences: increase CACHE on the sequence."
+        "5. For header block waits on sequences: increase CACHE on the sequence.",
+        "6. Check the wait event's P3 parameter (reason code) to identify the block type in contention — codes 130 and 220 are the most common; this tells you whether it's a data block, segment header, or undo header issue.",
+        "7. For hot DATA blocks specifically: rebuild the object with a higher PCTFREE to reduce the number of rows per block, and increase INITRANS/reduce PCTUSED to make the table less dense.",
+        "8. For MSSM (manual segment space management) tablespaces only: increasing the number of FREELISTs and FREELIST GROUPs on the segment can reduce contention (not applicable under ASSM, which is the default for most modern tablespaces)."
       ],
       "diagnostic_sql": [
         "-- Objects with buffer busy waits\nSELECT owner, object_name, obj_type, buffer_busy_waits\nFROM awr_seg_buff_busy_waits\nWHERE dbname = :dbname AND begin_snap BETWEEN :start_snap AND :end_snap\nORDER BY buffer_busy_waits DESC FETCH FIRST 10 ROWS ONLY;"
@@ -228,7 +235,8 @@
         "3. Increase SHARED_POOL_SIZE if shared pool is frequently flushed or fragmented.",
         "4. Check for large objects causing fragmentation: query V$DB_OBJECT_CACHE for large kept objects.",
         "5. Pin large frequently-used packages: DBMS_SHARED_POOL.KEEP('PACKAGE_NAME','P').",
-        "6. Set OPEN_CURSORS appropriately for the application's cursor usage patterns."
+        "6. Set OPEN_CURSORS appropriately for the application's cursor usage patterns.",
+        "7. Set SESSION_CACHED_CURSORS appropriately — this reduces the time sessions hold the shared pool/library cache latches by caching cursors at the session level rather than re-searching the library cache on each parse call."
       ],
       "diagnostic_sql": [
         "-- Top non-shared cursors (literal SQL)\nSELECT substr(sql_text,1,80) AS sql_text, count(*) AS versions\nFROM v$sql\nGROUP BY substr(sql_text,1,80)\nHAVING count(*) > 50\nORDER BY versions DESC FETCH FIRST 20 ROWS ONLY;",
@@ -343,6 +351,137 @@
         "-- Buffer cache size and hit rate\nSELECT name, value FROM v$sysstat\nWHERE name IN ('physical reads','physical reads cache','physical reads direct','session logical reads');"
       ],
       "related_rules": ["SGA_001", "WAIT_001"]
+    },
+
+    {
+      "rule_id": "WAIT_016",
+      "category": "wait",
+      "event_pattern": "latch: cache buffers chains",
+      "condition": "pct_db_time > 2 OR avg_wait_ms > 5",
+      "severity": "high",
+      "oracle_versions": ["19c", "21c"],
+      "title": "Cache Buffers Chains Latch Contention — Hot Block",
+      "root_cause": "This latch is acquired when searching for data blocks in the buffer cache — the cache is a chain of blocks, and each chain is protected by a child latch while being scanned. Contention almost always means a hot block: multiple sessions repeatedly accessing one or more blocks protected by the same child latch, typically driven by SQL with high BUFFER_GETS (logical reads) per execution, or multiple concurrent sessions running the same inefficient SQL against the same data. The wait time itself is an effect, not the cause — the underlying cause is too many block gets (excessive logical I/O).",
+      "resolution_steps": [
+        "1. Identify the SQL with the highest BUFFER_GETS per execution — that logical I/O rate is what's driving the latch contention, not the latch itself.",
+        "2. Tune that SQL to reduce logical I/O (better access path, selective index, avoid unnecessary full scans).",
+        "3. If it's a genuine hot block (not a bad plan): export the table, increase PCTFREE significantly, and re-import — this spreads rows over more blocks at the cost of extra storage and slower full scans.",
+        "4. For hot index blocks: rebuild the index with a higher PCTFREE (note this increases index height/size).",
+        "5. Consider moving the hot object to a tablespace with a smaller block size (e.g. 8K instead of 16K) — reduces rows per block, at the cost of slightly worse full-scan efficiency.",
+        "6. Check _DB_BLOCK_HASH_LATCHES (default ~1024) only as a last resort with Oracle Support guidance — this is a hidden parameter."
+      ],
+      "diagnostic_sql": [
+        "-- SQL with the highest buffer gets per execution (the real driver of this latch)\nSELECT sql_id, executions, buffer_gets, buffer_gets/NULLIF(executions,0) AS gets_per_exec\nFROM v$sql\nWHERE executions > 0\nORDER BY gets_per_exec DESC FETCH FIRST 15 ROWS ONLY;"
+      ],
+      "related_rules": ["WAIT_017", "SQL_002", "WAIT_009"]
+    },
+
+    {
+      "rule_id": "WAIT_017",
+      "category": "wait",
+      "event_pattern": "latch: cache buffers lru chain",
+      "condition": "pct_db_time > 2 OR avg_wait_ms > 5",
+      "severity": "medium",
+      "oracle_versions": ["19c", "21c"],
+      "title": "Cache Buffers LRU Chain Latch Contention",
+      "root_cause": "This latch is acquired when introducing a new block into the buffer cache or scanning the LRU chain to write dirty blocks back to disk. Heavy contention is symptomatic of intense buffer cache churn caused by inefficient SQL — statements that repeatedly scan large unselective indexes or perform full table scans are the usual culprits, since each new block read forces LRU chain manipulation.",
+      "resolution_steps": [
+        "1. Identify and tune the SQL driving the heaviest logical/physical I/O — this is a downstream symptom of inefficient access paths, not a latch-level problem to fix directly.",
+        "2. Implement multiple buffer pools (KEEP/RECYCLE) to isolate hot, frequently-reused objects from large scan traffic.",
+        "3. Consider increasing DB_BLOCK_LRU_LATCHES only if default sizing is confirmed inadequate — the default is sufficient for most systems.",
+        "4. Increasing the buffer cache size can reduce contention by lowering the rate at which new blocks must be introduced.",
+        "5. Look specifically for large unselective index range scans and full table scans in the top SQL by logical reads."
+      ],
+      "diagnostic_sql": [
+        "-- SQL with highest physical + logical reads (LRU chain churn drivers)\nSELECT sql_id, executions, buffer_gets, disk_reads\nFROM v$sql\nORDER BY disk_reads DESC FETCH FIRST 15 ROWS ONLY;"
+      ],
+      "related_rules": ["WAIT_016", "WAIT_002", "SGA_001"]
+    },
+
+    {
+      "rule_id": "WAIT_018",
+      "category": "wait",
+      "event_pattern": "direct path write",
+      "condition": "pct_db_time > 5",
+      "severity": "medium",
+      "oracle_versions": ["19c", "21c"],
+      "title": "Direct Path Write Waits — PGA-to-Disk I/O Bypassing Buffer Cache",
+      "root_cause": "Sessions are writing directly from their PGA to data files or the temporary tablespace, bypassing the buffer cache. Typical triggers: direct-load operations (CREATE TABLE AS SELECT, direct-path INSERT), Parallel DML, and sort I/O when a sort operation doesn't fit in the PGA work area and spills to TEMP.",
+      "resolution_steps": [
+        "1. If the file involved is TEMP: check for unexpected disk sort operations — this is the most common cause.",
+        "2. Verify PGA_AGGREGATE_TARGET is sized adequately; check V$PGASTAT 'cache hit percentage' (target > 95%) to see if work areas are undersized and forcing spills.",
+        "3. Ensure DISK_ASYNCH_IO = TRUE and that OS-level asynchronous I/O is correctly configured — this mainly reduces session elapsed time rather than the wait event's own reported time, since synchronous direct I/O isn't captured in wait timings.",
+        "4. Confirm no disks backing these operations are I/O-bound (check OS-level disk queue/utilisation).",
+        "5. If driven by CTAS/direct-path load or Parallel DML as expected batch behaviour, this may be acceptable — validate against the actual workload before tuning further."
+      ],
+      "diagnostic_sql": [
+        "-- Sessions doing direct writes (temp spill vs data load)\nSELECT ss.sid, ss.value AS physical_writes_direct, s.sql_id, s.program\nFROM v$sesstat ss JOIN v$statname sn ON ss.statistic# = sn.statistic#\nJOIN v$session s ON s.sid = ss.sid\nWHERE sn.name = 'physical writes direct' AND ss.value > 0\nORDER BY ss.value DESC;"
+      ],
+      "related_rules": ["WAIT_003", "WAIT_004", "PGA_001"]
+    },
+
+    {
+      "rule_id": "WAIT_019",
+      "category": "wait",
+      "event_pattern": "free buffer waits",
+      "condition": "pct_db_time > 2",
+      "severity": "high",
+      "oracle_versions": ["19c", "21c"],
+      "title": "Free Buffer Waits — DBWR Falling Behind",
+      "root_cause": "A session needs a free buffer but none are available in the cache because too many buffers are dirty. Either the buffer cache is too small, DBWR is too slow writing modified buffers to disk, or checkpoints are happening too frequently (often due to under-sized online redo log files) — DBWR simply can't keep up with the rate dirty buffers are being produced, e.g. from large sorts or full table scans filling the cache faster than it can be flushed.",
+      "resolution_steps": [
+        "1. Increase the size of the online redo log files to reduce checkpoint frequency (checkpoints force dirty-buffer writes).",
+        "2. Consider increasing the buffer cache size in the SGA if it's undersized for the workload.",
+        "3. Ensure DISK_ASYNCH_IO = TRUE; if asynchronous I/O isn't in use, increase the number of DBWR processes or DBWR I/O slaves instead.",
+        "4. Ensure hot spots don't exist by spreading data files across disks and disk controllers.",
+        "5. Identify and, where possible, pre-sort or reorganize data-loading operations that are producing large volumes of dirty buffers in a short window."
+      ],
+      "diagnostic_sql": [
+        "-- Checkpoint and DBWR write activity\nSELECT name, value FROM v$sysstat\nWHERE name IN ('DBWR checkpoints','physical writes','free buffer requested','free buffer inspected');"
+      ],
+      "related_rules": ["SGA_001", "WAIT_006"]
+    },
+
+    {
+      "rule_id": "WAIT_020",
+      "category": "wait",
+      "event_pattern": "latch: row cache objects",
+      "condition": "pct_db_time > 1",
+      "severity": "low",
+      "oracle_versions": ["19c", "21c"],
+      "title": "Row Cache Objects Latch Contention — Data Dictionary Cache",
+      "root_cause": "This latch protects access to the cached data dictionary values (the row cache / dc_* caches) in the shared pool. Contention here is uncommon and is usually a symptom of an undersized shared pool, or of excessive DDL / dictionary lookups (e.g. a very high number of indexes on tables with heavy insert activity, each requiring dictionary cache access).",
+      "resolution_steps": [
+        "1. Increase SHARED_POOL_SIZE — a well-sized library cache usually keeps the data dictionary cache properly sized too, since the two are tuned together.",
+        "2. Use locally managed tablespaces for application objects, especially indexes.",
+        "3. Review the logical design for tables with heavy insert activity — merging or reducing the number of indexes lowers dictionary cache pressure from index maintenance.",
+        "4. Check for unusually frequent DDL operations (dynamic object creation/drop) as a possible driver."
+      ],
+      "diagnostic_sql": [
+        "-- Data dictionary cache hit ratio by cache type\nSELECT parameter, gets, getmisses,\n       ROUND((1 - getmisses/NULLIF(gets,0)) * 100, 2) AS hit_pct\nFROM v$rowcache\nWHERE gets > 0\nORDER BY getmisses DESC FETCH FIRST 15 ROWS ONLY;"
+      ],
+      "related_rules": ["WAIT_011", "SGA_002"]
+    },
+
+    {
+      "rule_id": "WAIT_021",
+      "category": "wait",
+      "event_pattern": "enq: TM - contention",
+      "condition": "pct_db_time > 2 OR avg_wait_ms > 10",
+      "severity": "high",
+      "oracle_versions": ["19c", "21c"],
+      "title": "TM Enqueue Contention — Unindexed Foreign Keys",
+      "root_cause": "TM (DML) enqueue contention is generally an application/schema design issue — the single most common cause by far is an UNINDEXED foreign key column. When a parent row is updated or deleted, Oracle must lock the entire child table (not just matching rows) if the referencing foreign key column has no index, causing severe serialization under concurrent DML. This is distinct from TX row-lock contention (WAIT_007), which blocks on specific rows rather than the whole table.",
+      "resolution_steps": [
+        "1. Identify unindexed foreign key constraints using the diagnostic query below — this is almost always the root cause.",
+        "2. Create an index on every foreign key column found unindexed.",
+        "3. If FK indexing isn't feasible short-term, reduce concurrent DML against the affected parent/child tables during peak windows as a stopgap.",
+        "4. Confirm the fix by checking that TM enqueue waits drop in the next AWR snapshot after indexing."
+      ],
+      "diagnostic_sql": [
+        "-- Classic \"unindexed foreign keys\" check\nSELECT c.table_name, c.constraint_name, cc.column_name\nFROM user_constraints c\nJOIN user_cons_columns cc ON c.constraint_name = cc.constraint_name\nWHERE c.constraint_type = 'R'\n  AND NOT EXISTS (\n    SELECT 1 FROM user_ind_columns ic\n    WHERE ic.table_name = c.table_name\n      AND ic.column_name = cc.column_name\n      AND ic.column_position = cc.position\n  )\nORDER BY c.table_name;"
+      ],
+      "related_rules": ["WAIT_007", "WAIT_008"]
     },
 
     // ═══════════════════════════════════════════════════════
