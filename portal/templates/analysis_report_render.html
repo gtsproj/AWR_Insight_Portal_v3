@@ -1326,7 +1326,19 @@ async function downloadPDF(){
               '&instance=' + encodeURIComponent(_instance) +
               '&snap_ids=' + encodeURIComponent(_snapIds);
     var r = await fetch(url);
-    if (!r.ok) throw new Error('Server returned ' + r.status);
+    if (!r.ok) {
+      // Read the actual server error detail (e.g. the real Playwright
+      // exception text) instead of discarding it — a silent fallback here
+      // previously meant "still needs rotation, no change" was genuinely
+      // ambiguous: was the new route never reached, or did it run and
+      // fail? Surfacing the real reason removes that ambiguity outright.
+      var detail = 'HTTP ' + r.status;
+      try {
+        var body = await r.json();
+        if (body && body.detail) detail = body.detail;
+      } catch (_) { /* response wasn't JSON — keep the status-only detail */ }
+      throw new Error(detail);
+    }
     var blob = await r.blob();
     var a = document.createElement('a');
     var blobUrl = URL.createObjectURL(blob);
@@ -1338,9 +1350,17 @@ async function downloadPDF(){
     setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 5000);
   } catch (e) {
     // Fallback to the browser's own Print dialog if server-side export
-    // isn't available (e.g. Playwright not yet installed on this
-    // deployment) — degrades gracefully instead of leaving no PDF option.
+    // isn't available — degrades gracefully instead of leaving no PDF
+    // option at all. But made VISIBLE (not just console.warn) so this
+    // never again looks like "the fix didn't apply" when it's actually
+    // "the fix ran, hit a real error, and quietly reverted" — those look
+    // identical to the end user otherwise, which is exactly what made the
+    // 2026-08-19 rotation report hard to diagnose the first time around.
     console.warn('Server-side PDF export failed, falling back to browser print:', e);
+    alert('Server-side PDF export failed, falling back to your browser\'s Print '
+        + 'dialog (which may still need manual rotation for landscape tables):\n\n'
+        + e.message
+        + '\n\nPlease share this exact message so the server-side export can be fixed.');
     var orig = document.title;
     document.title = _pdfName;
     window.print();

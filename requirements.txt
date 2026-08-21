@@ -54,4 +54,26 @@ paramiko>=3.0,<4.0
 # If this isn't installed, the Download PDF button falls back to the
 # browser's own Print dialog (window.print()) automatically — the rest
 # of the portal is unaffected either way.
+#
+# WINDOWS SERVICE NOTE: by default `playwright install` downloads the
+# browser into the INTERACTIVE user's profile
+# (C:\Users\<you>\AppData\Local\ms-playwright\...). If AWRPortal runs as
+# an NSSM Windows service under a DIFFERENT identity (commonly
+# LocalSystem), that service process looks in ITS OWN profile for the
+# browser and won't find it there — Playwright then fails to launch, and
+# the Download PDF button silently falls back to the old Print-dialog
+# behaviour (still needing manual rotation), which is exactly the
+# confusing "installed it but nothing changed" symptom reported
+# 2026-08-19. To make the install location independent of which
+# account runs it, set this BEFORE running `playwright install
+# chromium` (so it installs inside the playwright package's own
+# directory instead of a user profile), then restart the AWRPortal
+# service so it picks up the same value:
+#   set PLAYWRIGHT_BROWSERS_PATH=0
+#   playwright install chromium
+# For this to also apply to the service process itself (not just the
+# terminal session used to install), set PLAYWRIGHT_BROWSERS_PATH=0 as
+# a SYSTEM (machine-level, not just user) environment variable via
+# Windows System Properties > Environment Variables, so every process
+# — interactive terminal or NSSM service — sees the same value.
 playwright>=1.40,<2.0
