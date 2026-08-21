@@ -1310,6 +1310,15 @@ var _pdfName  = "{{ pdf_filename | e }}";
 var _dbname   = "{{ dbname | e }}";
 var _instance = "{{ instance | e }}";
 var _snapIds  = "{{ snap_id_list | join(',') }}";
+// Absolute base URL, baked in at render time by the server (which knows
+// its own address) rather than derived client-side from window.location.
+// Necessary because this report is loaded into an <iframe> via a blob:
+// URL (see analysis_report.html's arGenerate()) -- relative fetch() calls
+// from inside a document loaded via blob: don't reliably resolve against
+// the real page origin (confirmed 2026-08-19: "Failed to parse URL from
+// /api/analysis-report/pdf?..." -- the blob: document has no conventional
+// authority component for the browser to resolve a relative path against).
+var _apiBase  = "{{ request.base_url | string | e }}".replace(/\/$/, '');
 
 async function downloadPDF(){
   var btn = document.querySelector('.pdf-btn');
@@ -1322,7 +1331,7 @@ async function downloadPDF(){
     // on the OS print driver in use. This replaced window.print() 2026-08-19
     // after confirming the CSS-only @page{landscape} approach still needed
     // a manual rotation on Ganesh's setup — see /api/analysis-report/pdf.
-    var url = '/api/analysis-report/pdf?dbname=' + encodeURIComponent(_dbname) +
+    var url = _apiBase + '/api/analysis-report/pdf?dbname=' + encodeURIComponent(_dbname) +
               '&instance=' + encodeURIComponent(_instance) +
               '&snap_ids=' + encodeURIComponent(_snapIds);
     var r = await fetch(url);
