@@ -43,3 +43,15 @@ paramiko>=3.0,<4.0
 
 # ── Optional: Anthropic cloud AI ──────────────────────────────────────
 # anthropic>=0.20,<1.0
+
+# ── Analysis Report server-side PDF export ─────────────────────────────
+# Used only by /api/analysis-report/pdf (headless Chromium PDF export —
+# replaces relying on the browser's own Print dialog, whose orientation
+# behaviour proved unreliable across different OS print drivers). The
+# pip package alone does NOT include the browser binary — after
+# installing, also run:
+#   playwright install chromium
+# If this isn't installed, the Download PDF button falls back to the
+# browser's own Print dialog (window.print()) automatically — the rest
+# of the portal is unaffected either way.
+playwright>=1.40,<2.0

@@ -1937,6 +1937,91 @@ async def api_analysis_report_generate(request: Request, dbname: str = "",
     return templates.TemplateResponse(request, "analysis_report_render.html", context=ctx)
 
 
+@app.get("/api/analysis-report/pdf")
+async def api_analysis_report_pdf(request: Request, dbname: str = "",
+                                   instance: str = "", snap_ids: str = ""):
+    """Server-side PDF export of the Analysis Report using a headless
+    Chromium (Playwright) instead of relying on the browser's own Print
+    dialog / window.print().
+
+    Why this exists (added 2026-08-19): the report's CSS sets
+    @page{size:A4 landscape}, which is only a *hint* the browser's print
+    pipeline may or may not fully honour — Ganesh confirmed that even
+    with that CSS in place, the PDF produced via window.print() still
+    needed a manual 90-degree rotation to view upright. There is no way
+    for a web page to force print orientation deterministically through
+    an OS-level print driver (e.g. "Microsoft Print to PDF") — that
+    setting lives outside the page entirely. Playwright's
+    page.pdf(landscape=True) is an explicit API parameter passed straight
+    to Chromium's own PDF engine, with no OS driver in the loop, so it
+    removes that unreliable link from the chain.
+
+    Requires: pip install playwright && playwright install chromium
+    (the pip package alone does not download the browser binary).
+    Falls back to a clear 500 error (caught client-side by
+    downloadPDF()'s fallback to window.print()) if either step wasn't
+    done on this deployment, rather than failing silently.
+    """
+    if not dbname or not instance or not snap_ids:
+        raise HTTPException(400, "dbname, instance and snap_ids are required")
+    try:
+        ids = [int(s) for s in snap_ids.split(",") if s.strip()]
+    except ValueError:
+        raise HTTPException(400, "snap_ids must be a comma-separated list of integers")
+    if not ids:
+        raise HTTPException(400, "At least one snapshot id is required")
+
+    from modules.analysis_report_generator import build_report_context
+    try:
+        ctx = build_report_context(dbname, instance, ids)
+    except Exception as e:
+        logger.error(f"analysis_report PDF generate failed: {e}")
+        raise HTTPException(500, f"Failed to generate report: {e}")
+
+    ctx["exadata_enabled"] = EXADATA_FEATURE_ENABLED
+    html = templates.env.get_template("analysis_report_render.html").render(**ctx)
+
+    try:
+        from playwright.async_api import async_playwright
+    except ImportError:
+        raise HTTPException(
+            500, "PDF export requires the 'playwright' package and its browser "
+                 "binary on this server. Run: pip install playwright  then  "
+                 "playwright install chromium")
+
+    try:
+        async with async_playwright() as pw:
+            browser = await pw.chromium.launch()
+            try:
+                page = await browser.new_page()
+                await page.set_content(html, wait_until="networkidle")
+                # Chart.js draws via requestAnimationFrame after the page's
+                # own scripts run — networkidle alone can still race ahead
+                # of the actual canvas paint, leaving blank charts in the
+                # PDF. A short fixed wait is simpler and more reliable here
+                # than instrumenting every chart with a JS-side "done"
+                # signal for a report that's generated on demand, not at
+                # high frequency.
+                await page.wait_for_timeout(600)
+                pdf_bytes = await page.pdf(
+                    format="A4", landscape=True, print_background=True,
+                    margin={"top": "10mm", "bottom": "10mm",
+                            "left": "8mm", "right": "8mm"},
+                )
+            finally:
+                await browser.close()
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Playwright PDF generation failed for {dbname}/{instance}: {e}")
+        raise HTTPException(500, f"PDF generation failed: {e}")
+
+    filename = (ctx.get("pdf_filename") or "AWR_Analysis_Report") + ".pdf"
+    return Response(
+        content=pdf_bytes, media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'})
+
+
 @app.get("/api/backup/history")
 async def api_backup_history(request: Request):
     """Return recent backup/restore run history for the Settings UI."""

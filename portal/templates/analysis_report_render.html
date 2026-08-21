@@ -1305,15 +1305,49 @@ tr:nth-child(even) td{background:#FAFBFE}
 </div>
 
 <script>
-// ── PDF filename ────────────────────────────────────────────
-var _pdfName = "{{ pdf_filename | e }}";
-function downloadPDF(){
-  var orig = document.title;
-  document.title = _pdfName;
-  // Tip: in Chrome print dialog, tick "Background graphics" to preserve
-  // the dark header and conclusion panel colours in the saved PDF.
-  window.print();
-  setTimeout(function(){ document.title = orig; }, 3000);
+// ── PDF filename / identity ──────────────────────────────────
+var _pdfName  = "{{ pdf_filename | e }}";
+var _dbname   = "{{ dbname | e }}";
+var _instance = "{{ instance | e }}";
+var _snapIds  = "{{ snap_id_list | join(',') }}";
+
+async function downloadPDF(){
+  var btn = document.querySelector('.pdf-btn');
+  var origBtnText = btn ? btn.textContent : null;
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Generating PDF…'; }
+  try {
+    // Server-side PDF export (Playwright/headless Chromium) — landscape is
+    // set as an explicit, deterministic API parameter here, not just a CSS
+    // hint the browser's own Print dialog may or may not honour depending
+    // on the OS print driver in use. This replaced window.print() 2026-08-19
+    // after confirming the CSS-only @page{landscape} approach still needed
+    // a manual rotation on Ganesh's setup — see /api/analysis-report/pdf.
+    var url = '/api/analysis-report/pdf?dbname=' + encodeURIComponent(_dbname) +
+              '&instance=' + encodeURIComponent(_instance) +
+              '&snap_ids=' + encodeURIComponent(_snapIds);
+    var r = await fetch(url);
+    if (!r.ok) throw new Error('Server returned ' + r.status);
+    var blob = await r.blob();
+    var a = document.createElement('a');
+    var blobUrl = URL.createObjectURL(blob);
+    a.href = blobUrl;
+    a.download = _pdfName + '.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 5000);
+  } catch (e) {
+    // Fallback to the browser's own Print dialog if server-side export
+    // isn't available (e.g. Playwright not yet installed on this
+    // deployment) — degrades gracefully instead of leaving no PDF option.
+    console.warn('Server-side PDF export failed, falling back to browser print:', e);
+    var orig = document.title;
+    document.title = _pdfName;
+    window.print();
+    setTimeout(function(){ document.title = orig; }, 3000);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = origBtnText; }
+  }
 }
 
 // ── Chart defaults ──────────────────────────────────────────
