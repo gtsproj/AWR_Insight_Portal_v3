@@ -1115,6 +1115,27 @@ CREATE TABLE IF NOT EXISTS awr_instance_efficiency (
     CONSTRAINT uq_awr_instance_eff UNIQUE (dbname, instance, begin_snap, row_hash)
 ) TABLESPACE awrparser;
 
+-- Host CPU / Instance CPU summary tables (modules/host_instance_cpu_parser.py).
+-- Same metric/value shape as awr_instance_efficiency above, with an added
+-- `section` column ('host' | 'instance') since the AWR report has two
+-- distinct single-row tables feeding this one table.
+CREATE TABLE IF NOT EXISTS awr_host_instance_cpu (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    instnum                        INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    section                        TEXT NOT NULL,      -- 'host' or 'instance'
+    metric                         TEXT,
+    value                          NUMERIC,
+    begin_snap                     INTEGER,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    pdb_name                       TEXT,
+    CONSTRAINT awr_host_instance_cpu_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_awr_host_instance_cpu UNIQUE (dbname, instance, begin_snap, row_hash)
+) TABLESPACE awrparser;
+
 -- Table: awr_io_profile
 CREATE TABLE IF NOT EXISTS awr_io_profile (
     id                             SERIAL,
