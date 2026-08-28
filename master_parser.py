@@ -22,6 +22,9 @@ sys.path.insert(0, os.path.join(_PROJECT_ROOT, "common"))
 from logger_utils import get_logger
 from db import get_db_connection
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "common"))
+from utils import extract_workload_repo_metadata
+
 logger = get_logger("master_parser")
 
 # ── paths ──────────────────────────────────────────────────────────────
@@ -151,48 +154,62 @@ def _refresh_materialized_views():
 # ── snap range lookup ───────────────────────────────────────────────────
 def _get_snap_range(db_name: str, filepath: str):
     """
-    Return (begin_snap, end_snap) for the just-parsed file.
+    Return (begin_snap, end_snap, instance) for the just-parsed file.
     Queries awr_load_profile for the most recent two snaps for this DB
     whose snap_time was recorded in the last 10 minutes (i.e. just inserted).
     Falls back to the global min/max for this DB if nothing recent found.
+
+    instance is read from the same just-inserted rows (awr_load_profile
+    already has it populated by the parser modules that ran immediately
+    before this) rather than re-parsing the HTML file separately. On a
+    RAC file this is the instance the just-parsed file belongs to, which
+    _run_recommendations() below needs so it can scope the rule engine
+    to this instance instead of pooling every instance sharing db_name.
     """
     try:
         conn = get_db_connection()
         with conn.cursor() as cur:
-            # Most recently inserted snap pair for this DB
+            # Most recently inserted snap pair (+ instance) for this DB
             cur.execute("""
-                SELECT MIN(begin_snap), MAX(begin_snap)
+                SELECT MIN(begin_snap), MAX(begin_snap), MAX(instance)
                 FROM awr_load_profile
                 WHERE dbname = %s
                   AND snap_time >= NOW() - INTERVAL '10 minutes'
             """, (db_name,))
             row = cur.fetchone()
             if row and row[0] is not None:
-                return int(row[0]), int(row[1])
+                return int(row[0]), int(row[1]), row[2]
 
             # Fallback: last two distinct snaps for this DB
             cur.execute("""
-                SELECT begin_snap FROM awr_load_profile
+                SELECT begin_snap, instance FROM awr_load_profile
                 WHERE dbname = %s
                 ORDER BY begin_snap DESC LIMIT 2
             """, (db_name,))
             rows = cur.fetchall()
             if rows:
                 snaps = sorted([r[0] for r in rows])
-                return int(snaps[0]), int(snaps[-1])
+                inst  = rows[0][1]
+                return int(snaps[0]), int(snaps[-1]), inst
         conn.close()
     except Exception as e:
         logger.warning(f"Could not resolve snap range for {db_name}: {e}")
-    return None, None
+    return None, None, None
 
 
 # ── auto recommendation engine ──────────────────────────────────────────
-def _run_recommendations(db_name: str, begin_snap: int, end_snap: int):
+def _run_recommendations(db_name: str, begin_snap: int, end_snap: int,
+                          instance: str = None):
     """
     Auto-trigger recommendation_engine for the just-parsed snap range.
     Best-effort — failure is logged but does not abort the parse.
+    instance scopes the rule engine to the instance that was actually
+    just parsed (RAC-safe) rather than pooling every instance sharing
+    db_name -- see the RAC data-loss/blending fix in
+    recommendation_engine.py for the full story.
     """
-    logger.info(f"🤖 Generating recommendations: {db_name} snaps {begin_snap}–{end_snap}")
+    logger.info(f"🤖 Generating recommendations: {db_name} ({instance or 'no instance'}) "
+                f"snaps {begin_snap}–{end_snap}")
     try:
         rec_path = os.path.join(_PROJECT_ROOT, "recommendation_engine.py")
         if not os.path.exists(rec_path):
@@ -206,11 +223,12 @@ def _run_recommendations(db_name: str, begin_snap: int, end_snap: int):
         # Prefer a callable run() / generate() / main() interface
         if hasattr(module, "run"):
             module.run(db_name=db_name, start_snap=begin_snap,
-                       end_snap=end_snap, store=True)
+                       end_snap=end_snap, store=True, instance=instance)
         elif hasattr(module, "generate_recommendations"):
             module.generate_recommendations(db_name=db_name,
                                              start_snap=begin_snap,
-                                             end_snap=end_snap, store=True)
+                                             end_snap=end_snap, store=True,
+                                             instance=instance)
         elif hasattr(module, "main"):
             # Patch sys.argv so argparse inside main() picks up the right args
             _orig_argv = sys.argv[:]
@@ -221,6 +239,8 @@ def _run_recommendations(db_name: str, begin_snap: int, end_snap: int):
                 "--end",   str(end_snap),
                 "--store",
             ]
+            if instance:
+                sys.argv += ["--instance", instance]
             try:
                 module.main()
             finally:
@@ -308,6 +328,28 @@ def _archive_file(filepath: str, db_name: str) -> None:
 
 
 # ── DB name from HTML title ─────────────────────────────────────────────
+def _get_instance_from_html(filepath: str):
+    """
+    Authoritative instance extraction for the file actually being
+    processed (unlike _get_snap_range's DB-state inference below, this
+    can't be confused by a RAC batch job parsing instance1 then
+    instance2 back-to-back within the same 10-minute window — it reads
+    the instance straight out of this specific file).
+    Returns None on any failure; callers already treat that as
+    "instance unknown, evaluate/store un-scoped" the same way they did
+    before this fix existed.
+    """
+    try:
+        from bs4 import BeautifulSoup
+        with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+            soup = BeautifulSoup(f, "lxml")
+        metadata = extract_workload_repo_metadata(soup)
+        return metadata.get("instance") if metadata else None
+    except Exception as e:
+        logger.warning(f"Could not extract instance from {filepath}: {e}")
+        return None
+
+
 def _db_name_from_html(filepath: str) -> str:
     import re
     try:
@@ -353,11 +395,13 @@ def process_file(filepath: str, archive: bool = False) -> bool:
         return False
 
     db_name = _db_name_from_html(filepath)
+    instance = _get_instance_from_html(filepath)
     fname   = os.path.basename(filepath)
 
     logger.info("=" * 60)
     logger.info(f"📂 Processing: {fname}")
     logger.info(f"   DB Name  : {db_name}")
+    logger.info(f"   Instance : {instance or '(unknown)'}")
     logger.info(f"   Full path: {filepath}")
 
     module_files = sorted([
@@ -433,9 +477,12 @@ def process_file(filepath: str, archive: bool = False) -> bool:
     _refresh_materialized_views()
 
     # ── Auto recommendations + anomaly detection ─────────────────────────
-    begin_snap, end_snap = _get_snap_range(db_name, filepath)
+    begin_snap, end_snap, snap_instance = _get_snap_range(db_name, filepath)
+    # Prefer the instance read directly from this file; fall back to the
+    # DB-state inference only if that extraction failed for some reason.
+    effective_instance = instance or snap_instance
     if begin_snap is not None and end_snap is not None:
-        _run_recommendations(db_name, begin_snap, end_snap)
+        _run_recommendations(db_name, begin_snap, end_snap, effective_instance)
         _run_anomaly_detection(db_name, begin_snap, end_snap)
     else:
         logger.warning(f"⚠ Could not resolve snap range for {db_name} — skipping recommendations/anomalies")

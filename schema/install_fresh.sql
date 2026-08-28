@@ -1379,6 +1379,7 @@ CREATE TABLE IF NOT EXISTS awr_recommendation_rules (
 CREATE TABLE IF NOT EXISTS awr_recommendations (
     id                             SERIAL,
     dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL DEFAULT '',
     begin_snap                     INTEGER NOT NULL,
     end_snap                       INTEGER NOT NULL,
     rule_id                        TEXT NOT NULL,
@@ -1391,7 +1392,7 @@ CREATE TABLE IF NOT EXISTS awr_recommendations (
     ai_summary                     TEXT,
     created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT awr_recommendations_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_awr_rec UNIQUE (dbname, begin_snap, end_snap, rule_id)
+    CONSTRAINT uq_awr_rec UNIQUE (dbname, instance, begin_snap, end_snap, rule_id)
 ) TABLESPACE awrparser;
 
 -- Table: awr_remote_db_paths

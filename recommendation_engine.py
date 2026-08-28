@@ -70,8 +70,16 @@ def _load_rules() -> list:
 
 
 # ── metric fetchers ───────────────────────────────────────────────────
-def _fetch_wait_metrics(conn, dbname: str, begin_snap: int, end_snap: int) -> list:
-    """Fetch foreground wait event metrics for the snap range."""
+def _fetch_wait_metrics(conn, dbname: str, begin_snap: int, end_snap: int,
+                         instance: Optional[str] = None) -> list:
+    """Fetch foreground wait event metrics for the snap range.
+
+    instance is optional for backward compatibility with any other
+    caller, but RecommendationEngine.evaluate() below always passes it
+    now -- on RAC, omitting this pools wait events across every
+    instance sharing dbname/snap range, which blends genuinely
+    different instances' workloads into one evaluation.
+    """
     sql = """
         SELECT event AS event_name, avg(pct_db_time) AS pct_db_time,
                avg(avg_wait_ms) AS avg_wait_ms,
@@ -79,13 +87,19 @@ def _fetch_wait_metrics(conn, dbname: str, begin_snap: int, end_snap: int) -> li
         FROM awr_foreground_wait_events
         WHERE dbname = %s
           AND begin_snap BETWEEN %s AND %s
+    """
+    params = [dbname, begin_snap, end_snap]
+    if instance:
+        sql += " AND instance = %s"
+        params.append(instance)
+    sql += """
         GROUP BY event
         ORDER BY pct_db_time DESC NULLS LAST
         LIMIT 30
     """
     try:
         with conn.cursor() as cur:
-            cur.execute(sql, (dbname, begin_snap, end_snap))
+            cur.execute(sql, tuple(params))
             cols = [d[0] for d in cur.description]
             return [dict(zip(cols, row)) for row in cur.fetchall()]
     except Exception as e:
@@ -226,18 +240,23 @@ def _fetch_sql_metrics(conn, dbname: str, begin_snap: int, end_snap: int,
     return results
 
 
-def _fetch_instance_efficiency(conn, dbname: str, begin_snap: int, end_snap: int) -> dict:
+def _fetch_instance_efficiency(conn, dbname: str, begin_snap: int, end_snap: int,
+                                instance: Optional[str] = None) -> dict:
     """Fetch instance efficiency ratios."""
     sql = """
         SELECT metric, avg(value) AS value
         FROM awr_instance_efficiency
         WHERE dbname = %s AND begin_snap BETWEEN %s AND %s
-        GROUP BY metric
     """
+    params = [dbname, begin_snap, end_snap]
+    if instance:
+        sql += " AND instance = %s"
+        params.append(instance)
+    sql += " GROUP BY metric"
     result = {}
     try:
         with conn.cursor() as cur:
-            cur.execute(sql, (dbname, begin_snap, end_snap))
+            cur.execute(sql, tuple(params))
             for row in cur.fetchall():
                 result[row[0]] = row[1]
     except Exception as e:
@@ -296,7 +315,8 @@ def _fetch_object_metadata(conn, dbname: str, owner_object_pairs: list) -> dict:
     return result
 
 
-def _fetch_segment_metrics(conn, dbname: str, begin_snap: int, end_snap: int) -> dict:
+def _fetch_segment_metrics(conn, dbname: str, begin_snap: int, end_snap: int,
+                            instance: Optional[str] = None) -> dict:
     """Fetch top segment metrics across all segment tables."""
     metrics = {}
     tables = {
@@ -316,12 +336,18 @@ def _fetch_segment_metrics(conn, dbname: str, begin_snap: int, end_snap: int) ->
                        AVG({pct_col}) AS pct_value
                 FROM {table}
                 WHERE dbname = %s AND begin_snap BETWEEN %s AND %s
+            """
+            params = [dbname, begin_snap, end_snap]
+            if instance:
+                sql += " AND instance = %s"
+                params.append(instance)
+            sql += """
                 GROUP BY owner, object_name, obj_type
                 ORDER BY metric_value DESC NULLS LAST
                 LIMIT 5
             """
             with conn.cursor() as cur:
-                cur.execute(sql, (dbname, begin_snap, end_snap))
+                cur.execute(sql, tuple(params))
                 cols = [d[0] for d in cur.description]
                 metrics[key] = [dict(zip(cols, row)) for row in cur.fetchall()]
         except Exception as e:
@@ -331,11 +357,20 @@ def _fetch_segment_metrics(conn, dbname: str, begin_snap: int, end_snap: int) ->
 
 
 # ── rule evaluator ────────────────────────────────────────────────────
-def _fetch_exadata_metrics(conn, dbname: str, begin_snap: int, end_snap: int) -> dict:
+def _fetch_exadata_metrics(conn, dbname: str, begin_snap: int, end_snap: int,
+                            instance: Optional[str] = None) -> dict:
     """
     Fetch Exadata-specific metrics for the snap range.
     Returns a dict with keys: fc_config, perf_summary, smart_io, fc_reads.
     Returns empty structures if no Exadata data is present (non-Exadata AWR).
+
+    Note: Exadata storage cells are shared infrastructure serving every
+    instance/node connected to the rack, so "per-instance" is a softer
+    concept here than for wait events/segments -- each row is still
+    attributed to whichever instance's AWR report captured it, so the
+    instance filter is applied the same way as the other fetchers for
+    consistency, but this is lower-priority given Exadata support is
+    currently on hold pending real AWR source data.
     """
     metrics = {
         "fc_config":    [],   # list of {cell_name, fc_status, is_flushing, fc_size_gb}
@@ -344,16 +379,19 @@ def _fetch_exadata_metrics(conn, dbname: str, begin_snap: int, end_snap: int) ->
         "fc_reads":     [],   # list of {cell_name, io_type, hit_pct, req_per_sec, ...}
     }
 
+    inst_clause = " AND instance = %s" if instance else ""
+
     try:
         cur = conn.cursor()
 
         # Flash Cache Configuration — detect flushing cells
-        cur.execute("""
+        params = [dbname, begin_snap, end_snap] + ([instance] if instance else [])
+        cur.execute(f"""
             SELECT cell_name, fc_status, is_flushing, fc_size_gb, fl_size_mb
             FROM awr_exadata_fc_config
-            WHERE dbname = %s AND begin_snap BETWEEN %s AND %s
+            WHERE dbname = %s AND begin_snap BETWEEN %s AND %s{inst_clause}
             ORDER BY cell_name
-        """, (dbname, begin_snap, end_snap))
+        """, tuple(params))
         metrics["fc_config"] = [
             {"cell_name": r[0], "fc_status": r[1], "is_flushing": r[2],
              "fc_size_gb": r[3], "fl_size_mb": r[4]}
@@ -361,15 +399,15 @@ def _fetch_exadata_metrics(conn, dbname: str, begin_snap: int, end_snap: int) ->
         ]
 
         # Performance Summary — system-wide cache efficiency
-        cur.execute("""
+        cur.execute(f"""
             SELECT fc_pct_of_db_ios, xrmem_pct_of_db_ios, rdma_pct_of_db_ios,
                    fc_hit_oltp_pct, fc_hit_scan_pct,
                    fc_read_skip_count, fc_write_skip_count, fc_read_miss_count
             FROM awr_exadata_perf_summary
-            WHERE dbname = %s AND begin_snap BETWEEN %s AND %s
+            WHERE dbname = %s AND begin_snap BETWEEN %s AND %s{inst_clause}
             ORDER BY begin_snap DESC
             LIMIT 1
-        """, (dbname, begin_snap, end_snap))
+        """, tuple(params))
         row = cur.fetchone()
         if row:
             metrics["perf_summary"] = {
@@ -384,14 +422,14 @@ def _fetch_exadata_metrics(conn, dbname: str, begin_snap: int, end_snap: int) ->
             }
 
         # Smart IO — per-cell Smart Scan efficiency
-        cur.execute("""
+        cur.execute(f"""
             SELECT cell_name, eligible_mbps, si_savings_mbps,
                    flash_read_mbps, disk_read_mbps,
                    passthru_mbps, passthru_pct, disk_pct
             FROM awr_exadata_smart_io
-            WHERE dbname = %s AND begin_snap BETWEEN %s AND %s
+            WHERE dbname = %s AND begin_snap BETWEEN %s AND %s{inst_clause}
             ORDER BY cell_name
-        """, (dbname, begin_snap, end_snap))
+        """, tuple(params))
         metrics["smart_io"] = [
             {"cell_name":     r[0],
              "eligible_mbps": float(r[1] or 0),
@@ -405,12 +443,12 @@ def _fetch_exadata_metrics(conn, dbname: str, begin_snap: int, end_snap: int) ->
         ]
 
         # Flash Cache User Reads — per-cell hit% by IO type
-        cur.execute("""
+        cur.execute(f"""
             SELECT cell_name, io_type, req_per_sec, miss_per_sec, hit_pct, skip_count
             FROM awr_exadata_fc_reads
-            WHERE dbname = %s AND begin_snap BETWEEN %s AND %s
+            WHERE dbname = %s AND begin_snap BETWEEN %s AND %s{inst_clause}
             ORDER BY cell_name, io_type
-        """, (dbname, begin_snap, end_snap))
+        """, tuple(params))
         metrics["fc_reads"] = [
             {"cell_name":   r[0], "io_type":     r[1],
              "req_per_sec": float(r[2] or 0),
@@ -1481,11 +1519,11 @@ class RecommendationEngine:
 
         conn = get_db_connection()
         try:
-            wait_metrics     = _fetch_wait_metrics(conn, dbname, begin_snap, end_snap)
+            wait_metrics     = _fetch_wait_metrics(conn, dbname, begin_snap, end_snap, instance)
             sql_metrics      = _fetch_sql_metrics(conn, dbname, begin_snap, end_snap, instance)
-            efficiency       = _fetch_instance_efficiency(conn, dbname, begin_snap, end_snap)
-            seg_metrics      = _fetch_segment_metrics(conn, dbname, begin_snap, end_snap)
-            exadata_metrics  = _fetch_exadata_metrics(conn, dbname, begin_snap, end_snap)
+            efficiency       = _fetch_instance_efficiency(conn, dbname, begin_snap, end_snap, instance)
+            seg_metrics      = _fetch_segment_metrics(conn, dbname, begin_snap, end_snap, instance)
+            exadata_metrics  = _fetch_exadata_metrics(conn, dbname, begin_snap, end_snap, instance)
 
             # Build the set of (owner, object_name) pairs from all segment metric results
             # and fetch their metadata from awr_object_metadata in one pass.
@@ -1531,6 +1569,7 @@ class RecommendationEngine:
 
         result = {
             "dbname":         dbname,
+            "instance":       instance or "",
             "begin_snap":     begin_snap,
             "end_snap":       end_snap,
             "snap_range":     snap_range,
@@ -1644,11 +1683,11 @@ class RecommendationEngine:
                     f_stored = self._enrich_finding_with_metadata(f)
                     cur.execute("""
                         INSERT INTO awr_recommendations
-                            (dbname, begin_snap, end_snap, rule_id, category,
+                            (dbname, instance, begin_snap, end_snap, rule_id, category,
                              severity, title, event_or_object,
                              root_cause, resolution_json, ai_summary, created_at)
-                        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW())
-                        ON CONFLICT (dbname, begin_snap, end_snap, rule_id) DO UPDATE
+                        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW())
+                        ON CONFLICT (dbname, instance, begin_snap, end_snap, rule_id) DO UPDATE
                             SET severity       = EXCLUDED.severity,
                                 title          = EXCLUDED.title,
                                 event_or_object = EXCLUDED.event_or_object,
@@ -1656,7 +1695,8 @@ class RecommendationEngine:
                                 resolution_json = EXCLUDED.resolution_json,
                                 created_at     = NOW()
                     """, (
-                        result["dbname"], result["begin_snap"], result["end_snap"],
+                        result["dbname"], result.get("instance", ""),
+                        result["begin_snap"], result["end_snap"],
                         f_stored.get("rule_id"), f_stored.get("category"),
                         f_stored.get("severity"), f_stored.get("title"),
                         f_stored.get("event") or f_stored.get("object") or f_stored.get("sql_id") or "",
@@ -1693,12 +1733,15 @@ def main():
     p.add_argument("--db",    required=True,       help="Database name (e.g. COLDBPRD)")
     p.add_argument("--start", required=True, type=int, help="Begin snap ID")
     p.add_argument("--end",   required=True, type=int, help="End snap ID")
+    p.add_argument("--instance", required=False, default=None,
+                   help="Instance name — scopes evaluation to this instance "
+                        "(needed on RAC; omit for standalone databases)")
     p.add_argument("--store", action="store_true",  help="Persist findings to DB")
     p.add_argument("--json",  action="store_true",  help="Output JSON instead of plain text")
     args = p.parse_args()
 
     engine = RecommendationEngine()
-    result = engine.evaluate(args.db, args.start, args.end)
+    result = engine.evaluate(args.db, args.start, args.end, args.instance)
 
     if args.store:
         engine.store_recommendations(result)
