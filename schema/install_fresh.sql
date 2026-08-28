@@ -2123,12 +2123,93 @@ CREATE TABLE IF NOT EXISTS awr_undo_statistics (
     number_of_transactions         BIGINT,
     max_qry_len_s                  NUMERIC,
     max_tx_concy                   NUMERIC,
+    tun_ret_mins                   NUMERIC,     -- 'Tun Ret (mins)' -- single value per interval row
+    sto_count                      INTEGER,     -- Snapshot Too Old count (direct ORA-01555 signal)
+    oos_count                      INTEGER,     -- Out Of Space count
+    us_stolen                      BIGINT,      -- unexpired Stolen  -- retention-guarantee violations:
+    ur_released                    BIGINT,      -- unexpired Released -- Oracle reused/stole undo extents
+    uu_reused                      BIGINT,      -- unexpired reUsed   -- still inside the retention window
+    es_stolen                      BIGINT,      -- expired Stolen   -- normal, healthy reuse of extents
+    er_released                    BIGINT,      -- expired Released -- that already aged past retention
+    eu_reused                      BIGINT,      -- expired reUsed
     begin_snap                     INTEGER,
     row_hash                       CHAR(32) NOT NULL,
     created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     pdb_name                       TEXT,
     CONSTRAINT awr_undo_statistics_pkey PRIMARY KEY (id),
     CONSTRAINT uq_awr_undo_stats UNIQUE (dbname, instance, begin_snap, row_hash)
+) TABLESPACE awrparser;
+
+-- Undo Segment Summary (modules/undo_segment_summary_parser.py) -- a
+-- SEPARATE AWR section from Undo Segment Stats above: one row per
+-- undo tablespace (Undo TS#) summarizing the whole snapshot range,
+-- not one row per V$UNDOSTAT 10-minute interval. Num Undo Blocks (K)
+-- is in THOUSANDS here (per the AWR report's own column header),
+-- unlike awr_undo_statistics.num_undo_blocks which is a raw count --
+-- kept as its own column (num_undo_blocks_k) rather than normalized,
+-- so this table's values match what a DBA sees on the report page
+-- without a silent unit conversion.
+CREATE TABLE IF NOT EXISTS awr_undo_segment_summary (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    instnum                        INTEGER,
+    snap_time                      TIMESTAMP WITHOUT TIME ZONE,
+    undo_ts_num                    INTEGER,     -- 'Undo TS#'
+    num_undo_blocks_k              NUMERIC,     -- 'Num Undo Blocks (K)' -- already in thousands
+    number_of_transactions         BIGINT,
+    max_qry_len_s                  NUMERIC,
+    max_tx_concurrency              NUMERIC,     -- 'Max Tx Concurcy' (sic, per AWR's own header spelling)
+    min_tr_mins                    NUMERIC,     -- 'Min/Max TR (mins)' split into two columns
+    max_tr_mins                    NUMERIC,
+    sto_count                      INTEGER,
+    oos_count                      INTEGER,
+    us_stolen                      BIGINT,
+    ur_released                    BIGINT,
+    uu_reused                      BIGINT,
+    es_stolen                      BIGINT,
+    er_released                    BIGINT,
+    eu_reused                      BIGINT,
+    begin_snap                     INTEGER,
+    row_hash                       CHAR(32) NOT NULL,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    pdb_name                       TEXT,
+    CONSTRAINT awr_undo_segment_summary_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_awr_undo_seg_summary UNIQUE (dbname, instance, begin_snap, row_hash)
+) TABLESPACE awrparser;
+
+-- Initialization Parameters (modules/init_parameters_parser.py).
+-- IMPORTANT: this only ever captures parameters that were CHANGED
+-- during the snapshot window (Modified Parameters / Modified
+-- Multi-Valued Parameters -- that's literally what the AWR report
+-- section contains). A parameter set once at startup and never
+-- touched again (e.g. UNDO_RETENTION, typically) will NOT appear
+-- here even though it's very much in effect -- this table answers
+-- "what changed mid-window", not "what is X's current value".
+-- Initialization Parameters (modules/init_parameters_parser.py).
+-- Deliberately NOT one row per snapshot like most awr_* tables --
+-- this is a deduplicated CURRENT-STATE key-value store per
+-- (dbname, instance, parameter_name), continuously kept up to date.
+--
+-- Only rows from the AWR "Modified Parameters" section that have a
+-- populated End Value are acted on -- an End Value means the
+-- parameter actually changed during that snapshot window, which is
+-- the signal Ganesh wants recorded. Rows with no End Value (the
+-- parameter's value was in effect the whole interval, unchanged) are
+-- skipped by the parser rather than inserted -- see
+-- init_parameters_parser.py's module docstring for the trade-off
+-- this implies for long-stable parameters like UNDO_RETENTION that
+-- may rarely appear here if they're rarely modified.
+CREATE TABLE IF NOT EXISTS awr_init_parameters (
+    id                             SERIAL,
+    dbname                         TEXT NOT NULL,
+    instance                       TEXT NOT NULL,
+    parameter_name                 TEXT NOT NULL,
+    value                          TEXT,
+    last_changed_begin_snap        INTEGER,        -- snap where this value was last observed to change
+    updated_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT awr_init_parameters_pkey PRIMARY KEY (id),
+    CONSTRAINT uq_awr_init_params UNIQUE (dbname, instance, parameter_name)
 ) TABLESPACE awrparser;
 
 -- Table: awr_wait_event_master

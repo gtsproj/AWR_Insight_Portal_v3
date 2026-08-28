@@ -909,7 +909,7 @@
       "rule_id": "UNDO_002",
       "category": "undo",
       "event_pattern": "ora-01555",
-      "condition": "ora1555_count > 0",
+      "condition": "sto_count > 0",
       "severity": "critical",
       "oracle_versions": ["19c", "21c"],
       "title": "ORA-01555 Snapshot Too Old — Undo Retention Insufficient",
@@ -922,9 +922,9 @@
         "5. If using Flashback Query: increase DB_FLASHBACK_RETENTION_TARGET."
       ],
       "diagnostic_sql": [
-        "-- ORA-01555 frequency from alert log (manual review required)\n-- Check DBA_SCHEDULER_JOB_RUN_DETAILS for long-running jobs overlapping with UNDO_RETENTION\nSELECT value FROM v$parameter WHERE name = 'undo_retention';"
+        "-- ORA-01555 count is now read directly from the AWR Undo Segment Stats/Summary section's STO (Snapshot Too Old) column -- no alert-log access needed.\nSELECT value FROM v$parameter WHERE name = 'undo_retention';"
       ],
-      "related_rules": ["UNDO_001"]
+      "related_rules": ["UNDO_001", "UNDO_004"]
     },
 
     {
@@ -947,6 +947,28 @@
         "-- Undo generation from AWR\nSELECT name, value FROM v$sysstat\nWHERE name IN ('undo change vector size','transaction rollbacks','user rollbacks');"
       ],
       "related_rules": ["UNDO_001", "REDO_001", "SEG_004"]
+    },
+
+    {
+      "rule_id": "UNDO_004",
+      "category": "undo",
+      "event_pattern": "unexpired_undo_stolen_or_reused",
+      "condition": "unexpired_violations > 0",
+      "severity": "high",
+      "oracle_versions": ["19c", "21c"],
+      "title": "Unexpired Undo Extents Stolen/Reused — Retention Guarantee at Risk",
+      "root_cause": "The Undo Segment Stats uS/uU (unexpired Stolen/reUsed) counters are non-zero, meaning Oracle was forced to touch undo extents that were still inside the UNDO_RETENTION window because the undo tablespace was under space pressure. This is a leading indicator that can appear BEFORE an actual ORA-01555 (UNDO_002) fires -- the retention guarantee is already being violated even if no query has failed yet. uR (unexpired Released) is excluded from this condition: it reflects Oracle reclaiming space from COMMITTED transactions that fall within the tuned undo retention window (TUN RET (mins)) -- normal, expected behavior, not a violation. Expired stolen/released/reused (eS/eR/eU) is likewise normal, healthy space reuse.",
+      "resolution_steps": [
+        "1. Treat this as an early warning for UNDO_002 (ORA-01555) -- act before it starts firing, not after.",
+        "2. Resize the undo tablespace or enable/verify AUTOEXTEND so Oracle has room to expire extents normally instead of stealing/reusing unexpired ones.",
+        "3. Review whether UNDO_RETENTION is set higher than the tablespace can actually sustain given current undo generation (UNDO_003) -- a retention target the tablespace can't back up will always eventually force this.",
+        "4. Identify and shorten unusually long-running transactions holding undo blocks open (V$TRANSACTION, V$UNDOSTAT).",
+        "5. If RETENTION GUARANTEE is set on the tablespace, be aware this can instead cause DML failures (ORA-30036) rather than silently stealing extents -- confirm which behavior you actually want."
+      ],
+      "diagnostic_sql": [
+        "-- Undo Segment Stats/Summary already surfaces uS/uU directly on the AWR report; for live investigation:\nSELECT tablespace_name, SUM(bytes)/1048576 AS total_mb, SUM(bytes - NVL(free_space,0))/1048576 AS used_mb\nFROM dba_undo_extents GROUP BY tablespace_name;"
+      ],
+      "related_rules": ["UNDO_002", "UNDO_001", "UNDO_003"]
     },
 
     {

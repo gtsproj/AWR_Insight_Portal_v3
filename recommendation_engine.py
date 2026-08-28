@@ -264,6 +264,123 @@ def _fetch_instance_efficiency(conn, dbname: str, begin_snap: int, end_snap: int
     return result
 
 
+def _fetch_redo_generation(conn, dbname: str, begin_snap: int, end_snap: int,
+                            instance: Optional[str] = None) -> float:
+    """Average redo MB/s over the snap range, from awr_load_profile's
+    'redo size' row (bytes/s). Same source/pattern as the existing
+    Redo Log Sizing panel in analysis_report_generator.py -- reusing
+    that computation rather than inventing a second one, so the report
+    and the rule engine can never disagree about this number."""
+    sql = """
+        SELECT avg(per_sec)
+        FROM awr_load_profile
+        WHERE dbname = %s AND begin_snap BETWEEN %s AND %s
+          AND metric ILIKE %s
+    """
+    params = [dbname, begin_snap, end_snap, "%redo size%"]
+    if instance:
+        sql += " AND instance = %s"
+        params.append(instance)
+    try:
+        with conn.cursor() as cur:
+            cur.execute(sql, tuple(params))
+            row = cur.fetchone()
+            redo_bytes_ps = float(row[0]) if row and row[0] is not None else 0.0
+            return round(redo_bytes_ps / (1024 * 1024), 2)
+    except Exception as e:
+        logger.warning(f"Redo generation fetch failed: {e}")
+        return 0.0
+
+
+def _fetch_pga_advisory(conn, dbname: str, begin_snap: int, end_snap: int,
+                         instance: Optional[str] = None) -> dict:
+    """PGA cache hit % at the CURRENT actual PGA size -- i.e. the
+    awr_advisory_pga row closest to size_factor = 1.0 for this snap
+    range, not one of the hypothetical resize scenarios Oracle's
+    advisor also reports in the same table. Returns {} if no advisory
+    data was captured for this range (advisory tables are sometimes
+    empty on databases where AWR's memory advisors are disabled)."""
+    sql = """
+        SELECT estd_pga_cache_hit_pct, size_factor
+        FROM awr_advisory_pga
+        WHERE dbname = %s AND begin_snap BETWEEN %s AND %s
+    """
+    params = [dbname, begin_snap, end_snap]
+    if instance:
+        sql += " AND instance = %s"
+        params.append(instance)
+    sql += " ORDER BY ABS(size_factor - 1.0) ASC LIMIT 1"
+    try:
+        with conn.cursor() as cur:
+            cur.execute(sql, tuple(params))
+            row = cur.fetchone()
+            if row and row[0] is not None:
+                return {"pga_cache_hit_pct": float(row[0]), "size_factor": float(row[1])}
+    except Exception as e:
+        logger.warning(f"PGA advisory fetch failed: {e}")
+    return {}
+
+
+def _fetch_undo_generation(conn, dbname: str, begin_snap: int, end_snap: int,
+                            instance: Optional[str] = None) -> dict:
+    """Undo-related signals over the snap range, from awr_undo_statistics
+    (the Undo Segment Stats section -- multiple V$UNDOSTAT interval rows
+    per snap range).
+    Returns a dict: undo_per_sec (blocks/s, see unit note below),
+    sto_count (Snapshot Too Old occurrences -- direct ORA-01555 signal),
+    unexpired_violations (sum of uS+uR+uU -- see note on 'released'
+    below).
+
+    undo_per_sec unit note: UNDO_003's condition is 'undo_per_sec > 1000'
+    with no unit suffix, unlike REDO_001's explicitly-named
+    'redo_mb_per_sec' -- read as blocks/s (matching the source stat
+    directly) rather than converting to MB, since 1000 blocks/s at
+    Oracle's standard 8KB block size is ~8 MB/s, which sits sensibly
+    below REDO_001's 50 MB/s redo threshold. Worth confirming this
+    reading against real system behavior once this rule has fired a
+    few times in practice.
+
+    sto_count / unexpired_violations are summed (not averaged) across
+    the snap range -- these are event counts, not rates, so summing
+    occurrences across the reporting window is the right aggregation.
+
+    unexpired_violations judgment call (RESOLVED per Ganesh, 2026-08-28):
+    only uS (Stolen) + uU (reUsed) count as retention-guarantee
+    violations. uR (Released) is NOT a violation -- it reflects Oracle
+    reclaiming space from COMMITTED transactions that fall within the
+    tuned undo retention window (TUN RET (mins)), which is normal,
+    expected behavior, not space pressure forcing a violation."""
+    UNDOSTAT_INTERVAL_SECONDS = 600
+    sql = """
+        SELECT avg(num_undo_blocks), sum(sto_count),
+               sum(us_stolen), sum(uu_reused)
+        FROM awr_undo_statistics
+        WHERE dbname = %s AND begin_snap BETWEEN %s AND %s
+    """
+    params = [dbname, begin_snap, end_snap]
+    if instance:
+        sql += " AND instance = %s"
+        params.append(instance)
+    try:
+        with conn.cursor() as cur:
+            cur.execute(sql, tuple(params))
+            row = cur.fetchone()
+            if not row:
+                return {"undo_per_sec": 0.0, "sto_count": 0, "unexpired_violations": 0}
+            avg_blocks   = float(row[0]) if row[0] is not None else 0.0
+            sto_count    = int(row[1]) if row[1] is not None else 0
+            us           = int(row[2]) if row[2] is not None else 0
+            uu           = int(row[3]) if row[3] is not None else 0
+            return {
+                "undo_per_sec": round(avg_blocks / UNDOSTAT_INTERVAL_SECONDS, 2),
+                "sto_count": sto_count,
+                "unexpired_violations": us + uu,
+            }
+    except Exception as e:
+        logger.warning(f"Undo generation fetch failed: {e}")
+        return {"undo_per_sec": 0.0, "sto_count": 0, "unexpired_violations": 0}
+
+
 def _fetch_object_metadata(conn, dbname: str, owner_object_pairs: list) -> dict:
     """
     Fetch awr_object_metadata for a list of (owner, object_name) pairs.
@@ -814,6 +931,88 @@ class RuleEngine:
                     "related_rules":  rule.get("related_rules", []),
                 })
 
+        return findings
+
+    def evaluate_pga_rules(self, pga_metrics: dict) -> list:
+        """Evaluates PGA_001 only -- SGA_001/SGA_002 need Buffer Pool
+        Advisory / Shared Pool Advisory data this codebase doesn't
+        currently parse (awr_advisory_sga holds SGA Target Advisory,
+        a different, coarser Oracle AWR section), so they're left
+        unevaluated rather than evaluated against the wrong table."""
+        findings = []
+        pga_rules = [r for r in self.rules if r.get("category") == "pga"]
+        if not pga_metrics or pga_metrics.get("pga_cache_hit_pct") is None:
+            return findings
+
+        context = {"pga_cache_hit_pct": pga_metrics["pga_cache_hit_pct"]}
+        for rule in pga_rules:
+            if self.evaluate_condition(rule.get("condition", ""), context):
+                findings.append({
+                    "rule_id":      rule["rule_id"],
+                    "category":     "pga",
+                    "severity":     rule.get("severity", "medium"),
+                    "title":        rule.get("title", ""),
+                    "value":        context["pga_cache_hit_pct"],
+                    "root_cause":   rule.get("root_cause", ""),
+                    "resolution":   rule.get("resolution_steps", []),
+                    "diagnostic_sql": rule.get("diagnostic_sql", []),
+                    "related_rules":  rule.get("related_rules", []),
+                })
+        return findings
+
+    def evaluate_undo_rules(self, undo_data: dict) -> list:
+        """Evaluates UNDO_002 (ORA-01555, via sto_count), UNDO_003 (high
+        undo generation), and UNDO_004 (unexpired stolen/released/reused
+        -- a leading indicator that can fire before UNDO_002 does).
+        UNDO_001 (tablespace usage %) is still not evaluated -- it needs
+        undo tablespace fill %, which isn't parsed anywhere in this
+        codebase; awr_undo_statistics/awr_undo_segment_summary have
+        block/transaction/concurrency/STO/OOS counts, not tablespace
+        usage. OOS (Out Of Space) count, once wired in, may turn out to
+        be a better direct signal for UNDO_001 than a percentage anyway."""
+        findings = []
+        undo_rules = {r["rule_id"]: r for r in self.rules if r.get("category") == "undo"}
+
+        contexts = {
+            "UNDO_002": {"sto_count": undo_data.get("sto_count", 0)},
+            "UNDO_003": {"undo_per_sec": undo_data.get("undo_per_sec", 0.0)},
+            "UNDO_004": {"unexpired_violations": undo_data.get("unexpired_violations", 0)},
+        }
+        for rule_id, context in contexts.items():
+            rule = undo_rules.get(rule_id)
+            if not rule:
+                continue
+            if self.evaluate_condition(rule.get("condition", ""), context):
+                findings.append({
+                    "rule_id":      rule["rule_id"],
+                    "category":     "undo",
+                    "severity":     rule.get("severity", "medium"),
+                    "title":        rule.get("title", ""),
+                    "value":        list(context.values())[0],
+                    "root_cause":   rule.get("root_cause", ""),
+                    "resolution":   rule.get("resolution_steps", []),
+                    "diagnostic_sql": rule.get("diagnostic_sql", []),
+                    "related_rules":  rule.get("related_rules", []),
+                })
+        return findings
+
+    def evaluate_redo_rules(self, redo_mb_per_sec: float) -> list:
+        findings = []
+        redo_rules = [r for r in self.rules if r.get("category") == "redo"]
+        context = {"redo_mb_per_sec": redo_mb_per_sec}
+        for rule in redo_rules:
+            if self.evaluate_condition(rule.get("condition", ""), context):
+                findings.append({
+                    "rule_id":      rule["rule_id"],
+                    "category":     "redo",
+                    "severity":     rule.get("severity", "medium"),
+                    "title":        rule.get("title", ""),
+                    "value":        redo_mb_per_sec,
+                    "root_cause":   rule.get("root_cause", ""),
+                    "resolution":   rule.get("resolution_steps", []),
+                    "diagnostic_sql": rule.get("diagnostic_sql", []),
+                    "related_rules":  rule.get("related_rules", []),
+                })
         return findings
 
     def evaluate_segment_rules(self, segment_metrics: dict, object_metadata: dict = None) -> list:
@@ -1524,6 +1723,9 @@ class RecommendationEngine:
             efficiency       = _fetch_instance_efficiency(conn, dbname, begin_snap, end_snap, instance)
             seg_metrics      = _fetch_segment_metrics(conn, dbname, begin_snap, end_snap, instance)
             exadata_metrics  = _fetch_exadata_metrics(conn, dbname, begin_snap, end_snap, instance)
+            pga_metrics      = _fetch_pga_advisory(conn, dbname, begin_snap, end_snap, instance)
+            undo_data        = _fetch_undo_generation(conn, dbname, begin_snap, end_snap, instance)
+            redo_mb_per_sec  = _fetch_redo_generation(conn, dbname, begin_snap, end_snap, instance)
 
             # Build the set of (owner, object_name) pairs from all segment metric results
             # and fetch their metadata from awr_object_metadata in one pass.
@@ -1543,6 +1745,9 @@ class RecommendationEngine:
         findings += self.engine.evaluate_efficiency_rules(efficiency)
         findings += self.engine.evaluate_segment_rules(seg_metrics, object_metadata)
         findings += self.engine.evaluate_exadata_rules(exadata_metrics)
+        findings += self.engine.evaluate_pga_rules(pga_metrics)
+        findings += self.engine.evaluate_undo_rules(undo_data)
+        findings += self.engine.evaluate_redo_rules(redo_mb_per_sec)
 
         # Filter by minimum severity
         findings = [f for f in findings
