@@ -175,7 +175,21 @@ def _fetch_sql_metrics(conn, dbname: str, begin_snap: int, end_snap: int,
         WHERE dbname = %s {instance_filter} AND begin_snap BETWEEN %s AND %s
         GROUP BY sql_id
     """
-    results = {"top_elapsed": [], "high_parse": [], "high_cpu": [], "long_single_exec": []}
+    # ── Step 4: physical reads per execution from awr_sql_reads ─────
+    # Feeds SQL_003 (High Physical I/O SQL) -- this table already existed
+    # and the report's own SQL Severity table already shows this data
+    # ("Avg Reads/Exec"), but nothing here was fetching it for the rule
+    # engine, so SQL_003 could never fire regardless of how bad the I/O
+    # actually was.
+    sql_reads = f"""
+        SELECT sql_id,
+               AVG(reads_per_exec) AS physical_reads_per_exec
+        FROM awr_sql_reads
+        WHERE dbname = %s {instance_filter} AND begin_snap BETWEEN %s AND %s
+        GROUP BY sql_id
+    """
+    results = {"top_elapsed": [], "high_parse": [], "high_cpu": [],
+               "long_single_exec": [], "high_physical_reads": []}
     try:
         elapsed_params = ([dbname, instance, begin_snap, end_snap] if instance
                            else [dbname, begin_snap, end_snap])
@@ -205,6 +219,16 @@ def _fetch_sql_metrics(conn, dbname: str, begin_snap: int, end_snap: int,
             conn.rollback()
             logger.warning(f"SQL parse metrics fetch failed: {e}")
 
+        try:
+            with conn.cursor() as cur:
+                cur.execute(sql_reads, elapsed_params)
+                for r in cur.fetchall():
+                    if r[0] in rows:
+                        rows[r[0]]["physical_reads_per_exec"] = float(r[1] or 0)
+        except Exception as e:
+            conn.rollback()
+            logger.warning(f"SQL physical reads metrics fetch failed: {e}")
+
         total_elapsed_all = sum(float(r.get("total_elapsed_s") or 0) for r in rows.values()) or 1.0
         total_cpu_all     = sum(float(r.get("total_cpu_time_s") or 0) for r in rows.values()) or 1.0
 
@@ -215,6 +239,7 @@ def _fetch_sql_metrics(conn, dbname: str, begin_snap: int, end_snap: int,
             avg_cpu         = float(r.get("avg_cpu_per_exec_s") or 0)
             execs           = float(r.get("executions") or 1)
             parses          = float(r.get("parse_calls") or 0)
+            physical_reads_per_exec = float(r.get("physical_reads_per_exec") or 0)
             r["pct_of_total_elapsed"] = round(total_elapsed / total_elapsed_all * 100, 1)
             r["pct_of_total_cpu"]     = round(total_cpu / total_cpu_all * 100, 1)
 
@@ -224,6 +249,8 @@ def _fetch_sql_metrics(conn, dbname: str, begin_snap: int, end_snap: int,
                 results["high_cpu"].append(r)
             if execs > 0 and (parses / execs) > 0.8 and parses > 1000:
                 results["high_parse"].append(r)
+            if physical_reads_per_exec > 10000:
+                results["high_physical_reads"].append(r)
             # Distinct signal: ran very few times but each execution was
             # very slow — worth flagging (ad-hoc query, blocking/lock wait
             # bleeding into elapsed time, a bad plan for one bind value)
@@ -863,6 +890,8 @@ class RuleEngine:
              {"parse_calls": "parse_calls", "executions": "executions"}),
             ("long_single_execution",  "long_single_exec",
              {"avg_elapsed_per_exec_s": "avg_elapsed_per_exec_s", "executions": "executions"}),
+            ("high_physical_reads",    "high_physical_reads",
+             {"physical_reads_per_exec": "physical_reads_per_exec", "executions": "executions"}),
         ]
 
         for pattern_key, metric_key, field_map in mappings:
@@ -899,10 +928,22 @@ class RuleEngine:
         findings = []
         eff_rules = [r for r in self.rules if r.get("category") == "instance_efficiency"]
 
+        # Metric label lookup (2026-08-31 fix): the primary keys here used
+        # to be descriptive names like "Buffer Cache Hit Ratio" that never
+        # actually appear in a real AWR report -- Oracle's own "Instance
+        # Efficiency Percentages" section literally prints "Buffer Hit %",
+        # not "Buffer Cache Hit Ratio" (confirmed against real AWR output
+        # from multiple independent sources, not just prose describing
+        # the metric). Since the lookup used a try-in-order fallback list,
+        # INST_001 was silently falling through to "Buffer Nowait %" --
+        # a genuinely DIFFERENT metric (latch/wait contention on getting a
+        # buffer at all, not cache hit efficiency) -- and evaluating that
+        # instead, while still labeling the finding "Low Buffer Cache Hit
+        # Ratio". Fixed to use the real label as primary.
         pattern_to_metric = {
-            "buffer_cache_hit_ratio": ["Buffer Cache Hit Ratio", "Buffer Nowait %"],
+            "buffer_cache_hit_ratio": ["Buffer Hit %", "Buffer Nowait %"],
             "soft_parse_ratio":       ["Soft Parse %"],
-            "library_cache_hit_ratio":["Library Cache Hit Ratio", "Library Hit %"],
+            "library_cache_hit_ratio":["Library Hit %"],
             "execute_to_parse_ratio": ["Execute to Parse %"],
         }
 
