@@ -1745,9 +1745,8 @@ async def comparison_post(request: Request,
                     INSERT INTO awr_comparison_tags
                         (tag_name, dbname, instance, snap_start, snap_end, tag_type, notes)
                     VALUES (%s,%s,%s,%s,%s,%s,%s)
-                    ON CONFLICT (dbname, tag_name, tag_type) DO UPDATE
-                      SET instance=EXCLUDED.instance,
-                          snap_start=EXCLUDED.snap_start,
+                    ON CONFLICT (dbname, instance, tag_name, tag_type) DO UPDATE
+                      SET snap_start=EXCLUDED.snap_start,
                           snap_end=EXCLUDED.snap_end,
                           notes=EXCLUDED.notes
                 """, (tag_name, dbname, instance, snap_start, snap_end, tag_type, notes))

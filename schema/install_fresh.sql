@@ -314,7 +314,7 @@ CREATE TABLE IF NOT EXISTS awr_comparison_tags (
     id                             SERIAL,
     tag_name                       TEXT NOT NULL,
     dbname                         TEXT NOT NULL,
-    instance                       TEXT,
+    instance                       TEXT NOT NULL DEFAULT '',
     snap_start                     INTEGER NOT NULL,
     snap_end                       INTEGER NOT NULL,
     tag_type                       TEXT NOT NULL,
@@ -322,7 +322,7 @@ CREATE TABLE IF NOT EXISTS awr_comparison_tags (
     created_by                     TEXT DEFAULT 'DBA'::text,
     created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT awr_comparison_tags_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_awr_tag UNIQUE (dbname, tag_name, tag_type)
+    CONSTRAINT uq_awr_tag UNIQUE (dbname, instance, tag_name, tag_type)
 ) TABLESPACE awrparser;
 
 -- Table: awr_db_info
