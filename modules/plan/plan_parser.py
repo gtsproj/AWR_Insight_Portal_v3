@@ -567,13 +567,24 @@ def compare_plans(plan_a: ExecutionPlan, plan_b: ExecutionPlan) -> dict:
             f"({result['cost_pct_change']:+.1f}%) {direction}"
         )
 
-    # ── Full scan changes ─────────────────────────────────────────────
+    # ── Full scan changes (plan-wide fallback only — see below) ────────
+    # The per-step-pair detection further down (in the unmatched_a/
+    # unmatched_b position-pairing loop) is more specific and fires for
+    # the common case. This plan-wide check is now only used as a
+    # fallback for cases the per-step pairing can't cleanly capture
+    # (e.g. net step-count changes where full scans don't pair 1:1) --
+    # previously this fired unconditionally, producing a duplicate,
+    # less-informative entry alongside the specific one every time both
+    # applied (e.g. fixed_problems showing both "Full table scan
+    # removed" and "Full scan removed: TABLE ACCESS FULL on X ->
+    # TABLE ACCESS BY INDEX ROWID" for the exact same event).
+    plan_wide_full_scan_msg = None
     if plan_a.has_full_scan and not plan_b.has_full_scan:
-        result["summary"].append("✅ Full table scan eliminated in optimized plan")
-        result["fixed_problems"].append("Full table scan removed")
+        plan_wide_full_scan_msg = ("summary", "✅ Full table scan eliminated in optimized plan",
+                                    "fixed", "Full table scan removed")
     elif not plan_a.has_full_scan and plan_b.has_full_scan:
-        result["summary"].append("⚠️ New full table scan introduced in optimized plan")
-        result["new_problems"].append("Full table scan introduced")
+        plan_wide_full_scan_msg = ("summary", "⚠️ New full table scan introduced in optimized plan",
+                                    "new", "Full table scan introduced")
 
     # ── Step-level diff — match by OPERATION+OBJECT not step_id ─────────
     # This correctly handles plans where steps renumber after optimisation.
@@ -688,76 +699,24 @@ def compare_plans(plan_a: ExecutionPlan, plan_b: ExecutionPlan) -> dict:
     # Sort step_diff by baseline step_id for display
     result["step_diff"].sort(key=lambda d: d.get("step_id") or 999)
 
-    # ── Re-evaluate new/fixed problems based on OPERATIONS not step numbers ──
-    # An operation is "new" only if it doesn't appear anywhere in baseline
-    # An operation is "fixed" only if it doesn't appear anywhere in optimised
-    ops_a = {s.operation.upper() for s in plan_a.steps}
-    ops_b = {s.operation.upper() for s in plan_b.steps}
-
-    # Full scans
-    full_ops = {"TABLE ACCESS FULL", "FIXED TABLE FULL", "INDEX FAST FULL SCAN"}
-    full_in_a = any(op in s.operation.upper() for s in plan_a.steps for op in full_ops)
-    full_in_b = any(op in s.operation.upper() for s in plan_b.steps for op in full_ops)
-
-    if full_in_a and not full_in_b:
-        result["fixed_problems"] = [p for p in result["fixed_problems"]
-                                    if "Full scan" not in p] + ["Full table scan removed"]
-    elif not full_in_a and full_in_b:
-        result["new_problems"] = [p for p in result["new_problems"]
-                                  if "Full scan" not in p] + ["Full table scan introduced"]
-
-    # Remove any false-positive "new full scan" entries that were added by step-ID matching
-    # (operation existed in baseline under a different step number)
-    cleaned_new = []
-    for prob in result["new_problems"]:
-        if "Full scan" in prob or "FULL" in prob.upper():
-            # Only keep if full scan op is genuinely new (not in baseline)
-            if not full_in_a:
-                cleaned_new.append(prob)
-            # else: it existed in baseline — skip (step renumbering artifact)
-        else:
-            cleaned_new.append(prob)
-    result["new_problems"] = cleaned_new
-
-    # Filter access_changes — remove step-renumbering artifacts
-    # A change is genuine only if the NEW operation didn't exist anywhere in baseline
-    # OR the OLD operation didn't exist anywhere in optimised plan
-    cleaned_access = []
-    for change in result["access_changes"]:
-        parts = change.split("→")
-        if len(parts) == 2:
-            old_op = parts[0].strip().split("(")[0].strip().upper()
-            # Extract just op name before object in parens
-            old_op = old_op.split("Step")[1].strip() if "Step" in old_op else old_op
-            # Clean step number prefix: "Step 7: HASH JOIN" → "HASH JOIN"
-            if ":" in old_op:
-                old_op = old_op.split(":")[-1].strip()
-            new_op = parts[1].strip().split("(")[0].strip().upper()
-
-            new_op_in_baseline  = any(new_op in s.operation.upper() for s in plan_a.steps)
-            old_op_in_optimised = any(old_op in s.operation.upper() for s in plan_b.steps)
-
-            # Skip if new op already existed in baseline AND old op still exists in optimised
-            # This means both operations exist in both plans — it's just a step renumber
-            if new_op_in_baseline and old_op_in_optimised:
-                continue
-
-            # Also skip if new op already existed in baseline (moved, not introduced)
-            if new_op_in_baseline:
-                continue
-
-        cleaned_access.append(change)
-    result["access_changes"] = cleaned_access
-
-    # Re-clean new_problems using same logic
-    cleaned_new = []
-    for prob in result["new_problems"]:
-        if any(scan in prob.upper() for scan in ["FULL SCAN", "TABLE ACCESS FULL"]):
-            if not full_in_a:  # Only flag if genuinely not in baseline
-                cleaned_new.append(prob)
-        else:
-            cleaned_new.append(prob)
-    result["new_problems"] = cleaned_new
+    # ── Plan-wide full-scan fallback ────────────────────────────────
+    # Only add the generic plan-wide message if the specific per-step
+    # detection above didn't already report a full-scan change -- this
+    # is the fallback for net step-count changes the position-pairing
+    # can't cleanly attribute to one pair, not a duplicate of the
+    # specific message.
+    if plan_wide_full_scan_msg:
+        kind, summary_msg, bucket, bucket_msg = plan_wide_full_scan_msg
+        already_specific = any(
+            "full scan" in p.lower() for p in
+            (result["fixed_problems"] if bucket == "fixed" else result["new_problems"])
+        )
+        if not already_specific:
+            result["summary"].append(summary_msg)
+            if bucket == "fixed":
+                result["fixed_problems"].append(bucket_msg)
+            else:
+                result["new_problems"].append(bucket_msg)
 
     return result
 
