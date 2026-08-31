@@ -259,10 +259,19 @@ def _run_recommendations(db_name: str, begin_snap: int, end_snap: int,
 
 
 # ── auto anomaly detection ──────────────────────────────────────────────
-def _run_anomaly_detection(db_name: str, begin_snap: int, end_snap: int):
+def _run_anomaly_detection(db_name: str, begin_snap: int, end_snap: int,
+                            instance: str = None):
     """
     Auto-trigger anomaly_detector for every snap in the parsed range.
     Best-effort — failure is logged but does not abort the parse.
+    instance scopes detection to the instance that was actually just
+    parsed (RAC-safe) -- anomaly_detector.py's detect()/detect_all()
+    already accept and correctly use this parameter, and awr_anomalies'
+    own unique constraint already includes instance, but this caller
+    was never passing it through, so every automatic anomaly-detection
+    run defaulted to instance=None regardless of which RAC instance the
+    file actually belonged to -- see the equivalent (and already fixed)
+    gap this had in _run_recommendations above.
     """
     logger.info(f"🔍 Running anomaly detection: {db_name} snaps {begin_snap}–{end_snap}")
     try:
@@ -280,9 +289,9 @@ def _run_anomaly_detection(db_name: str, begin_snap: int, end_snap: int):
         for snap in snaps_to_check:
             try:
                 if hasattr(module, "detect"):
-                    module.detect(db_name=db_name, snap=snap, store=True)
+                    module.detect(db_name=db_name, snap=snap, store=True, instance=instance)
                 elif hasattr(module, "run"):
-                    module.run(db_name=db_name, snap=snap, store=True)
+                    module.run(db_name=db_name, snap=snap, store=True, instance=instance)
                 elif hasattr(module, "main"):
                     _orig_argv = sys.argv[:]
                     sys.argv = [
@@ -291,6 +300,8 @@ def _run_anomaly_detection(db_name: str, begin_snap: int, end_snap: int):
                         "--snap",  str(snap),
                         "--store",
                     ]
+                    if instance:
+                        sys.argv += ["--inst", instance]
                     try:
                         module.main()
                     finally:
@@ -483,7 +494,7 @@ def process_file(filepath: str, archive: bool = False) -> bool:
     effective_instance = instance or snap_instance
     if begin_snap is not None and end_snap is not None:
         _run_recommendations(db_name, begin_snap, end_snap, effective_instance)
-        _run_anomaly_detection(db_name, begin_snap, end_snap)
+        _run_anomaly_detection(db_name, begin_snap, end_snap, effective_instance)
     else:
         logger.warning(f"⚠ Could not resolve snap range for {db_name} — skipping recommendations/anomalies")
 
