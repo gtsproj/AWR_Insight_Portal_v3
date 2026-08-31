@@ -54,17 +54,34 @@ HIGH_COST_THRESHOLD = 10000   # flag steps with cost > this
 
 
 def _parse_size(val: str) -> Optional[int]:
-    """Parse K/M/G suffixed numbers: '26K' → 26000."""
+    """Parse K/M/G/T-suffixed numbers as Oracle's DBMS_XPLAN actually
+    renders them: '26K' -> 26000, '129M' -> 129000000, '1.2G' -> 1200000000.
+
+    BUG FIX (2026-08-31): the previous implementation only stripped the
+    'K' suffix character and never applied any multiplier at all --
+    '26K' parsed as 26, not 26000; 'M'/'G' suffixes weren't stripped at
+    all, so the regex just grabbed the leading digits and silently
+    discarded the multiplier; decimal values like '1.2G' lost everything
+    after the decimal point since \\d+ doesn't match '.'. This fed
+    directly into the >10000-row and >1000-row problem-detection
+    thresholds below, causing real large-scan/large-nested-loop
+    problems to go undetected whenever Oracle displayed the count with
+    a K/M/G suffix -- which is the normal case for anything above a
+    few hundred rows, not an edge case.
+    """
     if not val or val.strip() in ("", "-"):
         return None
-    val = val.strip().rstrip("K")
-    m = re.match(r"([\d,]+)", val.replace(",", ""))
-    if m:
-        try:
-            return int(m.group(1))
-        except ValueError:
-            return None
-    return None
+    val = val.strip().replace(",", "")
+    m = re.match(r"([\d.]+)\s*([KMGT]?)$", val, re.IGNORECASE)
+    if not m:
+        return None
+    number_part, suffix = m.group(1), m.group(2).upper()
+    try:
+        number = float(number_part)
+    except ValueError:
+        return None
+    multiplier = {"": 1, "K": 1_000, "M": 1_000_000, "G": 1_000_000_000, "T": 1_000_000_000_000}[suffix]
+    return int(number * multiplier)
 
 
 def _parse_cost(val: str) -> Optional[float]:
@@ -111,24 +128,25 @@ def _detect_problems(step: PlanStep) -> PlanStep:
     return step
 
 
-def _fetch_plan_metadata_warnings(dbname: str, object_names: list) -> list:
+def _fetch_object_metadata_map(dbname: str, object_names: list) -> dict:
     """
-    Look up awr_object_metadata for objects in an execution plan.
-    Returns list of finding dicts with metadata-driven warnings.
+    Single query returning ALL awr_object_metadata rows for the given
+    objects, keyed by UPPER(object_name) -> row dict. Both
+    _fetch_plan_metadata_warnings (the existing stats/clustering/blevel
+    warnings) and analyse_plan's scan-finding action text (added
+    2026-08-31, see _build_scan_action) share this one fetch rather
+    than each running their own query against the same table.
     """
     if not dbname or not object_names:
-        return []
+        return {}
     try:
         import sys as _sys, os as _os
         _sys.path.insert(0, _os.path.join(
             _os.path.abspath(_os.path.dirname(__file__)), "..", "..", "common"))
         from db import get_db_connection
-        from datetime import datetime as _dt
 
         conn = get_db_connection()
-        warnings = []
-        now = _dt.now()
-
+        result = {}
         with conn.cursor() as cur:
             placeholders = ",".join(["%s"] * len(object_names))
             cur.execute(f"""
@@ -139,12 +157,95 @@ def _fetch_plan_metadata_warnings(dbname: str, object_names: list) -> list:
                 WHERE dbname = %s
                   AND UPPER(object_name) IN ({placeholders})
             """, [dbname] + [o.upper() for o in object_names])
-            rows = cur.fetchall()
+            for (obj_name, obj_type, num_rows, last_analyzed, blevel,
+                 distinct_keys, clust_factor, idx_cols,
+                 partition_type, uniqueness) in cur.fetchall():
+                # An object name can have both a TABLE row and an INDEX
+                # row (different object_type) -- keep whichever one has
+                # richer info if both exist under the same name, but in
+                # practice table/index names never collide in Oracle so
+                # this just keeps the one match.
+                result[obj_name.upper()] = {
+                    "object_name": obj_name, "object_type": obj_type,
+                    "num_rows": num_rows, "last_analyzed": last_analyzed,
+                    "blevel": blevel, "distinct_keys": distinct_keys,
+                    "clustering_factor": clust_factor, "index_columns": idx_cols,
+                    "partition_type": partition_type, "uniqueness": uniqueness,
+                }
         conn.close()
+        return result
+    except Exception as e:
+        import logging
+        logging.getLogger("plan_parser").debug(f"Metadata map fetch failed: {e}")
+        return {}
 
-        for (obj_name, obj_type, num_rows, last_analyzed, blevel,
-             distinct_keys, clust_factor, idx_cols,
-             partition_type, uniqueness) in rows:
+
+def _build_scan_action(obj_name: str, meta_map: dict, predicate_text: str) -> str:
+    """
+    Build a specific, data-driven action string for a full-scan finding,
+    instead of the previous identical canned text for every row.
+    Uses whatever awr_object_metadata has for this object (row count,
+    stats staleness) plus the plan's own captured predicate text --
+    honest about what it can and can't say: this schema has no
+    index-to-table linkage (indexes and tables are separate rows with
+    no FK), so this deliberately does NOT claim "no index exists on
+    this table" -- that would need a different data source
+    (DBA_IND_COLUMNS-style table_name linkage) that isn't captured
+    anywhere in this codebase today.
+    """
+    meta = meta_map.get((obj_name or "").upper())
+    parts = []
+
+    if meta and meta.get("num_rows"):
+        rows = int(meta["num_rows"])
+        parts.append(f"{obj_name} has {rows:,} rows")
+    elif obj_name:
+        parts.append(f"{obj_name}")
+
+    if meta and meta.get("last_analyzed") is None:
+        parts.append("statistics have never been gathered (optimizer is using defaults, which makes this row-count context unreliable too)")
+    elif meta and meta.get("last_analyzed"):
+        from datetime import datetime as _dt
+        days = (_dt.now() - meta["last_analyzed"]).days
+        if days > 30:
+            parts.append(f"statistics are {days} days stale")
+
+    if predicate_text:
+        parts.append(f"a filter predicate is present ({predicate_text.strip()[:120]}) but the optimizer still chose a full scan -- check whether this predicate is sargable (not wrapped in a function/implicit datatype conversion) and whether a selective index exists covering the filtered column(s)")
+    else:
+        parts.append("no filter predicate reaches this table at all -- confirm this is an intentional whole-table read (e.g. a batch/reporting job); if not, an index cannot help regardless of what exists, since nothing is being filtered on")
+
+    if not parts:
+        return "Verify scans are expected. For OLTP workloads check for missing selective indexes."
+    capitalized = [p[0].upper() + p[1:] if p else p for p in parts]
+    return ". ".join(capitalized) + "."
+
+
+def _fetch_plan_metadata_warnings(dbname: str, object_names: list, meta_map: dict = None) -> list:
+    """
+    Look up awr_object_metadata for objects in an execution plan.
+    Returns list of finding dicts with metadata-driven warnings.
+    Pass a pre-fetched meta_map (from _fetch_object_metadata_map) to
+    avoid a second identical query when the caller already has one --
+    analyse_plan fetches it up front for _build_scan_action and reuses
+    it here instead of querying awr_object_metadata twice per plan.
+    """
+    if not dbname or not object_names:
+        return []
+    try:
+        from datetime import datetime as _dt
+        if meta_map is None:
+            meta_map = _fetch_object_metadata_map(dbname, object_names)
+        warnings = []
+        now = _dt.now()
+
+        for row in meta_map.values():
+            obj_name, obj_type, num_rows, last_analyzed, blevel = (
+                row["object_name"], row["object_type"], row["num_rows"],
+                row["last_analyzed"], row["blevel"])
+            distinct_keys, clust_factor, idx_cols, partition_type, uniqueness = (
+                row["distinct_keys"], row["clustering_factor"], row["index_columns"],
+                row["partition_type"], row["uniqueness"])
 
             # Missing statistics
             if last_analyzed is None:
@@ -379,9 +480,20 @@ def parse_plan(text: str) -> ExecutionPlan:
             break
 
     # ── Parse Predicate Information ───────────────────────────────────
+    # BUG FIX (2026-08-31): standard Oracle DBMS_XPLAN output always has
+    # a blank line between the '---' divider and the first numbered
+    # predicate entry (this is standard formatting, not an edge case --
+    # every real plan looks like this). The old logic treated ANY blank
+    # line inside the predicate section as "end of section", including
+    # that one, so it exited before ever reading a single predicate
+    # line -- plan.predicates came back empty for every real-world
+    # plan pasted into this tool. Fixed by only treating a blank line
+    # as end-of-section once at least one real predicate entry has
+    # actually been captured.
     pred_section = False
     current_pred_id = None
     pred_lines = {}
+    seen_pred_line = False
 
     for line in lines:
         if "Predicate Information" in line:
@@ -396,9 +508,10 @@ def parse_plan(text: str) -> ExecutionPlan:
             if m:
                 current_pred_id = int(m.group(1))
                 pred_lines[current_pred_id] = m.group(2).strip()
+                seen_pred_line = True
             elif current_pred_id and line.strip():
                 pred_lines[current_pred_id] += " " + line.strip()
-            elif not line.strip():
+            elif not line.strip() and seen_pred_line:
                 pred_section = False
 
     plan.predicates = pred_lines
@@ -796,6 +909,16 @@ def analyse_plan(records: list) -> dict:
     # Track full scan objects to avoid duplicates
     full_scan_objects = set()
 
+    # Fetch object metadata ONCE, up front, so the scan findings below can
+    # build specific action text (row counts, stats staleness) instead of
+    # identical canned text for every row -- same query
+    # _fetch_plan_metadata_warnings uses further down, shared via
+    # _fetch_object_metadata_map rather than queried twice.
+    _dbname = records[0].get("dbname", "") if records else ""
+    _obj_names_upfront = list({r.get("object_name", "") for r in records
+                                if r.get("object_name", "")})
+    _meta_map = _fetch_object_metadata_map(_dbname, _obj_names_upfront)
+
     for r in records:
         if r.get("step_id") == 0 and r.get("cost"):
             total_cost = r["cost"]
@@ -811,7 +934,7 @@ def analyse_plan(records: list) -> dict:
                     "severity": "HIGH",
                     "pattern":  "Full Table / Index Fast Full Scan",
                     "detail":   f"Objects: {obj}" if obj else "",
-                    "action":   "Verify scans are expected. For OLTP workloads check for missing selective indexes.",
+                    "action":   _build_scan_action(obj, _meta_map, r.get("filter_predicates") or r.get("access_predicates")),
                 })
 
         # Index fast full scan — only flag if large cardinality
@@ -824,7 +947,7 @@ def analyse_plan(records: list) -> dict:
                     "severity": "HIGH",
                     "pattern":  "Full Table / Index Fast Full Scan",
                     "detail":   f"Objects: {obj}",
-                    "action":   "Verify scans are expected. For OLTP workloads check for missing selective indexes.",
+                    "action":   _build_scan_action(obj, _meta_map, r.get("filter_predicates") or r.get("access_predicates")),
                 })
 
         # Unbounded full scan — full scan with no filter predicate
@@ -835,7 +958,7 @@ def analyse_plan(records: list) -> dict:
                 "severity": "HIGH",
                 "pattern":  "Unbounded Full Scan",
                 "detail":   f"Step {r.get('step_id')}: {obj} — no filter predicate",
-                "action":   "Every row is read. Ensure WHERE clause reaches this table.",
+                "action":   _build_scan_action(obj, _meta_map, None),
             })
 
         # High cost step
@@ -876,11 +999,9 @@ def analyse_plan(records: list) -> dict:
     # ── Metadata enrichment ───────────────────────────────────────────
     # Look up object metadata for each object in the plan
     # Adds warnings like "45M rows, never analyzed" or "blevel=5, rebuild needed"
-    obj_names = list({r.get("object_name","") for r in records
-                      if r.get("object_name","")})
+    # Reuses _meta_map fetched up front (see above) instead of querying again.
     meta_warnings = _fetch_plan_metadata_warnings(
-        records[0].get("dbname","") if records else "",
-        obj_names
+        _dbname, _obj_names_upfront, meta_map=_meta_map
     )
     for w in meta_warnings:
         findings.append(w)
