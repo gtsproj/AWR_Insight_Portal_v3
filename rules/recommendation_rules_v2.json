@@ -1124,6 +1124,85 @@
       ],
       "diagnostic_sql": [],
       "related_rules": ["SAR_001", "SAR_002"]
+    },
+
+    {
+      "rule_id": "NMON_001",
+      "category": "nmon_correlated",
+      "event_pattern": "aix_iowait_and_db_file_sequential_read",
+      "condition": "nmon_iowait_pct > 20 AND oracle_wait_pct_db_time > 10",
+      "severity": "critical",
+      "oracle_versions": ["19c", "21c"],
+      "title": "Correlated: AIX I/O Wait + Oracle I/O Wait Events",
+      "root_cause": "High AIX-level I/O wait (nmon_cpu_stats.wait_pct) coinciding with high Oracle I/O wait events (db file sequential/scattered read, direct path read) confirms the bottleneck is genuinely storage-level, not an Oracle-side inefficiency — the OS is waiting on the same I/O the database is. Direct AIX analog of SAR_001 (Linux).",
+      "resolution_steps": [
+        "1. Check AIX storage layer: iostat -D, LPAR I/O entitlement if on shared storage.",
+        "2. Review Oracle segment-level I/O (see WAIT_001, WAIT_002).",
+        "3. If on VIOS/shared storage: check for I/O contention from other LPARs sharing the same physical adapters.",
+        "4. Confirm SAN/storage queue depth is adequately provisioned for this LPAR's I/O profile."
+      ],
+      "diagnostic_sql": [],
+      "related_rules": ["SAR_001", "WAIT_001", "WAIT_002"]
+    },
+
+    {
+      "rule_id": "NMON_002",
+      "category": "nmon_correlated",
+      "event_pattern": "aix_cpu_saturation_and_oracle_cpu",
+      "condition": "nmon_cpu_idle_pct < 10 AND oracle_cpu_pct_db_time > 40",
+      "severity": "critical",
+      "oracle_versions": ["19c", "21c"],
+      "title": "Correlated: AIX CPU Saturation + Oracle CPU-Bound Workload",
+      "root_cause": "AIX CPU is nearly fully utilized (idle_pct < 10%) at the same time Oracle's own DB Time is dominated by CPU rather than waits -- the LPAR itself is the bottleneck, not Oracle SQL/wait tuning. Direct AIX analog of SAR_002 (Linux). On a shared-processor LPAR, also check entitlement/uncapped mode before assuming this is genuine physical CPU exhaustion.",
+      "resolution_steps": [
+        "1. Check LPAR CPU entitlement and whether it's capped -- an uncapped LPAR hitting its cap looks identical to genuine CPU exhaustion from inside AIX alone.",
+        "2. Identify top CPU-consuming Oracle SQL (see SQL_002).",
+        "3. Review whether other LPARs on the same frame are competing for shared processor pool capacity.",
+        "4. Consider increasing entitled capacity or moving to a dedicated LPAR if consistently CPU-bound."
+      ],
+      "diagnostic_sql": [],
+      "related_rules": ["SAR_002", "SQL_002"]
+    },
+
+    {
+      "rule_id": "NMON_003",
+      "category": "nmon_correlated",
+      "event_pattern": "aix_memory_pressure",
+      "condition": "nmon_mem_used_pct > 90 AND nmon_fault_per_sec > 10",
+      "severity": "critical",
+      "oracle_versions": ["19c", "21c"],
+      "title": "Correlated: AIX Memory Pressure (fault rate)",
+      "root_cause": "AIX memory utilization is high AND the page fault rate is elevated, suggesting memory pressure on the LPAR. IMPORTANT CAVEAT: NMON's paging section only reports a single combined fault_persec, not Linux SAR's specific major-fault-only majflt_per_sec -- AIX's memory model doesn't expose the same minor/major fault distinction NMON captures for Linux. This means fault_persec includes faults that never touch disk, so the >10/sec threshold (copied from SAR_003's threshold as a starting point) has NOT been validated against real AIX fault-rate baselines and may need separate calibration -- treat this rule's threshold as provisional until confirmed against real customer NMON data, same as several Oracle-side rule thresholds already flagged this way earlier in this file. Same underlying-condition asymmetry as SAR_003 also applies here: this condition is purely OS-side despite the sar_correlated/nmon_correlated category naming.",
+      "resolution_steps": [
+        "1. Review AIX memory: svmon -G, vmstat -v for paging space usage.",
+        "2. Check Oracle SGA/PGA sizing relative to available LPAR memory (see PGA_001).",
+        "3. Confirm paging space is not being actively used by Oracle processes (indicates real memory shortage, not just cache pressure).",
+        "4. Validate this rule's fault-rate threshold against your own AIX baseline before relying on it -- see the root cause note above."
+      ],
+      "diagnostic_sql": [],
+      "related_rules": ["SAR_003", "PGA_001"]
+    },
+
+    {
+      "rule_id": "NMON_005",
+      "category": "nmon_correlated",
+      "event_pattern": "aix_high_context_switch_and_latch",
+      "condition": "nmon_cswch_per_sec > 100000 AND oracle_latch_wait_pct > 3",
+      "severity": "high",
+      "oracle_versions": ["19c", "21c"],
+      "title": "Correlated: AIX Context Switch Storm + Oracle Latch Contention",
+      "root_cause": "Extremely high AIX context switch rate combined with Oracle latch waits indicates the same spin-and-yield feedback loop as SAR_005 (Linux) -- many Oracle server processes spinning and yielding the CPU while waiting for latches, driving up context switches, which increases latch contention further.",
+      "resolution_steps": [
+        "1. Identify which Oracle latches are hot: SELECT * FROM V$LATCH ORDER BY misses DESC.",
+        "2. Resolve the underlying latch contention (see WAIT_010, WAIT_011 rules).",
+        "3. Check CPU_COUNT — ensure Oracle is not over-subscribed beyond the LPAR's entitled/virtual CPUs.",
+        "4. Review SPIN_COUNT parameter.",
+        "5. Reduce active concurrent sessions if the LPAR is CPU-starved."
+      ],
+      "diagnostic_sql": [
+        "-- Hot latches\nSELECT name, gets, misses, sleeps, ROUND(misses/NULLIF(gets,0)*100,2) AS miss_pct\nFROM v$latch\nWHERE misses > 1000\nORDER BY misses DESC FETCH FIRST 20 ROWS ONLY;"
+      ],
+      "related_rules": ["SAR_005", "WAIT_010", "WAIT_011"]
     }
 
 ,

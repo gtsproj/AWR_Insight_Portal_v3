@@ -319,6 +319,296 @@ def _fetch_redo_generation(conn, dbname: str, begin_snap: int, end_snap: int,
         return 0.0
 
 
+def _fetch_sar_correlated_metrics(conn, dbname: str, begin_snap: int, end_snap: int,
+                                   instance: str = None) -> dict:
+    """
+    Correlate SAR OS-level metrics with Oracle wait/CPU metrics over the
+    same time window, feeding the 6 sar_correlated rules (SAR_001-006).
+    These were orphaned (no evaluator at all) when the rest of the rule
+    set was reviewed -- wiring them up here, using the exact same
+    ±30-minute time-alignment approach already reviewed and confirmed
+    sound in the AWR+SAR Correlation Grafana dashboard, rather than
+    inventing a new mechanism.
+
+    Two things this correctly does NOT assume:
+    - hostname: SAR data is keyed by hostname, not dbname/instance, and
+      nothing else in this engine has a hostname parameter. Resolved
+      here from awr_db_info.host_name for this dbname/instance instead
+      of requiring a new parameter threaded through the whole
+      evaluate() call chain.
+    - cpu_count (needed for SAR_006): no SAR table has this column at
+      all (only nmon_cpu_stats does). Uses awr_db_info.cpu instead --
+      the same host CPU count already shown elsewhere in the Analysis
+      Report -- as a reasonable proxy, since it's the same physical
+      host the SAR data was collected from.
+
+    Returns {} (not partial/fabricated data) if hostname can't be
+    resolved or no SAR data exists for this host/window -- callers
+    should treat that as "correlation unavailable for this run", not
+    "everything is fine".
+    """
+    result = {}
+    try:
+        with conn.cursor() as cur:
+            # Resolve hostname + cpu_count from the same AWR metadata
+            # table that already reports this on the Analysis Report.
+            sql = "SELECT host_name, cpu FROM awr_db_info WHERE db_name = %s"
+            params = [dbname]
+            if instance:
+                sql += " AND instance = %s"
+                params.append(instance)
+            sql += " ORDER BY created_at DESC LIMIT 1"
+            cur.execute(sql, tuple(params))
+            row = cur.fetchone()
+            if not row or not row[0]:
+                logger.debug("SAR correlation: could not resolve hostname from awr_db_info")
+                return {}
+            hostname, cpu_count = row[0], (int(row[1]) if row[1] else None)
+
+            # Resolve the snap range's own time window, same subquery
+            # pattern as the correlation dashboard.
+            cur.execute("""
+                SELECT MIN(snap_time), MAX(snap_time)
+                FROM awr_load_profile
+                WHERE dbname = %s AND begin_snap BETWEEN %s AND %s
+                """ + (" AND instance = %s" if instance else ""),
+                tuple([dbname, begin_snap, end_snap] + ([instance] if instance else [])))
+            row = cur.fetchone()
+            if not row or not row[0]:
+                logger.debug("SAR correlation: could not resolve snap time window")
+                return {}
+            t_start, t_end = row[0], row[1]
+
+            sar_window = " AND snap_time BETWEEN %(t_start)s - INTERVAL '30 minutes' AND %(t_end)s + INTERVAL '30 minutes'"
+            sar_params = {"hostname": hostname, "t_start": t_start, "t_end": t_end}
+
+            cur.execute(f"""
+                SELECT AVG(iowait_pct), AVG(idle_pct)
+                FROM sar_cpu_stats WHERE hostname = %(hostname)s AND cpu = 'all' {sar_window}
+            """, sar_params)
+            r = cur.fetchone()
+            result["sar_iowait_pct"]   = float(r[0]) if r and r[0] is not None else None
+            result["sar_cpu_idle_pct"] = float(r[1]) if r and r[1] is not None else None
+
+            cur.execute(f"""
+                SELECT AVG(mem_used_pct) FROM sar_memory_stats
+                WHERE hostname = %(hostname)s {sar_window}
+            """, sar_params)
+            r = cur.fetchone()
+            result["sar_mem_used_pct"] = float(r[0]) if r and r[0] is not None else None
+
+            cur.execute(f"""
+                SELECT AVG(majflt_per_sec) FROM sar_paging_stats
+                WHERE hostname = %(hostname)s {sar_window}
+            """, sar_params)
+            r = cur.fetchone()
+            result["sar_majflt_per_sec"] = float(r[0]) if r and r[0] is not None else None
+
+            cur.execute(f"""
+                SELECT MAX(ifutil_pct) FROM sar_network_stats
+                WHERE hostname = %(hostname)s {sar_window}
+            """, sar_params)
+            r = cur.fetchone()
+            result["sar_ifutil_pct"] = float(r[0]) if r and r[0] is not None else None
+
+            cur.execute(f"""
+                SELECT AVG(cswch_per_sec) FROM sar_ctxswitch_stats
+                WHERE hostname = %(hostname)s {sar_window}
+            """, sar_params)
+            r = cur.fetchone()
+            result["sar_cswch_per_sec"] = float(r[0]) if r and r[0] is not None else None
+
+            cur.execute(f"""
+                SELECT AVG(runq_sz), AVG(blocked) FROM sar_loadavg_stats
+                WHERE hostname = %(hostname)s {sar_window}
+            """, sar_params)
+            r = cur.fetchone()
+            result["sar_runq_sz"] = float(r[0]) if r and r[0] is not None else None
+            result["sar_blocked"] = float(r[1]) if r and r[1] is not None else None
+            result["cpu_count"]   = cpu_count
+
+            # Oracle-side aggregates, same event groupings as the
+            # correlation dashboard and the existing WAIT_ rules.
+            oracle_params = [dbname, begin_snap, end_snap]
+            inst_clause = ""
+            if instance:
+                inst_clause = " AND instance = %s"
+                oracle_params.append(instance)
+
+            cur.execute(f"""
+                SELECT SUM(pct_db_time) FROM awr_foreground_wait_events
+                WHERE dbname = %s AND begin_snap BETWEEN %s AND %s{inst_clause}
+                  AND event IN ('db file sequential read','db file scattered read','direct path read')
+            """, tuple(oracle_params))
+            r = cur.fetchone()
+            result["oracle_wait_pct_db_time"] = float(r[0]) if r and r[0] is not None else 0.0
+
+            cur.execute(f"""
+                SELECT SUM(pct_db_time) FROM awr_foreground_wait_events
+                WHERE dbname = %s AND begin_snap BETWEEN %s AND %s{inst_clause}
+                  AND event ILIKE 'gc %%'
+            """, tuple(oracle_params))
+            r = cur.fetchone()
+            result["oracle_gc_wait_pct"] = float(r[0]) if r and r[0] is not None else 0.0
+
+            cur.execute(f"""
+                SELECT SUM(pct_db_time) FROM awr_foreground_wait_events
+                WHERE dbname = %s AND begin_snap BETWEEN %s AND %s{inst_clause}
+                  AND event ILIKE 'latch:%%'
+            """, tuple(oracle_params))
+            r = cur.fetchone()
+            result["oracle_latch_wait_pct"] = float(r[0]) if r and r[0] is not None else 0.0
+
+            cur.execute(f"""
+                SELECT
+                  CASE WHEN MAX(CASE WHEN metric='DB Time(s)' THEN per_sec END) > 0
+                       THEN MAX(CASE WHEN metric='DB CPU(s)' THEN per_sec END)
+                            / MAX(CASE WHEN metric='DB Time(s)' THEN per_sec END) * 100
+                       ELSE 0 END
+                FROM awr_load_profile
+                WHERE dbname = %s AND begin_snap BETWEEN %s AND %s{inst_clause}
+                  AND metric IN ('DB Time(s)', 'DB CPU(s)')
+            """, tuple(oracle_params))
+            r = cur.fetchone()
+            result["oracle_cpu_pct_db_time"] = float(r[0]) if r and r[0] is not None else 0.0
+
+    except Exception as e:
+        logger.warning(f"SAR-correlated metrics fetch failed: {e}")
+        return {}
+
+    return result
+
+
+def _fetch_nmon_correlated_metrics(conn, dbname: str, begin_snap: int, end_snap: int,
+                                    instance: str = None) -> dict:
+    """
+    AIX/NMON equivalent of _fetch_sar_correlated_metrics -- feeds
+    NMON_001, 002, 003, 005 (NMON_004 and NMON_006 don't exist; see the
+    module-level note below on why those two couldn't be honestly
+    mirrored from their SAR counterparts).
+
+    Same hostname-resolution approach (awr_db_info.host_name) and same
+    ±30-minute time-alignment as the SAR fetcher and the AWR+NMON
+    Correlation Grafana dashboard -- this is genuinely the same
+    mechanism applied to AIX tables, not a new one.
+
+    NOT implemented, and deliberately not faked:
+    - NMON "network utilization %" (would be NMON_004's equivalent):
+      nmon_network_stats only has raw read_kbs/write_kbs throughput,
+      no interface speed captured anywhere to compute a utilization %
+      from -- there's no honest way to reproduce SAR_004's
+      ifutil_pct > 60 condition against AIX data with this schema.
+    - NMON "blocked process count" (would be NMON_006's equivalent):
+      nmon_runqueue_stats has runq_sz and swapin_procs, but no
+      direct blocked-on-I/O count like SAR's sar_loadavg_stats.blocked
+      -- swapin_procs is a related but semantically different signal,
+      not treated as equivalent without confirming that's actually
+      the right substitute.
+    """
+    result = {}
+    try:
+        with conn.cursor() as cur:
+            sql = "SELECT host_name FROM awr_db_info WHERE db_name = %s"
+            params = [dbname]
+            if instance:
+                sql += " AND instance = %s"
+                params.append(instance)
+            sql += " ORDER BY created_at DESC LIMIT 1"
+            cur.execute(sql, tuple(params))
+            row = cur.fetchone()
+            if not row or not row[0]:
+                logger.debug("NMON correlation: could not resolve hostname from awr_db_info")
+                return {}
+            hostname = row[0]
+
+            cur.execute("""
+                SELECT MIN(snap_time), MAX(snap_time)
+                FROM awr_load_profile
+                WHERE dbname = %s AND begin_snap BETWEEN %s AND %s
+                """ + (" AND instance = %s" if instance else ""),
+                tuple([dbname, begin_snap, end_snap] + ([instance] if instance else [])))
+            row = cur.fetchone()
+            if not row or not row[0]:
+                logger.debug("NMON correlation: could not resolve snap time window")
+                return {}
+            t_start, t_end = row[0], row[1]
+
+            nmon_window = " AND snap_time BETWEEN %(t_start)s - INTERVAL '30 minutes' AND %(t_end)s + INTERVAL '30 minutes'"
+            nmon_params = {"hostname": hostname, "t_start": t_start, "t_end": t_end}
+
+            cur.execute(f"""
+                SELECT AVG(wait_pct), AVG(idle_pct)
+                FROM nmon_cpu_stats WHERE hostname = %(hostname)s AND cpu = 'ALL' {nmon_window}
+            """, nmon_params)
+            r = cur.fetchone()
+            result["nmon_iowait_pct"]   = float(r[0]) if r and r[0] is not None else None
+            result["nmon_cpu_idle_pct"] = float(r[1]) if r and r[1] is not None else None
+
+            cur.execute(f"""
+                SELECT AVG(mem_used_pct) FROM nmon_memory_stats
+                WHERE hostname = %(hostname)s {nmon_window}
+            """, nmon_params)
+            r = cur.fetchone()
+            result["nmon_mem_used_pct"] = float(r[0]) if r and r[0] is not None else None
+
+            cur.execute(f"""
+                SELECT AVG(fault_persec) FROM nmon_paging_stats
+                WHERE hostname = %(hostname)s {nmon_window}
+            """, nmon_params)
+            r = cur.fetchone()
+            result["nmon_fault_per_sec"] = float(r[0]) if r and r[0] is not None else None
+
+            cur.execute(f"""
+                SELECT AVG(cswch_persec) FROM nmon_ctxswitch_stats
+                WHERE hostname = %(hostname)s {nmon_window}
+            """, nmon_params)
+            r = cur.fetchone()
+            result["nmon_cswch_per_sec"] = float(r[0]) if r and r[0] is not None else None
+
+            # Oracle-side aggregates -- identical computation to the SAR
+            # fetcher, since this is the same Oracle data either way.
+            oracle_params = [dbname, begin_snap, end_snap]
+            inst_clause = ""
+            if instance:
+                inst_clause = " AND instance = %s"
+                oracle_params.append(instance)
+
+            cur.execute(f"""
+                SELECT SUM(pct_db_time) FROM awr_foreground_wait_events
+                WHERE dbname = %s AND begin_snap BETWEEN %s AND %s{inst_clause}
+                  AND event IN ('db file sequential read','db file scattered read','direct path read')
+            """, tuple(oracle_params))
+            r = cur.fetchone()
+            result["oracle_wait_pct_db_time"] = float(r[0]) if r and r[0] is not None else 0.0
+
+            cur.execute(f"""
+                SELECT SUM(pct_db_time) FROM awr_foreground_wait_events
+                WHERE dbname = %s AND begin_snap BETWEEN %s AND %s{inst_clause}
+                  AND event ILIKE 'latch:%%'
+            """, tuple(oracle_params))
+            r = cur.fetchone()
+            result["oracle_latch_wait_pct"] = float(r[0]) if r and r[0] is not None else 0.0
+
+            cur.execute(f"""
+                SELECT
+                  CASE WHEN MAX(CASE WHEN metric='DB Time(s)' THEN per_sec END) > 0
+                       THEN MAX(CASE WHEN metric='DB CPU(s)' THEN per_sec END)
+                            / MAX(CASE WHEN metric='DB Time(s)' THEN per_sec END) * 100
+                       ELSE 0 END
+                FROM awr_load_profile
+                WHERE dbname = %s AND begin_snap BETWEEN %s AND %s{inst_clause}
+                  AND metric IN ('DB Time(s)', 'DB CPU(s)')
+            """, tuple(oracle_params))
+            r = cur.fetchone()
+            result["oracle_cpu_pct_db_time"] = float(r[0]) if r and r[0] is not None else 0.0
+
+    except Exception as e:
+        logger.warning(f"NMON-correlated metrics fetch failed: {e}")
+        return {}
+
+    return result
+
+
 def _fetch_pga_advisory(conn, dbname: str, begin_snap: int, end_snap: int,
                          instance: Optional[str] = None) -> dict:
     """PGA cache hit % at the CURRENT actual PGA size -- i.e. the
@@ -1056,6 +1346,122 @@ class RuleEngine:
                 })
         return findings
 
+    def evaluate_sar_correlated_rules(self, sar_metrics: dict) -> list:
+        """
+        Evaluates SAR_001-006. sar_metrics is the dict returned by
+        _fetch_sar_correlated_metrics -- empty dict means correlation
+        was unavailable this run (hostname unresolvable or no SAR data
+        in the aligned window), not "nothing to report", so this
+        returns no findings rather than false negatives dressed up as
+        clean results.
+
+        Note on SAR_003: its condition (sar_mem_used_pct > 90 AND
+        sar_majflt_per_sec > 10) is purely SAR-side despite being
+        titled 'Correlated: OS Memory Pressure + Oracle Memory
+        Overallocation' and living in the sar_correlated category --
+        there's no oracle_* variable in the actual condition as
+        written in the rules file. Implemented exactly as written
+        rather than guessing at an intended Oracle-side condition;
+        worth Ganesh confirming whether that's intentional.
+        """
+        findings = []
+        if not sar_metrics:
+            return findings
+        sar_rules = {r["rule_id"]: r for r in self.rules if r.get("category") == "sar_correlated"}
+
+        contexts = {
+            "SAR_001": {"sar_iowait_pct": sar_metrics.get("sar_iowait_pct") or 0,
+                        "oracle_wait_pct_db_time": sar_metrics.get("oracle_wait_pct_db_time") or 0},
+            "SAR_002": {"sar_cpu_idle_pct": sar_metrics.get("sar_cpu_idle_pct") if sar_metrics.get("sar_cpu_idle_pct") is not None else 100,
+                        "oracle_cpu_pct_db_time": sar_metrics.get("oracle_cpu_pct_db_time") or 0},
+            "SAR_003": {"sar_mem_used_pct": sar_metrics.get("sar_mem_used_pct") or 0,
+                        "sar_majflt_per_sec": sar_metrics.get("sar_majflt_per_sec") or 0},
+            "SAR_004": {"sar_ifutil_pct": sar_metrics.get("sar_ifutil_pct") or 0,
+                        "oracle_gc_wait_pct": sar_metrics.get("oracle_gc_wait_pct") or 0},
+            "SAR_005": {"sar_cswch_per_sec": sar_metrics.get("sar_cswch_per_sec") or 0,
+                        "oracle_latch_wait_pct": sar_metrics.get("oracle_latch_wait_pct") or 0},
+            "SAR_006": {"sar_runq_sz": sar_metrics.get("sar_runq_sz") or 0,
+                        "cpu_count": sar_metrics.get("cpu_count") or 999999,  # missing cpu_count -> never fires, not a false positive
+                        "sar_blocked": sar_metrics.get("sar_blocked") or 0},
+        }
+        for rule_id, context in contexts.items():
+            rule = sar_rules.get(rule_id)
+            if not rule:
+                continue
+            # Skip rules whose required inputs are genuinely missing
+            # this run (None, not just 0/absent-and-defaulted-to-0)
+            # rather than evaluate against a fabricated zero.
+            raw_keys = {
+                "SAR_001": ["sar_iowait_pct"], "SAR_002": ["sar_cpu_idle_pct"],
+                "SAR_003": ["sar_mem_used_pct", "sar_majflt_per_sec"],
+                "SAR_004": ["sar_ifutil_pct"], "SAR_005": ["sar_cswch_per_sec"],
+                "SAR_006": ["sar_runq_sz", "sar_blocked"],
+            }[rule_id]
+            if any(sar_metrics.get(k) is None for k in raw_keys):
+                continue
+            if self.evaluate_condition(rule.get("condition", ""), context):
+                findings.append({
+                    "rule_id":      rule["rule_id"],
+                    "category":     "sar_correlated",
+                    "severity":     rule.get("severity", "medium"),
+                    "title":        rule.get("title", ""),
+                    "value":        context,
+                    "root_cause":   rule.get("root_cause", ""),
+                    "resolution":   rule.get("resolution_steps", []),
+                    "diagnostic_sql": rule.get("diagnostic_sql", []),
+                    "related_rules":  rule.get("related_rules", []),
+                })
+        return findings
+
+    def evaluate_nmon_correlated_rules(self, nmon_metrics: dict) -> list:
+        """
+        AIX/NMON equivalent of evaluate_sar_correlated_rules. Only
+        NMON_001, 002, 003, 005 exist -- NMON_004 (network utilization)
+        and NMON_006 (blocked processes) have no honest data source in
+        the current NMON schema, see _fetch_nmon_correlated_metrics's
+        docstring for why. Empty nmon_metrics means correlation was
+        unavailable this run, not "nothing to report".
+        """
+        findings = []
+        if not nmon_metrics:
+            return findings
+        nmon_rules = {r["rule_id"]: r for r in self.rules if r.get("category") == "nmon_correlated"}
+
+        contexts = {
+            "NMON_001": {"nmon_iowait_pct": nmon_metrics.get("nmon_iowait_pct") or 0,
+                         "oracle_wait_pct_db_time": nmon_metrics.get("oracle_wait_pct_db_time") or 0},
+            "NMON_002": {"nmon_cpu_idle_pct": nmon_metrics.get("nmon_cpu_idle_pct") if nmon_metrics.get("nmon_cpu_idle_pct") is not None else 100,
+                         "oracle_cpu_pct_db_time": nmon_metrics.get("oracle_cpu_pct_db_time") or 0},
+            "NMON_003": {"nmon_mem_used_pct": nmon_metrics.get("nmon_mem_used_pct") or 0,
+                         "nmon_fault_per_sec": nmon_metrics.get("nmon_fault_per_sec") or 0},
+            "NMON_005": {"nmon_cswch_per_sec": nmon_metrics.get("nmon_cswch_per_sec") or 0,
+                         "oracle_latch_wait_pct": nmon_metrics.get("oracle_latch_wait_pct") or 0},
+        }
+        raw_keys_by_rule = {
+            "NMON_001": ["nmon_iowait_pct"], "NMON_002": ["nmon_cpu_idle_pct"],
+            "NMON_003": ["nmon_mem_used_pct", "nmon_fault_per_sec"],
+            "NMON_005": ["nmon_cswch_per_sec"],
+        }
+        for rule_id, context in contexts.items():
+            rule = nmon_rules.get(rule_id)
+            if not rule:
+                continue
+            if any(nmon_metrics.get(k) is None for k in raw_keys_by_rule[rule_id]):
+                continue
+            if self.evaluate_condition(rule.get("condition", ""), context):
+                findings.append({
+                    "rule_id":      rule["rule_id"],
+                    "category":     "nmon_correlated",
+                    "severity":     rule.get("severity", "medium"),
+                    "title":        rule.get("title", ""),
+                    "value":        context,
+                    "root_cause":   rule.get("root_cause", ""),
+                    "resolution":   rule.get("resolution_steps", []),
+                    "diagnostic_sql": rule.get("diagnostic_sql", []),
+                    "related_rules":  rule.get("related_rules", []),
+                })
+        return findings
+
     def evaluate_segment_rules(self, segment_metrics: dict, object_metadata: dict = None) -> list:
         findings = []
         seg_rules = [r for r in self.rules if r.get("category") == "segment"]
@@ -1767,6 +2173,8 @@ class RecommendationEngine:
             pga_metrics      = _fetch_pga_advisory(conn, dbname, begin_snap, end_snap, instance)
             undo_data        = _fetch_undo_generation(conn, dbname, begin_snap, end_snap, instance)
             redo_mb_per_sec  = _fetch_redo_generation(conn, dbname, begin_snap, end_snap, instance)
+            sar_metrics      = _fetch_sar_correlated_metrics(conn, dbname, begin_snap, end_snap, instance)
+            nmon_metrics     = _fetch_nmon_correlated_metrics(conn, dbname, begin_snap, end_snap, instance)
 
             # Build the set of (owner, object_name) pairs from all segment metric results
             # and fetch their metadata from awr_object_metadata in one pass.
@@ -1789,6 +2197,8 @@ class RecommendationEngine:
         findings += self.engine.evaluate_pga_rules(pga_metrics)
         findings += self.engine.evaluate_undo_rules(undo_data)
         findings += self.engine.evaluate_redo_rules(redo_mb_per_sec)
+        findings += self.engine.evaluate_sar_correlated_rules(sar_metrics)
+        findings += self.engine.evaluate_nmon_correlated_rules(nmon_metrics)
 
         # Filter by minimum severity
         findings = [f for f in findings
