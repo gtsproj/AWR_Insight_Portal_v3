@@ -178,7 +178,7 @@
           "editorMode": "code",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "SELECT snap_time AS time,\n  event AS metric, pct_db_time AS \"Oracle Wait % DB Time\"\nFROM awr_foreground_wait_events\nWHERE dbname='${dbname}' AND '${dbname}' != '' AND '${instance}' != ''\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int\n  AND event IN ('db file sequential read','db file scattered read','direct path read')\nORDER BY snap_time\n",
+          "rawSql": "SELECT snap_time AS time,\n  event AS metric, pct_db_time AS \"Oracle Wait % DB Time\"\nFROM awr_foreground_wait_events\nWHERE dbname='${dbname}' AND '${dbname}' != ''\n  AND instance='${instance}' AND '${instance}' != ''\n  AND '${start_snap}' != '' AND '${end_snap}' != ''\n  AND begin_snap BETWEEN split_part('${start_snap}',' - ',1)::int\n                     AND split_part('${end_snap}',' - ',1)::int\n  AND event IN ('db file sequential read','db file scattered read','direct path read')\nORDER BY snap_time\n",
           "refId": "A",
           "sql": {
             "columns": [
