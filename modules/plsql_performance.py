@@ -45,6 +45,23 @@ _ASH_SQL_CTE = """
     WHERE  {ash_filter}
     GROUP  BY o.owner, o.object_name, a.sql_id
 ),
+ash_sql_share AS (
+    -- A sql_id can be called from multiple different PL/SQL objects
+    -- (a shared/common SQL statement -- normal in real schemas, e.g. a
+    -- shared validation or logging routine). dba_hist_sqlstat only
+    -- tracks totals PER SQL_ID, not per calling object, so without
+    -- this, a straight join would attribute that SQL's FULL elapsed/
+    -- cpu/cluster/io time to EVERY calling object rather than
+    -- splitting it -- e.g. a 100s SQL called by 2 procedures would
+    -- report 100s against each, summing to 200s across the two, not
+    -- the true 100s. Allocates each sql_id's totals proportionally by
+    -- each calling object's share of that sql_id's ASH samples --
+    -- since ASH is itself a sampling technique, sample-count share is
+    -- the natural proxy for time share here.
+    SELECT owner, object_name, sql_id, ash_samples,
+           ash_samples / SUM(ash_samples) OVER (PARTITION BY sql_id) obj_share
+    FROM   ash_sql
+),
 sqlstats AS (
     SELECT sql_id,
            SUM(executions_delta)      execs,
@@ -65,20 +82,20 @@ def _top_sql(order_col):
 SELECT *
 FROM (
     SELECT a.owner, a.object_name, a.sql_id,
-           s.execs,
-           ROUND(s.elapsed_sec,2)                       elapsed_sec,
-           ROUND(s.cpu_sec,2)                           cpu_sec,
-           ROUND(s.cluster_sec,2)                       cluster_sec,
-           ROUND(s.io_sec,2)                            io_sec,
-           ROUND(s.elapsed_sec/NULLIF(s.execs,0),4)     avg_elapsed,
-           ROUND(s.cpu_sec/NULLIF(s.execs,0),4)         avg_cpu,
+           ROUND(s.execs * a.obj_share)                 execs,
+           ROUND(s.elapsed_sec * a.obj_share,2)          elapsed_sec,
+           ROUND(s.cpu_sec * a.obj_share,2)              cpu_sec,
+           ROUND(s.cluster_sec * a.obj_share,2)          cluster_sec,
+           ROUND(s.io_sec * a.obj_share,2)               io_sec,
+           ROUND(s.elapsed_sec/NULLIF(s.execs,0),4)      avg_elapsed,
+           ROUND(s.cpu_sec/NULLIF(s.execs,0),4)          avg_cpu,
            a.ash_samples,
            SUBSTR(t.sql_text,1,200)                     sql_text,
            ROW_NUMBER() OVER (
                PARTITION BY a.owner,a.object_name
-               ORDER BY s.{order_col} DESC
+               ORDER BY s.{order_col} * a.obj_share DESC
            ) rn
-    FROM ash_sql a
+    FROM ash_sql_share a
     JOIN sqlstats s ON s.sql_id = a.sql_id
     LEFT JOIN dba_hist_sqltext t ON t.sql_id = a.sql_id
 )
@@ -209,6 +226,16 @@ FETCH FIRST 30 ROWS ONLY
       AND  a.sql_id IS NOT NULL
     GROUP  BY o.owner, o.object_name, a.sql_id
 ),
+ash_proc_share AS (
+    -- Same proportional-allocation fix as _ASH_SQL_CTE above: without
+    -- this, a sql_id shared across multiple calling PL/SQL objects
+    -- would have its FULL elapsed/cpu/cluster/io time attributed to
+    -- EVERY calling object rather than split by each object's actual
+    -- share of that sql_id's activity (proxied by ASH sample share).
+    SELECT owner, object_name, sql_id, ash_samples, gc_current, gc_cr,
+           ash_samples / SUM(ash_samples) OVER (PARTITION BY sql_id) obj_share
+    FROM   ash_proc_sql
+),
 sql_metrics AS (
     SELECT sql_id,
            SUM(executions_delta)       execs,
@@ -222,14 +249,14 @@ sql_metrics AS (
 ),
 proc_summary AS (
     SELECT a.owner, a.object_name,
-           SUM(m.elapsed_sec)  elapsed_sec,
-           SUM(m.cpu_sec)      cpu_sec,
-           SUM(m.cluster_sec)  cluster_sec,
-           SUM(m.io_sec)       io_sec,
-           SUM(m.execs)        executions,
+           SUM(m.elapsed_sec * a.obj_share)  elapsed_sec,
+           SUM(m.cpu_sec * a.obj_share)      cpu_sec,
+           SUM(m.cluster_sec * a.obj_share)  cluster_sec,
+           SUM(m.io_sec * a.obj_share)       io_sec,
+           SUM(m.execs * a.obj_share)        executions,
            SUM(a.gc_current)   gc_current,
            SUM(a.gc_cr)        gc_cr
-    FROM   ash_proc_sql a
+    FROM   ash_proc_share a
     JOIN   sql_metrics m ON m.sql_id = a.sql_id
     GROUP  BY a.owner, a.object_name
 ),
@@ -239,9 +266,9 @@ top_sql AS (
                SUBSTR(t.sql_text,1,120) sql_text,
                ROW_NUMBER() OVER (
                    PARTITION BY a.owner, a.object_name
-                   ORDER BY m.elapsed_sec DESC
+                   ORDER BY m.elapsed_sec * a.obj_share DESC
                ) rn
-        FROM ash_proc_sql a
+        FROM ash_proc_share a
         JOIN sql_metrics m ON m.sql_id = a.sql_id
         LEFT JOIN dba_hist_sqltext t ON t.sql_id = a.sql_id
     ) WHERE rn = 1
@@ -315,36 +342,76 @@ FETCH FIRST 50 ROWS ONLY
         'description': (
             'FK constraints with no supporting index on the child table. '
             'Causes full table scans on the child during parent DELETE/UPDATE '
-            'and lock escalation issues. High value — commonly missed.'
+            'and lock escalation issues. High value — commonly missed. '
+            'Correctly checks composite (multi-column) FKs as a whole, not '
+            'column-by-column — a per-column check would report a composite FK '
+            'as covered even when no single index actually spans all its columns '
+            'together in order, which is what Oracle actually needs to avoid the '
+            'full scan.'
         ),
         'metric':      None,
         'metric_label': None,
         'threshold':   0,
         'sql': lambda: """
-SELECT c.owner, c.table_name, c.constraint_name,
-       cc.column_name fk_column,
-       rc.table_name  referenced_table,
-       'CREATE INDEX idx_' || LOWER(c.table_name) || '_'
-           || LOWER(cc.column_name)
-           || ' ON ' || c.owner || '.' || c.table_name
-           || '(' || cc.column_name || ');'  suggested_index
-FROM   dba_constraints  c
-JOIN   dba_cons_columns cc ON c.owner = cc.owner
-                           AND c.constraint_name = cc.constraint_name
-JOIN   dba_constraints  rc ON c.r_owner = rc.owner
-                           AND c.r_constraint_name = rc.constraint_name
-WHERE  c.constraint_type = 'R'
-  AND  c.owner NOT IN (
-       'SYS','SYSTEM','DBSNMP','OUTLN','MDSYS','ORDSYS','WMSYS',
-       'CTXSYS','XDB','SYSMAN','APPQOSSYS','AUDSYS','OJVMSYS')
-  AND  NOT EXISTS (
-       SELECT 1 FROM dba_ind_columns i
-       WHERE  i.table_owner  = c.owner
-         AND  i.table_name   = c.table_name
-         AND  i.column_name  = cc.column_name
-         AND  i.column_position = 1
-  )
-ORDER  BY c.owner, c.table_name
+WITH fk_cols AS (
+    SELECT c.owner, c.table_name, c.constraint_name,
+           rc.table_name referenced_table,
+           cc.column_name, cc.position
+    FROM   dba_constraints  c
+    JOIN   dba_cons_columns cc ON c.owner = cc.owner
+                               AND c.constraint_name = cc.constraint_name
+    JOIN   dba_constraints  rc ON c.r_owner = rc.owner
+                               AND c.r_constraint_name = rc.constraint_name
+    WHERE  c.constraint_type = 'R'
+      AND  c.owner NOT IN (
+           'SYS','SYSTEM','DBSNMP','OUTLN','MDSYS','ORDSYS','WMSYS',
+           'CTXSYS','XDB','SYSMAN','APPQOSSYS','AUDSYS','OJVMSYS')
+),
+fk_summary AS (
+    SELECT owner, table_name, constraint_name, referenced_table,
+           LISTAGG(column_name, ',') WITHIN GROUP (ORDER BY position) fk_col_list
+    FROM   fk_cols
+    GROUP  BY owner, table_name, constraint_name, referenced_table
+),
+idx_prefix AS (
+    -- Scoped to only the tables that actually have an FK needing
+    -- verification (via fk_summary), not all of dba_ind_columns
+    -- system-wide -- in a large multi-schema database dba_ind_columns
+    -- can hold hundreds of thousands of rows (every column of every
+    -- index in every schema); aggregating all of it before filtering
+    -- was unnecessary work this query never needed to do.
+    SELECT table_owner, table_name,
+           index_name,
+           LISTAGG(column_name, ',') WITHIN GROUP (ORDER BY column_position) idx_col_list
+    FROM   dba_ind_columns i
+    WHERE  EXISTS (
+        SELECT 1 FROM fk_summary f
+        WHERE  f.owner = i.table_owner AND f.table_name = i.table_name
+    )
+    GROUP  BY table_owner, table_name, index_name
+)
+SELECT f.owner, f.table_name, f.constraint_name,
+       f.fk_col_list fk_column,
+       f.referenced_table,
+       'CREATE INDEX idx_' || LOWER(f.table_name) || '_'
+           || LOWER(REPLACE(f.fk_col_list, ',', '_'))
+           || ' ON ' || f.owner || '.' || f.table_name
+           || '(' || f.fk_col_list || ');'  suggested_index
+FROM   fk_summary f
+WHERE  NOT EXISTS (
+    -- An index only genuinely supports this FK if the FK's columns, in
+    -- FK-position order, form the LEADING columns of some index on the
+    -- same table -- either exactly, or as a prefix followed by more
+    -- columns. Matching on ',' -- delimited prefix (not a raw string
+    -- prefix) so e.g. FK columns 'COL1,COL2' cannot false-positive
+    -- match an index column list like 'COL1,COL22,COL3'.
+    SELECT 1 FROM idx_prefix i
+    WHERE  i.table_owner = f.owner
+      AND  i.table_name  = f.table_name
+      AND  (i.idx_col_list = f.fk_col_list
+            OR i.idx_col_list LIKE f.fk_col_list || ',%')
+)
+ORDER  BY f.owner, f.table_name
 """,
     },
 ]

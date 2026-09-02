@@ -118,6 +118,20 @@ portal:
   sar_archive_retain_days:  7
   nmon_archive_retain_days: 7
 
+# ── Live Oracle query engine (PL/SQL Performance Analysis, System Study,
+#    and any future live-Oracle feature that goes through
+#    modules/oracle_live_query.py) ──────────────────────────────────────
+oracle_live_query:
+  # Hard timeout in milliseconds. If a query doesn't return within this
+  # window, oracledb actively interrupts the in-progress server-side
+  # call (not just a client-side give-up) so it stops consuming
+  # resources on the customer's database. Default 5000ms per Ganesh's
+  # requirement -- queries are designed to complete within 2000ms
+  # under normal conditions; this timeout is the safety net for
+  # abnormal cases (large ASH history window, unusually busy system),
+  # not the expected/target runtime.
+  query_timeout_ms: 5000
+
 # ── Anomaly detection thresholds ─────────────────────────────────────────────
 # AWR thresholds (also serve as fallback for SAR/NMON if their sections are absent)
 anomaly:
