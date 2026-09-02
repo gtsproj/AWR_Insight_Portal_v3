@@ -19,7 +19,9 @@ Tables used:
 """
 
 import os
+import re
 import sys
+import html as html_module
 from datetime import datetime, timezone
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "common"))
@@ -296,6 +298,109 @@ def _json_dumps_safe(obj) -> str:
         return json.dumps(obj, indent=2, default=str)
     except Exception:
         return str(obj)
+
+
+def _markdown_to_html(text: str) -> str:
+    """Lightweight, self-contained markdown->HTML for the AI narrative
+    panel. NOT a full CommonMark implementation -- covers exactly the
+    subset LLMs commonly produce for a short structured narrative
+    (headers, bold, italic, bullet/numbered lists, paragraphs), which is
+    what the AI narrative prompt actually asks for (3-4 short
+    paragraphs, occasional emphasis, no tables/code/links). Deliberately
+    not pulling in a new external `markdown` dependency (not currently
+    used anywhere in this codebase) for this one narrow, well-defined
+    use case.
+
+    Bug this fixes: the template previously rendered ai_narrative.text
+    directly via Jinja2's {{ }}, which auto-escapes -- so raw markdown
+    like '## Summary' or '**Critical**' showed up as literal '##'/'**'
+    characters in the rendered report/PDF instead of being formatted.
+
+    SAFETY / ORDERING: escapes the raw text FIRST (html.escape), THEN
+    applies markdown transformations on top of the escaped text. This
+    order matters -- escaping is done before any HTML tags exist, so a
+    literal '<'/'>' actually written by the AI (e.g. 'cost < 100')
+    stays safely inert as text, while markdown's own syntax markers
+    (#, *, -, digits+.) are untouched by html.escape and still convert
+    correctly afterward. The caller must render the result with
+    Jinja2's `| safe` filter -- it returns real HTML, not text to be
+    auto-escaped again.
+    """
+    if not text:
+        return ""
+
+    escaped = html_module.escape(text)
+
+    def _inline(s: str) -> str:
+        s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
+        s = re.sub(r"__(.+?)__", r"<strong>\1</strong>", s)
+        s = re.sub(r"(?<!\*)\*([^*\n]+?)\*(?!\*)", r"<em>\1</em>", s)
+        s = re.sub(r"(?<!_)_([^_\n]+?)_(?!_)", r"<em>\1</em>", s)
+        return s
+
+    lines = escaped.split("\n")
+    out = []
+    in_ul = False
+    in_ol = False
+    para_buf = []
+
+    def _flush_para():
+        if para_buf:
+            out.append(f"<p>{_inline(' '.join(para_buf))}</p>")
+            para_buf.clear()
+
+    def _close_lists():
+        nonlocal in_ul, in_ol
+        if in_ul:
+            out.append("</ul>")
+            in_ul = False
+        if in_ol:
+            out.append("</ol>")
+            in_ol = False
+
+    for raw_line in lines:
+        line = raw_line.strip()
+        header_m = re.match(r"^(#{1,6})\s+(.*)", line)
+        bullet_m = re.match(r"^[-*]\s+(.*)", line)
+        numbered_m = re.match(r"^\d+\.\s+(.*)", line)
+
+        if header_m:
+            _flush_para()
+            _close_lists()
+            # +2 levels so the AI's ## (nominally h2) can't collide
+            # with the report's own h1/h2 section headings -- renders
+            # as h4 instead, staying visually subordinate.
+            level = min(len(header_m.group(1)) + 2, 6)
+            out.append(f"<h{level}>{_inline(header_m.group(2))}</h{level}>")
+        elif bullet_m:
+            _flush_para()
+            if in_ol:
+                out.append("</ol>")
+                in_ol = False
+            if not in_ul:
+                out.append("<ul>")
+                in_ul = True
+            out.append(f"<li>{_inline(bullet_m.group(1))}</li>")
+        elif numbered_m:
+            _flush_para()
+            if in_ul:
+                out.append("</ul>")
+                in_ul = False
+            if not in_ol:
+                out.append("<ol>")
+                in_ol = True
+            out.append(f"<li>{_inline(numbered_m.group(1))}</li>")
+        elif line == "":
+            _flush_para()
+            _close_lists()
+        else:
+            _close_lists()
+            para_buf.append(line)
+
+    _flush_para()
+    _close_lists()
+
+    return "\n".join(out)
 
 
 # ── helpers ─────────────────────────────────────────────────────────────
@@ -1010,6 +1115,13 @@ def build_report_context(dbname: str, instance: str, snap_ids: list) -> dict:
         dbname, instance, snap_ids_sorted[0], snap_ids_sorted[-1])
     ai_narrative = _call_ai_narrative(
         rule_findings, dbname, instance, snap_range_str, ai_settings)
+    # Rendered HTML for the template -- see _markdown_to_html's docstring
+    # for why this exists (Jinja2's {{ ai_narrative.text }} was rendering
+    # raw markdown syntax as literal text). _markdown_to_html("") == "",
+    # so this is safe across every ai_narrative.text path (success,
+    # empty, and error) without needing to touch each individual return
+    # statement inside _call_ai_narrative.
+    ai_narrative["html"] = _markdown_to_html(ai_narrative.get("text", ""))
 
     context = {
         "dbname": dbname, "instance": instance,
@@ -1553,14 +1665,37 @@ def build_conclusion(ctx: dict) -> dict:
     # possible rules. Skipped if the rule engine returned nothing
     # (import/DB failure — see _get_rule_engine_findings) so the report
     # still shows the KPI-threshold recommendations above on their own.
+    #
+    # Dedup key note (2026-09-02 fix): rule titles come from the static
+    # rule definition (e.g. SQL_003's title is always "High Physical
+    # I/O SQL"), not parameterized per-instance -- but the SAME rule
+    # legitimately fires once per matching row, so 3 different SQL_IDs
+    # each exceeding SQL_003's threshold produce 3 distinct findings
+    # that all share that identical title. Deduping on bare title alone
+    # (the previous behavior) silently dropped the 2nd and 3rd as
+    # "already seen", even though they're genuinely different SQL
+    # statements needing separate attention. Now dedupes on
+    # title+distinguisher (sql_id/object/event, whichever the finding
+    # carries) instead, and folds the distinguisher into the displayed
+    # title so multiple occurrences of the same rule are visually
+    # distinguishable in the list, not just no-longer-silently-dropped.
     existing_titles = {t for t, _ in recs}
+    rule_rec_keys_seen = set()
     rule_rec_count = 0
     MAX_RULE_RECS = 6
     for f in ctx.get("rule_findings", []):
         if rule_rec_count >= MAX_RULE_RECS:
             break
         title = f.get("title", "")
-        if not title or title in existing_titles:
+        if not title:
+            continue
+        distinguisher = f.get("sql_id") or f.get("object") or f.get("event") or ""
+        dedup_key = f"{title}::{distinguisher}" if distinguisher else title
+        if dedup_key in rule_rec_keys_seen:
+            continue
+        if not distinguisher and title in existing_titles:
+            # No distinguisher to tell repeats apart -- only guard
+            # against colliding with the heuristic recs' bare titles.
             continue
         detail = f.get("root_cause", "")
         steps = f.get("resolution") or []
@@ -1568,8 +1703,10 @@ def build_conclusion(ctx: dict) -> dict:
             detail = (detail + " " if detail else "") + f"Next step: {steps[0]}"
         if not detail:
             continue
-        recs.append((title, detail))
-        existing_titles.add(title)
+        display_title = f"{title} ({distinguisher})" if distinguisher else title
+        recs.append((display_title, detail))
+        rule_rec_keys_seen.add(dedup_key)
+        existing_titles.add(display_title)
         rule_rec_count += 1
 
     # ── Exadata-specific recommendations ─────────────────────────────────
