@@ -132,6 +132,37 @@ oracle_live_query:
   # not the expected/target runtime.
   query_timeout_ms: 5000
 
+# ── Analysis Report AI narrative (local_ai mode / Ollama) ───────────────────
+# Was hardcoded (timeout=120, num_predict=600) until 2026-09-03 -- moved here
+# so it can be tuned without a code change. Defaults below match what was
+# already hardcoded, so nothing changes until you edit this.
+ai_narrative:
+  # Max seconds to wait for Ollama to return the narrative before giving
+  # up. Already raised once before (45s -> 120s, see the comment this
+  # replaced in analysis_report_generator.py) for CPU-bound Ollama
+  # inference with no GPU. If you're still hitting timeouts, raise this
+  # first -- it's the direct fix. A slow/unreachable AI endpoint can't
+  # hang report generation past this value; the report still completes,
+  # just without the AI panel (falls back to Rules-mode findings only).
+  ollama_timeout_seconds: 120
+  # Max tokens Ollama is asked to generate for the narrative. Lowering
+  # this (e.g. to 400) directly reduces generation time on CPU-bound
+  # inference, since output length is the main driver of total time --
+  # trade narrative length/detail for speed if raising the timeout
+  # alone doesn't get you where you want. Raising it does the opposite.
+  ollama_num_predict: 600
+  # How long Ollama keeps this model loaded in memory after a request,
+  # so the NEXT report generation doesn't pay the cost of reloading an
+  # 8B model from disk (which can itself take 30-60+ seconds on
+  # CPU-only hardware, on top of actual generation time -- often the
+  # real cause of a timeout that a warm-inference baseline shouldn't
+  # hit). Accepts Ollama's normal keep_alive formats: a duration string
+  # ("30m", "1h"), a number of seconds, or -1 to never unload. This
+  # value is sent with every request and overrides Ollama's own
+  # server-level OLLAMA_KEEP_ALIVE setting (per Ollama's docs), so it
+  # works regardless of how Ollama is hosted on your server.
+  ollama_keep_alive: "30m"
+
 # ── Anomaly detection thresholds ─────────────────────────────────────────────
 # AWR thresholds (also serve as fallback for SAR/NMON if their sections are absent)
 anomaly:

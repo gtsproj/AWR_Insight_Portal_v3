@@ -147,6 +147,117 @@ def _resolve_ollama_model(url: str, model: str) -> str:
     return model
 
 
+def _fetch_object_metadata_for_narrative(dbname: str, objects: list) -> dict:
+    """Look up awr_object_metadata (num_rows, last_analyzed, object_type)
+    for the given objects, to enrich the AI narrative prompt for
+    segment-level findings the same way _fetch_wait_event_guidance does
+    for wait events. Ganesh asked (2026-09-03) for this specifically.
+
+    `objects` are the finding dicts' own "object" strings, which
+    evaluate_segment_rules() formats as "OWNER.OBJECT_NAME" (confirmed
+    directly in recommendation_engine.py) -- split on the first '.' and
+    match on BOTH owner and object_name via a row-value IN clause,
+    since matching object_name alone risks colliding across schemas
+    that happen to share a table/index name.
+
+    Unlike awr_wait_event_master (a generic, dbname-independent
+    reference table), awr_object_metadata is scoped per dbname, so this
+    takes dbname as well.
+
+    Opens its own short-lived connection (same reason as
+    _fetch_wait_event_guidance -- the report-building connection is
+    already closed by the time the AI narrative step runs). Returns {}
+    if unreachable, empty, or no rows match -- not fabricated data.
+    """
+    if not objects:
+        return {}
+    pairs = []
+    for obj in objects:
+        if "." in obj:
+            owner, name = obj.split(".", 1)
+        else:
+            owner, name = "", obj
+        pairs.append((owner.upper(), name.upper()))
+    if not pairs:
+        return {}
+    try:
+        from db import get_db_connection
+        conn = get_db_connection()
+        try:
+            with conn.cursor() as cur:
+                values_clause = ",".join(["(%s,%s)"] * len(pairs))
+                params = [dbname]
+                for owner, name in pairs:
+                    params.extend([owner, name])
+                cur.execute(f"""
+                    SELECT owner, object_name, object_type, num_rows, last_analyzed
+                    FROM awr_object_metadata
+                    WHERE dbname = %s
+                      AND (UPPER(owner), UPPER(object_name)) IN ({values_clause})
+                """, tuple(params))
+                result = {}
+                for owner, obj_name, obj_type, num_rows, last_analyzed in cur.fetchall():
+                    result[f"{owner}.{obj_name}"] = {
+                        "object_type": obj_type,
+                        "num_rows": num_rows,
+                        "last_analyzed": last_analyzed,
+                    }
+                return result
+        finally:
+            conn.close()
+    except Exception as e:
+        logger.debug(f"Object metadata lookup failed for AI narrative "
+                     f"(non-fatal, enrichment just won't include it): {e}")
+        return {}
+
+
+def _fetch_wait_event_guidance(events: list) -> dict:
+    """Look up awr_wait_event_master.guidance_text/wait_class for the
+    given wait event names, to enrich the AI narrative prompt beyond
+    the bare event name string that findings normally carry.
+
+    Ganesh asked (2026-09-02) how to feed recommendation_rules_v2.json
+    and awr_wait_event_master into the AI narrative. Turned out rule
+    root_cause/resolution_steps were ALREADY reaching the prompt --
+    every finding dict from recommendation_engine.py already carries
+    those fields straight from the rule definition, and
+    _get_rule_engine_findings() passes findings through unmodified.
+    awr_wait_event_master was the genuine gap: the table exists with
+    74 well-written guidance entries (schema/wait_event_master_update.sql)
+    but nothing in the codebase ever queried it. This function is that
+    missing piece.
+
+    Opens its own short-lived connection since build_report_context's
+    connection is already closed by the time this runs (see conn.close()
+    before the _call_ai_narrative call site). Returns {} (not a partial
+    or fabricated result) if the table hasn't been seeded yet -- run
+    schema/wait_event_master_update.sql once against your database if
+    this consistently returns nothing.
+    """
+    if not events:
+        return {}
+    try:
+        from db import get_db_connection
+        conn = get_db_connection()
+        try:
+            with conn.cursor() as cur:
+                placeholders = ",".join(["%s"] * len(events))
+                cur.execute(f"""
+                    SELECT event, wait_class, guidance_text
+                    FROM awr_wait_event_master
+                    WHERE event IN ({placeholders})
+                """, tuple(events))
+                return {row[0]: {"wait_class": row[1], "guidance": row[2]}
+                        for row in cur.fetchall() if row[2]}
+        finally:
+            conn.close()
+    except Exception as e:
+        logger.debug(f"Wait event guidance lookup failed "
+                     f"(table may not be seeded — see "
+                     f"schema/wait_event_master_update.sql): {e}")
+        return {}
+
+
 def _call_ai_narrative(findings: list, dbname: str, instance: str,
                         snap_range: str, ai_settings: dict) -> dict:
     """Generate an AI narrative summary of the rule engine's top findings,
@@ -172,16 +283,70 @@ def _call_ai_narrative(findings: list, dbname: str, instance: str,
                 "error": "Rule engine returned no findings for this snap range"}
 
     top = findings[:6]
+
+    # Wait-event guidance enrichment: gives the model grounded Oracle
+    # reference material for events it's summarising, rather than
+    # relying on whatever wait-event knowledge it happened to absorb
+    # during pretraining (a real hallucination risk for a small local
+    # model — the whole point of this enrichment).
+    event_names = sorted({f.get("event") for f in top if f.get("event")})
+    wait_guidance = _fetch_wait_event_guidance(event_names)
+    guidance_block = ""
+    if wait_guidance:
+        lines = [f"- {ev} ({info['wait_class']}): {info['guidance']}"
+                 for ev, info in wait_guidance.items()]
+        guidance_block = (
+            "\n\nWait Event Reference (use this to ground your explanation "
+            "of any wait-event findings above — do not contradict it):\n"
+            + "\n".join(lines)
+        )
+
+    # Object metadata enrichment (2026-09-03, Ganesh's request): for
+    # segment-level findings, gives the model the actual row count and
+    # statistics freshness for the specific object involved, instead of
+    # discussing "this segment" in the abstract. Same grounding
+    # rationale as the wait-event block above.
+    object_refs = sorted({f.get("object") for f in top if f.get("object")})
+    obj_metadata = _fetch_object_metadata_for_narrative(dbname, object_refs)
+    object_block = ""
+    if obj_metadata:
+        obj_lines = []
+        for obj, info in obj_metadata.items():
+            bits = [info["object_type"] or "OBJECT"]
+            if info["num_rows"] is not None:
+                bits.append(f"{info['num_rows']:,} rows")
+            if info["last_analyzed"] is not None:
+                bits.append(f"stats last gathered {info['last_analyzed']}")
+            else:
+                bits.append("statistics never gathered")
+            obj_lines.append(f"- {obj}: {', '.join(bits)}")
+        object_block = (
+            "\n\nObject Reference (real row counts/statistics freshness for "
+            "the specific segments above — use these, don't guess at scale):\n"
+            + "\n".join(obj_lines)
+        )
+
     prompt = (
         f"You are an Oracle DBA expert reviewing an AWR analysis for "
         f"database {dbname}/{instance} (snapshots {snap_range}). "
-        f"The rule engine below already identified these findings — do not "
-        f"repeat them verbatim. Instead, in 3-4 short paragraphs: "
+        f"The rule engine below already identified these findings, each "
+        f"with its own root_cause and resolution steps — do not repeat "
+        f"them verbatim, but your narrative MUST be grounded in this "
+        f"specific content: reference concrete details from root_cause/"
+        f"resolution/the reference blocks below (numbers, object names, "
+        f"specific mechanisms) rather than writing generic Oracle tuning "
+        f"advice that could apply to any database. If a finding's "
+        f"root_cause mentions a specific cause (e.g. a deep B-tree index, "
+        f"a specific table's row count), your narrative should reflect "
+        f"that specific cause, not a generic restatement of the wait "
+        f"event or metric name alone. In 3-4 short paragraphs: "
         f"1) summarise the overall performance state in plain language, "
-        f"2) call out the top 3 most urgent items in priority order and why, "
-        f"3) note any cross-finding pattern (e.g. one root cause explaining "
-        f"several findings). Be concise and factual — no generic filler.\n\n"
-        f"Findings:\n" + _json_dumps_safe(top)
+        f"2) call out the top 3 most urgent items in priority order and "
+        f"why, using the specific grounding details available for each, "
+        f"3) note any cross-finding pattern (e.g. one root cause "
+        f"explaining several findings). Be concise and factual — no "
+        f"generic filler.\n\n"
+        f"Findings:\n" + _json_dumps_safe(top) + guidance_block + object_block
     )
 
     try:
@@ -192,21 +357,41 @@ def _call_ai_narrative(findings: list, dbname: str, instance: str,
             resolved_model = _resolve_ollama_model(url, model)
             logger.info(f"Calling Local AI (Ollama) at {url} model={resolved_model} "
                         f"(configured as '{model}') for AI narrative")
-            # num_predict trimmed from 900->600 and timeout raised 45s->120s:
-            # CPU-bound Ollama inference (no GPU) took ~47s for an 8B model at
-            # 900 tokens on Ganesh's server -- right at the old 45s timeout
-            # edge, confirmed via logs/analysis_report_generator.log 2026-08-19
-            # ("AI narrative call failed (local_ai): timed out"). Cloud
-            # providers below are unaffected -- they're consistently fast, no
-            # need to loosen those timeouts.
+            # Timeout and num_predict now read from config/settings.yaml
+            # -> ai_narrative (was hardcoded here until 2026-09-03; see
+            # that section's comments for the tuning tradeoff and this
+            # timeout's history -- it was already raised once before,
+            # 45s->120s, for CPU-bound Ollama inference with no GPU).
+            try:
+                from config_loader import load_config
+                _ai_cfg = (load_config() or {}).get("ai_narrative", {})
+            except Exception:
+                _ai_cfg = {}
+            ollama_timeout = int(_ai_cfg.get("ollama_timeout_seconds", 120))
+            ollama_num_predict = int(_ai_cfg.get("ollama_num_predict", 600))
+            # keep_alive (2026-09-03): Ollama unloads a model from memory
+            # after ~5 minutes idle by default, and reloading an 8B model
+            # from disk before generating a single token can itself take
+            # 30-60+ seconds on CPU-only hardware -- easily explaining a
+            # timeout that a previously-measured ~47s warm-inference
+            # baseline shouldn't hit. Setting keep_alive per-request is
+            # more reliable than relying on the OLLAMA_KEEP_ALIVE server
+            # environment variable: per Ollama's own docs, a request's
+            # keep_alive value overrides the server-level env var, so
+            # this works regardless of how Ollama is hosted/whether the
+            # env var was correctly set for that process. Configurable
+            # (same ai_narrative config section) in case 30m isn't right
+            # for how often reports actually get generated.
+            ollama_keep_alive = _ai_cfg.get("ollama_keep_alive", "30m")
             payload = _json.dumps({
                 "model": resolved_model, "prompt": prompt, "stream": False,
-                "options": {"temperature": 0.3, "num_predict": 600},
+                "keep_alive": ollama_keep_alive,
+                "options": {"temperature": 0.3, "num_predict": ollama_num_predict},
             }).encode()
             req = urllib.request.Request(
                 f"{url}/api/generate", data=payload,
                 headers={"Content-Type": "application/json"})
-            with urllib.request.urlopen(req, timeout=120) as resp:
+            with urllib.request.urlopen(req, timeout=ollama_timeout) as resp:
                 text = _json.loads(resp.read()).get("response", "").strip()
             if text:
                 logger.info(f"Local AI narrative received ({len(text)} chars)")
