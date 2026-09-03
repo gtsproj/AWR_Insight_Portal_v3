@@ -1353,9 +1353,6 @@ tr:nth-child(even) td{background:#FAFBFE}
 <div class="st" id="sec-root-cause"><span class="st-icon">📝</span> Root Cause Analysis {{ help("A structured Symptoms → Root Cause → Evidence → Action Plan summary, pre-filled from this report's data. Click into any field below to edit it before printing or sharing — it's a starting draft for an incident writeup, not a final answer.") }}</div>
 {# Editable version (screen only) #}
 <div class="rca-wrap" id="rca-editable" style="border:2px solid #dee2ec;background:#fff">
-  <div class="no-print" style="font-size:10px;color:#475569;font-weight:600;margin-bottom:10px">
-    📝 Pre-filled from report data — click any field to edit before printing
-  </div>
   {% set rca_rows = [
     ('🔴 Symptoms',   dbname~'/'~instance~' degraded — top wait: '~top_wait_event~' · DB Time '~kpi.db_time_ss~' s/s · Health '~health.rag),
     ('🎯 Root Cause', conclusion.hotspots[0] if conclusion.hotspots else 'See hotspot analysis'),
