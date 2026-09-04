@@ -20,3 +20,26 @@ SAR Limit:1
 Expiry:   2026-07-13
 Customer: TEST001 (Test)
 ============================================================
+
+============================================================
+DB TYPE LICENSING (added 2026-09) -- --db-types flag
+============================================================
+New in v4 key format: --db-types selects WHICH database types this
+license enables at all (Oracle, MS SQL, MySQL, PostgreSQL, MariaDB,
+MongoDB, Cassandra), independent of --db (which stays a single pooled
+instance count shared across whichever types are enabled).
+
+Defaults to "oracle" if --db-types is omitted -- matches every key
+issued before this feature existed, so existing customers are
+unaffected if you don't pass it.
+
+Valid values: oracle,mssql,mysql,postgresql,mariadb,mongodb,cassandra
+
+py modules\license_engine.py generate --tier PRO --mac YOUR_MAC --db 5 --sar 5 --db-types "oracle,mssql" --expiry 2027-06-01 --customer CUST100 --name "Customer Name"
+
+-- Oracle + MS SQL together, for a customer who wants both engines
+
+py modules\license_engine.py generate --tier ENT --mac YOUR_MAC --db -1 --sar -1 --db-types "oracle,mssql,mysql,postgresql,mariadb,mongodb,cassandra" --expiry 2027-06-01 --customer CUST200 --name "Customer Name"
+
+-- Enterprise, every currently-defined db type enabled
+============================================================

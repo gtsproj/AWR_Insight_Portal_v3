@@ -53,6 +53,52 @@ GRACE_DAYS = 7          # days after expiry before hard block
 PDB_FREE_COUNT = 3      # PDBs included free per CDB
 MONTHLY_AI_LIMIT = 200  # default monthly cloud AI recommendation cap
 
+# ── Licensed database types (v4 key format, 2026-09) ───────────────
+# One bit each, packed into a single byte -- 7 types defined, 1 bit
+# spare for whatever comes after Cassandra. This is what actually
+# gates which parsers/collectors/portal UI a given license unlocks --
+# see is_db_type_licensed() below, and the module-level docstring
+# note on how a new collector should use it.
+#
+# Every license issued before this (v1/v2/v3 keys, already in the
+# field) has no mask at all -- validate_license_key() defaults those
+# to {"oracle"} only, matching what every existing customer actually
+# has today. This is a real correctness point, not a formality: it's
+# the difference between "decode a key that predates this feature and
+# correctly infer Oracle-only" vs "silently unlock everything for
+# every already-issued key," which would be a serious licensing bug.
+DB_TYPES = {
+    "oracle":     0,  # bit 0
+    "mssql":      1,  # bit 1
+    "mysql":      2,  # bit 2
+    "postgresql": 3,  # bit 3
+    "mariadb":    4,  # bit 4
+    "mongodb":    5,  # bit 5
+    "cassandra":  6,  # bit 6
+    # bit 7 reserved
+}
+
+
+def _encode_db_type_mask(db_types) -> int:
+    """['oracle', 'mssql'] -> bitmask int. Unknown type names raise --
+    a typo here should fail loudly at license-generation time, not
+    silently issue a key that doesn't grant what was intended."""
+    mask = 0
+    for t in db_types:
+        t = t.strip().lower()
+        if t not in DB_TYPES:
+            raise ValueError(f"Unknown db type: {t!r}. Valid: {list(DB_TYPES.keys())}")
+        mask |= (1 << DB_TYPES[t])
+    return mask
+
+
+def _decode_db_type_mask(mask: int) -> list:
+    """bitmask int -> sorted ['mssql', 'oracle', ...] -- a list, not a set,
+    so this serializes cleanly to JSON (the CLI's `validate` command dumps
+    this straight to JSON) without needing a set->list conversion at every
+    call site."""
+    return sorted(name for name, bit in DB_TYPES.items() if mask & (1 << bit))
+
 
 # ══════════════════════════════════════════════════════════════════
 # MAC ADDRESS
@@ -392,29 +438,40 @@ def generate_license_key(
     customer_id: str,
     customer_name: str,
     nmon_count: int = 0,
+    db_types: list = None,
 ) -> str:
     """
-    Generate a compact license key (v3 format — 18-byte payload).
+    Generate a compact license key (v4 format — 19-byte payload).
 
     Format versions detected by stripped base64 payload length:
       v1 (22 chars) — 16-byte payload — no nmon field (legacy)
       v2 (23 chars) — 17-byte payload — adds nmon; 0 = unlimited (old flaw)
       v3 (24 chars) — 18-byte payload — version byte; 0 = none, 255 = unlimited
+      v4 (26 chars) — 19-byte payload — adds db_type_mask byte (2026-09)
 
-    v3 sentinel: 0 = not licensed, 1-254 = count, 255 = unlimited (-1)
+    v3/v4 sentinel: 0 = not licensed, 1-254 = count, 255 = unlimited (-1)
 
-    v3 payload (18 bytes):
-      1 byte  — format version (0x03)
+    v4 payload (19 bytes):
+      1 byte  — format version (0x04)
       1 byte  — tier code
       6 bytes — MAC address octets
-      1 byte  — db_count   (0=none, 255=unlimited)
-      1 byte  — sar_count  (0=none, 255=unlimited)
-      1 byte  — nmon_count (0=none, 255=unlimited)
+      1 byte  — db_count      (0=none, 255=unlimited)
+      1 byte  — sar_count     (0=none, 255=unlimited)
+      1 byte  — nmon_count    (0=none, 255=unlimited)
+      1 byte  — db_type_mask  (bit per DB_TYPES entry — which db types this
+                                license enables at all, independent of db_count,
+                                which remains a single pooled instance count
+                                shared across whichever types are enabled)
       2 bytes — days since 2024-01-01
       3 bytes — customer_id hash (sha256 first 3 bytes)
       2 bytes — checksum
 
-    Output: AVK-{TIER}-{24 base64url chars}
+    db_types: list of DB_TYPES keys, e.g. ["oracle", "mssql"]. Defaults to
+    ["oracle"] if not given, matching every license issued before this
+    feature existed -- new keys are Oracle-only unless db_types is
+    explicitly passed, not silently "everything."
+
+    Output: AVK-{TIER}-{26 base64url chars}
     """
     if tier not in _TIER_CODE:
         raise ValueError(f"Unknown tier: {tier}. Valid: {list(_TIER_CODE.keys())}")
@@ -429,7 +486,7 @@ def generate_license_key(
         raise ValueError(f"Expiry date out of range: {expiry_date}")
 
     def _enc(count: int) -> int:
-        """v3 encoding: -1 → 255 (unlimited), 0 → 0 (none), 1-254 → count."""
+        """v3/v4 encoding: -1 → 255 (unlimited), 0 → 0 (none), 1-254 → count."""
         if count == -1: return 255
         if count ==  0: return 0
         return min(max(count, 1), 254)
@@ -437,23 +494,25 @@ def generate_license_key(
     db_val   = _enc(db_count)
     sar_val  = _enc(sar_count)
     nmon_val = _enc(nmon_count)
+    db_type_mask = _encode_db_type_mask(db_types if db_types else ["oracle"])
 
     cust_hash = hashlib.sha256(customer_id.encode()).digest()[:3]
 
-    # v3: 16-byte payload body
+    # v4: 17-byte payload body
     payload = struct.pack(
-        ">BB6sBBBH3s",
-        0x03,           # format version byte
+        ">BB6sBBBBH3s",
+        0x04,           # format version byte
         _TIER_CODE[tier],
         mac_bytes,
         db_val,
         sar_val,
         nmon_val,
+        db_type_mask,
         days,
         cust_hash,
     )
     chk = sum(payload) & 0xFFFF
-    payload += struct.pack(">H", chk)   # 18 bytes total
+    payload += struct.pack(">H", chk)   # 19 bytes total
 
     encrypted = _xor_crypt(payload, _LICENSE_SECRET)
     b64 = base64.urlsafe_b64encode(encrypted).decode().rstrip("=")
@@ -469,6 +528,7 @@ def validate_license_key(key: str) -> dict:
         "valid": False, "in_grace": False, "hard_expired": False,
         "tier": "", "tier_name": "", "is_trial": False,
         "db_limit": 0, "sar_limit": 0, "nmon_limit": 0,
+        "licensed_db_types": [],
         "expiry": None, "days_left": -9999,
         "customer_id": "", "customer_name": "",
         "issued": None, "mac_match": False, "error": "",
@@ -507,6 +567,7 @@ def validate_license_key(key: str) -> dict:
     # v1: 14-byte body (16 total) → 22 stripped b64 chars — no nmon
     # v2: 15-byte body (17 total) → 23 stripped b64 chars — 0=unlimited (legacy)
     # v3: 16-byte body (18 total) → 24 stripped b64 chars — 0=none, 255=unlimited
+    # v4: 17-byte body (19 total) → 26 stripped b64 chars — adds db_type_mask
     payload_body = payload[:-2]  # strip checksum
 
     def _dec_v2(val):
@@ -514,12 +575,27 @@ def validate_license_key(key: str) -> dict:
         return -1 if val == 0 else int(val)
 
     def _dec_v3(val):
-        """v3 sentinel: 0 = none (0), 255 = unlimited (-1), 1-254 = count."""
+        """v3/v4 sentinel: 0 = none (0), 255 = unlimited (-1), 1-254 = count."""
         if val == 255: return -1
         return int(val)   # 0 stays 0 (none)
 
+    # v1/v2/v3 keys predate db_type_mask entirely -- every one of them,
+    # already issued and in the field, is Oracle-only in practice (nothing
+    # else existed to license). Defaulting here to {"oracle"} is what makes
+    # that correct rather than either "empty" (would incorrectly block
+    # Oracle itself for existing customers) or "everything" (would silently
+    # unlock unbuilt features for keys issued before they existed).
+    db_type_mask = _encode_db_type_mask(["oracle"])
+
     try:
-        if len(payload_body) == 16:
+        if len(payload_body) == 17:
+            # v4 key — adds db_type_mask
+            _ver, tier_code, mac_bytes, db_val, sar_val, nmon_val, db_type_mask, days, cust_hash = \
+                struct.unpack(">BB6sBBBBH3s", payload_body)
+            db_limit   = _dec_v3(db_val)
+            sar_limit  = _dec_v3(sar_val)
+            nmon_limit = _dec_v3(nmon_val)
+        elif len(payload_body) == 16:
             # v3 key — leading version byte
             _ver, tier_code, mac_bytes, db_val, sar_val, nmon_val, days, cust_hash = \
                 struct.unpack(">BB6sBBBH3s", payload_body)
@@ -571,6 +647,7 @@ def validate_license_key(key: str) -> dict:
         "db_limit":      db_limit,
         "sar_limit":     sar_limit,
         "nmon_limit":    nmon_limit,
+        "licensed_db_types": _decode_db_type_mask(db_type_mask),
         "expiry":        expiry_dt,
         "days_left":     days_left,
         "customer_id":   "",
@@ -911,6 +988,7 @@ def get_license_status(conn=None, config: dict = None) -> dict:
         "db_limit":         db_limit,
         "sar_limit":        sar_limit,
         "nmon_limit":       nmon_limit,
+        "licensed_db_types": key_info.get("licensed_db_types", ["oracle"]),
         "db_used":          db_used,
         "sar_used":         sar_used,
         "nmon_used":        nmon_used,
@@ -1077,6 +1155,62 @@ def is_db_licensed(dbname: str, conn, queued_dbs: set = None) -> bool:
 
 
 # ══════════════════════════════════════════════════════════════════
+# DB TYPE GATING — 2026-09
+# ══════════════════════════════════════════════════════════════════
+
+def is_db_type_licensed(db_type: str, conn=None) -> bool:
+    """
+    Whether a given database type (a DB_TYPES key, e.g. "mssql") is
+    enabled at all by the current license -- a pure on/off gate,
+    independent of db_limit's pooled instance count.
+
+    This is the extension point every future db-type-specific
+    collector/parser/portal route should check at startup, mirroring
+    how EXADATA_FEATURE_ENABLED (common/feature_flags.py) gates the
+    Exadata UI today -- except this reads the REAL license, not a
+    hardcoded development-stage switch. Pattern for a future
+    modules/mssql/*.py collector:
+
+        from license_engine import is_db_type_licensed
+        if not is_db_type_licensed("mssql"):
+            logger.info("MS SQL Server not licensed -- skipping collection")
+            return
+
+    conn is optional -- if not provided, opens its own short-lived
+    connection to read portal_config (same self-contained pattern as
+    the rest of this module's DB-touching functions). Fails open
+    (returns True) on any error, matching is_db_licensed's existing
+    fail-open behaviour -- a license-check failure should not itself
+    take down data collection that was otherwise working.
+    """
+    db_type = db_type.strip().lower()
+    if db_type not in DB_TYPES:
+        logger.warning(f"is_db_type_licensed: unknown db type {db_type!r}")
+        return False
+    try:
+        own_conn = conn is None
+        if own_conn:
+            from db import get_db_connection
+            conn = get_db_connection()
+        try:
+            with conn.cursor() as cur:
+                cur.execute("SELECT value FROM portal_config WHERE key = 'license_key'")
+                row = cur.fetchone()
+                key_info = validate_license_key(row[0] if row else "")
+                # Note: Enterprise tier's db_limit=-1 means "unlimited instance
+                # count," but does NOT automatically imply every db type is
+                # licensed -- db_type_mask is independent of tier and only
+                # reflects what the key was actually generated with.
+                return db_type in key_info.get("licensed_db_types", [])
+        finally:
+            if own_conn:
+                conn.close()
+    except Exception as e:
+        logger.debug(f"is_db_type_licensed check failed for {db_type!r}: {e}")
+        return True  # fail open, same as is_db_licensed
+
+
+# ══════════════════════════════════════════════════════════════════
 # KEY GENERATION CLI (Avekshaa internal use)
 # ══════════════════════════════════════════════════════════════════
 
@@ -1095,6 +1229,9 @@ if __name__ == "__main__":
     gen.add_argument("--sar",      type=int, default=5)
     gen.add_argument("--nmon",     type=int, default=0,
                      help="Licensed NMON server count (0=none, -1=unlimited)")
+    gen.add_argument("--db-types", default="oracle",
+                     help=f"Comma-separated licensed database types. "
+                          f"Choices: {','.join(DB_TYPES.keys())}. Default: oracle")
     gen.add_argument("--expiry",   required=True, help="YYYY-MM-DD")
     gen.add_argument("--customer", required=True, help="Customer ID (e.g. CUST001)")
     gen.add_argument("--name",     default="", help="Customer name")
@@ -1109,12 +1246,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.cmd == "generate":
+        db_types_list = [t.strip() for t in args.db_types.split(",") if t.strip()]
         key = generate_license_key(
             tier          = args.tier,
             mac_address   = args.mac,
             db_count      = args.db,
             sar_count     = args.sar,
             nmon_count    = args.nmon,
+            db_types      = db_types_list,
             expiry_date   = date.fromisoformat(args.expiry),
             customer_id   = args.customer,
             customer_name = args.name,
@@ -1128,6 +1267,7 @@ if __name__ == "__main__":
         print(f"DB Limit:   {args.db}")
         print(f"SAR Limit:  {args.sar}")
         print(f"NMON Limit: {args.nmon}")
+        print(f"DB Types:   {', '.join(db_types_list)}")
         print(f"Expiry:     {args.expiry}")
         print(f"Customer:   {args.customer} ({args.name})")
         print(f"{'='*60}\n")
