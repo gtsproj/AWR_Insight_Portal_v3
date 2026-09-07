@@ -101,6 +101,36 @@ BENIGN_WAIT_TYPES = frozenset([
     "SOS_WORK_DISPATCHER",
 ])
 
+# Absolute floor, in ms, below which a wait_type's total delta is too
+# small to mean anything, REGARDLESS of its percentage share of total
+# wait time. This is a genuinely different problem from
+# BENIGN_WAIT_TYPES above: some wait types (the PREEMPTIVE_OS_* family
+# especially) are NOT always benign the way SOS_WORK_DISPATCHER always
+# is -- PREEMPTIVE_OS_AUTHENTICATIONOPS running high can mean a real
+# Active Directory/Domain Controller performance problem, confirmed
+# against multiple DBA sources -- so blanket-excluding the whole
+# PREEMPTIVE_* family the way BENIGN_WAIT_TYPES does for genuinely
+# always-irrelevant types would be wrong; it would permanently hide a
+# real signal at scale, not just suppress noise.
+#
+# A real run against a near-idle instance showed exactly why a floor
+# is still needed even so: PAGEIOLATCH_SH fired MSSQL_WAIT_001 as HIGH
+# severity on a 50ms total delta (26.88% of an ~186ms total across
+# every wait type) -- a technically-correct percentage computed from
+# numbers too small to represent a real problem on any system. The
+# same multiple sources that discuss PREEMPTIVE_OS_AUTHENTICATIONOPS
+# as a genuine problem when high are explicit that sub-millisecond-
+# average, small-total values aren't worth worrying about, which is
+# the same "small numbers, even if 100% of a tiny total, aren't a
+# finding" principle this floor encodes generally rather than
+# per-wait-type.
+#
+# 1000ms (1 second) of total wait time across the delta window is a
+# conservative, reasonable starting floor, not an empirically-tuned
+# one -- like several other thresholds in this project's rules, this
+# may need adjusting once real production-scale (not near-idle
+# test-instance) data is available to tune against.
+MIN_WAIT_TIME_MS_DELTA = 1000
 
 def _load_rules() -> list:
     try:
@@ -218,13 +248,20 @@ def fetch_wait_type_metrics(pg_conn, instance_id: int, snapshot_id: int = None) 
     # resets the cumulative counters -- a negative delta here means
     # exactly that, not a real decrease, and should be excluded rather
     # than reported as a nonsensical negative wait time), zero-delta
-    # rows (no new waits of this type since the previous snapshot), and
+    # rows (no new waits of this type since the previous snapshot),
     # benign background wait types (BENIGN_WAIT_TYPES) -- confirmed
-    # against a real instance run: without this last filter,
+    # against a real instance run: without this filter,
     # SOS_WORK_DISPATCHER alone consumed 68.59% of total wait time,
     # silently diluting every genuine workload wait's computed share
-    # and producing zero findings despite the raw data being real.
-    clean = [(wt, d, t) for wt, d, t in rows if d > 0 and wt not in BENIGN_WAIT_TYPES]
+    # and producing zero findings despite the raw data being real --
+    # and, separately, waits below MIN_WAIT_TIME_MS_DELTA in absolute
+    # terms -- confirmed against a second real run: PAGEIOLATCH_SH
+    # fired a HIGH-severity finding on a 50ms total delta out of an
+    # ~186ms total across every wait type on a near-idle instance,
+    # technically correct at 26.88% share but not a real problem at
+    # that magnitude.
+    clean = [(wt, d, t) for wt, d, t in rows
+             if d > 0 and wt not in BENIGN_WAIT_TYPES and d >= MIN_WAIT_TIME_MS_DELTA]
     total_wait_ms = sum(d for _, d, _ in clean) or 1  # avoid div-by-zero if everything was filtered
 
     results = []
