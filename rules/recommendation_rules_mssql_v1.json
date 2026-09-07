@@ -1,0 +1,96 @@
+{
+  "rules": [
+    {
+      "rule_id": "MSSQL_WAIT_001",
+      "category": "mssql_wait_type",
+      "event_pattern": "PAGEIOLATCH_*",
+      "condition": "wait_pct_of_total > 15 OR avg_wait_ms > 10",
+      "severity": "high",
+      "title": "High Buffer I/O Wait (PAGEIOLATCH)",
+      "root_cause": "PAGEIOLATCH waits mean SQL Server is waiting on physical disk I/O to bring data pages into the buffer pool. Common causes: buffer pool undersized for the working set (check Page Life Expectancy and Max Server Memory), missing or stale statistics causing more pages to be scanned than necessary, or genuine storage-layer I/O bottleneck.",
+      "resolution_steps": [
+        "1. Check Page Life Expectancy (mssql_perf_counters, counter_name='Page life expectancy') -- consistently low (under a few hundred seconds) points at buffer pool pressure",
+        "2. Check Max Server Memory (mssql_config_snapshot.max_server_memory_mb) against actual physical memory -- an undersized cap forces more physical reads",
+        "3. Check mssql_index_usage_delta for the affected database for missing/stale statistics or high leaf-level page churn",
+        "4. If storage-layer latency is suspected, check mssql_file_io_delta's io_stall_read_ms for the specific file"
+      ],
+      "related_rules": ["MSSQL_SEG_001"]
+    },
+    {
+      "rule_id": "MSSQL_WAIT_002",
+      "category": "mssql_wait_type",
+      "event_pattern": "LCK_M_*",
+      "condition": "wait_pct_of_total > 10 OR avg_wait_ms > 50",
+      "severity": "high",
+      "title": "High Lock Wait (Blocking Contention)",
+      "root_cause": "LCK_M_* waits mean sessions are waiting on locks held by other sessions -- genuine blocking, not I/O or CPU pressure. Common causes: long-running transactions holding locks longer than necessary, missing indexes forcing broader lock scope (table/page locks instead of row locks), or a genuinely high-concurrency hot row/page being contended.",
+      "resolution_steps": [
+        "1. Check mssql_blocking_snapshot for the same time period -- it captures the actual blocking_session_id/wait_resource/request_mode detail this wait-type-level rule can't see on its own",
+        "2. Look for long-running transactions (mssql_session_stats' cpu_time_ms/reads high relative to a short session count) that may be holding locks too long",
+        "3. Check for missing indexes on the contended table -- a missing index often forces a full scan under a lock that a seek would have avoided",
+        "4. Consider READ_COMMITTED_SNAPSHOT isolation if blocking is between readers and writers specifically"
+      ],
+      "related_rules": []
+    },
+    {
+      "rule_id": "MSSQL_WAIT_003",
+      "category": "mssql_wait_type",
+      "event_pattern": "CXPACKET",
+      "condition": "wait_pct_of_total > 20",
+      "severity": "medium",
+      "title": "High Parallelism Wait (CXPACKET)",
+      "root_cause": "CXPACKET waits mean parallel query threads are waiting on each other to synchronize -- not necessarily a problem on its own (some CXPACKET is normal for genuinely parallel work), but high volume often means Cost Threshold for Parallelism is set too low (parallelizing cheap queries that shouldn't be) or Max Degree of Parallelism is mismatched to the workload.",
+      "resolution_steps": [
+        "1. Check mssql_config_snapshot.cost_threshold_for_parallelism -- the SQL Server default (5) is very low for most modern workloads; consider raising it (commonly 25-50) if this is genuinely default-configured",
+        "2. Check mssql_config_snapshot.max_dop against cpu_count -- an uncapped MAXDOP on a high-core-count server can cause excessive parallelism for small queries",
+        "3. Cross-reference with mssql_scheduler_stats' runnable_tasks_count -- if schedulers are already queued, added parallelism is making contention worse, not better"
+      ],
+      "related_rules": ["MSSQL_SCHED_001"]
+    },
+    {
+      "rule_id": "MSSQL_WAIT_004",
+      "category": "mssql_wait_type",
+      "event_pattern": "SOS_SCHEDULER_YIELD",
+      "condition": "wait_pct_of_total > 15",
+      "severity": "high",
+      "title": "High CPU Pressure (SOS_SCHEDULER_YIELD)",
+      "root_cause": "SOS_SCHEDULER_YIELD waits mean a task voluntarily yielded the CPU to let other tasks run and had to wait for its turn again -- this is a genuine CPU-pressure signal, distinct from I/O or lock waits. High volume means the instance's CPU is a bottleneck for the current workload, not any single query necessarily.",
+      "resolution_steps": [
+        "1. Check mssql_scheduler_stats' runnable_tasks_count across all schedulers -- consistently high values confirm genuine CPU saturation, not just one busy scheduler",
+        "2. Check mssql_plan_cache_stats for high-usecount plans with high total_worker_time_us -- these are the CPU-heaviest recurring queries worth tuning first",
+        "3. Check for excessive compilation (mssql_perf_counters, 'SQL Compilations/sec' and 'SQL Re-Compilations/sec') -- parameter sniffing or ad-hoc query volume can itself be a CPU drain independent of the queries' own logic"
+      ],
+      "related_rules": ["MSSQL_WAIT_003"]
+    },
+    {
+      "rule_id": "MSSQL_WAIT_005",
+      "category": "mssql_wait_category",
+      "event_pattern": "Buffer IO",
+      "condition": "pct_query_wait_time > 15 OR avg_wait_ms > 10",
+      "severity": "high",
+      "title": "High Buffer I/O Wait — Query Store",
+      "root_cause": "This specific query is spending a disproportionate share of its wait time on Buffer IO -- the per-query counterpart to MSSQL_WAIT_001's instance-wide signal, naming the actual query responsible rather than just the aggregate wait type. Same root causes apply (buffer pool pressure, missing/stale statistics, storage latency), but now attributable to one statement worth tuning directly.",
+      "resolution_steps": [
+        "1. Review this query's plan (mssql_qs_plan) for full/index scans that a covering index could avoid",
+        "2. Check whether the tables this query touches have current statistics",
+        "3. If the query is fundamentally I/O-bound by its nature (e.g. a genuine full-table reporting scan), confirm that's expected rather than accidental (a missing WHERE clause, for instance)"
+      ],
+      "related_rules": ["MSSQL_WAIT_001"]
+    },
+    {
+      "rule_id": "MSSQL_WAIT_006",
+      "category": "mssql_wait_category",
+      "event_pattern": "Lock",
+      "condition": "pct_query_wait_time > 10 OR avg_wait_ms > 50",
+      "severity": "high",
+      "title": "High Lock Wait — Query Store",
+      "root_cause": "This specific query is spending a disproportionate share of its wait time waiting on locks -- the per-query counterpart to MSSQL_WAIT_002. Query Store's wait_category granularity can't say which other session or resource is the actual blocker (that detail only exists in mssql_blocking_snapshot, point-in-time, not per-query historically) -- this rule tells you WHICH query is most often the one waiting, not WHY.",
+      "resolution_steps": [
+        "1. Cross-reference mssql_blocking_snapshot around the times this query ran for the actual blocking_session_id/resource_type/request_mode detail",
+        "2. Check the query's own transaction scope -- is it doing more work inside the transaction than strictly necessary, holding locks longer than needed?",
+        "3. Check for a missing index that would let this query use a narrower row/page lock instead of a broader table lock"
+      ],
+      "related_rules": ["MSSQL_WAIT_002"]
+    }
+  ]
+}
