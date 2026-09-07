@@ -37,8 +37,6 @@ a sign something was rushed.
 import os
 import sys
 import logging
-import struct
-from datetime import datetime, timezone, timedelta
 
 _PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, os.path.join(_PROJECT_ROOT, 'common'))
@@ -49,9 +47,21 @@ sys.path.insert(0, os.path.join(_PROJECT_ROOT, 'common'))
 # fails with ModuleNotFoundError (confirmed by an actual run against
 # a real Windows install -- common/ alone wasn't enough).
 sys.path.insert(0, os.path.join(_PROJECT_ROOT, 'modules'))
+# And this file's own directory, for the shared connection.py sibling
+# module -- matching the same flat sys.path-import convention used
+# throughout this codebase (from utils import ..., from db import ...)
+# rather than package-relative imports.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from logger_utils import get_logger
 from utils import row_hash
+from connection import (
+    mssql_connect as _mssql_connect,
+    handle_datetimeoffset as _handle_datetimeoffset,
+    to_naive_utc as _to_naive_utc,
+    resolve_instance_id as _resolve_instance_id,
+    QUERY_TIMEOUT_SECONDS,
+)
 
 logger = get_logger('mssql_query_store_collector')
 
@@ -61,9 +71,9 @@ try:
 except Exception:
     _cfg = {}
 
-# Same config pattern as ai_narrative/oracle_live_query -- configurable,
-# defaults preserve current behaviour if the key is missing.
-QUERY_TIMEOUT_SECONDS = int(_cfg.get("mssql", {}).get("query_timeout_seconds", 30))
+# QUERY_TIMEOUT_SECONDS now comes from the shared connection.py import
+# above -- removed the duplicate local computation that used to be
+# here (it would have silently shadowed the import otherwise).
 
 # How many completed intervals to pull per collection run, per database.
 # Bounded so a database that hasn't been collected in a long time (or
@@ -73,128 +83,10 @@ QUERY_TIMEOUT_SECONDS = int(_cfg.get("mssql", {}).get("query_timeout_seconds", 3
 MAX_INTERVALS_PER_RUN = int(_cfg.get("mssql", {}).get("max_qs_intervals_per_run", 50))
 
 
-def _handle_datetimeoffset(dto_value):
-    """
-    pyodbc output converter for SQL Server's DATETIMEOFFSET type (ODBC
-    type -155, SQL_SS_TIMESTAMPOFFSET) -- pyodbc has no native support
-    for this type and raises "ODBC SQL type -155 is not yet supported"
-    without this registered. Confirmed against a real connection
-    attempt against sys.query_store_runtime_stats_interval.start_time/
-    end_time, which are DATETIMEOFFSET columns.
+# _handle_datetimeoffset, _to_naive_utc, _mssql_connect now live in
+# the shared connection.py (imported above) -- removed the duplicate
+# definitions that used to be here.
 
-    This exact struct format ("<6hI2h") is the canonical, widely-used
-    fix for this pyodbc limitation -- verified against pyodbc's own
-    official wiki (Using an Output Converter function), a real pyodbc
-    GitHub issue thread, and an independent production integration
-    (Django + MS SQL), all using this identical byte layout. Not
-    something reconstructed from memory -- cross-checked across
-    multiple independent, working examples before use here, since a
-    subtly wrong byte-unpacking here wouldn't crash, it would silently
-    produce a wrong timestamp.
-
-    Ref: https://github.com/mkleehammer/pyodbc/issues/134#issuecomment-281739794
-    """
-    tup = struct.unpack("<6hI2h", dto_value)
-    return datetime(tup[0], tup[1], tup[2], tup[3], tup[4], tup[5], tup[6] // 1000,
-                     timezone(timedelta(hours=tup[7], minutes=tup[8])))
-
-
-def _to_naive_utc(dt):
-    """
-    _handle_datetimeoffset above returns a timezone-AWARE datetime
-    (DATETIMEOFFSET carries its own UTC offset). mssql_qs_interval's
-    start_time/end_time columns are TIMESTAMP WITHOUT TIME ZONE --
-    inserting a tz-aware value there without an explicit, deliberate
-    conversion first risks psycopg2 silently dropping the offset
-    information rather than normalizing it, which would store the
-    correct WALL-CLOCK numbers but the WRONG absolute moment in time
-    for any source server not running in UTC -- the same class of
-    silent-correctness bug (not a crash, a quietly wrong value) this
-    project has run into before elsewhere. Explicitly converting to
-    UTC and stripping tzinfo here means the stored value is always an
-    unambiguous UTC timestamp, not dependent on implicit driver
-    behaviour.
-    """
-    if dt is None:
-        return None
-    if dt.tzinfo is not None:
-        return dt.astimezone(timezone.utc).replace(tzinfo=None)
-    return dt
-
-
-def _mssql_connect(cfg: dict):
-    """
-    Open a pyodbc connection to a SQL Server instance.
-
-    cfg: {"host": ..., "port": ..., "instance_name": ... (optional,
-    named-instance form), "database": ...} plus EITHER:
-      - "trusted_connection": True -- Windows Authentication, uses the
-        credentials of whatever Windows account is running this script.
-        No username/password needed or used.
-      - "username" / "password" -- SQL Server (mixed-mode) Authentication.
-
-    Added after a real connection attempt against Ganesh's test
-    instance failed with "Login failed for user 'admin'" (error
-    18456) -- a personal desktop machine (hostname DESKTOP-...) is
-    very likely running SQL Server in Windows-Authentication-only
-    mode, the common default for a local dev install, in which case
-    NO username/password combination would ever work, correct or not.
-    This was already flagged as an unbuilt gap in this function's own
-    docstring before that error occurred.
-    """
-    try:
-        import pyodbc
-    except ImportError:
-        raise ImportError('pyodbc not installed. Run: pip install pyodbc')
-
-    server = cfg["host"]
-    # "MSSQLSERVER" is SQL Server's internal/reserved name for the
-    # DEFAULT (unnamed) instance -- it is never something you actually
-    # specify in a connection string. This CLI's own --instance-name
-    # defaults to "MSSQLSERVER" for exactly that case (connecting to
-    # the default instance), but the original code here treated any
-    # truthy instance_name as a genuine named instance and appended it
-    # regardless -- producing "HOST\MSSQLSERVER", which SQL Server
-    # Browser then tried (and failed) to resolve as if it were a real
-    # named instance. Confirmed by an actual failed connection
-    # attempt against a real instance ("SQL Server Network Interfaces:
-    # Connection string is not valid [87]... Server is not found").
-    #
-    # Also fixes a second bug in the same few lines: the old
-    # instance-name branch did `server = f"{host}\\{instance_name}"`,
-    # which completely overwrote server, silently discarding any port
-    # that the branch above it had just appended.
-    is_named_instance = cfg.get("instance_name") and cfg["instance_name"] != "MSSQLSERVER"
-    if is_named_instance:
-        # SQL Server Browser resolves the port for a named instance --
-        # a port is not normally also specified alongside one.
-        server = f"{cfg['host']}\\{cfg['instance_name']}"
-    elif cfg.get("port"):
-        server = f"{server},{cfg['port']}"
-
-    if cfg.get("trusted_connection"):
-        conn_str = (
-            f"DRIVER={{ODBC Driver 18 for SQL Server}};"
-            f"SERVER={server};"
-            f"DATABASE={cfg.get('database', 'master')};"
-            f"Trusted_Connection=yes;"
-            f"TrustServerCertificate=yes;"  # test/dev default -- revisit for
-                                             # production once cert handling
-                                             # is actually decided
-        )
-    else:
-        conn_str = (
-            f"DRIVER={{ODBC Driver 18 for SQL Server}};"
-            f"SERVER={server};"
-            f"DATABASE={cfg.get('database', 'master')};"
-            f"UID={cfg['username']};"
-            f"PWD={cfg['password']};"
-            f"TrustServerCertificate=yes;"
-        )
-    conn = pyodbc.connect(conn_str, timeout=QUERY_TIMEOUT_SECONDS)
-    conn.add_output_converter(-155, _handle_datetimeoffset)  # DATETIMEOFFSET support -- see docstring above
-    conn.timeout = QUERY_TIMEOUT_SECONDS  # per-query timeout after connect
-    return conn
 
 
 def _is_query_store_enabled(conn, database_name: str) -> bool:
@@ -224,36 +116,9 @@ def _is_query_store_enabled(conn, database_name: str) -> bool:
         return False
 
 
-def _resolve_instance_id(host_name: str, instance_name: str) -> int:
-    """
-    Resolve this connection's row in mssql_instance_master, matching
-    is_db_licensed's existing pattern of treating this table as the
-    licensed-instance gate (Analysis Model doc Section 5.1 /
-    mssql_core_tables.sql's own comment: "Only instances in this table
-    will be collected by the MS SQL collector"). Does NOT auto-create
-    a row for an unregistered instance -- an unlicensed/unregistered
-    instance should fail loudly here, not silently start being
-    collected.
-    """
-    from db import get_db_connection
-    pg_conn = get_db_connection()
-    try:
-        with pg_conn.cursor() as cur:
-            cur.execute(
-                "SELECT id FROM mssql_instance_master "
-                "WHERE host_name = %s AND instance_name = %s AND active = true",
-                (host_name, instance_name)
-            )
-            row = cur.fetchone()
-            if not row:
-                raise ValueError(
-                    f"No active mssql_instance_master row for "
-                    f"{host_name}\\{instance_name} -- register it first, "
-                    f"the collector will not auto-create one."
-                )
-            return row[0]
-    finally:
-        pg_conn.close()
+# _resolve_instance_id now lives in the shared connection.py
+# (imported above) -- removed the duplicate definition.
+
 
 
 def run_query_store_collection(mssql_cfg: dict, database_names: list = None) -> dict:
