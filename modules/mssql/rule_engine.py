@@ -99,6 +99,18 @@ BENIGN_WAIT_TYPES = frozenset([
     "WAIT_XTP_OFFLINE_CKPT_NEW_LOG", "WAIT_XTP_HOST_WAIT",
     "KSOURCE_WAKEUP", "DIRTY_PAGE_POLL", "RESOURCE_QUEUE",
     "SOS_WORK_DISPATCHER",
+    # Added after two more real-instance findings surfaced them:
+    "QDS_PERSIST_TASK_MAIN_LOOP_SLEEP",           # Query Store's own persistence-task
+    "QDS_CLEANUP_STALE_QUERIES_TASK_MAIN_LOOP_SLEEP",  # sleep loops, confirmed benign
+    "CXCONSUMER",  # NOT a CXPACKET-equivalent needing its own rule -- the opposite.
+                   # SQL Server deliberately split CXPACKET into CXPACKET (still
+                   # actionable, still MSSQL_WAIT_003's target) and CXCONSUMER
+                   # (the "good"/expected side of parallelism) specifically so
+                   # the benign half wouldn't be mistaken for a real problem --
+                   # confirmed against Paul Randal's own reference and multiple
+                   # other sources ("make sure to add CXCONSUMER to the wait
+                   # types ignored by your monitoring tools"). Initially assumed
+                   # this needed a new rule; the research corrected that.
 ])
 
 # Absolute floor, in ms, below which a wait_type's total delta is too
