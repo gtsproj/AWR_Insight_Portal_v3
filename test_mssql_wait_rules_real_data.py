@@ -1,0 +1,116 @@
+"""
+test_mssql_wait_rules_real_data.py
+====================================
+Runs the MS SQL wait-statistics rule engine against whatever real data
+is already sitting in Postgres from the two collectors' proven runs --
+not synthetic test data this time. Uses the same config/settings.yaml
+connection the collectors themselves use, so no connection details
+need to be typed in.
+
+Run from the repo root:
+    py test_mssql_wait_rules_real_data.py
+
+Or target a specific host/instance if more than one is registered:
+    py test_mssql_wait_rules_real_data.py --host DESKTOP-TT7JK6I --instance-name MSSQLSERVER
+"""
+
+import sys
+import os
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'common'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'modules'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'modules', 'mssql'))
+
+from db import get_db_connection
+import rule_engine as re_mssql
+
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--host", default=None, help="Filter to a specific registered instance's host_name")
+    parser.add_argument("--instance-name", default="MSSQLSERVER")
+    parser.add_argument("--database", default=None, help="Database name for the Query Store tier (omit to use whichever has the most recent interval)")
+    args = parser.parse_args()
+
+    conn = get_db_connection()
+
+    with conn.cursor() as cur:
+        if args.host:
+            cur.execute(
+                "SELECT id, host_name, instance_name FROM mssql_instance_master "
+                "WHERE host_name = %s AND instance_name = %s AND active = true",
+                (args.host, args.instance_name)
+            )
+        else:
+            cur.execute(
+                "SELECT id, host_name, instance_name FROM mssql_instance_master WHERE active = true"
+            )
+        instances = cur.fetchall()
+
+    if not instances:
+        print("No registered, active instances found in mssql_instance_master.")
+        print("Register one first, or check --host/--instance-name if you passed them.")
+        return
+
+    for instance_id, host_name, instance_name in instances:
+        print(f"\n{'='*70}")
+        print(f"Instance: {host_name}\\{instance_name}  (id={instance_id})")
+        print(f"{'='*70}")
+
+        # ── How much real data actually exists ──
+        with conn.cursor() as cur:
+            cur.execute("SELECT count(*) FROM mssql_dmv_snapshot WHERE instance_id = %s", (instance_id,))
+            snapshot_count = cur.fetchone()[0]
+            cur.execute(
+                "SELECT count(*) FROM mssql_qs_interval WHERE instance_id = %s AND (%s IS NULL OR database_name = %s)",
+                (instance_id, args.database, args.database)
+            )
+            interval_count = cur.fetchone()[0]
+
+        print(f"DMV snapshots collected: {snapshot_count}  |  Query Store intervals collected: {interval_count}")
+
+        engine = re_mssql.MssqlRuleEngine()
+
+        if snapshot_count < 2:
+            print(f"\n(Only {snapshot_count} DMV snapshot(s) -- wait_type findings need at least 2 to compute a "
+                  f"delta. Run the DMV collector again to get a second snapshot, then re-run this.)")
+        else:
+            type_metrics = re_mssql.fetch_wait_type_metrics(conn, instance_id)
+            print(f"\n--- Real wait_type metrics (top 10 by share of total wait time) ---")
+            for m in type_metrics[:10]:
+                print(f"  {m['wait_type']:<30} pct={m['wait_pct_of_total']:6.2f}%  "
+                      f"avg_ms={m['avg_wait_ms']:8.1f}  delta_ms={m['wait_time_ms_delta']}")
+
+            type_findings = engine.evaluate_wait_type_rules(type_metrics)
+            print(f"\n--- Findings: mssql_wait_type ({len(type_findings)}) ---")
+            if not type_findings:
+                print("  (none -- either genuinely healthy, or nothing matched a rule's event_pattern/condition)")
+            for f in type_findings:
+                print(f"  [{f['severity'].upper():6}] {f['rule_id']} -- {f['title']}")
+                print(f"           wait_type={f['wait_type']}  pct={f['wait_pct_of_total']}%  avg_ms={f['avg_wait_ms']}")
+
+        if interval_count == 0:
+            print(f"\n(No Query Store intervals collected yet for this filter -- "
+                  f"wait_category findings need at least one completed interval.)")
+        else:
+            cat_metrics = re_mssql.fetch_wait_category_metrics(conn, instance_id, args.database)
+            print(f"\n--- Real wait_category metrics (Query Store, most recent interval) ---")
+            for m in cat_metrics:
+                print(f"  {m['wait_category_desc']:<20} pct={m['pct_query_wait_time']:6.2f}%  "
+                      f"avg_ms={m['avg_wait_ms']}  plan_id={m['qs_plan_id']}")
+
+            cat_findings = engine.evaluate_wait_category_rules(cat_metrics)
+            print(f"\n--- Findings: mssql_wait_category ({len(cat_findings)}) ---")
+            if not cat_findings:
+                print("  (none -- either genuinely healthy, or nothing matched a rule's event_pattern/condition)")
+            for f in cat_findings:
+                print(f"  [{f['severity'].upper():6}] {f['rule_id']} -- {f['title']}")
+                print(f"           wait_category={f['wait_category']}  plan_id={f['qs_plan_id']}  "
+                      f"pct={f['pct_query_wait_time']}%")
+
+    conn.close()
+
+
+if __name__ == "__main__":
+    main()
