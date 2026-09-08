@@ -110,7 +110,7 @@ def main():
             print(f"\n--- Real wait_category metrics (Query Store, most recent interval) ---")
             for m in cat_metrics:
                 print(f"  {m['wait_category_desc']:<20} pct={m['pct_query_wait_time']:6.2f}%  "
-                      f"avg_ms={m['avg_wait_ms']}  plan_id={m['qs_plan_id']}")
+                      f"avg_ms={float(m['avg_wait_ms'] or 0):8.1f}  plan_id={m['qs_plan_id']}")
 
             cat_findings = engine.evaluate_wait_category_rules(cat_metrics)
             print(f"\n--- Findings: mssql_wait_category ({len(cat_findings)}) ---")

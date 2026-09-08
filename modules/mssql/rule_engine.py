@@ -111,6 +111,23 @@ BENIGN_WAIT_TYPES = frozenset([
                    # other sources ("make sure to add CXCONSUMER to the wait
                    # types ignored by your monitoring tools"). Initially assumed
                    # this needed a new rule; the research corrected that.
+    "QDS_ASYNC_QUEUE",  # Query Store's async persist-queue task sleeping between
+                        # scheduled writes -- confirmed benign directly by Paul
+                        # Randal in a public forum reply ("Is this a wait type
+                        # that can be put on the ignore-list?" -> "Yup - entirely
+                        # expected"), and his own reference page uses the same
+                        # "I usually filter out as benign" wording as his other
+                        # confirmed-benign entries. Large delta values are
+                        # expected and not alarming -- it only flushes to
+                        # sys.dm_os_wait_stats in bursts (on Query Store
+                        # config change, restart, or its own periodic flush),
+                        # not continuously, so a big number here reflects
+                        # accumulated background sleep time, not sustained
+                        # real-time contention. One dissenting source exists
+                        # (unlike SOS_WORK_DISPATCHER, which had none) --
+                        # if a future instance shows this dominating alongside
+                        # other genuine symptoms, it's worth a second look
+                        # rather than treating this exclusion as absolute.
 ])
 
 # Absolute floor, in ms, below which a wait_type's total delta is too

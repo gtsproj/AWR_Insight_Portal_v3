@@ -91,6 +91,22 @@
         "3. Check for a missing index that would let this query use a narrower row/page lock instead of a broader table lock"
       ],
       "related_rules": ["MSSQL_WAIT_002"]
+    },
+    {
+      "rule_id": "MSSQL_WAIT_007",
+      "category": "mssql_wait_type",
+      "event_pattern": "CXSYNC_PORT",
+      "condition": "wait_pct_of_total > 20",
+      "severity": "medium",
+      "title": "High Parallel Exchange Port Synchronization Wait (CXSYNC_PORT)",
+      "root_cause": "CXSYNC_PORT (SQL Server 2022+) tracks time spent opening/closing/synchronizing the exchange ports parallel producer and consumer threads use to hand off rows -- introduced specifically to give this signal its own identity separate from CXPACKET. Unlike CXCONSUMER (the benign, expected side of parallelism, deliberately excluded from this rule engine's findings), high CXSYNC_PORT genuinely indicates workload imbalance: sustained port waits most often accompany a blocking operator -- a sort, hash build, or spool -- sitting between producer and consumer threads, so one stage of the plan gates the rest.",
+      "resolution_steps": [
+        "1. Identify the specific query/plan behind this wait (cross-reference mssql_qs_wait_stats/mssql_qs_plan for the same time window) and look for a blocking operator (Sort, Hash Match, Spool) feeding an exchange -- that operator's input is the real tuning target, not the wait itself",
+        "2. Check for skewed or misestimated row counts feeding the blocking operator -- fresh statistics often resolve this",
+        "3. Consider whether an index that provides the needed order could avoid the sort entirely",
+        "4. Review mssql_config_snapshot.cost_threshold_for_parallelism -- as with CXPACKET (MSSQL_WAIT_003), trivial queries going parallel unnecessarily can contribute"
+      ],
+      "related_rules": ["MSSQL_WAIT_003"]
     }
   ]
 }
