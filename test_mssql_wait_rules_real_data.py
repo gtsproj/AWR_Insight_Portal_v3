@@ -76,8 +76,17 @@ def main():
             print(f"\n(Only {snapshot_count} DMV snapshot(s) -- wait_type findings need at least 2 to compute a "
                   f"delta. Run the DMV collector again to get a second snapshot, then re-run this.)")
         else:
-            type_metrics = re_mssql.fetch_wait_type_metrics(conn, instance_id)
+            type_metrics, diag = re_mssql.fetch_wait_type_metrics(conn, instance_id, return_diagnostics=True)
+            print(f"\n--- wait_type filtering breakdown ---")
+            print(f"  {diag['raw_rows']} wait type(s) had any activity since the previous snapshot")
+            print(f"  {diag['filtered_negative_or_zero']} excluded: zero/negative delta (a service restart resets counters)")
+            print(f"  {diag['filtered_benign']} excluded: known benign background waits (SOS_WORK_DISPATCHER, etc.)")
+            print(f"  {diag['filtered_below_floor']} excluded: below the {re_mssql.MIN_WAIT_TIME_MS_DELTA}ms minimum floor")
+            print(f"  {diag['remaining']} remaining, eligible for rule evaluation")
+
             print(f"\n--- Real wait_type metrics (top 10 by share of total wait time) ---")
+            if not type_metrics:
+                print("  (none -- see the filtering breakdown above for why)")
             for m in type_metrics[:10]:
                 print(f"  {m['wait_type']:<30} pct={m['wait_pct_of_total']:6.2f}%  "
                       f"avg_ms={m['avg_wait_ms']:8.1f}  delta_ms={m['wait_time_ms_delta']}")

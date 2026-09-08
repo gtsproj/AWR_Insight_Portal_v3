@@ -186,7 +186,8 @@ def _match_event_pattern(pattern: str, event: str) -> bool:
 
 # ══════════════════════ FETCHERS ══════════════════════
 
-def fetch_wait_type_metrics(pg_conn, instance_id: int, snapshot_id: int = None) -> list:
+def fetch_wait_type_metrics(pg_conn, instance_id: int, snapshot_id: int = None,
+                              return_diagnostics: bool = False):
     """
     Instance-wide, fine-grained wait_type metrics -- computes a DELTA
     between the given snapshot (or the latest one, if not specified)
@@ -206,7 +207,18 @@ def fetch_wait_type_metrics(pg_conn, instance_id: int, snapshot_id: int = None) 
     this instance -- a delta needs two points, and that's a normal,
     expected state shortly after the collector's first run, not a
     failure.
+
+    return_diagnostics: when True, returns (results, diagnostics) instead
+    of just results. diagnostics reports how many wait_type rows existed
+    in the raw delta before filtering, and how many were removed by each
+    filter reason -- added after a real run returned an empty top-10 list
+    with no way to tell whether that meant "genuinely no wait activity"
+    or "something had activity and got silently filtered out." Default
+    is False so every existing caller's behavior is unchanged.
     """
+    diag = {"raw_rows": 0, "filtered_negative_or_zero": 0,
+            "filtered_benign": 0, "filtered_below_floor": 0, "remaining": 0}
+
     with pg_conn.cursor() as cur:
         if snapshot_id is None:
             cur.execute(
@@ -216,7 +228,7 @@ def fetch_wait_type_metrics(pg_conn, instance_id: int, snapshot_id: int = None) 
             )
             row = cur.fetchone()
             if not row:
-                return []
+                return ([], diag) if return_diagnostics else []
             snapshot_id, latest_time = row
         else:
             cur.execute(
@@ -225,7 +237,7 @@ def fetch_wait_type_metrics(pg_conn, instance_id: int, snapshot_id: int = None) 
             )
             row = cur.fetchone()
             if not row:
-                return []
+                return ([], diag) if return_diagnostics else []
             latest_time = row[0]
 
         cur.execute(
@@ -238,12 +250,12 @@ def fetch_wait_type_metrics(pg_conn, instance_id: int, snapshot_id: int = None) 
         if not prev_row:
             logger.info(f"Only one snapshot exists for instance {instance_id} -- "
                         f"no delta possible yet, this is expected shortly after first collection")
-            return []
+            return ([], diag) if return_diagnostics else []
         prev_snapshot_id, prev_time = prev_row
 
         elapsed_seconds = (latest_time - prev_time).total_seconds()
         if elapsed_seconds <= 0:
-            return []
+            return ([], diag) if return_diagnostics else []
 
         cur.execute("""
             SELECT cur.wait_type,
@@ -255,6 +267,8 @@ def fetch_wait_type_metrics(pg_conn, instance_id: int, snapshot_id: int = None) 
             WHERE cur.snapshot_id = %s
         """, (prev_snapshot_id, snapshot_id))
         rows = cur.fetchall()
+
+    diag["raw_rows"] = len(rows)
 
     # Filter out negative deltas (a service restart between snapshots
     # resets the cumulative counters -- a negative delta here means
@@ -272,6 +286,11 @@ def fetch_wait_type_metrics(pg_conn, instance_id: int, snapshot_id: int = None) 
     # ~186ms total across every wait type on a near-idle instance,
     # technically correct at 26.88% share but not a real problem at
     # that magnitude.
+    diag["filtered_negative_or_zero"] = sum(1 for wt, d, t in rows if d <= 0)
+    diag["filtered_benign"] = sum(1 for wt, d, t in rows if d > 0 and wt in BENIGN_WAIT_TYPES)
+    diag["filtered_below_floor"] = sum(
+        1 for wt, d, t in rows if d > 0 and wt not in BENIGN_WAIT_TYPES and d < MIN_WAIT_TIME_MS_DELTA
+    )
     clean = [(wt, d, t) for wt, d, t in rows
              if d > 0 and wt not in BENIGN_WAIT_TYPES and d >= MIN_WAIT_TIME_MS_DELTA]
     total_wait_ms = sum(d for _, d, _ in clean) or 1  # avoid div-by-zero if everything was filtered
@@ -286,7 +305,9 @@ def fetch_wait_type_metrics(pg_conn, instance_id: int, snapshot_id: int = None) 
             "avg_wait_ms": (wait_time_ms_delta / tasks_delta) if tasks_delta > 0 else 0,
             "wait_pct_of_total": (wait_time_ms_delta / total_wait_ms) * 100,
         })
-    return sorted(results, key=lambda r: r["wait_pct_of_total"], reverse=True)
+    diag["remaining"] = len(results)
+    results = sorted(results, key=lambda r: r["wait_pct_of_total"], reverse=True)
+    return (results, diag) if return_diagnostics else results
 
 
 def fetch_wait_category_metrics(pg_conn, instance_id: int, database_name: str = None,
