@@ -107,6 +107,37 @@
         "4. Review mssql_config_snapshot.cost_threshold_for_parallelism -- as with CXPACKET (MSSQL_WAIT_003), trivial queries going parallel unnecessarily can contribute"
       ],
       "related_rules": ["MSSQL_WAIT_003"]
+    },
+    {
+      "rule_id": "MSSQL_WAIT_008",
+      "category": "mssql_wait_type",
+      "event_pattern": "WRITELOG",
+      "condition": "wait_pct_of_total > 15 OR avg_wait_ms > 15",
+      "severity": "high",
+      "title": "High Transaction Log Write Wait (WRITELOG)",
+      "root_cause": "WRITELOG waits mean SQL Server is waiting for the transaction log buffer to be flushed to disk -- charged on every COMMIT, on CHECKPOINT, and whenever a log block fills. Two genuinely different root causes produce this signal, distinguishable by which metric is driving the finding: a LOW avg_wait_ms alongside a high wait_pct_of_total points at commit FREQUENCY -- many small, individually-committed transactions each waiting only briefly, but accumulating into a large total simply from volume (batching/commit-frequency issue, not a storage problem). A HIGH avg_wait_ms specifically points at genuine transaction log I/O latency -- the storage subsystem itself is slow to harden each write, regardless of how many there are.",
+      "resolution_steps": [
+        "1. Check avg_wait_ms specifically: low (a few ms or less) with high volume suggests batching many small transactions into fewer, larger commits, or considering delayed durability (SQL Server 2014+) if the application can tolerate the small window of potential data loss on crash",
+        "2. High avg_wait_ms (double digits or more) suggests genuine storage-layer latency -- check mssql_file_io_delta's io_stall_write_ms for the transaction log file specifically, and confirm the log file is on fast, dedicated storage, not shared with data files or other I/O-heavy workloads",
+        "3. If using Availability Groups in synchronous commit mode, also check for HADR_SYNC_COMMIT -- the remote log copy can itself introduce this same class of delay, separate from local disk latency",
+        "4. Confirm CHECKPOINT frequency isn't excessive (mssql_perf_counters, 'Log Flushes/sec' and related counters) if commits alone don't explain the volume"
+      ],
+      "related_rules": ["MSSQL_WAIT_009"]
+    },
+    {
+      "rule_id": "MSSQL_WAIT_009",
+      "category": "mssql_wait_category",
+      "event_pattern": "Tran Log IO",
+      "condition": "pct_query_wait_time > 15 OR avg_wait_ms > 15",
+      "severity": "high",
+      "title": "High Transaction Log Write Wait — Query Store",
+      "root_cause": "This specific query is spending a disproportionate share of its wait time on transaction log writes -- the per-query counterpart to MSSQL_WAIT_008's instance-wide signal. Query Store attributes this to whichever query's commit (or the transaction it participates in) triggered the log flush, naming the actual statement responsible rather than just the aggregate wait type.",
+      "resolution_steps": [
+        "1. Check whether this query commits frequently within a loop or batch (e.g. row-by-row processing with a commit per row) -- consolidating into fewer, larger transactions is often the most direct fix",
+        "2. Cross-reference mssql_wait_type's WRITELOG avg_wait_ms (MSSQL_WAIT_008) to determine whether this is a frequency issue (many small commits) or a genuine storage-latency issue affecting this query's commits specifically",
+        "3. If this query's transaction includes other write-heavy statements, confirm none of them are generating unexpectedly large log volume (e.g. an unintended full-table UPDATE)"
+      ],
+      "related_rules": ["MSSQL_WAIT_008"]
     }
   ]
 }
