@@ -155,6 +155,114 @@
         "5. Confirm mssql_config_snapshot.max_server_memory_mb isn't set low enough to be the real constraint before assuming this is purely a query-tuning problem"
       ],
       "related_rules": []
+    },
+    {
+      "rule_id": "MSSQL_WAIT_011",
+      "category": "mssql_wait_type",
+      "event_pattern": "ASYNC_NETWORK_IO",
+      "condition": "wait_pct_of_total > 15 OR avg_wait_ms > 5",
+      "severity": "medium",
+      "title": "High Network I/O Wait (ASYNC_NETWORK_IO)",
+      "root_cause": "ASYNC_NETWORK_IO means SQL Server has results ready to send but is waiting for the CLIENT to consume them over the network -- despite the name, this is very often not a network problem at all. The most common cause by far is the application/client fetching rows too slowly (row-by-row processing in a loop instead of bulk fetch, a chatty ORM, or a client-side cursor pulling one row at a time), not genuine network latency or bandwidth.",
+      "resolution_steps": [
+        "1. Check whether the client application is processing result sets row-by-row rather than in bulk -- this is the most common root cause, not the network itself",
+        "2. Confirm the query isn't returning far more rows/columns than the application actually uses -- trimming an unnecessarily wide or long result set reduces the transfer burden",
+        "3. If genuine network latency is suspected (e.g. cross-region client), check mssql_session_stats' client_net_address to confirm whether affected sessions are consistently remote",
+        "4. Rule out the client application pausing mid-fetch to do per-row work (logging, UI updates) before requesting the next row"
+      ],
+      "related_rules": []
+    },
+    {
+      "rule_id": "MSSQL_WAIT_012",
+      "category": "mssql_wait_type",
+      "event_pattern": "PAGELATCH_*",
+      "condition": "wait_pct_of_total > 15 OR avg_wait_ms > 10",
+      "severity": "high",
+      "title": "High In-Memory Page Latch Wait (PAGELATCH)",
+      "root_cause": "PAGELATCH waits (not to be confused with PAGEIOLATCH) are for a page already IN MEMORY -- no disk I/O involved. The classic cause is 'last page insert contention': many concurrent sessions inserting into the same table's last page (an ever-increasing identity/sequential key with no natural spread), all fighting over the same in-memory page structure. Heavy TempDB object creation/allocation churn is the other common cause.",
+      "resolution_steps": [
+        "1. For insert-heavy tables with a sequential/identity key: consider a different distribution (a hash/GUID-leading key, or multiple last-page 'hot spots' via partitioning) to spread inserts across more pages",
+        "2. Check mssql_tempdb_session_usage/mssql_tempdb_task_usage for the same time window -- heavy temp table creation/dropping is a common concurrent cause of this same wait, distinct from the insert-contention scenario",
+        "3. Confirm TempDB has multiple data files configured (one per CPU core, up to ~8, is the standard guidance) -- a single TempDB data file is a well-known amplifier of PAGELATCH contention specifically in TempDB"
+      ],
+      "related_rules": []
+    },
+    {
+      "rule_id": "MSSQL_WAIT_013",
+      "category": "mssql_wait_type",
+      "event_pattern": "RESOURCE_SEMAPHORE",
+      "condition": "wait_pct_of_total > 10 OR avg_wait_ms > 50",
+      "severity": "high",
+      "title": "High Memory Grant Wait — Instance-Wide (RESOURCE_SEMAPHORE)",
+      "root_cause": "The instance-wide counterpart to MSSQL_WAIT_010's Query Store Memory-category signal. A query's memory grant request (for sorts, hash joins, and similar memory-intensive operators) couldn't be satisfied immediately because other concurrent queries were holding the memory instead. Genuinely serious per Microsoft's own documentation -- can escalate to query timeout error 8645 if sustained.",
+      "resolution_steps": [
+        "1. Cross-reference MSSQL_WAIT_010's Query Store Memory-category findings if any exist for the same period -- that identifies WHICH query is driving this, this instance-wide signal only confirms THAT it's happening",
+        "2. Check mssql_perf_counters for 'Memory Grants Pending' (high) and 'Memory Grants Outstanding' (low) to confirm sustained contention rather than a brief spike",
+        "3. Look for missing indexes or stale statistics driving oversized sort/hash memory requests across multiple queries, not just one",
+        "4. Confirm mssql_config_snapshot.max_server_memory_mb isn't constraining the instance below what the workload genuinely needs"
+      ],
+      "related_rules": ["MSSQL_WAIT_010"]
+    },
+    {
+      "rule_id": "MSSQL_WAIT_014",
+      "category": "mssql_wait_type",
+      "event_pattern": "IO_COMPLETION",
+      "condition": "wait_pct_of_total > 15 OR avg_wait_ms > 10",
+      "severity": "medium",
+      "title": "High Non-Buffer I/O Completion Wait (IO_COMPLETION)",
+      "root_cause": "IO_COMPLETION covers I/O outside the normal buffer-pool page-read path that PAGEIOLATCH tracks -- most commonly backup/restore I/O, or reads during operations like DBCC CHECKDB. High values during a backup window are expected and not a concern; high values OUTSIDE any known backup/maintenance window point at genuine storage-layer latency for whatever operation is running.",
+      "resolution_steps": [
+        "1. First confirm whether this coincides with a scheduled backup, restore, or consistency-check (DBCC CHECKDB) window -- if so, this is expected, not a finding requiring action",
+        "2. If it does NOT coincide with known maintenance activity, check mssql_file_io_delta's io_stall_read_ms/io_stall_write_ms for the affected database's files to confirm genuine storage latency",
+        "3. Check whether multiple large operations (backups, bulk loads, index rebuilds) are running concurrently and competing for the same storage I/O capacity"
+      ],
+      "related_rules": ["MSSQL_WAIT_001"]
+    },
+    {
+      "rule_id": "MSSQL_WAIT_015",
+      "category": "mssql_wait_type",
+      "event_pattern": "HADR_SYNC_COMMIT",
+      "condition": "wait_pct_of_total > 15 OR avg_wait_ms > 20",
+      "severity": "high",
+      "title": "High Availability Group Synchronous Commit Wait (HADR_SYNC_COMMIT)",
+      "root_cause": "HADR_SYNC_COMMIT is specific to Always On Availability Groups running in synchronous-commit mode -- the primary replica waits for confirmation that the transaction log record has been hardened to disk on ALL synchronous secondary replicas before the commit can return to the caller. High waits here mean a secondary replica (or the network path to it) is the bottleneck, not the primary's own local storage.",
+      "resolution_steps": [
+        "1. Check network latency and throughput between the primary and each synchronous secondary replica -- this is the most common root cause",
+        "2. Check the secondary replica(s)' own local storage/log-write performance -- a slow secondary's local WRITELOG-equivalent delay propagates directly into this wait on the primary",
+        "3. Confirm whether a specific secondary is consistently the slow one (worth investigating in isolation) versus all secondaries contributing roughly equally",
+        "4. Consider whether this replica genuinely needs synchronous commit, or whether asynchronous commit is acceptable for its role, if the durability guarantee isn't strictly required"
+      ],
+      "related_rules": ["MSSQL_WAIT_008"]
+    },
+    {
+      "rule_id": "MSSQL_WAIT_016",
+      "category": "mssql_wait_type",
+      "event_pattern": "LATCH_EX",
+      "condition": "wait_pct_of_total > 15 OR avg_wait_ms > 10",
+      "severity": "medium",
+      "title": "High Exclusive Latch Wait on Non-Page Structures (LATCH_EX)",
+      "root_cause": "LATCH_EX is for an exclusive latch on a non-page internal structure -- distinct from PAGELATCH (in-memory data pages) and PAGEIOLATCH (disk page reads). Common causes include a data or log file needing to autogrow (the growth operation itself briefly serializes access), or internal metadata structure contention unrelated to any specific table's data.",
+      "resolution_steps": [
+        "1. Check whether database/log file autogrow events are occurring frequently during the affected window -- pre-sizing files appropriately and avoiding small autogrow increments reduces this",
+        "2. If autogrow isn't the cause, this often requires deeper investigation via sys.dm_os_waiting_tasks captured live during the issue, since LATCH_EX covers a broad range of internal structures not identifiable from aggregate wait stats alone",
+        "3. Confirm Instant File Initialization is enabled (reduces the time a data file growth operation takes, though it does not help log file growth)"
+      ],
+      "related_rules": []
+    },
+    {
+      "rule_id": "MSSQL_WAIT_017",
+      "category": "mssql_wait_type",
+      "event_pattern": "PREEMPTIVE_OS_AUTHENTICATIONOPS",
+      "condition": "wait_pct_of_total > 15 OR avg_wait_ms > 20",
+      "severity": "medium",
+      "title": "High Windows Authentication Call Wait (PREEMPTIVE_OS_AUTHENTICATIONOPS)",
+      "root_cause": "SQL Server hands control out to an external Windows authentication API call for this wait -- small values are routine and expected (confirmed against multiple DBA sources), but genuinely high or sustained values can indicate a real Active Directory/Domain Controller performance or connectivity problem, since every authentication check has to round-trip to AD. This is deliberately NOT in this rule engine's benign-wait exclusion list, unlike most other PREEMPTIVE_OS_* waits, specifically because it can be a real signal at scale where those are not.",
+      "resolution_steps": [
+        "1. Check whether Domain Controller response times or connectivity have degraded around the same period -- this is the most likely root cause if the value is genuinely high, not sporadic",
+        "2. Check whether authentication volume itself has increased (e.g. connection pooling misconfigured, causing far more login/authentication events than expected) rather than DC performance itself degrading",
+        "3. If this is intermittent and low-magnitude, it's very likely not a real problem -- this rule's threshold is intentionally set to only fire on a sustained, meaningful share of total wait time, not routine background authentication activity"
+      ],
+      "related_rules": []
     }
   ]
 }
