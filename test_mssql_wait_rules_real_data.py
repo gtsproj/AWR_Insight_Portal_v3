@@ -77,12 +77,15 @@ def main():
                   f"delta. Run the DMV collector again to get a second snapshot, then re-run this.)")
         else:
             type_metrics, diag = re_mssql.fetch_wait_type_metrics(conn, instance_id, return_diagnostics=True)
+            nonzero = diag['raw_rows'] - diag['filtered_negative_or_zero']
             print(f"\n--- wait_type filtering breakdown ---")
-            print(f"  {diag['raw_rows']} wait type(s) had any activity since the previous snapshot")
-            print(f"  {diag['filtered_negative_or_zero']} excluded: zero/negative delta (a service restart resets counters)")
-            print(f"  {diag['filtered_benign']} excluded: known benign background waits (SOS_WORK_DISPATCHER, etc.)")
-            print(f"  {diag['filtered_below_floor']} excluded: below the {re_mssql.MIN_WAIT_TIME_MS_DELTA}ms minimum floor")
-            print(f"  {diag['remaining']} remaining, eligible for rule evaluation")
+            print(f"  {diag['raw_rows']} distinct wait type(s) tracked by the instance, compared across the two snapshots")
+            print(f"  {diag['filtered_negative_or_zero']} had NO new activity in this window (delta=0 -- normal; most wait "
+                  f"types sit idle most of the time) or a negative delta (counter reset, e.g. a service restart)")
+            print(f"  -> {nonzero} had genuine nonzero activity in this window, of which:")
+            print(f"       {diag['filtered_benign']} excluded: known benign background waits (SOS_WORK_DISPATCHER, etc.)")
+            print(f"       {diag['filtered_below_floor']} excluded: below the {re_mssql.MIN_WAIT_TIME_MS_DELTA}ms minimum floor")
+            print(f"       {diag['remaining']} remaining, eligible for rule evaluation")
 
             print(f"\n--- Real wait_type metrics (top 10 by share of total wait time) ---")
             if not type_metrics:
