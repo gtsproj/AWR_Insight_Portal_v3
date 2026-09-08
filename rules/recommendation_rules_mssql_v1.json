@@ -138,6 +138,23 @@
         "3. If this query's transaction includes other write-heavy statements, confirm none of them are generating unexpectedly large log volume (e.g. an unintended full-table UPDATE)"
       ],
       "related_rules": ["MSSQL_WAIT_008"]
+    },
+    {
+      "rule_id": "MSSQL_WAIT_010",
+      "category": "mssql_wait_category",
+      "event_pattern": "Memory",
+      "condition": "pct_query_wait_time > 15 OR avg_wait_ms > 50",
+      "severity": "high",
+      "title": "High Memory Grant Wait — Query Store",
+      "root_cause": "Query Store's Memory wait category is the query-level view of RESOURCE_SEMAPHORE waits -- a query's memory grant request (needed for sorts, hash joins, and similar memory-intensive operators) couldn't be satisfied immediately because other concurrent queries were holding the memory instead. This is a genuinely serious signal, not routine contention: Microsoft's own documentation for RESOURCE_SEMAPHORE explicitly calls out 'excessive number of concurrent queries, or excessive memory request amounts' as the cause, and it can escalate to query timeout error 8645 if the wait is long enough.",
+      "resolution_steps": [
+        "1. Check whether this query's plan (mssql_qs_plan) involves a large Sort or Hash Match -- these are what actually request the memory grant; a missing index that would avoid the sort/hash is often the most direct fix",
+        "2. Check whether stale statistics are causing an inflated cardinality estimate and therefore an oversized memory grant request -- update statistics on the tables involved",
+        "3. Check mssql_perf_counters for 'Memory Grants Pending' (high) and 'Memory Grants Outstanding' (low) -- confirms genuine memory-grant contention rather than a one-off",
+        "4. If many concurrent queries are competing for memory rather than one query being the culprit, consider Resource Governor memory limits, or MIN_GRANT_PERCENT/MAX_GRANT_PERCENT query hints (SQL Server 2012 SP3+) to cap how much any single query can request",
+        "5. Confirm mssql_config_snapshot.max_server_memory_mb isn't set low enough to be the real constraint before assuming this is purely a query-tuning problem"
+      ],
+      "related_rules": []
     }
   ]
 }
