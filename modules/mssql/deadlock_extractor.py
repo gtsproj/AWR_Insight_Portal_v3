@@ -94,11 +94,21 @@ def run_deadlock_collection(mssql_cfg: dict) -> dict:
 
         events = _extract_deadlock_events(conn, wildcard_path)
 
+        # Resolve RCSI status once per unique database, not once per
+        # event -- multiple deadlock events commonly share the same
+        # database, no reason to re-query the same fact repeatedly.
+        rcsi_cache = {}
+        for event in events:
+            db_name = event["database_name"]
+            if db_name not in rcsi_cache:
+                rcsi_cache[db_name] = _get_rcsi_status(conn, db_name)
+
         from db import get_db_connection
         pg_conn = get_db_connection()
         try:
             for event in events:
-                if _store_deadlock_event(pg_conn, instance_id, event):
+                rcsi_enabled = rcsi_cache.get(event["database_name"])
+                if _store_deadlock_event(pg_conn, instance_id, event, rcsi_enabled):
                     summary["events_collected"] += 1
             pg_conn.commit()
         except Exception:
@@ -181,6 +191,7 @@ def _extract_deadlock_events(conn, wildcard_path: str) -> list:
                 de.dg.value('(deadlock/resource-list/*/@indexname)[1]', 'VARCHAR(300)') AS contested_index,
                 de.dg.value('(deadlock/resource-list//@mode)[1]', 'VARCHAR(20)') AS lock_mode_1,
                 de.dg.value('(deadlock/resource-list//@mode)[2]', 'VARCHAR(20)') AS lock_mode_2,
+                DB_NAME(de.dg.value('(deadlock/process-list/process/@currentdb)[1]', 'INT')) AS database_name,
                 CAST(de.dg AS NVARCHAR(MAX)) AS deadlock_graph_xml,
 
                 proc_node.process_xml.value('@id', 'VARCHAR(50)') AS process_id,
@@ -206,7 +217,7 @@ def _extract_deadlock_events(conn, wildcard_path: str) -> list:
     events = {}
     for r in rows:
         (deadlock_time, victim_id, contested_table, contested_index, lock_mode_1, lock_mode_2,
-         deadlock_graph_xml, process_id, spid, client_app, login_name, host_name,
+         database_name, deadlock_graph_xml, process_id, spid, client_app, login_name, host_name,
          isolation_level, tran_count, input_buffer, frame1_procname, frame1_line,
          frame1_text, frame2_procname, frame2_line) = r
 
@@ -216,6 +227,7 @@ def _extract_deadlock_events(conn, wildcard_path: str) -> list:
                 "deadlock_time": deadlock_time, "victim_id": victim_id,
                 "contested_table": contested_table, "contested_index": contested_index,
                 "lock_mode_1": lock_mode_1, "lock_mode_2": lock_mode_2,
+                "database_name": database_name,
                 "deadlock_graph_xml": deadlock_graph_xml, "processes": [],
             }
 
@@ -234,16 +246,26 @@ def _extract_deadlock_events(conn, wildcard_path: str) -> list:
     return list(events.values())
 
 
-def classify_deadlock_cause(lock_mode_1: str, lock_mode_2: str, contested_index: str) -> str:
+def classify_deadlock_cause(lock_mode_1: str, lock_mode_2: str, contested_index: str,
+                              rcsi_enabled: bool = None) -> str:
     """
     Same classification logic as Ganesh's own analysis script's
     Classified CTE, reimplemented in Python so it runs automatically
     at collection time. Categories and their meaning, unchanged from
     his original:
       - Update/Exclusive lock collision: both sides held/wanted U or X
-      - Read-Write conflict (RCSI not enabled?): one side S, other X/U --
-        classic reader-vs-writer deadlock, often avoidable with
-        READ_COMMITTED_SNAPSHOT isolation
+      - Read-Write conflict: one side S, other X/U -- classic
+        reader-vs-writer deadlock. The specific message depends on
+        rcsi_enabled (added after Ganesh enabled RCSI on TestDB, which
+        would have made his original static "(RCSI not enabled?)"
+        wording actively misleading if this category fired again
+        there): RCSI genuinely off -> the original suggestion still
+        applies; RCSI genuinely on -> a different, more specific
+        question (an explicit locking hint or non-default isolation
+        level is now the more likely cause, not a missing RCSI
+        setting); unknown (couldn't resolve the database) -> the
+        original honest "?" phrasing, since asserting either way
+        without knowing would be a guess.
       - Table-level lock (missing covering index): no index involved at
         all, meaning the lock was table-level -- usually because no
         usable index existed for the query's access pattern
@@ -257,16 +279,46 @@ def classify_deadlock_cause(lock_mode_1: str, lock_mode_2: str, contested_index:
     if m1 in ("U", "X") and m2 in ("U", "X"):
         return "Update/Exclusive lock collision"
     if (m1 == "S" and m2 in ("X", "U")) or (m1 in ("X", "U") and m2 == "S"):
-        return "Read-Write conflict (RCSI not enabled?)"
+        if rcsi_enabled is True:
+            return "Read-Write conflict despite RCSI being enabled (check for an explicit UPDLOCK/HOLDLOCK hint or a non-READ-COMMITTED isolation level)"
+        elif rcsi_enabled is False:
+            return "Read-Write conflict (RCSI not enabled -- enabling READ_COMMITTED_SNAPSHOT would likely reduce this)"
+        else:
+            return "Read-Write conflict (RCSI status unknown)"
     if not contested_index:
         return "Table-level lock (missing covering index)"
     return "Cross-resource cyclic lock (tx order mismatch)"
 
 
-def _store_deadlock_event(pg_conn, instance_id: int, event: dict) -> bool:
+def _get_rcsi_status(conn, database_name: str):
+    """
+    Looks up a database's actual is_read_committed_snapshot_on value --
+    not assumed, not guessed. Returns True/False, or None if the
+    database name couldn't be resolved (e.g. currentdb pointed at a
+    database that no longer exists) or the query itself failed --
+    None flows through to classify_deadlock_cause's honest
+    "RCSI status unknown" branch rather than asserting either way.
+    """
+    if not database_name:
+        return None
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT is_read_committed_snapshot_on FROM sys.databases WHERE name = ?",
+                database_name
+            )
+            row = cur.fetchone()
+            return bool(row[0]) if row else None
+    except Exception as e:
+        logger.warning(f"Could not look up RCSI status for {database_name!r}: {e}")
+        return None
+
+
+def _store_deadlock_event(pg_conn, instance_id: int, event: dict, rcsi_enabled) -> bool:
     """Stores one deadlock event + its processes. Returns True if this
     was a genuinely new event (not already collected)."""
-    deadlock_cause = classify_deadlock_cause(event["lock_mode_1"], event["lock_mode_2"], event["contested_index"])
+    deadlock_cause = classify_deadlock_cause(event["lock_mode_1"], event["lock_mode_2"],
+                                              event["contested_index"], rcsi_enabled)
 
     hash_input = {
         "deadlock_time": str(event["deadlock_time"]),
@@ -286,14 +338,15 @@ def _store_deadlock_event(pg_conn, instance_id: int, event: dict) -> bool:
 
         pg_cur.execute("""
             INSERT INTO mssql_deadlock_events
-                (instance_id, deadlock_time, victim_process_id, process_count,
+                (instance_id, deadlock_time, database_name, victim_process_id, process_count,
                  contested_table, contested_index, lock_mode_1, lock_mode_2,
-                 deadlock_cause, deadlock_graph_xml, row_hash)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                 rcsi_enabled, deadlock_cause, deadlock_graph_xml, row_hash)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
-        """, (instance_id, event["deadlock_time"], event["victim_id"], len(event["processes"]),
-              event["contested_table"], event["contested_index"], event["lock_mode_1"],
-              event["lock_mode_2"], deadlock_cause, event["deadlock_graph_xml"], event_hash))
+        """, (instance_id, event["deadlock_time"], event["database_name"], event["victim_id"],
+              len(event["processes"]), event["contested_table"], event["contested_index"],
+              event["lock_mode_1"], event["lock_mode_2"], rcsi_enabled, deadlock_cause,
+              event["deadlock_graph_xml"], event_hash))
         event_id = pg_cur.fetchone()[0]
 
         for p in event["processes"]:

@@ -33,6 +33,10 @@ CREATE TABLE IF NOT EXISTS mssql_deadlock_events (
     id                              SERIAL,
     instance_id                     INTEGER NOT NULL,
     deadlock_time                   TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    database_name                   TEXT,          -- resolved from the deadlock graph's own
+                                                    -- currentdb attribute (DB_NAME()) -- needed to
+                                                    -- look up that database's actual RCSI status,
+                                                    -- not assumed/guessed
     victim_process_id               TEXT,          -- the deadlock graph's own process id (e.g. "process861a...")
                                                     -- for the victim -- joins to mssql_deadlock_processes.process_id
     process_count                   INTEGER,
@@ -40,11 +44,16 @@ CREATE TABLE IF NOT EXISTS mssql_deadlock_events (
     contested_index                 TEXT,
     lock_mode_1                     TEXT,
     lock_mode_2                     TEXT,
-    deadlock_cause                  TEXT,          -- classified at collection time, same categories as
-                                                    -- Ganesh's script: 'Update/Exclusive lock collision',
-                                                    -- 'Read-Write conflict (RCSI not enabled?)',
-                                                    -- 'Table-level lock (missing covering index)',
-                                                    -- 'Cross-resource cyclic lock (tx order mismatch)'
+    rcsi_enabled                    BOOLEAN,       -- the database's actual is_read_committed_snapshot_on
+                                                    -- value AT COLLECTION TIME -- not necessarily the value
+                                                    -- at the moment the deadlock happened, if it changed
+                                                    -- since, but far more accurate than assuming
+    deadlock_cause                  TEXT,          -- classified at collection time using rcsi_enabled,
+                                                    -- same categories as Ganesh's script but with the
+                                                    -- Read-Write conflict message adapted to whether RCSI
+                                                    -- is actually on ('not enabled', 'despite RCSI being
+                                                    -- enabled', or a plain '?' when the database couldn't
+                                                    -- be resolved at all)
     deadlock_graph_xml              TEXT,          -- full raw XML, for anything the structured columns don't capture
     row_hash                        CHAR(32) NOT NULL,
     created_at                      TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
