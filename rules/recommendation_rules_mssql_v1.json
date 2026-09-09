@@ -263,6 +263,22 @@
         "3. If this is intermittent and low-magnitude, it's very likely not a real problem -- this rule's threshold is intentionally set to only fire on a sustained, meaningful share of total wait time, not routine background authentication activity"
       ],
       "related_rules": []
+    },
+    {
+      "rule_id": "MSSQL_WAIT_018",
+      "category": "mssql_wait_type",
+      "event_pattern": "MEMORY_ALLOCATION_EXT",
+      "condition": "wait_pct_of_total > 15 OR avg_wait_ms > 20",
+      "severity": "medium",
+      "title": "High General Memory Allocation Wait (MEMORY_ALLOCATION_EXT)",
+      "root_cause": "MEMORY_ALLOCATION_EXT means a task requested memory (for sorts, hashes, indexing, or other operations) and had to wait for it to be allocated -- a genuine, distinct memory-pressure signal from RESOURCE_SEMAPHORE (which is specifically about query MEMORY GRANT requests). Some occurrence is normal, but prolonged or frequent waits indicate the instance is under real memory pressure, whether from insufficient total memory, memory fragmentation, or a workload requesting more than what's comfortably available.",
+      "resolution_steps": [
+        "1. Cross-reference RESOURCE_SEMAPHORE (MSSQL_WAIT_013) and the Query Store Memory category (MSSQL_WAIT_010) for the same period -- if all three are elevated together, this is a broad, genuine memory-pressure signal, not an isolated one",
+        "2. Check mssql_memory_clerks for which memory clerk type is consuming the most -- this narrows down whether it's buffer pool, plan cache, or another specific consumer",
+        "3. Check mssql_config_snapshot.max_server_memory_mb against actual physical memory -- confirm the instance has enough headroom for the workload's genuine needs",
+        "4. Look for queries with unexpectedly large memory grant requests (oversized sorts/hashes from stale statistics) contributing disproportionately"
+      ],
+      "related_rules": ["MSSQL_WAIT_013", "MSSQL_WAIT_010"]
     }
   ]
 }
