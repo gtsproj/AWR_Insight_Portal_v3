@@ -188,9 +188,19 @@ class MssqlRecommendationEngine:
             key=lambda r: (-SEVERITY_RANK.get(r["severity"], 1), r["title"])
         )
 
+        # Use the RESOLVED database name (from wherever wait_category
+        # data actually came from), not the raw parameter -- fixes a
+        # real gap where every stored recommendation had
+        # database_name=NULL whenever the caller didn't pass
+        # --database explicitly, even for findings that are inherently
+        # per-database (Query Store). Falls back to the parameter
+        # itself for the (normal) case where nothing resolved it,
+        # e.g. no Query Store data exists at all yet for this instance.
+        resolved_database_name = wait_findings.get("resolved_database_name") or database_name
+
         result = {
             "instance_id": instance_id,
-            "database_name": database_name,
+            "database_name": resolved_database_name,
             "total_recommendations": len(recommendations),
             "high": sum(1 for r in recommendations if r["severity"] == "high"),
             "medium": sum(1 for r in recommendations if r["severity"] == "medium"),

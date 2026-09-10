@@ -341,16 +341,23 @@ def fetch_wait_category_metrics(pg_conn, instance_id: int, database_name: str = 
     the interval -- the metric MSSQL_WAIT_005/006's conditions check).
 
     return_interval_meta: when True, also returns the resolved
-    interval's (qs_interval_id, start_time, end_time) as a second
-    value. Added after tracing through a real diagnostic where two
-    consecutive checks, seconds apart, showed byte-for-byte identical
-    "most recent interval" data -- because no new Query Store interval
-    had actually closed between them. Without this, there's no way to
-    tell from the output alone whether you're looking at genuinely
-    fresh data or the same already-seen interval being displayed
-    again, which can look like "every different scenario produces the
-    same signal" when it's really one interval being re-shown several
-    times. Default False so existing callers' return shape is unchanged.
+    interval's (qs_interval_id, database_name, start_time, end_time)
+    as a second value. Added after tracing through a real diagnostic
+    where two consecutive checks, seconds apart, showed byte-for-byte
+    identical "most recent interval" data -- because no new Query
+    Store interval had actually closed between them. Without this,
+    there's no way to tell from the output alone whether you're
+    looking at genuinely fresh data or the same already-seen interval
+    being displayed again, which can look like "every different
+    scenario produces the same signal" when it's really one interval
+    being re-shown several times. database_name specifically matters
+    beyond just display: it was already being resolved internally
+    here when the caller didn't pass one explicitly, but silently
+    discarded rather than returned -- a real gap found by noticing
+    every stored recommendation involving a wait_category finding had
+    database_name=NULL, even though Query Store is inherently a
+    per-database feature and the actual database was known at fetch
+    time. Default False so existing callers' return shape is unchanged.
     """
     with pg_conn.cursor() as cur:
         if qs_interval_id is None:
@@ -370,11 +377,15 @@ def fetch_wait_category_metrics(pg_conn, instance_id: int, database_name: str = 
             qs_interval_id, database_name, interval_start, interval_end = row
         else:
             cur.execute(
-                "SELECT start_time, end_time FROM mssql_qs_interval WHERE qs_interval_id = %s AND instance_id = %s",
+                "SELECT database_name, start_time, end_time FROM mssql_qs_interval "
+                "WHERE qs_interval_id = %s AND instance_id = %s",
                 (qs_interval_id, instance_id)
             )
             row = cur.fetchone()
-            interval_start, interval_end = row if row else (None, None)
+            if row:
+                database_name, interval_start, interval_end = row
+            else:
+                interval_start, interval_end = None, None
 
         cur.execute("""
             SELECT wait_category_desc, qs_plan_id, total_query_wait_time_ms, avg_query_wait_time_ms
@@ -396,7 +407,8 @@ def fetch_wait_category_metrics(pg_conn, instance_id: int, database_name: str = 
     results = sorted(results, key=lambda r: r["pct_query_wait_time"], reverse=True)
 
     if return_interval_meta:
-        interval_meta = {"qs_interval_id": qs_interval_id, "start_time": interval_start, "end_time": interval_end}
+        interval_meta = {"qs_interval_id": qs_interval_id, "database_name": database_name,
+                          "start_time": interval_start, "end_time": interval_end}
         return results, interval_meta
     return results
 
@@ -488,12 +500,23 @@ def evaluate_wait_findings(pg_conn, instance_id: int, database_name: str = None,
     type_metrics, type_diag = fetch_wait_type_metrics(pg_conn, instance_id, return_diagnostics=True)
     type_findings = engine.evaluate_wait_type_rules(type_metrics)
 
-    cat_metrics = fetch_wait_category_metrics(pg_conn, instance_id, database_name)
+    cat_metrics, cat_interval_meta = fetch_wait_category_metrics(
+        pg_conn, instance_id, database_name, return_interval_meta=True)
     cat_findings = engine.evaluate_wait_category_rules(cat_metrics)
 
     result = {
         "wait_type_findings": type_findings,
         "wait_category_findings": cat_findings,
+        # The database wait_category data actually came from -- resolved
+        # here even when the caller passed database_name=None, since
+        # fetch_wait_category_metrics always knows which database its
+        # "most recent interval" belongs to. Real gap this closes: every
+        # wait_category-derived recommendation was being stored with
+        # database_name=NULL, discovered by reviewing an actual export
+        # of mssql_recommendations and noticing it was NULL on every
+        # single row, including ones built from inherently per-database
+        # Query Store findings.
+        "resolved_database_name": cat_interval_meta.get("database_name") if cat_interval_meta else database_name,
     }
     if return_diagnostics:
         result["wait_type_diagnostics"] = type_diag
