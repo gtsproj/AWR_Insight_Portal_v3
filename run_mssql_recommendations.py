@@ -31,7 +31,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'modules'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'modules', 'mssql'))
 
 from db import get_db_connection
-import recommendation_engine as rec_eng
+import mssql_recommendation_engine as rec_eng
 
 
 def _print_recommendation(row):
@@ -103,8 +103,10 @@ def main():
         print(f"\n{'='*70}\nInstance: {host_name}\\{instance_name}  (id={instance_id})\n{'='*70}")
 
         if not args.list_only:
-            new_recs = rec_eng.generate_recommendations(conn, instance_id, args.database)
-            print(f"New recommendations generated this run: {len(new_recs)}")
+            engine = rec_eng.MssqlRecommendationEngine()
+            result = engine.evaluate(conn, instance_id, args.database)
+            new_count = engine.store_recommendations(conn, result)
+            print(f"New recommendations generated this run: {new_count}")
 
         with conn.cursor() as cur:
             cur.execute("""
