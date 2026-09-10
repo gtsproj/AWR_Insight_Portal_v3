@@ -209,27 +209,46 @@ class MssqlRecommendationEngine:
                     f"(high={result['high']}, medium={result['medium']}, low={result['low']})")
         return result
 
-    def store_recommendations(self, pg_conn, result: dict) -> int:
+    def store_recommendations(self, pg_conn, result: dict, _today: str = None) -> int:
         """
         Persists the recommendations in an evaluate() result. Row_hash
-        dedups against re-storing the same recommendation on every run
-        while the underlying condition persists (the MS SQL
-        counterpart to the Oracle side's ON CONFLICT (dbname,
-        instance, begin_snap, end_snap, rule_id) upsert -- MS SQL's
-        wait-analysis data doesn't have a clean snap-range natural key
-        the same way, so a content hash serves the same purpose).
+        dedups against re-storing the same recommendation MULTIPLE
+        TIMES ON THE SAME DAY while the underlying condition persists
+        (the MS SQL counterpart to the Oracle side's ON CONFLICT
+        (dbname, instance, begin_snap, end_snap, rule_id) upsert --
+        MS SQL's wait-analysis data doesn't have a clean snap-range
+        natural key the same way, so a content hash serves the same
+        purpose).
+
+        The hash includes today's date specifically so dedup isn't
+        permanent -- a real gap found by tracing through a real run:
+        the original hash was (rule_ids, affected_object) alone, which
+        meant once a recommendation for a given condition existed, it
+        could never be regenerated again, even if the issue fully
+        resolved and then genuinely recurred days or weeks later. A
+        monitoring tool that only ever tells you about a problem once,
+        permanently, isn't actually useful the second time it happens.
+        Bucketing by date means the same condition is deduped WITHIN a
+        day (no spam from every collector run), but naturally produces
+        a fresh recommendation on a new day if it's still (or again)
+        occurring -- without needing a separate time-windowed WHERE
+        clause or touching the database-level uniqueness guarantee at
+        all, since the hash itself already differs day to day.
 
         Returns the number of NEWLY stored recommendations (not ones
-        that were already present).
+        that were already present today).
         """
+        import datetime
         instance_id = result["instance_id"]
         database_name = result["database_name"]
         stored_count = 0
+        today = _today or datetime.date.today().isoformat()
 
         for rec in result["recommendations"]:
             hash_input = {
                 "rule_ids": sorted(rec["contributing_rule_ids"]),
                 "affected_object": rec["affected_object"],
+                "date_bucket": today,
             }
             rec_hash = row_hash(hash_input)
 
@@ -239,7 +258,7 @@ class MssqlRecommendationEngine:
                     (instance_id, rec_hash)
                 )
                 if cur.fetchone():
-                    continue  # already stored, not new this run
+                    continue  # already stored today, not new this run
 
                 cur.execute("""
                     INSERT INTO mssql_recommendations

@@ -279,6 +279,21 @@
         "4. Look for queries with unexpectedly large memory grant requests (oversized sorts/hashes from stale statistics) contributing disproportionately"
       ],
       "related_rules": ["MSSQL_WAIT_013", "MSSQL_WAIT_010"]
+    },
+    {
+      "rule_id": "MSSQL_WAIT_019",
+      "category": "mssql_wait_type",
+      "event_pattern": "RESERVED_MEMORY_ALLOCATION_EXT",
+      "condition": "wait_pct_of_total > 15 OR avg_wait_ms > 20",
+      "severity": "medium",
+      "title": "High Reserved Memory Allocation Wait (RESERVED_MEMORY_ALLOCATION_EXT)",
+      "root_cause": "RESERVED_MEMORY_ALLOCATION_EXT is distinct from MEMORY_ALLOCATION_EXT (MSSQL_WAIT_018): this one occurs while allocating memory that has ALREADY been granted to the query (e.g. while writing to a sort run, a hash workfile, or a partitioned workfile), not during the initial grant request itself. Generally not a cause for concern in small amounts, but frequent or prolonged occurrence can indicate genuine memory-allocation contention, often seen when scaling memory-intensive operations like large columnstore ETL or big sorts/hashes concurrently.",
+      "resolution_steps": [
+        "1. Check whether this coincides with large sort/hash operations (columnstore index builds/ETL, big ORDER BY or GROUP BY operations) running concurrently -- these are the most commonly documented triggers",
+        "2. Cross-reference MEMORY_ALLOCATION_EXT (MSSQL_WAIT_018) and RESOURCE_SEMAPHORE (MSSQL_WAIT_013) for the same period -- if all three are elevated together, this points at broad memory-allocation pressure during memory-intensive operations, not an isolated issue",
+        "3. Consider whether reducing concurrent memory-intensive operations, or (for columnstore-specific workloads) large page support, would relieve the contention"
+      ],
+      "related_rules": ["MSSQL_WAIT_018"]
     }
   ]
 }
