@@ -441,21 +441,36 @@ class MssqlRuleEngine:
         return findings
 
 
-def evaluate_wait_findings(pg_conn, instance_id: int, database_name: str = None) -> dict:
+def evaluate_wait_findings(pg_conn, instance_id: int, database_name: str = None,
+                             return_diagnostics: bool = False):
     """
     Convenience entry point: fetches both wait-metric tiers and
     evaluates both rule categories against them in one call. Returns
     {"wait_type_findings": [...], "wait_category_findings": [...]}.
+
+    return_diagnostics: when True, also includes "wait_type_diagnostics"
+    (the same breakdown fetch_wait_type_metrics can report -- raw rows,
+    how many were filtered as benign/below-floor, how many remained)
+    in the returned dict. Added after a caller layer (the recommendation
+    engine) reported "zero recommendations" with no way to tell whether
+    that meant genuinely healthy data or stale/no-data -- the exact
+    ambiguity this same diagnostic breakdown was built to resolve for
+    the wait-rules test script, just never propagated up through this
+    function. Default False so existing callers' return shape is
+    unchanged.
     """
     engine = MssqlRuleEngine()
 
-    type_metrics = fetch_wait_type_metrics(pg_conn, instance_id)
+    type_metrics, type_diag = fetch_wait_type_metrics(pg_conn, instance_id, return_diagnostics=True)
     type_findings = engine.evaluate_wait_type_rules(type_metrics)
 
     cat_metrics = fetch_wait_category_metrics(pg_conn, instance_id, database_name)
     cat_findings = engine.evaluate_wait_category_rules(cat_metrics)
 
-    return {
+    result = {
         "wait_type_findings": type_findings,
         "wait_category_findings": cat_findings,
     }
+    if return_diagnostics:
+        result["wait_type_diagnostics"] = type_diag
+    return result

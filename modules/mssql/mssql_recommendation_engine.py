@@ -177,7 +177,8 @@ class MssqlRecommendationEngine:
         """
         logger.info(f"Evaluating recommendations: instance_id={instance_id} database={database_name}")
 
-        wait_findings = re_mssql.evaluate_wait_findings(pg_conn, instance_id, database_name)
+        wait_findings = re_mssql.evaluate_wait_findings(pg_conn, instance_id, database_name,
+                                                          return_diagnostics=True)
         all_findings = wait_findings["wait_type_findings"] + wait_findings["wait_category_findings"]
 
         groups = _correlate_findings(all_findings)
@@ -195,6 +196,13 @@ class MssqlRecommendationEngine:
             "medium": sum(1 for r in recommendations if r["severity"] == "medium"),
             "low": sum(1 for r in recommendations if r["severity"] == "low"),
             "recommendations": recommendations,
+            # Included so "zero recommendations" is never ambiguous --
+            # distinguishes genuinely healthy data from stale/missing
+            # data, the same diagnostic breakdown
+            # test_mssql_wait_rules_real_data.py already surfaces, now
+            # propagated up through this layer too instead of stopping
+            # at the rule-engine level.
+            "wait_type_diagnostics": wait_findings.get("wait_type_diagnostics", {}),
         }
 
         logger.info(f"Recommendations complete: {len(recommendations)} "
@@ -395,6 +403,18 @@ def main():
     print(f"Total: {result['total_recommendations']}  |  "
           f"High: {result['high']}  Medium: {result['medium']}  Low: {result['low']}")
     print(f"{'='*60}\n")
+
+    if result['total_recommendations'] == 0:
+        diag = result.get('wait_type_diagnostics', {})
+        if diag:
+            nonzero = diag.get('raw_rows', 0) - diag.get('filtered_negative_or_zero', 0)
+            print(f"Zero recommendations -- here's why, not just that:")
+            print(f"  {diag.get('raw_rows', 0)} distinct wait type(s) tracked, {nonzero} had genuine nonzero activity")
+            print(f"  {diag.get('filtered_benign', 0)} benign, {diag.get('filtered_below_floor', 0)} below the minimum floor, "
+                  f"{diag.get('remaining', 0)} eligible for rule evaluation")
+            print(f"  If 'remaining' is 0 and nonzero was also low, this instance is plausibly just quiet right now --")
+            print(f"  not a sign anything is broken. If you expected real findings, try re-running the collectors first")
+            print(f"  to get a fresh snapshot, then re-run this.\n")
 
     for i, r in enumerate(result["recommendations"], 1):
         tag = "[CORRELATED]" if r["correlated"] else ""

@@ -15,9 +15,12 @@ Examples:
     py run_mssql_recommendations.py --host DESKTOP-TT7JK6I --list-only
         Skips generation, just shows what's already stored.
 
-    py run_mssql_recommendations.py --feedback 3 --status CONFIRMED_REAL --reviewed-by Ganesh --notes "Confirmed via manual check"
-        Records feedback on recommendation id 3. Doesn't regenerate
-        or list anything else.
+    py run_mssql_recommendations.py --feedback <REC_ID> --status CONFIRMED_REAL --reviewed-by Ganesh --notes "Confirmed via manual check"
+        Records feedback on a specific recommendation id. Look up
+        real ids first with --host <host> or --list-only -- an id
+        that doesn't exist yet (e.g. before any recommendations have
+        been generated) will fail with a foreign key error, which is
+        expected, not a bug -- there's nothing to attach feedback to.
 
     py run_mssql_recommendations.py --accuracy
         Shows the current accuracy report across all recorded feedback.
@@ -107,6 +110,20 @@ def main():
             result = engine.evaluate(conn, instance_id, args.database)
             new_count = engine.store_recommendations(conn, result)
             print(f"New recommendations generated this run: {new_count}")
+
+            if result['total_recommendations'] == 0:
+                diag = result.get('wait_type_diagnostics', {})
+                if diag:
+                    nonzero = diag.get('raw_rows', 0) - diag.get('filtered_negative_or_zero', 0)
+                    print(f"\nZero recommendations -- here's why, not just that:")
+                    print(f"  {diag.get('raw_rows', 0)} distinct wait type(s) tracked, {nonzero} had genuine nonzero activity")
+                    print(f"  {diag.get('filtered_benign', 0)} benign, {diag.get('filtered_below_floor', 0)} below the minimum floor, "
+                          f"{diag.get('remaining', 0)} eligible for rule evaluation")
+                    if diag.get('raw_rows', 0) < 2:
+                        print(f"  (fewer than 2 snapshots exist yet, or only 1 -- run the DMV collector again to get a fresh delta)")
+                    else:
+                        print(f"  If this looks low across the board, the instance is plausibly just quiet right now, not broken.")
+                        print(f"  If you expected real findings, re-run the collectors for a fresh snapshot, then re-run this.")
 
         with conn.cursor() as cur:
             cur.execute("""
