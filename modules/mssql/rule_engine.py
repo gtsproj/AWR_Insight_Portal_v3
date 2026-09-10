@@ -328,7 +328,7 @@ def fetch_wait_type_metrics(pg_conn, instance_id: int, snapshot_id: int = None,
 
 
 def fetch_wait_category_metrics(pg_conn, instance_id: int, database_name: str = None,
-                                  qs_interval_id: int = None) -> list:
+                                  qs_interval_id: int = None, return_interval_meta: bool = False):
     """
     Per-query wait_category metrics from Query Store -- already
     interval-aggregated, no delta math needed (the "native interval
@@ -339,6 +339,18 @@ def fetch_wait_category_metrics(pg_conn, instance_id: int, database_name: str = 
     total_query_wait_time_ms, avg_query_wait_time_ms,
     pct_query_wait_time (this row's share of all wait time captured in
     the interval -- the metric MSSQL_WAIT_005/006's conditions check).
+
+    return_interval_meta: when True, also returns the resolved
+    interval's (qs_interval_id, start_time, end_time) as a second
+    value. Added after tracing through a real diagnostic where two
+    consecutive checks, seconds apart, showed byte-for-byte identical
+    "most recent interval" data -- because no new Query Store interval
+    had actually closed between them. Without this, there's no way to
+    tell from the output alone whether you're looking at genuinely
+    fresh data or the same already-seen interval being displayed
+    again, which can look like "every different scenario produces the
+    same signal" when it's really one interval being re-shown several
+    times. Default False so existing callers' return shape is unchanged.
     """
     with pg_conn.cursor() as cur:
         if qs_interval_id is None:
@@ -348,14 +360,21 @@ def fetch_wait_category_metrics(pg_conn, instance_id: int, database_name: str = 
                 db_filter = "AND database_name = %s"
                 params.append(database_name)
             cur.execute(f"""
-                SELECT qs_interval_id, database_name FROM mssql_qs_interval
+                SELECT qs_interval_id, database_name, start_time, end_time FROM mssql_qs_interval
                 WHERE instance_id = %s {db_filter}
                 ORDER BY start_time DESC LIMIT 1
             """, params)
             row = cur.fetchone()
             if not row:
-                return []
-            qs_interval_id, database_name = row
+                return ([], None) if return_interval_meta else []
+            qs_interval_id, database_name, interval_start, interval_end = row
+        else:
+            cur.execute(
+                "SELECT start_time, end_time FROM mssql_qs_interval WHERE qs_interval_id = %s AND instance_id = %s",
+                (qs_interval_id, instance_id)
+            )
+            row = cur.fetchone()
+            interval_start, interval_end = row if row else (None, None)
 
         cur.execute("""
             SELECT wait_category_desc, qs_plan_id, total_query_wait_time_ms, avg_query_wait_time_ms
@@ -374,7 +393,12 @@ def fetch_wait_category_metrics(pg_conn, instance_id: int, database_name: str = 
             "avg_wait_ms": avg_ms,
             "pct_query_wait_time": ((total_ms or 0) / total) * 100,
         })
-    return sorted(results, key=lambda r: r["pct_query_wait_time"], reverse=True)
+    results = sorted(results, key=lambda r: r["pct_query_wait_time"], reverse=True)
+
+    if return_interval_meta:
+        interval_meta = {"qs_interval_id": qs_interval_id, "start_time": interval_start, "end_time": interval_end}
+        return results, interval_meta
+    return results
 
 
 # ══════════════════════ EVALUATOR ══════════════════════

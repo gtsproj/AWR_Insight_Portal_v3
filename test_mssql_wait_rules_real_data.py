@@ -106,8 +106,21 @@ def main():
             print(f"\n(No Query Store intervals collected yet for this filter -- "
                   f"wait_category findings need at least one completed interval.)")
         else:
-            cat_metrics = re_mssql.fetch_wait_category_metrics(conn, instance_id, args.database)
-            print(f"\n--- Real wait_category metrics (Query Store, most recent interval) ---")
+            cat_metrics, interval_meta = re_mssql.fetch_wait_category_metrics(
+                conn, instance_id, args.database, return_interval_meta=True)
+
+            import datetime
+            age_str = ""
+            if interval_meta.get("end_time"):
+                age_seconds = (datetime.datetime.now() - interval_meta["end_time"]).total_seconds()
+                age_str = f", ended {age_seconds:.0f}s ago"
+
+            print(f"\n--- Real wait_category metrics (Query Store interval #{interval_meta.get('qs_interval_id')}"
+                  f"{age_str}) ---")
+            print(f"  NOTE: this is always 'the most recent interval' -- if that number/age matches a previous "
+                  f"run's, you're looking at the SAME interval again, not fresh data (Query Store hasn't closed "
+                  f"a new one yet between checks). A signal that seems to persist across runs may just be this, "
+                  f"not a genuinely ongoing condition.")
             for m in cat_metrics:
                 print(f"  {m['wait_category_desc']:<20} pct={m['pct_query_wait_time']:6.2f}%  "
                       f"avg_ms={float(m['avg_wait_ms'] or 0):8.1f}  plan_id={m['qs_plan_id']}")
