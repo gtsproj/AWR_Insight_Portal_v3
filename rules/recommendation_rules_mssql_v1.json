@@ -339,6 +339,22 @@
         "3. In an active incident, KILLing the head blocker's session_id is sometimes the fastest resolution -- but only after understanding what it was doing, since an abrupt rollback of real work has its own cost"
       ],
       "related_rules": ["MSSQL_WAIT_002"]
+    },
+    {
+      "rule_id": "MSSQL_PLAN_001",
+      "category": "mssql_plan",
+      "event_pattern": "*",
+      "condition": "has_seek_blocking_conversion == True",
+      "severity": "high",
+      "title": "Implicit Conversion Blocking Index Seek (VARCHAR/NVARCHAR Mismatch)",
+      "root_cause": "SQL Server's own execution plan reports a CONVERT_IMPLICIT warning with ConvertIssue='Seek Plan' -- a direct, structural fact, not an inference from wait stats: an implicit data type conversion on this predicate is preventing an index seek entirely, forcing a scan instead. The single most common real-world cause is an application layer (Java/Hibernate, .NET/Entity Framework, and similar ORMs) sending string parameters as NVARCHAR by default, regardless of the actual column type -- when a VARCHAR column is compared against an NVARCHAR parameter, SQL Server's data type precedence rules force NVARCHAR to win, meaning every row's VARCHAR value must be converted before comparison. This isn't a query-cost curiosity: a real production incident traced this exact mechanism end to end -- the forced scan raised the query's estimated cost past Cost Threshold for Parallelism, causing an UPDATE to run in parallel (up to the configured MAXDOP), which under concurrent load led directly to session blocking. The implicit conversion is the actual root cause; MSSQL_WAIT_003/MSSQL_WAIT_007 (parallelism) and MSSQL_BLOCK_001/002/003 (blocking) further down the chain are downstream symptoms of this, not separate problems.",
+      "resolution_steps": [
+        "1. Read the expression in this finding's evidence -- it names the exact column and target type SQL Server converted (e.g. CONVERT_IMPLICIT(nvarchar(50), [table].[column], 0)) -- that column's real type not matching what the application sends is the fix target",
+        "2. For Hibernate/JDBC specifically: configure the JDBC driver or Hibernate dialect to send VARCHAR parameters as VARCHAR, not NVARCHAR, for columns that are genuinely VARCHAR -- this is a driver/mapping-level fix, not a schema change, and fixes every query using that parameter type, not just one",
+        "3. Alternatively, if Unicode support is genuinely needed for that column's data, changing the COLUMN to NVARCHAR (matching what the application already sends) resolves the mismatch from the other side -- weigh the storage/index-size cost of NVARCHAR against the application-layer fix",
+        "4. After whichever fix is applied, confirm the warning is actually gone by checking a fresh plan for this query -- an implicit conversion this specific is either present or it isn't, so this is directly verifiable, not a matter of degree"
+      ],
+      "related_rules": ["MSSQL_WAIT_003", "MSSQL_WAIT_007", "MSSQL_BLOCK_001", "MSSQL_BLOCK_002", "MSSQL_BLOCK_003"]
     }
   ]
 }

@@ -415,6 +415,110 @@ def fetch_wait_category_metrics(pg_conn, instance_id: int, database_name: str = 
 
 # ══════════════════════ EVALUATOR ══════════════════════
 
+def _extract_seek_blocking_conversions(plan_xml: str) -> list:
+    """
+    Parses a stored execution plan's raw XML for PlanAffectingConvert
+    warnings specifically with ConvertIssue="Seek Plan" -- SQL Server's
+    own, direct signal that an implicit data type conversion (most
+    commonly VARCHAR column vs NVARCHAR parameter, the classic
+    Hibernate/JDBC default-parameter-binding anti-pattern -- Hibernate
+    sends Java strings as NVARCHAR by default regardless of the
+    column's actual type) is preventing an index seek on that
+    predicate entirely, forcing a scan instead. Confirmed via multiple
+    independent sources before building this, not assumed: one
+    explicitly states "ConvertIssue=Seek Plan means the conversion is
+    preventing an index seek entirely" (as opposed to
+    ConvertIssue="Cardinality Estimate", a related but different,
+    less severe issue -- poisoned row-count estimates, not a lost
+    seek -- deliberately not what this function looks for).
+
+    Regex-based extraction, not full XML tree parsing with namespace
+    handling -- deliberate choice. The showplan XML has a namespace
+    (http://schemas.microsoft.com/sqlserver/2004/07/showplan) that
+    ElementTree requires explicit handling for, and this function only
+    ever needs to find and extract attributes from ONE specific
+    self-closing warning element, not navigate the plan's structure --
+    a targeted regex is simpler and has less to get subtly wrong than
+    namespace-aware tree traversal for this narrow a task. Verified
+    against Microsoft's own confirmed real element structure
+    (PlanAffectingConvert ConvertIssue="Seek Plan"
+    Expression="CONVERT_IMPLICIT(nvarchar(100),[TP].[DocumentId],0)=[D].[DocumentID]")
+    from multiple independent sources before writing this.
+
+    Returns a list of dicts: {"expression": ..., "convert_issue": ...}
+    -- empty list if the plan has no such warning, or if plan_xml is
+    None/empty (a plan that was never captured, not an error).
+    """
+    if not plan_xml:
+        return []
+
+    results = []
+    # Find each self-closing PlanAffectingConvert element as its own
+    # string first, then extract attributes from within just that
+    # substring -- avoids assuming a fixed attribute order across the
+    # element (SQL Server's actual attribute ordering isn't guaranteed
+    # to be identical across versions).
+    for element_match in re.finditer(r'<PlanAffectingConvert\b[^>]*/>', plan_xml):
+        element_str = element_match.group(0)
+        issue_match = re.search(r'ConvertIssue="([^"]*)"', element_str)
+        expr_match = re.search(r'Expression="([^"]*)"', element_str)
+        if issue_match and issue_match.group(1) == "Seek Plan":
+            results.append({
+                "convert_issue": issue_match.group(1),
+                "expression": expr_match.group(1) if expr_match else None,
+            })
+    return results
+
+
+def fetch_implicit_conversion_metrics(pg_conn, instance_id: int, database_name: str = None,
+                                        limit: int = 50) -> list:
+    """
+    Checks the most recently-seen Query Store plans for implicit
+    conversions that block an index seek (see
+    _extract_seek_blocking_conversions for what specifically counts).
+    This is a fundamentally different KIND of signal than every other
+    fetcher in this file: not a threshold on a metric, but a direct,
+    binary, structural fact SQL Server itself already reports in the
+    plan -- a query either has this warning or it doesn't, there's no
+    "how much" to measure.
+
+    limit bounds how many recent plans get checked per call, the same
+    reasoning as MAX_INTERVALS_PER_RUN elsewhere -- plan_plan XML can
+    be large, and checking every plan ever seen isn't the goal, recent
+    ones are.
+
+    Returns a list of dicts: qs_plan_id, database_name, expression
+    (the raw CONVERT_IMPLICIT expression text, naming the actual
+    column and target type involved).
+    """
+    with pg_conn.cursor() as cur:
+        params = [instance_id]
+        db_filter = ""
+        if database_name:
+            db_filter = "AND database_name = %s"
+            params.append(database_name)
+        params.append(limit)
+        cur.execute(f"""
+            SELECT qs_plan_id, database_name, query_plan
+            FROM mssql_qs_plan
+            WHERE instance_id = %s {db_filter}
+            ORDER BY first_seen_at DESC
+            LIMIT %s
+        """, params)
+        rows = cur.fetchall()
+
+    results = []
+    for qs_plan_id, db_name, plan_xml in rows:
+        conversions = _extract_seek_blocking_conversions(plan_xml)
+        for conv in conversions:
+            results.append({
+                "qs_plan_id": qs_plan_id,
+                "database_name": db_name,
+                "expression": conv["expression"],
+            })
+    return results
+
+
 def fetch_blocking_metrics(pg_conn, instance_id: int, snapshot_id: int = None) -> list:
     """
     Point-in-time blocking snapshot metrics -- fundamentally different
@@ -585,6 +689,38 @@ class MssqlRuleEngine:
                     break
         return findings
 
+    def evaluate_plan_rules(self, conversion_metrics: list) -> list:
+        """
+        Evaluates MSSQL_PLAN_* rules against implicit-conversion
+        findings. Unlike every other evaluator here, the condition is
+        a fixed boolean (has_seek_blocking_conversion == True) rather
+        than a threshold -- each row in conversion_metrics already IS
+        a confirmed Seek Plan conversion (the fetcher only returns
+        rows where one was found), so the "detection" already happened
+        upstream; this just formats it into a finding, one per
+        distinct conversion.
+        """
+        findings = []
+        plan_rules = [r for r in self.rules if r.get("category") == "mssql_plan"]
+
+        for metric in conversion_metrics:
+            context = {"has_seek_blocking_conversion": True}
+            for rule in plan_rules:
+                if evaluate_condition(rule.get("condition", ""), context):
+                    findings.append({
+                        "rule_id": rule["rule_id"],
+                        "category": "mssql_plan",
+                        "severity": rule.get("severity", "medium"),
+                        "title": rule.get("title", ""),
+                        "qs_plan_id": metric["qs_plan_id"],
+                        "expression": metric["expression"],
+                        "database_name": metric.get("database_name"),
+                        "root_cause": rule.get("root_cause", ""),
+                        "resolution": rule.get("resolution_steps", []),
+                        "related_rules": rule.get("related_rules", []),
+                    })
+        return findings
+
     def evaluate_blocking_rules(self, blocking_metrics: list) -> list:
         """
         Evaluates MSSQL_BLOCK_* rules against a blocking snapshot.
@@ -717,4 +853,16 @@ def evaluate_blocking_findings(pg_conn, instance_id: int, snapshot_id: int = Non
     metrics = fetch_blocking_metrics(pg_conn, instance_id, snapshot_id)
     engine = MssqlRuleEngine()
     return engine.evaluate_blocking_rules(metrics)
+
+
+def evaluate_plan_findings(pg_conn, instance_id: int, database_name: str = None) -> list:
+    """
+    Convenience entry point for the implicit-conversion plan category,
+    matching the other categories' shape. Separate function for the
+    same reason blocking is separate -- genuinely different kind of
+    data (parsed plan XML, not a metric threshold) than wait analysis.
+    """
+    metrics = fetch_implicit_conversion_metrics(pg_conn, instance_id, database_name)
+    engine = MssqlRuleEngine()
+    return engine.evaluate_plan_rules(metrics)
 

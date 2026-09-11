@@ -124,6 +124,8 @@ def _affected_object(f: dict) -> str:
         if f.get("rule_id") == "MSSQL_BLOCK_003":
             return f"session {f.get('session_id')} (head blocker)"
         return f"session {f.get('session_id')} blocked by {f.get('blocking_session_id')}"
+    if f.get("category") == "mssql_plan":
+        return f"plan {f.get('qs_plan_id')}"
     return ""
 
 
@@ -139,6 +141,11 @@ def _finding_detail_str(f: dict) -> str:
             return f"blocking {f.get('blocked_count')} sessions"
         wait_s = (f.get("wait_time_ms") or 0) / 1000
         return f"blocked {wait_s:.1f}s"
+    if f.get("category") == "mssql_plan":
+        # The expression itself IS the detail worth showing -- it names
+        # the exact column/type, more useful here than a generic metric.
+        expr = f.get("expression") or ""
+        return expr[:80] + ("..." if len(expr) > 80 else "")
     return ""
 
 
@@ -214,8 +221,9 @@ class MssqlRecommendationEngine:
         wait_findings = re_mssql.evaluate_wait_findings(pg_conn, instance_id, database_name,
                                                           return_diagnostics=True)
         blocking_findings = re_mssql.evaluate_blocking_findings(pg_conn, instance_id)
+        plan_findings = re_mssql.evaluate_plan_findings(pg_conn, instance_id, database_name)
         all_findings = (wait_findings["wait_type_findings"] + wait_findings["wait_category_findings"]
-                         + blocking_findings)
+                         + blocking_findings + plan_findings)
 
         groups = _correlate_findings(all_findings)
         recommendations = [_synthesize_recommendation(g) for g in groups]
