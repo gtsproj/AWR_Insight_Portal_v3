@@ -472,11 +472,39 @@ def fetch_blocking_metrics(pg_conn, instance_id: int, snapshot_id: int = None) -
     if not rows:
         return []
 
+    # Walk the blocking chain to find each row's ROOT blocker, not just
+    # its immediate one -- a real gap found from actual data: a genuine
+    # multi-level chain (A blocks B, B blocks C/D/E) meant session B
+    # was being identified as the "head blocker" of 3 sessions, when B
+    # is itself just stuck waiting on A -- the true root cause never
+    # showed up as a head blocker at all, since it only directly
+    # blocked one session (B). blocking_session_id in the raw data is
+    # only ever the IMMEDIATE blocker (SQL Server's own reporting, not
+    # something this project controls), so finding the true root needs
+    # walking session_id -> blocking_session_id links until reaching a
+    # session that isn't itself blocked in this snapshot. Guarded
+    # against cycles (shouldn't occur for blocking specifically -- that
+    # would be a deadlock, which SQL Server's own deadlock monitor
+    # resolves before a snapshot could ever observe it stably -- but
+    # guarded anyway rather than trusting that assumption blindly).
+    blocker_of = {r[0]: r[1] for r in rows}  # session_id -> blocking_session_id
+
+    def _resolve_root(session_id):
+        current = session_id
+        visited = set()
+        while current in blocker_of and current not in visited:
+            visited.add(current)
+            current = blocker_of[current]
+        return current
+
+    root_of = {r[0]: _resolve_root(r[0]) for r in rows}
+
     # blocked_count: how many rows in THIS snapshot share the same
-    # blocking_session_id -- a property of the blocker, computed once
-    # here rather than requiring every caller to re-derive it.
+    # ROOT blocker (not just the same immediate one) -- a property of
+    # the root cause, computed once here rather than requiring every
+    # caller to re-derive it.
     from collections import Counter
-    blocker_counts = Counter(r[1] for r in rows if r[1])
+    root_counts = Counter(root_of.values())
 
     results = []
     for session_id, blocking_session_id, wait_type, wait_time_ms, wait_resource, \
@@ -484,13 +512,14 @@ def fetch_blocking_metrics(pg_conn, instance_id: int, snapshot_id: int = None) -
         results.append({
             "session_id": session_id,
             "blocking_session_id": blocking_session_id,
+            "root_blocking_session_id": root_of[session_id],
             "wait_type": wait_type,
             "wait_time_ms": wait_time_ms or 0,
             "wait_resource": wait_resource,
             "resource_type": resource_type,
             "request_mode": request_mode,
             "database_name": database_name,
-            "blocked_count": blocker_counts.get(blocking_session_id, 0),
+            "blocked_count": root_counts.get(root_of[session_id], 0),
         })
     return sorted(results, key=lambda r: r["wait_time_ms"], reverse=True)
 
@@ -598,17 +627,27 @@ class MssqlRuleEngine:
                         "related_rules": rule.get("related_rules", []),
                     })
 
-            # Head blocker: evaluate once per unique blocker, not once per blocked row.
-            blocker_id = metric.get("blocking_session_id")
-            if head_blocker_rule and blocker_id and blocker_id not in seen_head_blockers:
+            # Head blocker: evaluate once per unique ROOT blocker, not
+            # once per blocked row, and not per immediate blocker
+            # either -- a real gap found from actual chain data (A
+            # blocks B, B blocks C/D/E): using blocking_session_id here
+            # would identify B as the head blocker of 3 sessions, when
+            # B is itself just stuck waiting on A. A is the actual
+            # session worth investigating -- it's the one genuinely not
+            # blocked by anyone, holding whatever the whole chain is
+            # waiting on. blocked_count (computed in the fetcher) is
+            # already based on the resolved root, not the immediate
+            # blocker, so this only needs to key off the same root.
+            root_id = metric.get("root_blocking_session_id") or metric.get("blocking_session_id")
+            if head_blocker_rule and root_id and root_id not in seen_head_blockers:
                 if evaluate_condition(head_blocker_rule.get("condition", ""), context):
-                    seen_head_blockers.add(blocker_id)
+                    seen_head_blockers.add(root_id)
                     findings.append({
                         "rule_id": head_blocker_rule["rule_id"],
                         "category": "mssql_blocking",
                         "severity": head_blocker_rule.get("severity", "medium"),
                         "title": head_blocker_rule.get("title", ""),
-                        "session_id": blocker_id,  # the finding is ABOUT the blocker itself here
+                        "session_id": root_id,  # the finding is ABOUT the root blocker itself here
                         "blocking_session_id": None,
                         "blocked_count": metric.get("blocked_count"),
                         "database_name": metric.get("database_name"),
