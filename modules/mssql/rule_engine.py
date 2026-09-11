@@ -415,6 +415,74 @@ def fetch_wait_category_metrics(pg_conn, instance_id: int, database_name: str = 
 
 # ══════════════════════ EVALUATOR ══════════════════════
 
+def fetch_blocking_metrics(pg_conn, instance_id: int, snapshot_id: int = None) -> list:
+    """
+    Point-in-time blocking snapshot metrics -- fundamentally different
+    shape from the wait_type/wait_category fetchers above: no delta
+    math needed, since mssql_blocking_snapshot already IS a snapshot
+    of who was blocked, by whom, and on what, at collection time. The
+    analysis question here is "was there meaningful blocking happening
+    right now," not "how has this changed since the last poll."
+
+    Returns a list of dicts, one per blocked session: session_id,
+    blocking_session_id, wait_type, wait_time_ms, wait_resource,
+    resource_type (the lock-escalation signal -- 'OBJECT' means a
+    table-level lock, not row/page-level), request_mode, database_name,
+    and blocked_count -- how many OTHER sessions this row's
+    blocking_session_id is blocking in total this snapshot (computed
+    here, not stored per-row in the raw table), which is what
+    MSSQL_BLOCK_003's head-blocker rule actually evaluates.
+
+    Returns [] (not an error) if no blocking snapshot exists yet for
+    this instance, or if the latest snapshot simply had no blocked
+    sessions -- an empty result here is a GOOD sign, not a failure.
+    """
+    with pg_conn.cursor() as cur:
+        if snapshot_id is None:
+            cur.execute(
+                "SELECT snapshot_id FROM mssql_dmv_snapshot "
+                "WHERE instance_id = %s ORDER BY snapshot_time DESC LIMIT 1",
+                (instance_id,)
+            )
+            row = cur.fetchone()
+            if not row:
+                return []
+            snapshot_id = row[0]
+
+        cur.execute("""
+            SELECT session_id, blocking_session_id, wait_type, wait_time_ms,
+                   wait_resource, resource_type, request_mode, database_name
+            FROM mssql_blocking_snapshot
+            WHERE snapshot_id = %s
+        """, (snapshot_id,))
+        rows = cur.fetchall()
+
+    if not rows:
+        return []
+
+    # blocked_count: how many rows in THIS snapshot share the same
+    # blocking_session_id -- a property of the blocker, computed once
+    # here rather than requiring every caller to re-derive it.
+    from collections import Counter
+    blocker_counts = Counter(r[1] for r in rows if r[1])
+
+    results = []
+    for session_id, blocking_session_id, wait_type, wait_time_ms, wait_resource, \
+            resource_type, request_mode, database_name in rows:
+        results.append({
+            "session_id": session_id,
+            "blocking_session_id": blocking_session_id,
+            "wait_type": wait_type,
+            "wait_time_ms": wait_time_ms or 0,
+            "wait_resource": wait_resource,
+            "resource_type": resource_type,
+            "request_mode": request_mode,
+            "database_name": database_name,
+            "blocked_count": blocker_counts.get(blocking_session_id, 0),
+        })
+    return sorted(results, key=lambda r: r["wait_time_ms"], reverse=True)
+
+
 class MssqlRuleEngine:
     def __init__(self, rules: list = None):
         self.rules = rules if rules is not None else _load_rules()
@@ -476,6 +544,69 @@ class MssqlRuleEngine:
                     break
         return findings
 
+    def evaluate_blocking_rules(self, blocking_metrics: list) -> list:
+        """
+        Evaluates MSSQL_BLOCK_* rules against a blocking snapshot.
+        MSSQL_BLOCK_001 (table-level escalation) and MSSQL_BLOCK_002
+        (sustained wait) are per-row, like every other evaluator here.
+        MSSQL_BLOCK_003 (head blocker) is deliberately different: it's
+        a property of the BLOCKER, not each individual blocked
+        session, so it's evaluated once per unique blocking_session_id
+        rather than once per row -- without this, a single head
+        blocker affecting 5 sessions would produce 5 duplicate
+        findings for what is genuinely one underlying problem.
+        """
+        findings = []
+        block_rules = [r for r in self.rules if r.get("category") == "mssql_blocking"]
+        head_blocker_rule = next((r for r in block_rules if r["rule_id"] == "MSSQL_BLOCK_003"), None)
+        per_row_rules = [r for r in block_rules if r["rule_id"] != "MSSQL_BLOCK_003"]
+
+        seen_head_blockers = set()
+
+        for metric in blocking_metrics:
+            context = {
+                "resource_type": metric.get("resource_type") or "",
+                "wait_time_ms": metric.get("wait_time_ms") or 0,
+                "blocked_count": metric.get("blocked_count") or 0,
+            }
+            for rule in per_row_rules:
+                if evaluate_condition(rule.get("condition", ""), context):
+                    findings.append({
+                        "rule_id": rule["rule_id"],
+                        "category": "mssql_blocking",
+                        "severity": rule.get("severity", "medium"),
+                        "title": rule.get("title", ""),
+                        "session_id": metric["session_id"],
+                        "blocking_session_id": metric["blocking_session_id"],
+                        "resource_type": metric.get("resource_type"),
+                        "wait_time_ms": metric.get("wait_time_ms"),
+                        "database_name": metric.get("database_name"),
+                        "root_cause": rule.get("root_cause", ""),
+                        "resolution": rule.get("resolution_steps", []),
+                        "related_rules": rule.get("related_rules", []),
+                    })
+
+            # Head blocker: evaluate once per unique blocker, not once per blocked row.
+            blocker_id = metric.get("blocking_session_id")
+            if head_blocker_rule and blocker_id and blocker_id not in seen_head_blockers:
+                if evaluate_condition(head_blocker_rule.get("condition", ""), context):
+                    seen_head_blockers.add(blocker_id)
+                    findings.append({
+                        "rule_id": head_blocker_rule["rule_id"],
+                        "category": "mssql_blocking",
+                        "severity": head_blocker_rule.get("severity", "medium"),
+                        "title": head_blocker_rule.get("title", ""),
+                        "session_id": blocker_id,  # the finding is ABOUT the blocker itself here
+                        "blocking_session_id": None,
+                        "blocked_count": metric.get("blocked_count"),
+                        "database_name": metric.get("database_name"),
+                        "root_cause": head_blocker_rule.get("root_cause", ""),
+                        "resolution": head_blocker_rule.get("resolution_steps", []),
+                        "related_rules": head_blocker_rule.get("related_rules", []),
+                    })
+
+        return findings
+
 
 def evaluate_wait_findings(pg_conn, instance_id: int, database_name: str = None,
                              return_diagnostics: bool = False):
@@ -521,3 +652,18 @@ def evaluate_wait_findings(pg_conn, instance_id: int, database_name: str = None,
     if return_diagnostics:
         result["wait_type_diagnostics"] = type_diag
     return result
+
+
+def evaluate_blocking_findings(pg_conn, instance_id: int, snapshot_id: int = None) -> list:
+    """
+    Convenience entry point for the blocking category, matching
+    evaluate_wait_findings' shape for the other category. Separate
+    function (not folded into evaluate_wait_findings) since blocking
+    is a genuinely different kind of data -- point-in-time, not a
+    delta -- and callers that only care about wait analysis shouldn't
+    need to pull blocking data every time.
+    """
+    metrics = fetch_blocking_metrics(pg_conn, instance_id, snapshot_id)
+    engine = MssqlRuleEngine()
+    return engine.evaluate_blocking_rules(metrics)
+

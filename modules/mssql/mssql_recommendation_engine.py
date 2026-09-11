@@ -108,6 +108,40 @@ def _correlate_findings(findings: list) -> list:
     return groups
 
 
+def _affected_object(f: dict) -> str:
+    """
+    A short label identifying what a finding is actually about --
+    varies by category since each has a genuinely different shape.
+    Kept as its own function (not inlined) since this needs to handle
+    a growing set of finding shapes as more rule categories get built,
+    not just wait_type/wait_category.
+    """
+    if f.get("wait_type"):
+        return f["wait_type"]
+    if f.get("wait_category"):
+        return f["wait_category"]
+    if f.get("category") == "mssql_blocking":
+        if f.get("rule_id") == "MSSQL_BLOCK_003":
+            return f"session {f.get('session_id')} (head blocker)"
+        return f"session {f.get('session_id')} blocked by {f.get('blocking_session_id')}"
+    return ""
+
+
+def _finding_detail_str(f: dict) -> str:
+    """A short, human-readable metric string for a finding -- percentage
+    for wait findings, the actual wait duration or blocked count for
+    blocking findings, since those don't have a percentage at all."""
+    pct = f.get("wait_pct_of_total") or f.get("pct_query_wait_time")
+    if pct is not None:
+        return f"{pct}%"
+    if f.get("category") == "mssql_blocking":
+        if f.get("rule_id") == "MSSQL_BLOCK_003":
+            return f"blocking {f.get('blocked_count')} sessions"
+        wait_s = (f.get("wait_time_ms") or 0) / 1000
+        return f"blocked {wait_s:.1f}s"
+    return ""
+
+
 def _synthesize_recommendation(group: list) -> dict:
     """
     Builds one recommendation dict from a correlated group of 1+
@@ -124,22 +158,22 @@ def _synthesize_recommendation(group: list) -> dict:
     if len(group) == 1:
         f = group[0]
         title = f.get("title", "")
-        affected_object = f.get("wait_type") or f.get("wait_category")
-        pct = f.get("wait_pct_of_total") or f.get("pct_query_wait_time")
+        affected_object = _affected_object(f)
+        detail = _finding_detail_str(f)
         summary = f"{title}. {f.get('root_cause', '')}"
-        if pct is not None:
-            summary += f" (observed at {pct}% of total wait time.)"
+        if detail:
+            summary += f" (observed: {detail}.)"
     else:
         affected_object = " / ".join(sorted(set(
-            f.get("wait_type") or f.get("wait_category") or "" for f in group
+            _affected_object(f) for f in group
         ) - {""}))
         title = "Correlated finding: " + " + ".join(titles)
         summary_parts = []
         for f in group:
-            pct = f.get("wait_pct_of_total") or f.get("pct_query_wait_time")
-            obj = f.get("wait_type") or f.get("wait_category")
+            detail = _finding_detail_str(f)
+            obj = _affected_object(f)
             summary_parts.append(
-                f"{f['rule_id']} ({obj}, {pct}%): {f.get('root_cause', '')}"
+                f"{f['rule_id']} ({obj}, {detail}): {f.get('root_cause', '')}"
             )
         summary = ("Multiple independent signals corroborate the same underlying issue -- "
                    + " | ".join(summary_parts))
@@ -179,7 +213,9 @@ class MssqlRecommendationEngine:
 
         wait_findings = re_mssql.evaluate_wait_findings(pg_conn, instance_id, database_name,
                                                           return_diagnostics=True)
-        all_findings = wait_findings["wait_type_findings"] + wait_findings["wait_category_findings"]
+        blocking_findings = re_mssql.evaluate_blocking_findings(pg_conn, instance_id)
+        all_findings = (wait_findings["wait_type_findings"] + wait_findings["wait_category_findings"]
+                         + blocking_findings)
 
         groups = _correlate_findings(all_findings)
         recommendations = [_synthesize_recommendation(g) for g in groups]

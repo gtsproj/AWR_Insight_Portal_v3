@@ -30,7 +30,7 @@
         "3. Check for missing indexes on the contended table -- a missing index often forces a full scan under a lock that a seek would have avoided",
         "4. Consider READ_COMMITTED_SNAPSHOT isolation if blocking is between readers and writers specifically"
       ],
-      "related_rules": []
+      "related_rules": ["MSSQL_BLOCK_001", "MSSQL_BLOCK_002", "MSSQL_BLOCK_003"]
     },
     {
       "rule_id": "MSSQL_WAIT_003",
@@ -294,6 +294,51 @@
         "3. Consider whether reducing concurrent memory-intensive operations, or (for columnstore-specific workloads) large page support, would relieve the contention"
       ],
       "related_rules": ["MSSQL_WAIT_018"]
+    },
+    {
+      "rule_id": "MSSQL_BLOCK_001",
+      "category": "mssql_blocking",
+      "event_pattern": "*",
+      "condition": "resource_type == 'OBJECT'",
+      "severity": "high",
+      "title": "Table-Level Lock Blocking (Escalation)",
+      "root_cause": "This session is waiting on an OBJECT-level (table-level) lock, not a row/page-level one -- either its own statement escalated to a table lock (SQL Server does this automatically once a statement holds roughly 5000+ locks on one table/index), or another session already holds one and this session's otherwise-narrow request is blocked behind it. Table-level locking is meaningfully more severe than row-level contention: it blocks EVERY other session touching that table, not just ones after the same specific row.",
+      "resolution_steps": [
+        "1. Identify the blocking session's own statement (cross-reference mssql_session_stats or, better, the exact_dml captured if this same session shows up in a deadlock later) -- a large UPDATE/DELETE with no supporting index on its WHERE clause is the classic trigger for both escalation and the full scan that makes it more likely",
+        "2. If escalation is the cause, consider ALTER TABLE ... SET (LOCK_ESCALATION = AUTO) for partitioned tables (escalates to partition level instead of the whole table), or restructure the operation into smaller batches to stay under the escalation threshold",
+        "3. Confirm a supporting index exists for the blocking statement's WHERE/JOIN predicates -- reduces both the row count touched and the chance of hitting the escalation threshold in the first place"
+      ],
+      "related_rules": ["MSSQL_WAIT_002"]
+    },
+    {
+      "rule_id": "MSSQL_BLOCK_002",
+      "category": "mssql_blocking",
+      "event_pattern": "*",
+      "condition": "wait_time_ms > 30000",
+      "severity": "high",
+      "title": "Sustained Session Blocking",
+      "root_cause": "This session has been blocked for over 30 seconds at the moment this snapshot was captured -- brief, sub-second lock waits are completely normal in any OLTP system and not what this rule targets. A wait this long, still ongoing at snapshot time, means a real user-facing delay is happening right now, not a routine momentary contention blip.",
+      "resolution_steps": [
+        "1. Identify the blocking_session_id and what it's doing -- an idle-but-uncommitted transaction (application holding a connection open mid-transaction) is a common, easily-fixed cause distinct from genuine long-running work",
+        "2. Check whether the blocking session is itself waiting on something else (a blocking chain) -- see MSSQL_BLOCK_003 if one session is blocking several others simultaneously",
+        "3. If this recurs regularly at the same time of day, check for a scheduled job (backup, index maintenance, batch ETL) coinciding with normal transaction activity"
+      ],
+      "related_rules": ["MSSQL_WAIT_002"]
+    },
+    {
+      "rule_id": "MSSQL_BLOCK_003",
+      "category": "mssql_blocking",
+      "event_pattern": "*",
+      "condition": "blocked_count >= 3",
+      "severity": "high",
+      "title": "Head Blocker (Blocking Chain)",
+      "root_cause": "This one session is directly blocking 3 or more other sessions simultaneously at snapshot time -- a 'head blocker' or 'lead blocker' in classic DBA terminology. This is a materially different, more urgent situation than isolated 1:1 blocking: resolving THIS session unblocks everyone behind it at once, whereas each of the individual blocked sessions is a symptom, not the actual problem to fix.",
+      "resolution_steps": [
+        "1. This is the session to investigate first, not any of the ones it's blocking -- check what it's actually doing (its own wait_type/command/cpu_time_ms) and how long it's held its current transaction open",
+        "2. If it's idle-but-uncommitted (a connection held open mid-transaction by the application, not actively doing work), this is very likely an application bug -- a missing COMMIT/ROLLBACK on some code path, not a database tuning issue",
+        "3. In an active incident, KILLing the head blocker's session_id is sometimes the fastest resolution -- but only after understanding what it was doing, since an abrupt rollback of real work has its own cost"
+      ],
+      "related_rules": ["MSSQL_WAIT_002"]
     }
   ]
 }
