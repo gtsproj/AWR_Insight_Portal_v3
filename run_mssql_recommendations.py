@@ -22,6 +22,12 @@ Examples:
         been generated) will fail with a foreign key error, which is
         expected, not a bug -- there's nothing to attach feedback to.
 
+    py run_mssql_recommendations.py --review --host DESKTOP-TT7JK6I
+        Walks through every recommendation that doesn't have feedback
+        yet, one at a time -- shows the full detail, then prompts for
+        a status. No need to look up ids manually first. Type 's' to
+        skip one, 'q' to stop the session early.
+
     py run_mssql_recommendations.py --accuracy
         Shows the current accuracy report across all recorded feedback.
 """
@@ -60,9 +66,73 @@ def main():
     parser.add_argument("--reviewed-by", default=None)
     parser.add_argument("--notes", default=None)
     parser.add_argument("--accuracy", action="store_true", help="Show the accuracy report and exit")
+    parser.add_argument("--review", action="store_true",
+                         help="Interactively walk through every recommendation without feedback yet")
     args = parser.parse_args()
 
     conn = get_db_connection()
+
+    if args.review:
+        with conn.cursor() as cur:
+            if args.host:
+                cur.execute(
+                    "SELECT r.id, r.generated_at, r.severity, r.title, r.summary, r.contributing_rule_ids, "
+                    "r.correlated, r.database_name, r.affected_object, f.feedback_status "
+                    "FROM mssql_recommendations r "
+                    "JOIN mssql_instance_master im ON r.instance_id = im.id "
+                    "LEFT JOIN mssql_recommendation_feedback f ON r.id = f.recommendation_id "
+                    "WHERE im.host_name = %s AND im.instance_name = %s "
+                    "AND (f.id IS NULL OR f.feedback_status = 'UNREVIEWED') "
+                    "ORDER BY r.generated_at ASC",
+                    (args.host, args.instance_name)
+                )
+            else:
+                cur.execute(
+                    "SELECT r.id, r.generated_at, r.severity, r.title, r.summary, r.contributing_rule_ids, "
+                    "r.correlated, r.database_name, r.affected_object, f.feedback_status "
+                    "FROM mssql_recommendations r "
+                    "LEFT JOIN mssql_recommendation_feedback f ON r.id = f.recommendation_id "
+                    "WHERE (f.id IS NULL OR f.feedback_status = 'UNREVIEWED') "
+                    "ORDER BY r.generated_at ASC"
+                )
+            pending = cur.fetchall()
+
+        if not pending:
+            print("Nothing to review -- every recommendation already has feedback recorded.")
+            conn.close()
+            return
+
+        print(f"{len(pending)} recommendation(s) awaiting feedback.")
+        reviewed_by = args.reviewed_by or (input("Reviewer name (blank to leave unset): ").strip() or None)
+
+        status_map = {"1": "CONFIRMED_REAL", "2": "FALSE_POSITIVE", "3": "NEEDS_INVESTIGATION"}
+        reviewed_count = 0
+
+        for row in pending:
+            rec_id = row[0]
+            _print_recommendation(row)
+            choice = input("\n  Status? [1=CONFIRMED_REAL 2=FALSE_POSITIVE 3=NEEDS_INVESTIGATION s=skip q=quit]: ").strip().lower()
+            if choice == 'q':
+                print("Stopping review session.")
+                break
+            if choice == 's' or choice == '':
+                print("  Skipped.")
+                continue
+            status = status_map.get(choice)
+            if not status:
+                print("  Not a recognized choice -- skipped.")
+                continue
+            notes = input("  Notes (optional): ").strip() or None
+            ok = rec_eng.record_feedback(conn, rec_id, status, reviewed_by, notes)
+            if ok:
+                reviewed_count += 1
+                print(f"  Recorded: {status}")
+            else:
+                print("  FAILED to record -- see error above")
+
+        print(f"\nReview session complete -- {reviewed_count} of {len(pending)} recorded this session.")
+        conn.close()
+        return
 
     if args.accuracy:
         report = rec_eng.accuracy_report(conn)
