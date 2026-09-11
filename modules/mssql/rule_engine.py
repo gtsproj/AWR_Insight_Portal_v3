@@ -822,6 +822,22 @@ def evaluate_wait_findings(pg_conn, instance_id: int, database_name: str = None,
         pg_conn, instance_id, database_name, return_interval_meta=True)
     cat_findings = engine.evaluate_wait_category_rules(cat_metrics)
 
+    # Tag each wait_category finding with the interval it actually came
+    # from, not just return this globally -- a real gap found from a
+    # real confusion: two recommendations generated ~2 minutes apart
+    # showed different Parallelism percentages for what looked like
+    # "the same workload," and tracing it back required manually
+    # cross-referencing raw log output to work out that they'd actually
+    # come from two DIFFERENT Query Store intervals (the "most recent"
+    # one had rolled over between the two runs), not the same data
+    # re-measured. Attaching interval age directly to each finding means
+    # a stored recommendation can show this on its own, rather than
+    # requiring that kind of after-the-fact detective work.
+    if cat_interval_meta:
+        for f in cat_findings:
+            f["qs_interval_id"] = cat_interval_meta.get("qs_interval_id")
+            f["qs_interval_end_time"] = cat_interval_meta.get("end_time")
+
     result = {
         "wait_type_findings": type_findings,
         "wait_category_findings": cat_findings,

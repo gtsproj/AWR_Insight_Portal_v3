@@ -76,30 +76,46 @@ def _correlate_findings(findings: list) -> list:
     never discover MSSQL_WAIT_006 even though they're clearly meant
     to correlate -- caught by testing this against exactly that real
     pair before this function was used anywhere.
-    """
-    by_rule_id = {f["rule_id"]: f for f in findings}
-    fired_rule_ids = set(by_rule_id.keys())
 
-    adjacency = {rid: set() for rid in fired_rule_ids}
-    for rid in fired_rule_ids:
-        for related in by_rule_id[rid].get("related_rules", []):
-            if related in fired_rule_ids:
-                adjacency[rid].add(related)
-                adjacency[related].add(rid)  # the undirected part -- record both directions
+    Indexes findings by POSITION, not by rule_id -- a serious real bug
+    found by testing against 3 real MSSQL_WAIT_020 findings for 3
+    different plan_ids (a completely normal, expected shape -- the
+    same rule firing for multiple distinct objects): the original
+    implementation built a dict keyed by rule_id alone
+    (by_rule_id = {f["rule_id"]: f for f in findings}), which silently
+    collapsed all 3 findings down to just the last one processed,
+    discarding the other 2 entirely with no error or warning. This had
+    been silently dropping real findings since this function was first
+    written -- confirmed by tracing a real discrepancy where 3 raw
+    MSSQL_WAIT_020 findings in test_mssql_wait_rules_real_data.py's
+    output only ever produced 1 stored recommendation.
+    """
+    n = len(findings)
+    indices_by_rule_id = {}
+    for i, f in enumerate(findings):
+        indices_by_rule_id.setdefault(f["rule_id"], []).append(i)
+
+    adjacency = {i: set() for i in range(n)}
+    for i, f in enumerate(findings):
+        for related_rule_id in f.get("related_rules", []):
+            for j in indices_by_rule_id.get(related_rule_id, []):
+                if j != i:
+                    adjacency[i].add(j)
+                    adjacency[j].add(i)  # the undirected part -- record both directions
 
     visited = set()
     groups = []
-    for rule_id in fired_rule_ids:
-        if rule_id in visited:
+    for i in range(n):
+        if i in visited:
             continue
         component = []
-        queue = [rule_id]
+        queue = [i]
         while queue:
             current = queue.pop()
             if current in visited:
                 continue
             visited.add(current)
-            component.append(by_rule_id[current])
+            component.append(findings[current])
             for neighbor in adjacency[current]:
                 if neighbor not in visited:
                     queue.append(neighbor)
@@ -119,7 +135,17 @@ def _affected_object(f: dict) -> str:
     if f.get("wait_type"):
         return f["wait_type"]
     if f.get("wait_category"):
-        return f["wait_category"]
+        # Include qs_plan_id, not just the category name -- a real bug
+        # found from real data: without this, multiple DIFFERENT plans
+        # showing the same wait_category (e.g. 3 distinct queries all
+        # with high Parallelism) produced IDENTICAL affected_object
+        # strings, colliding in store_recommendations' dedup hash and
+        # silently discarding all but one of them at storage time, even
+        # though evaluate() had correctly produced separate findings for
+        # each. Traced directly from Ganesh's real data: 3 raw
+        # MSSQL_WAIT_020 findings for 3 different plan_ids, but only 1
+        # recommendation ever made it into mssql_recommendations.
+        return f"{f['wait_category']} (plan {f.get('qs_plan_id')})"
     if f.get("category") == "mssql_blocking":
         if f.get("rule_id") == "MSSQL_BLOCK_003":
             return f"session {f.get('session_id')} (head blocker)"
@@ -132,10 +158,22 @@ def _affected_object(f: dict) -> str:
 def _finding_detail_str(f: dict) -> str:
     """A short, human-readable metric string for a finding -- percentage
     for wait findings, the actual wait duration or blocked count for
-    blocking findings, since those don't have a percentage at all."""
+    blocking findings, since those don't have a percentage at all.
+    For wait_category findings specifically, appends how old the
+    underlying Query Store interval actually was -- without this, two
+    recommendations minutes apart can show different percentages for
+    what looks like "the same" Parallelism/Lock/etc. category with no
+    visible reason why, when the real explanation is they came from
+    two different intervals (the "most recent" one had rolled over
+    between them), not the same data re-measured."""
     pct = f.get("wait_pct_of_total") or f.get("pct_query_wait_time")
     if pct is not None:
-        return f"{pct}%"
+        detail = f"{pct}%"
+        if f.get("category") == "mssql_wait_category" and f.get("qs_interval_end_time"):
+            import datetime
+            age_s = (datetime.datetime.now() - f["qs_interval_end_time"]).total_seconds()
+            detail += f" (Query Store interval #{f.get('qs_interval_id')}, ended {age_s:.0f}s before this finding was generated)"
+        return detail
     if f.get("category") == "mssql_blocking":
         if f.get("rule_id") == "MSSQL_BLOCK_003":
             return f"blocking {f.get('blocked_count')} sessions"
