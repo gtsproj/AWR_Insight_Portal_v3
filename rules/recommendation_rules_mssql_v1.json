@@ -354,7 +354,22 @@
         "3. Alternatively, if Unicode support is genuinely needed for that column's data, changing the COLUMN to NVARCHAR (matching what the application already sends) resolves the mismatch from the other side -- weigh the storage/index-size cost of NVARCHAR against the application-layer fix",
         "4. After whichever fix is applied, confirm the warning is actually gone by checking a fresh plan for this query -- an implicit conversion this specific is either present or it isn't, so this is directly verifiable, not a matter of degree"
       ],
-      "related_rules": ["MSSQL_WAIT_003", "MSSQL_WAIT_007", "MSSQL_BLOCK_001", "MSSQL_BLOCK_002", "MSSQL_BLOCK_003"]
+      "related_rules": ["MSSQL_WAIT_003", "MSSQL_WAIT_007", "MSSQL_WAIT_020", "MSSQL_BLOCK_001", "MSSQL_BLOCK_002", "MSSQL_BLOCK_003"]
+    },
+    {
+      "rule_id": "MSSQL_WAIT_020",
+      "category": "mssql_wait_category",
+      "event_pattern": "Parallelism",
+      "condition": "pct_query_wait_time > 15 OR avg_wait_ms > 50",
+      "severity": "high",
+      "title": "High Parallelism Wait — Query Store",
+      "root_cause": "This specific query is spending a disproportionate share of its wait time on parallel-execution synchronization -- the per-query counterpart to MSSQL_WAIT_003 (CXPACKET) and MSSQL_WAIT_007 (CXSYNC_PORT)'s instance-wide signals, naming the actual query going parallel rather than just the aggregate wait type. A query going parallel isn't inherently a problem, but a high share of ITS OWN wait time spent here specifically means the parallel threads are spending more time synchronizing with each other than doing useful work -- often because the query shouldn't have gone parallel in the first place (a forced scan from a missing index or an implicit conversion pushed its cost over Cost Threshold for Parallelism) rather than because it's genuinely large, CPU-bound work that benefits from parallelism.",
+      "resolution_steps": [
+        "1. Check this query's plan (mssql_qs_plan) for why it went parallel -- a scan where a seek should have been possible (check for MSSQL_PLAN_001 findings on the same plan_id specifically) is a common, directly-fixable root cause, not a data-volume problem",
+        "2. Cross-reference mssql_config_snapshot.cost_threshold_for_parallelism and max_dop -- confirm these are deliberately tuned for this workload, not just left at defaults",
+        "3. If the query genuinely needs to scan a large amount of data (no seek possible even with correct types/indexes), parallelism may be legitimate here -- the distinction is whether the SCAN itself was necessary, not whether parallelism helped once the scan was already happening"
+      ],
+      "related_rules": ["MSSQL_WAIT_003", "MSSQL_WAIT_007", "MSSQL_PLAN_001"]
     }
   ]
 }
