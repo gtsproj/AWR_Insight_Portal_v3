@@ -436,6 +436,18 @@ def fetch_blocking_metrics(pg_conn, instance_id: int, snapshot_id: int = None) -
     Returns [] (not an error) if no blocking snapshot exists yet for
     this instance, or if the latest snapshot simply had no blocked
     sessions -- an empty result here is a GOOD sign, not a failure.
+
+    Defensively filters out blocking_session_id IS NULL/0 rows even
+    though the collector itself now only inserts genuine blocking
+    (blocking_session_id > 0) -- a real bug on a real first run showed
+    27 rows with blocking_session_id=0 (SQL Server's own sentinel for
+    "not actually blocked"), which MSSQL_BLOCK_002 then flagged as
+    sustained blocking on wait times that were really just long-idle
+    connections on a benign wait, nothing to do with another session.
+    Filtering here too, not just in the collector's own query, means
+    an already-collected snapshot with this old bad data (like
+    Ganesh's actual database has right now) doesn't need to wait for
+    a fresh collection to stop producing false positives.
     """
     with pg_conn.cursor() as cur:
         if snapshot_id is None:
@@ -453,7 +465,7 @@ def fetch_blocking_metrics(pg_conn, instance_id: int, snapshot_id: int = None) -
             SELECT session_id, blocking_session_id, wait_type, wait_time_ms,
                    wait_resource, resource_type, request_mode, database_name
             FROM mssql_blocking_snapshot
-            WHERE snapshot_id = %s
+            WHERE snapshot_id = %s AND blocking_session_id > 0
         """, (snapshot_id,))
         rows = cur.fetchall()
 

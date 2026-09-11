@@ -226,9 +226,27 @@ def _collect_blocking(conn, pg_conn, snapshot_id) -> int:
     # can hold/wait on several locks at once, and wait_resource already
     # gives the compact summary; resource_type/request_mode add the
     # structured detail for whichever lock it's actively waiting on).
-    # Only sessions with a genuine blocker or an active wait are
-    # captured -- an empty result here is a GOOD sign (no blocking
-    # right now), not a collection failure.
+    #
+    # Only sessions with a GENUINE blocker (blocking_session_id > 0)
+    # are captured -- a real bug found on a real first run of the
+    # blocking rule category: the original condition here was
+    # "blocking_session_id > 0 OR wait_type IS NOT NULL", which
+    # captured ANY session with ANY active wait, including entirely
+    # benign ones (idle connections waiting on the client for their
+    # next command, background tasks) that were never blocked by
+    # another session at all. blocking_session_id = 0 is SQL Server's
+    # own sentinel for "not blocked" -- a real run showed 27 rows, all
+    # with blocked by 0, several with wait times over 18,000 seconds
+    # (5+ hours), which MSSQL_BLOCK_002 then correctly-by-its-own-logic
+    # but wrongly-in-substance flagged as "sustained blocking" -- 10
+    # false positives from data that was never genuine blocking to
+    # begin with. General wait activity (not tied to a specific
+    # blocker) is already covered by mssql_wait_stats_delta -- no
+    # coverage is lost by narrowing this table to what its name and
+    # the rules built against it actually mean: genuine blocking.
+    #
+    # An empty result here is a GOOD sign (no blocking right now), not
+    # a collection failure.
     with conn.cursor() as cur:
         cur.execute("""
             SELECT r.session_id, DB_NAME(r.database_id), r.blocking_session_id,
@@ -241,7 +259,7 @@ def _collect_blocking(conn, pg_conn, snapshot_id) -> int:
                 FROM sys.dm_tran_locks
                 WHERE request_session_id = r.session_id AND request_status = 'WAIT'
             ) tl
-            WHERE r.blocking_session_id > 0 OR r.wait_type IS NOT NULL
+            WHERE r.blocking_session_id > 0
         """)
         rows = cur.fetchall()
     n = 0
