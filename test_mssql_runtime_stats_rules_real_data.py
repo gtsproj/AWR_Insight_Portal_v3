@@ -62,14 +62,23 @@ def main():
         for m in metrics:
             mem_mb = (m['avg_query_max_used_memory_kb'] or 0) / 1024
             tag = "[SELECT INTO #temp]" if m['is_select_into_temp'] else ""
+            # Falls back to the query text when object_name is legitimately
+            # None (ad-hoc queries, including SQL Server's own internal
+            # StatMan statistics-update mechanism, genuinely have no object
+            # to name) -- otherwise this row gives no clue what it actually
+            # is, even though the text was successfully retrieved.
+            obj_display = m['object_name'] or (
+                f"(ad-hoc: {m['query_sql_text'][:60].strip()}...)" if m.get('query_sql_text') else "(unresolved)")
             print(f"  plan_id={m['qs_plan_id']:<8} exec={m['count_executions']:<6} "
-                  f"avg_mem={mem_mb:6.1f}MB {tag}  obj={m['object_name']}")
+                  f"avg_mem={mem_mb:6.1f}MB {tag}  obj={obj_display}")
 
         findings = engine.evaluate_runtime_stats_rules(metrics)
         print(f"\n--- Findings: mssql_runtime ({len(findings)}) ---")
         for f in findings:
+            obj_display = f['object_name'] or (
+                f"(ad-hoc: {f['query_sql_text'][:60].strip()}...)" if f.get('query_sql_text') else "(unresolved)")
             print(f"  [{f['severity'].upper():6}] {f['rule_id']} -- {f['title']}")
-            print(f"           plan_id={f['qs_plan_id']}  obj={f['object_name']}  "
+            print(f"           plan_id={f['qs_plan_id']}  obj={obj_display}  "
                   f"exec={f['count_executions']}  select_into_temp={f['is_select_into_temp']}")
 
     conn.close()
