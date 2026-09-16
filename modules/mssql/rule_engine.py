@@ -618,6 +618,65 @@ def fetch_deadlock_metrics(pg_conn, instance_id: int, database_name: str = None,
     return results
 
 
+def fetch_runtime_stats_metrics(pg_conn, instance_id: int, database_name: str = None,
+                                  lookback_intervals: int = 5, min_avg_memory_kb: float = 1024) -> list:
+    """
+    Checks recent Query Store runtime stats for queries that are both
+    frequently executed AND consistently pulling a large memory grant
+    -- a materially worse combination than either alone, since the
+    memory cost compounds across every concurrent execution rather
+    than being a one-off. Looks across the most recent
+    lookback_intervals (not just the single most recent one, unlike
+    the wait_category fetcher) since count_executions resets per
+    interval -- a query that's consistently frequent over time could
+    be under-detected looking at just one interval in isolation.
+
+    min_avg_memory_kb pre-filters at the SQL level (1MB default) purely
+    to keep the row count reasonable before resolving object_name/
+    query_sql_text per row -- the actual rule threshold (10MB, per
+    MSSQL_RUNTIME_001) is applied later by the rule condition itself,
+    not here.
+
+    Returns a list of dicts, one per (qs_plan_id, interval) combination
+    above the pre-filter: qs_plan_id, database_name, count_executions,
+    avg_query_max_used_memory_kb, object_name, query_sql_text, and
+    is_select_into_temp -- a regex-detected flag for the specific
+    SELECT...INTO #temptable pattern, which the evaluator uses to
+    sharpen the finding's detail when it matches.
+    """
+    with pg_conn.cursor() as cur:
+        params = [instance_id]
+        db_filter = ""
+        if database_name:
+            db_filter = "AND rs.database_name = %s"
+            params.append(database_name)
+        params.extend([min_avg_memory_kb, lookback_intervals])
+        cur.execute(f"""
+            SELECT rs.qs_plan_id, rs.database_name, rs.count_executions, rs.avg_query_max_used_memory_kb
+            FROM mssql_qs_runtime_stats rs
+            WHERE rs.instance_id = %s {db_filter} AND rs.avg_query_max_used_memory_kb > %s
+            ORDER BY rs.qs_interval_id DESC
+            LIMIT %s
+        """, params)
+        rows = cur.fetchall()
+
+    results = []
+    select_into_pattern = re.compile(r'\bSELECT\b.*?\bINTO\s+#\w+', re.IGNORECASE | re.DOTALL)
+    for qs_plan_id, db_name, count_executions, avg_memory_kb in rows:
+        obj_name, query_sql_text = _resolve_query_context(pg_conn, instance_id, db_name, qs_plan_id)
+        is_select_into_temp = bool(query_sql_text and select_into_pattern.search(query_sql_text))
+        results.append({
+            "qs_plan_id": qs_plan_id,
+            "database_name": db_name,
+            "count_executions": count_executions,
+            "avg_query_max_used_memory_kb": avg_memory_kb,
+            "object_name": obj_name,
+            "query_sql_text": query_sql_text,
+            "is_select_into_temp": is_select_into_temp,
+        })
+    return results
+
+
 def fetch_blocking_metrics(pg_conn, instance_id: int, snapshot_id: int = None) -> list:
     """
     Point-in-time blocking snapshot metrics -- fundamentally different
@@ -823,6 +882,45 @@ class MssqlRuleEngine:
                         "database_name": metric.get("database_name"),
                         "object_name": metric.get("object_name"),
                         "query_sql_text": metric.get("query_sql_text"),
+                        "root_cause": rule.get("root_cause", ""),
+                        "resolution": rule.get("resolution_steps", []),
+                        "related_rules": rule.get("related_rules", []),
+                    })
+        return findings
+
+    def evaluate_runtime_stats_rules(self, runtime_metrics: list) -> list:
+        """
+        Evaluates MSSQL_RUNTIME_* rules. Per-row, like most evaluators
+        here (no dedup needed the way head-blocker/recurring-deadlock
+        require, since each row is already a distinct (plan, interval)
+        combination -- duplicate findings across intervals for the
+        SAME plan are a real possibility this doesn't yet dedupe, left
+        as-is deliberately: a query that's persistently heavy across
+        multiple recent intervals arguably deserves that visibility,
+        not to be silently collapsed to one finding).
+        """
+        findings = []
+        runtime_rules = [r for r in self.rules if r.get("category") == "mssql_runtime"]
+
+        for metric in runtime_metrics:
+            context = {
+                "count_executions": metric.get("count_executions") or 0,
+                "avg_query_max_used_memory_kb": float(metric.get("avg_query_max_used_memory_kb") or 0),
+            }
+            for rule in runtime_rules:
+                if evaluate_condition(rule.get("condition", ""), context):
+                    findings.append({
+                        "rule_id": rule["rule_id"],
+                        "category": "mssql_runtime",
+                        "severity": rule.get("severity", "medium"),
+                        "title": rule.get("title", ""),
+                        "qs_plan_id": metric["qs_plan_id"],
+                        "database_name": metric.get("database_name"),
+                        "count_executions": metric.get("count_executions"),
+                        "avg_query_max_used_memory_kb": metric.get("avg_query_max_used_memory_kb"),
+                        "object_name": metric.get("object_name"),
+                        "query_sql_text": metric.get("query_sql_text"),
+                        "is_select_into_temp": metric.get("is_select_into_temp"),
                         "root_cause": rule.get("root_cause", ""),
                         "resolution": rule.get("resolution_steps", []),
                         "related_rules": rule.get("related_rules", []),
@@ -1070,6 +1168,16 @@ def evaluate_deadlock_findings(pg_conn, instance_id: int, database_name: str = N
     metrics = fetch_deadlock_metrics(pg_conn, instance_id, database_name, lookback_hours)
     engine = MssqlRuleEngine()
     return engine.evaluate_deadlock_rules(metrics)
+
+
+def evaluate_runtime_stats_findings(pg_conn, instance_id: int, database_name: str = None) -> list:
+    """
+    Convenience entry point for the runtime stats category, matching
+    the other categories' shape.
+    """
+    metrics = fetch_runtime_stats_metrics(pg_conn, instance_id, database_name)
+    engine = MssqlRuleEngine()
+    return engine.evaluate_runtime_stats_rules(metrics)
 
 
 def evaluate_plan_findings(pg_conn, instance_id: int, database_name: str = None) -> list:

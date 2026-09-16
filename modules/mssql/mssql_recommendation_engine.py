@@ -93,6 +93,8 @@ def _correlation_key(f: dict):
         return f.get("qs_plan_id")
     if f.get("category") == "mssql_deadlock":
         return f.get("contested_table")
+    if f.get("category") == "mssql_runtime":
+        return f.get("qs_plan_id")
     return None
 
 
@@ -255,6 +257,9 @@ def _affected_object(f: dict) -> str:
         return f"plan {f.get('qs_plan_id')}{' (' + obj + ')' if obj else ''}"
     if f.get("category") == "mssql_deadlock":
         return f"{f.get('contested_table')} (event #{f.get('event_id')})"
+    if f.get("category") == "mssql_runtime":
+        obj = f.get("object_name")
+        return f"plan {f.get('qs_plan_id')}{' (' + obj + ')' if obj else ''}"
     return ""
 
 
@@ -305,6 +310,16 @@ def _finding_detail_str(f: dict) -> str:
             detail = f"Recurred {f.get('recurrence_count')} times -- {detail}"
         elif f.get("deadlock_time"):
             detail += f" (at {f['deadlock_time']})"
+        return detail
+    if f.get("category") == "mssql_runtime":
+        mem_mb = (f.get("avg_query_max_used_memory_kb") or 0) / 1024
+        detail = f"{f.get('count_executions')} executions, avg {mem_mb:.1f}MB memory grant each"
+        if f.get("is_select_into_temp"):
+            detail += (" | Pattern: SELECT...INTO #temptable detected -- the temp table's row estimate "
+                       "comes from the JOIN's cardinality estimate, not the temp table's own statistics; "
+                       "check base-table statistics accuracy first")
+        if f.get("query_sql_text"):
+            detail += f" | Query: {f['query_sql_text'][:150].strip()}{'...' if len(f['query_sql_text']) > 150 else ''}"
         return detail
     return ""
 
@@ -398,8 +413,9 @@ class MssqlRecommendationEngine:
         blocking_findings = re_mssql.evaluate_blocking_findings(pg_conn, instance_id)
         plan_findings = re_mssql.evaluate_plan_findings(pg_conn, instance_id, database_name)
         deadlock_findings = re_mssql.evaluate_deadlock_findings(pg_conn, instance_id, database_name)
+        runtime_findings = re_mssql.evaluate_runtime_stats_findings(pg_conn, instance_id, database_name)
         all_findings = (wait_findings["wait_type_findings"] + wait_findings["wait_category_findings"]
-                         + blocking_findings + plan_findings + deadlock_findings)
+                         + blocking_findings + plan_findings + deadlock_findings + runtime_findings)
 
         groups = _correlate_findings(all_findings)
         recommendations = [_synthesize_recommendation(g) for g in groups]

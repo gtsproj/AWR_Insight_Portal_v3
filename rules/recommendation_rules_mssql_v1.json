@@ -401,6 +401,22 @@
         "3. After applying a fix, this rule firing again on the SAME table/cause combination is the direct, verifiable signal the fix didn't actually resolve it -- worth checking again after deploying a change, not just once"
       ],
       "related_rules": ["MSSQL_DEADLOCK_001"]
+    },
+    {
+      "rule_id": "MSSQL_RUNTIME_001",
+      "category": "mssql_runtime",
+      "event_pattern": "*",
+      "condition": "count_executions > 50 AND avg_query_max_used_memory_kb > 10240",
+      "severity": "high",
+      "title": "High-Memory, Frequently-Executed Query",
+      "root_cause": "This query both executes frequently AND consistently requests a large memory grant per execution -- a materially worse combination than either alone: an occasional heavy query is a one-off cost, but the same large grant repeated at high frequency compounds directly into sustained memory pressure for every OTHER concurrent query competing for the same memory grant pool (see MSSQL_WAIT_010/013). Root cause is very often unoptimized code, not genuinely necessary memory use -- frequently-called procedures using SELECT...INTO #temptable with join conditions to filter from base tables are a classic, common instance of this: the temp table's row-count estimate comes from the JOIN's cardinality estimate, not a real table's own statistics, so when the join's filter conditions are hard to estimate accurately (correlated columns, stale statistics on the base tables), the memory grant is frequently wrong in either direction -- and at high call frequency, that estimation error compounds across every concurrent execution rather than being a one-off cost.",
+      "resolution_steps": [
+        "1. Check this finding's evidence for the actual query text -- if it matches SELECT...INTO #temptable specifically, the fix is usually ensuring accurate statistics on the base tables being joined/filtered, or pre-creating the temp table with an explicit schema and populating it with INSERT instead of SELECT INTO, which lets it get its own real statistics rather than inheriting the join's estimate",
+        "2. Cross-reference MSSQL_WAIT_010 (Memory wait_category) and MSSQL_WAIT_013 (RESOURCE_SEMAPHORE) for the same period -- if elevated together, this specific query is a strong candidate for being the actual source of that broader pressure, not just a coincidentally correlated symptom",
+        "3. If the memory grant is genuinely necessary (real, large intermediate result sets), consider whether Resource Governor workload groups could cap this specific pattern's memory footprint without affecting other queries",
+        "4. Check actual vs estimated rows in the query's execution plan directly -- a large gap between the two is the definitive confirmation of a cardinality-estimation-driven memory grant problem, not just a correlation"
+      ],
+      "related_rules": ["MSSQL_WAIT_010", "MSSQL_WAIT_013"]
     }
   ]
 }
