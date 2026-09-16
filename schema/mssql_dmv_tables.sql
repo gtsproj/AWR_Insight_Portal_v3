@@ -71,6 +71,15 @@ CREATE TABLE IF NOT EXISTS mssql_blocking_snapshot (
     total_elapsed_time_ms          BIGINT,
     logical_reads                  BIGINT,
     command                        TEXT,
+    blocked_object_name            TEXT,           -- resolved at collection time via OBJECT_NAME() --
+                                                    -- OBJECT-type locks resolve resource_associated_entity_id
+                                                    -- directly; PAGE/KEY/RID types resolve via sys.partitions
+                                                    -- (object_id alone is meaningless outside its source database,
+                                                    -- same reasoning as mssql_qs_query.object_name)
+    blocked_index_name             TEXT,           -- only populated for PAGE/KEY/RID (row/page-level) locks --
+                                                    -- an OBJECT-level (table-level) lock has no single index to name
+    blocked_statement_text         TEXT,           -- the actual statement text the blocked session was executing,
+                                                    -- via sys.dm_exec_sql_text + statement_start/end_offset
     CONSTRAINT mssql_blocking_snapshot_pkey PRIMARY KEY (id) USING INDEX TABLESPACE mssqlparser_idx,
     CONSTRAINT fk_mssql_block_snapshot FOREIGN KEY (snapshot_id) REFERENCES mssql_dmv_snapshot(snapshot_id),
     CONSTRAINT uq_mssql_blocking_snapshot UNIQUE (snapshot_id, session_id) USING INDEX TABLESPACE mssqlparser_idx

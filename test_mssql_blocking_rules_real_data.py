@@ -62,6 +62,11 @@ def main():
             print(f"  session {m['session_id']:<6} blocked by {str(m['blocking_session_id']):<6} "
                   f"waited {wait_s:6.1f}s  resource_type={m['resource_type'] or '?':<8} "
                   f"blocker's total blocked count={m['blocked_count']}  db={m['database_name']}")
+            if m.get('blocked_object_name'):
+                idx = f", index {m['blocked_index_name']}" if m.get('blocked_index_name') else ""
+                print(f"    Table: {m['blocked_object_name']}{idx}")
+            if m.get('blocked_statement_text'):
+                print(f"    Statement: {m['blocked_statement_text'].strip()[:200]}")
 
         findings = engine.evaluate_blocking_rules(metrics)
         print(f"\n--- Findings: mssql_blocking ({len(findings)}) ---")
@@ -75,6 +80,10 @@ def main():
             else:
                 print(f"           session={f['session_id']}  blocked_by={f['blocking_session_id']}  "
                       f"resource_type={f.get('resource_type')}  wait_time_ms={f.get('wait_time_ms')}")
+            if f.get('blocked_object_name'):
+                print(f"           Table: {f['blocked_object_name']}")
+            if f.get('blocked_statement_text'):
+                print(f"           Statement: {f['blocked_statement_text'].strip()[:200]}")
 
     conn.close()
 

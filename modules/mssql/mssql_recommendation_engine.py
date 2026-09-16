@@ -145,13 +145,20 @@ def _affected_object(f: dict) -> str:
         # each. Traced directly from Ganesh's real data: 3 raw
         # MSSQL_WAIT_020 findings for 3 different plan_ids, but only 1
         # recommendation ever made it into mssql_recommendations.
-        return f"{f['wait_category']} (plan {f.get('qs_plan_id')})"
+        # object_name included when resolved (not always -- a plan can
+        # be genuinely ad-hoc with nothing to resolve) since a real
+        # table/proc name is what a DBA can actually act on, a raw
+        # plan_id number alone is not.
+        obj = f.get("object_name")
+        return f"{f['wait_category']} (plan {f.get('qs_plan_id')}{', ' + obj if obj else ''})"
     if f.get("category") == "mssql_blocking":
+        obj_suffix = f" on {f['blocked_object_name']}" if f.get("blocked_object_name") else ""
         if f.get("rule_id") == "MSSQL_BLOCK_003":
-            return f"session {f.get('session_id')} (head blocker)"
-        return f"session {f.get('session_id')} blocked by {f.get('blocking_session_id')}"
+            return f"session {f.get('session_id')} (head blocker){obj_suffix}"
+        return f"session {f.get('session_id')} blocked by {f.get('blocking_session_id')}{obj_suffix}"
     if f.get("category") == "mssql_plan":
-        return f"plan {f.get('qs_plan_id')}"
+        obj = f.get("object_name")
+        return f"plan {f.get('qs_plan_id')}{' (' + obj + ')' if obj else ''}"
     return ""
 
 
@@ -173,17 +180,29 @@ def _finding_detail_str(f: dict) -> str:
             import datetime
             age_s = (datetime.datetime.now() - f["qs_interval_end_time"]).total_seconds()
             detail += f" (Query Store interval #{f.get('qs_interval_id')}, ended {age_s:.0f}s before this finding was generated)"
+        if f.get("query_sql_text"):
+            detail += f" | Query: {f['query_sql_text'][:150].strip()}{'...' if len(f['query_sql_text']) > 150 else ''}"
         return detail
     if f.get("category") == "mssql_blocking":
         if f.get("rule_id") == "MSSQL_BLOCK_003":
-            return f"blocking {f.get('blocked_count')} sessions"
-        wait_s = (f.get("wait_time_ms") or 0) / 1000
-        return f"blocked {wait_s:.1f}s"
+            detail = f"blocking {f.get('blocked_count')} sessions"
+        else:
+            wait_s = (f.get("wait_time_ms") or 0) / 1000
+            detail = f"blocked {wait_s:.1f}s"
+        if f.get("blocked_index_name"):
+            detail += f" | Index: {f['blocked_index_name']}"
+        if f.get("blocked_statement_text"):
+            stmt = f["blocked_statement_text"].strip()
+            detail += f" | Statement: {stmt[:150]}{'...' if len(stmt) > 150 else ''}"
+        return detail
     if f.get("category") == "mssql_plan":
         # The expression itself IS the detail worth showing -- it names
         # the exact column/type, more useful here than a generic metric.
         expr = f.get("expression") or ""
-        return expr[:80] + ("..." if len(expr) > 80 else "")
+        detail = expr[:80] + ("..." if len(expr) > 80 else "")
+        if f.get("query_sql_text"):
+            detail += f" | Query: {f['query_sql_text'][:150].strip()}{'...' if len(f['query_sql_text']) > 150 else ''}"
+        return detail
     return ""
 
 

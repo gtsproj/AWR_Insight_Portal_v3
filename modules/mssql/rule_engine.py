@@ -327,6 +327,39 @@ def fetch_wait_type_metrics(pg_conn, instance_id: int, snapshot_id: int = None,
     return (results, diag) if return_diagnostics else results
 
 
+def _resolve_query_context(pg_conn, instance_id: int, database_name: str, qs_plan_id) -> tuple:
+    """
+    Resolves a qs_plan_id back to the actual object name (table/proc)
+    and SQL text it belongs to -- both already collected, no new
+    collector work needed. object_name is resolved at collection time
+    (OBJECT_NAME() run while connected to the source database, since
+    an object_id alone is meaningless outside it -- see
+    mssql_qs_query's own table comment); query_sql_text is Query
+    Store's own captured statement text.
+
+    Added because a finding naming only a plan_id and a percentage
+    gives a DBA nothing to act on -- no table, no query, no way to
+    judge whether to accept or reject the recommendation. Returns
+    (object_name, query_sql_text), either possibly None (a plan that's
+    aged out of Query Store's retention window, or a genuinely ad-hoc
+    query with no object_name to resolve).
+    """
+    if qs_plan_id is None:
+        return (None, None)
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT q.object_name, qt.query_sql_text
+            FROM mssql_qs_plan p
+            JOIN mssql_qs_query q ON p.instance_id = q.instance_id AND p.database_name = q.database_name
+                AND p.qs_query_id = q.qs_query_id
+            JOIN mssql_qs_query_text qt ON q.instance_id = qt.instance_id AND q.database_name = qt.database_name
+                AND q.qs_query_text_id = qt.qs_query_text_id
+            WHERE p.instance_id = %s AND p.database_name = %s AND p.qs_plan_id = %s
+        """, (instance_id, database_name, qs_plan_id))
+        row = cur.fetchone()
+    return row if row else (None, None)
+
+
 def fetch_wait_category_metrics(pg_conn, instance_id: int, database_name: str = None,
                                   qs_interval_id: int = None, return_interval_meta: bool = False):
     """
@@ -397,12 +430,15 @@ def fetch_wait_category_metrics(pg_conn, instance_id: int, database_name: str = 
     total = sum(r[2] or 0 for r in rows) or 1
     results = []
     for wait_category_desc, plan_id, total_ms, avg_ms in rows:
+        obj_name, query_sql_text = _resolve_query_context(pg_conn, instance_id, database_name, plan_id)
         results.append({
             "wait_category_desc": wait_category_desc,
             "qs_plan_id": plan_id,
             "total_query_wait_time_ms": total_ms,
             "avg_wait_ms": avg_ms,
             "pct_query_wait_time": ((total_ms or 0) / total) * 100,
+            "object_name": obj_name,
+            "query_sql_text": query_sql_text,
         })
     results = sorted(results, key=lambda r: r["pct_query_wait_time"], reverse=True)
 
@@ -511,10 +547,13 @@ def fetch_implicit_conversion_metrics(pg_conn, instance_id: int, database_name: 
     for qs_plan_id, db_name, plan_xml in rows:
         conversions = _extract_seek_blocking_conversions(plan_xml)
         for conv in conversions:
+            obj_name, query_sql_text = _resolve_query_context(pg_conn, instance_id, db_name, qs_plan_id)
             results.append({
                 "qs_plan_id": qs_plan_id,
                 "database_name": db_name,
                 "expression": conv["expression"],
+                "object_name": obj_name,
+                "query_sql_text": query_sql_text,
             })
     return results
 
@@ -567,7 +606,8 @@ def fetch_blocking_metrics(pg_conn, instance_id: int, snapshot_id: int = None) -
 
         cur.execute("""
             SELECT session_id, blocking_session_id, wait_type, wait_time_ms,
-                   wait_resource, resource_type, request_mode, database_name
+                   wait_resource, resource_type, request_mode, database_name,
+                   blocked_object_name, blocked_index_name, blocked_statement_text
             FROM mssql_blocking_snapshot
             WHERE snapshot_id = %s AND blocking_session_id > 0
         """, (snapshot_id,))
@@ -612,7 +652,8 @@ def fetch_blocking_metrics(pg_conn, instance_id: int, snapshot_id: int = None) -
 
     results = []
     for session_id, blocking_session_id, wait_type, wait_time_ms, wait_resource, \
-            resource_type, request_mode, database_name in rows:
+            resource_type, request_mode, database_name, blocked_object_name, \
+            blocked_index_name, blocked_statement_text in rows:
         results.append({
             "session_id": session_id,
             "blocking_session_id": blocking_session_id,
@@ -624,6 +665,9 @@ def fetch_blocking_metrics(pg_conn, instance_id: int, snapshot_id: int = None) -
             "request_mode": request_mode,
             "database_name": database_name,
             "blocked_count": root_counts.get(root_of[session_id], 0),
+            "blocked_object_name": blocked_object_name,
+            "blocked_index_name": blocked_index_name,
+            "blocked_statement_text": blocked_statement_text,
         })
     return sorted(results, key=lambda r: r["wait_time_ms"], reverse=True)
 
@@ -682,6 +726,8 @@ class MssqlRuleEngine:
                         "qs_plan_id": metric["qs_plan_id"],
                         "pct_query_wait_time": round(context["pct_query_wait_time"], 2),
                         "avg_wait_ms": round(context["avg_wait_ms"], 2),
+                        "object_name": metric.get("object_name"),
+                        "query_sql_text": metric.get("query_sql_text"),
                         "root_cause": rule.get("root_cause", ""),
                         "resolution": rule.get("resolution_steps", []),
                         "related_rules": rule.get("related_rules", []),
@@ -715,6 +761,8 @@ class MssqlRuleEngine:
                         "qs_plan_id": metric["qs_plan_id"],
                         "expression": metric["expression"],
                         "database_name": metric.get("database_name"),
+                        "object_name": metric.get("object_name"),
+                        "query_sql_text": metric.get("query_sql_text"),
                         "root_cause": rule.get("root_cause", ""),
                         "resolution": rule.get("resolution_steps", []),
                         "related_rules": rule.get("related_rules", []),
@@ -758,6 +806,9 @@ class MssqlRuleEngine:
                         "resource_type": metric.get("resource_type"),
                         "wait_time_ms": metric.get("wait_time_ms"),
                         "database_name": metric.get("database_name"),
+                        "blocked_object_name": metric.get("blocked_object_name"),
+                        "blocked_index_name": metric.get("blocked_index_name"),
+                        "blocked_statement_text": metric.get("blocked_statement_text"),
                         "root_cause": rule.get("root_cause", ""),
                         "resolution": rule.get("resolution_steps", []),
                         "related_rules": rule.get("related_rules", []),
@@ -787,6 +838,13 @@ class MssqlRuleEngine:
                         "blocking_session_id": None,
                         "blocked_count": metric.get("blocked_count"),
                         "database_name": metric.get("database_name"),
+                        # The contended table -- likely shared across the whole chain since
+                        # everyone's waiting on the same resource, but this specific value comes
+                        # from one blocked session's row, not the root blocker's own activity
+                        # (the root may not even have an active request right now if it's idle
+                        # mid-transaction) -- worth being honest about that distinction in how
+                        # this gets displayed, not just attaching it silently.
+                        "blocked_object_name": metric.get("blocked_object_name"),
                         "root_cause": head_blocker_rule.get("root_cause", ""),
                         "resolution": head_blocker_rule.get("resolution_steps", []),
                         "related_rules": head_blocker_rule.get("related_rules", []),

@@ -247,18 +247,51 @@ def _collect_blocking(conn, pg_conn, snapshot_id) -> int:
     #
     # An empty result here is a GOOD sign (no blocking right now), not
     # a collection failure.
+    #
+    # blocked_object_name/blocked_index_name/blocked_statement_text:
+    # added after a real DBA question -- "session 74 blocked by 77"
+    # tells a DBA nothing they can act on without knowing which table
+    # and which query. Resolution logic verified against multiple
+    # sources (including Microsoft's own sys.dm_tran_locks reference)
+    # before writing this: resource_associated_entity_id IS the
+    # object_id directly for OBJECT-type locks, but is a hobt_id
+    # requiring a join through sys.partitions for PAGE/KEY/RID types --
+    # these are NOT interchangeable, and treating them the same would
+    # silently resolve wrong or NULL names for one or the other.
+    # blocked_statement_text uses the same sql_handle +
+    # statement_start/end_offset substring extraction pattern already
+    # used elsewhere in this project for "what exact statement was
+    # this session running" -- OUTER APPLY (not CROSS APPLY) so a
+    # session with no resolvable sql_handle still keeps its row rather
+    # than being silently dropped.
     with conn.cursor() as cur:
         cur.execute("""
             SELECT r.session_id, DB_NAME(r.database_id), r.blocking_session_id,
                    r.wait_type, r.wait_time, r.wait_resource,
                    r.cpu_time, r.total_elapsed_time, r.logical_reads, r.command,
-                   tl.resource_type, tl.request_mode, tl.request_status
+                   tl.resource_type, tl.request_mode, tl.request_status,
+                   CASE
+                       WHEN tl.resource_type = 'OBJECT' THEN OBJECT_NAME(tl.resource_associated_entity_id, r.database_id)
+                       WHEN tl.resource_type IN ('KEY', 'PAGE', 'RID') THEN OBJECT_NAME(p.object_id, r.database_id)
+                       ELSE NULL
+                   END AS blocked_object_name,
+                   CASE WHEN p.object_id IS NOT NULL THEN idx.name ELSE NULL END AS blocked_index_name,
+                   stmt.blocked_statement_text
             FROM sys.dm_exec_requests r
             OUTER APPLY (
-                SELECT TOP 1 resource_type, request_mode, request_status
+                SELECT TOP 1 resource_type, request_mode, request_status, resource_associated_entity_id
                 FROM sys.dm_tran_locks
                 WHERE request_session_id = r.session_id AND request_status = 'WAIT'
             ) tl
+            LEFT JOIN sys.partitions p
+                ON tl.resource_type IN ('KEY', 'PAGE', 'RID') AND p.hobt_id = tl.resource_associated_entity_id
+            LEFT JOIN sys.indexes idx ON idx.object_id = p.object_id AND idx.index_id = p.index_id
+            OUTER APPLY (
+                SELECT SUBSTRING(st.text, (r.statement_start_offset / 2) + 1,
+                         ((CASE r.statement_end_offset WHEN -1 THEN DATALENGTH(st.text) ELSE r.statement_end_offset END
+                           - r.statement_start_offset) / 2) + 1) AS blocked_statement_text
+                FROM sys.dm_exec_sql_text(r.sql_handle) st
+            ) stmt
             WHERE r.blocking_session_id > 0
         """)
         rows = cur.fetchall()
@@ -270,11 +303,12 @@ def _collect_blocking(conn, pg_conn, snapshot_id) -> int:
                     (snapshot_id, database_name, session_id, blocking_session_id,
                      wait_type, wait_time_ms, wait_resource, resource_type,
                      request_mode, request_status, cpu_time_ms,
-                     total_elapsed_time_ms, logical_reads, command)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                     total_elapsed_time_ms, logical_reads, command,
+                     blocked_object_name, blocked_index_name, blocked_statement_text)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT (snapshot_id, session_id) DO NOTHING
             """, (snapshot_id, r[1], r[0], r[2], r[3], r[4], r[5], r[10], r[11], r[12],
-                  r[6], r[7], r[8], r[9]))
+                  r[6], r[7], r[8], r[9], r[13], r[14], r[15]))
         n += 1
     return n
 
