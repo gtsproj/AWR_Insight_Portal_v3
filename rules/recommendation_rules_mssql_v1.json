@@ -370,6 +370,37 @@
         "3. If the query genuinely needs to scan a large amount of data (no seek possible even with correct types/indexes), parallelism may be legitimate here -- the distinction is whether the SCAN itself was necessary, not whether parallelism helped once the scan was already happening"
       ],
       "related_rules": ["MSSQL_WAIT_003", "MSSQL_WAIT_007", "MSSQL_PLAN_001"]
+    },
+    {
+      "rule_id": "MSSQL_DEADLOCK_001",
+      "category": "mssql_deadlock",
+      "event_pattern": "*",
+      "condition": "True",
+      "severity": "high",
+      "title": "Deadlock Captured",
+      "root_cause": "A genuine deadlock occurred -- one session was killed and rolled back by SQL Server's own deadlock monitor to let the other proceed. This is a directly-observed event, not an inference from wait stats: the deadlock graph itself, the exact contested table/lock modes, and (from the classification already computed at collection time) a specific, actionable cause are all captured. Unlike ordinary blocking, a deadlock always means a transaction that a client was depending on failed and had to be retried (or surfaced as an error) by the application.",
+      "resolution_steps": [
+        "1. Read this finding's classified cause directly -- it already accounts for the database's actual RCSI setting at collection time, not a generic guess",
+        "2. Check the exact DML each process was executing (mssql_deadlock_processes.exact_dml_statement) to identify the specific code paths involved, not just the table",
+        "3. If the cause names lock ordering (two processes acquiring the same resources in opposite order), the fix is standardizing acquisition order across the code paths involved -- the most reliable, permanent fix for this class of deadlock",
+        "4. If RCSI is not enabled and the cause is a Read-Write conflict, enabling READ_COMMITTED_SNAPSHOT is often the single highest-leverage fix available, addressing many similar deadlocks at once rather than one at a time"
+      ],
+      "related_rules": ["MSSQL_DEADLOCK_002", "MSSQL_WAIT_002", "MSSQL_BLOCK_001"]
+    },
+    {
+      "rule_id": "MSSQL_DEADLOCK_002",
+      "category": "mssql_deadlock",
+      "event_pattern": "*",
+      "condition": "recurrence_count >= 2",
+      "severity": "high",
+      "title": "Recurring Deadlock Pattern",
+      "root_cause": "The same table and classified cause have produced more than one deadlock -- a genuinely different, more urgent situation than an isolated occurrence: a systemic code pattern is repeatedly causing transaction failures, not a one-off collision. Each individual occurrence might look like ordinary noise on its own; the recurrence itself is the signal that the underlying cause hasn't actually been addressed.",
+      "resolution_steps": [
+        "1. This is worth prioritizing over isolated single-occurrence deadlocks (MSSQL_DEADLOCK_001) elsewhere -- the same root cause is confirmed to be recurring, not hypothetically ongoing",
+        "2. Compare the exact_dml_statement across each occurrence (mssql_deadlock_processes) -- if it's genuinely the same code path each time, that's the one to fix, not each individual incident separately",
+        "3. After applying a fix, this rule firing again on the SAME table/cause combination is the direct, verifiable signal the fix didn't actually resolve it -- worth checking again after deploying a change, not just once"
+      ],
+      "related_rules": ["MSSQL_DEADLOCK_001"]
     }
   ]
 }

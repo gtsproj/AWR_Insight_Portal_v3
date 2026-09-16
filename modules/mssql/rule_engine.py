@@ -558,6 +558,66 @@ def fetch_implicit_conversion_metrics(pg_conn, instance_id: int, database_name: 
     return results
 
 
+def fetch_deadlock_metrics(pg_conn, instance_id: int, database_name: str = None,
+                             lookback_hours: int = 168) -> list:
+    """
+    Recent captured deadlock events -- fundamentally a different kind
+    of data than every other fetcher here: discrete, already-resolved
+    historical events (SQL Server's own deadlock monitor already
+    killed a victim and moved on), not an ongoing condition to be
+    re-measured. lookback_hours (default 7 days) bounds how far back
+    to look -- deadlocks don't "expire" the way a wait-stat delta
+    does, but re-surfacing a months-old, long-since-addressed deadlock
+    forever isn't useful either.
+
+    Computes recurrence_count per event: how many events in the
+    lookback window share the same (contested_table, deadlock_cause)
+    combination -- what MSSQL_DEADLOCK_002 actually checks. A single
+    occurrence looks like ordinary noise on its own; recurrence is the
+    signal the underlying cause hasn't been addressed.
+
+    Returns a list of dicts, one per deadlock event: event id,
+    deadlock_time, database_name, contested_table, contested_index,
+    lock_mode_1/2, rcsi_enabled, deadlock_cause, recurrence_count.
+    """
+    with pg_conn.cursor() as cur:
+        params = [instance_id, lookback_hours]
+        db_filter = ""
+        if database_name:
+            db_filter = "AND database_name = %s"
+            params.append(database_name)
+        cur.execute(f"""
+            SELECT id, deadlock_time, database_name, contested_table, contested_index,
+                   lock_mode_1, lock_mode_2, rcsi_enabled, deadlock_cause
+            FROM mssql_deadlock_events
+            WHERE instance_id = %s AND deadlock_time > now() - (%s || ' hours')::interval {db_filter}
+            ORDER BY deadlock_time DESC
+        """, params)
+        rows = cur.fetchall()
+
+    if not rows:
+        return []
+
+    from collections import Counter
+    recurrence_counts = Counter((r[3], r[8]) for r in rows)  # (contested_table, deadlock_cause)
+
+    results = []
+    for event_id, deadlock_time, db_name, table, index, lock_mode_1, lock_mode_2, rcsi, cause in rows:
+        results.append({
+            "event_id": event_id,
+            "deadlock_time": deadlock_time,
+            "database_name": db_name,
+            "contested_table": table,
+            "contested_index": index,
+            "lock_mode_1": lock_mode_1,
+            "lock_mode_2": lock_mode_2,
+            "rcsi_enabled": rcsi,
+            "deadlock_cause": cause,
+            "recurrence_count": recurrence_counts.get((table, cause), 1),
+        })
+    return results
+
+
 def fetch_blocking_metrics(pg_conn, instance_id: int, snapshot_id: int = None) -> list:
     """
     Point-in-time blocking snapshot metrics -- fundamentally different
@@ -769,6 +829,67 @@ class MssqlRuleEngine:
                     })
         return findings
 
+    def evaluate_deadlock_rules(self, deadlock_metrics: list) -> list:
+        """
+        Evaluates MSSQL_DEADLOCK_* rules. MSSQL_DEADLOCK_001 (a
+        deadlock was captured) is per-event, like most evaluators
+        here -- every distinct event gets its own finding.
+        MSSQL_DEADLOCK_002 (recurring pattern) is deliberately
+        different, matching MSSQL_BLOCK_003's head-blocker pattern:
+        it's a property of the (contested_table, deadlock_cause)
+        PATTERN, not each individual event, so it's evaluated once per
+        unique pattern rather than once per event -- without this, 3
+        recurrences of the same underlying cause would produce 3
+        duplicate "recurring" findings for what is genuinely one
+        systemic issue.
+        """
+        findings = []
+        deadlock_rules = [r for r in self.rules if r.get("category") == "mssql_deadlock"]
+        per_event_rule = next((r for r in deadlock_rules if r["rule_id"] == "MSSQL_DEADLOCK_001"), None)
+        recurring_rule = next((r for r in deadlock_rules if r["rule_id"] == "MSSQL_DEADLOCK_002"), None)
+
+        seen_patterns = set()
+
+        for metric in deadlock_metrics:
+            context = {"recurrence_count": metric.get("recurrence_count", 1)}
+
+            if per_event_rule and evaluate_condition(per_event_rule.get("condition", ""), context):
+                findings.append({
+                    "rule_id": per_event_rule["rule_id"],
+                    "category": "mssql_deadlock",
+                    "severity": per_event_rule.get("severity", "medium"),
+                    "title": per_event_rule.get("title", ""),
+                    "event_id": metric["event_id"],
+                    "deadlock_time": metric.get("deadlock_time"),
+                    "database_name": metric.get("database_name"),
+                    "contested_table": metric.get("contested_table"),
+                    "deadlock_cause": metric.get("deadlock_cause"),
+                    "root_cause": per_event_rule.get("root_cause", ""),
+                    "resolution": per_event_rule.get("resolution_steps", []),
+                    "related_rules": per_event_rule.get("related_rules", []),
+                })
+
+            pattern_key = (metric.get("contested_table"), metric.get("deadlock_cause"))
+            if recurring_rule and pattern_key not in seen_patterns:
+                if evaluate_condition(recurring_rule.get("condition", ""), context):
+                    seen_patterns.add(pattern_key)
+                    findings.append({
+                        "rule_id": recurring_rule["rule_id"],
+                        "category": "mssql_deadlock",
+                        "severity": recurring_rule.get("severity", "medium"),
+                        "title": recurring_rule.get("title", ""),
+                        "event_id": metric["event_id"],
+                        "database_name": metric.get("database_name"),
+                        "contested_table": metric.get("contested_table"),
+                        "deadlock_cause": metric.get("deadlock_cause"),
+                        "recurrence_count": metric.get("recurrence_count"),
+                        "root_cause": recurring_rule.get("root_cause", ""),
+                        "resolution": recurring_rule.get("resolution_steps", []),
+                        "related_rules": recurring_rule.get("related_rules", []),
+                    })
+
+        return findings
+
     def evaluate_blocking_rules(self, blocking_metrics: list) -> list:
         """
         Evaluates MSSQL_BLOCK_* rules against a blocking snapshot.
@@ -845,6 +966,14 @@ class MssqlRuleEngine:
                         # mid-transaction) -- worth being honest about that distinction in how
                         # this gets displayed, not just attaching it silently.
                         "blocked_object_name": metric.get("blocked_object_name"),
+                        # Same honesty applies here -- this is a statement from one of the
+                        # sessions BEHIND the head blocker in the queue, not necessarily what
+                        # the head blocker itself is currently running. Included anyway because
+                        # a DBA reviewing this needs *something* concrete to look at, and the
+                        # contended resource is genuinely the same one across the whole chain --
+                        # the summary text this feeds into makes the distinction explicit rather
+                        # than implying more precision than the data actually has.
+                        "blocked_statement_text": metric.get("blocked_statement_text"),
                         "root_cause": head_blocker_rule.get("root_cause", ""),
                         "resolution": head_blocker_rule.get("resolution_steps", []),
                         "related_rules": head_blocker_rule.get("related_rules", []),
@@ -927,6 +1056,20 @@ def evaluate_blocking_findings(pg_conn, instance_id: int, snapshot_id: int = Non
     metrics = fetch_blocking_metrics(pg_conn, instance_id, snapshot_id)
     engine = MssqlRuleEngine()
     return engine.evaluate_blocking_rules(metrics)
+
+
+def evaluate_deadlock_findings(pg_conn, instance_id: int, database_name: str = None,
+                                 lookback_hours: int = 168) -> list:
+    """
+    Convenience entry point for the deadlock category, matching the
+    other categories' shape. Separate function for the same reason
+    blocking is separate -- genuinely different kind of data (discrete
+    historical events, not a metric threshold or a live snapshot) than
+    wait analysis or blocking.
+    """
+    metrics = fetch_deadlock_metrics(pg_conn, instance_id, database_name, lookback_hours)
+    engine = MssqlRuleEngine()
+    return engine.evaluate_deadlock_rules(metrics)
 
 
 def evaluate_plan_findings(pg_conn, instance_id: int, database_name: str = None) -> list:

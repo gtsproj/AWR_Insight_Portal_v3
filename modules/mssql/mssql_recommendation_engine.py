@@ -43,6 +43,7 @@ deliberate and kept (not removed for consistency's sake):
 
 import os
 import sys
+import re
 import json
 
 _PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -57,6 +58,42 @@ import rule_engine as re_mssql
 logger = get_logger('mssql_recommendation_engine')
 
 SEVERITY_RANK = {"low": 0, "medium": 1, "high": 2}
+
+
+def _correlation_key(f: dict):
+    """
+    An identifying key for what a finding is actually about, used to
+    stop correlation from linking findings that share a referenced
+    rule_id but are about completely unrelated objects. Real bug found
+    from testing a genuine multi-event deadlock scenario: 4 separate
+    MSSQL_DEADLOCK_001 findings for 2 different tables all got merged
+    into ONE recommendation, including a completely unrelated table,
+    because _correlate_findings only checked "does some finding
+    reference this rule_id" without checking whether they shared any
+    actual context -- correlation is meant to link independent
+    evidence of the SAME issue, not everything that happens to share a
+    rule name.
+
+    Returns None for categories that are genuinely instance-wide (no
+    natural "which object" to check -- wait_type findings, which
+    should still be able to correlate with any per-query finding that
+    references them, matching how this has always correctly worked).
+    Returns a category-specific key otherwise: qs_plan_id for
+    wait_category/mssql_plan findings, the blocking chain's root
+    session for blocking findings, contested_table for deadlock
+    findings.
+    """
+    if f.get("category") == "mssql_wait_type":
+        return None
+    if f.get("category") == "mssql_wait_category":
+        return f.get("qs_plan_id")
+    if f.get("category") == "mssql_blocking":
+        return f.get("root_blocking_session_id") or f.get("session_id")
+    if f.get("category") == "mssql_plan":
+        return f.get("qs_plan_id")
+    if f.get("category") == "mssql_deadlock":
+        return f.get("contested_table")
+    return None
 
 
 def _correlate_findings(findings: list) -> list:
@@ -100,8 +137,14 @@ def _correlate_findings(findings: list) -> list:
         for related_rule_id in f.get("related_rules", []):
             for j in indices_by_rule_id.get(related_rule_id, []):
                 if j != i:
-                    adjacency[i].add(j)
-                    adjacency[j].add(i)  # the undirected part -- record both directions
+                    key_i, key_j = _correlation_key(f), _correlation_key(findings[j])
+                    # Link only when they're actually about the same
+                    # object -- a None key means "instance-wide, no
+                    # specific object to check" and is compatible with
+                    # anything; two non-None keys must genuinely match.
+                    if key_i is None or key_j is None or key_i == key_j:
+                        adjacency[i].add(j)
+                        adjacency[j].add(i)  # the undirected part -- record both directions
 
     visited = set()
     groups = []
@@ -122,6 +165,28 @@ def _correlate_findings(findings: list) -> list:
         groups.append(component)
 
     return groups
+
+
+def _fallback_table_from_statement(stmt: str):
+    """
+    Best-effort table-name extraction from raw statement text, used
+    only when the collector's structured resolution came back empty --
+    a real gap found from real data: blocked_object_name and
+    blocked_statement_text come from two independent mechanisms in the
+    collector (a sys.dm_tran_locks/sys.partitions join vs.
+    sys.dm_exec_sql_text), and it's possible for the statement text to
+    resolve while the object-name join doesn't (e.g. if
+    sys.dm_tran_locks' non-deterministic "TOP 1 with no ORDER BY"
+    happens to pick an unrelated lock row for a session waiting on
+    more than one at once -- under investigation separately). Rather
+    than show nothing, a regex over common DML keywords gets something
+    imperfect but still useful. Not a substitute for fixing the
+    underlying resolution -- a fallback for while that's pending.
+    """
+    if not stmt:
+        return None
+    match = re.search(r'\b(?:FROM|UPDATE|INTO|JOIN)\s+\[?([\w.]+)\]?', stmt, re.IGNORECASE)
+    return match.group(1) if match else None
 
 
 def _affected_object(f: dict) -> str:
@@ -152,13 +217,16 @@ def _affected_object(f: dict) -> str:
         obj = f.get("object_name")
         return f"{f['wait_category']} (plan {f.get('qs_plan_id')}{', ' + obj if obj else ''})"
     if f.get("category") == "mssql_blocking":
-        obj_suffix = f" on {f['blocked_object_name']}" if f.get("blocked_object_name") else ""
+        obj_name = f.get("blocked_object_name") or _fallback_table_from_statement(f.get("blocked_statement_text"))
+        obj_suffix = f" on {obj_name}" if obj_name else ""
         if f.get("rule_id") == "MSSQL_BLOCK_003":
             return f"session {f.get('session_id')} (head blocker){obj_suffix}"
         return f"session {f.get('session_id')} blocked by {f.get('blocking_session_id')}{obj_suffix}"
     if f.get("category") == "mssql_plan":
         obj = f.get("object_name")
         return f"plan {f.get('qs_plan_id')}{' (' + obj + ')' if obj else ''}"
+    if f.get("category") == "mssql_deadlock":
+        return f"{f.get('contested_table')} (event #{f.get('event_id')})"
     return ""
 
 
@@ -202,6 +270,13 @@ def _finding_detail_str(f: dict) -> str:
         detail = expr[:80] + ("..." if len(expr) > 80 else "")
         if f.get("query_sql_text"):
             detail += f" | Query: {f['query_sql_text'][:150].strip()}{'...' if len(f['query_sql_text']) > 150 else ''}"
+        return detail
+    if f.get("category") == "mssql_deadlock":
+        detail = f.get("deadlock_cause") or ""
+        if f.get("rule_id") == "MSSQL_DEADLOCK_002":
+            detail = f"Recurred {f.get('recurrence_count')} times -- {detail}"
+        elif f.get("deadlock_time"):
+            detail += f" (at {f['deadlock_time']})"
         return detail
     return ""
 
@@ -279,8 +354,9 @@ class MssqlRecommendationEngine:
                                                           return_diagnostics=True)
         blocking_findings = re_mssql.evaluate_blocking_findings(pg_conn, instance_id)
         plan_findings = re_mssql.evaluate_plan_findings(pg_conn, instance_id, database_name)
+        deadlock_findings = re_mssql.evaluate_deadlock_findings(pg_conn, instance_id, database_name)
         all_findings = (wait_findings["wait_type_findings"] + wait_findings["wait_category_findings"]
-                         + blocking_findings + plan_findings)
+                         + blocking_findings + plan_findings + deadlock_findings)
 
         groups = _correlate_findings(all_findings)
         recommendations = [_synthesize_recommendation(g) for g in groups]
