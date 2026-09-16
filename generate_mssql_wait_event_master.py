@@ -96,6 +96,14 @@ CLASS_RULES = [
     ("PREEMPTIVE_", "Preemptive"),
     ("SOS_", "CPU/Scheduler"),
     ("CHECKPOINT", "Checkpoint"), ("CHKPT", "Checkpoint"),
+    ("HTTP", "Other"),  # MUST precede the generic "HT" rule below -- real bug found
+                         # and fixed: HTTP_START/HTTP_EXTERNAL_CONNECTION*/etc were being
+                         # caught by the "HT" -> "Hash Join" prefix match purely because
+                         # "HTTP" also starts with "HT", miscategorizing 7 genuinely
+                         # unrelated HTTP-connectivity waits as Hash Join. "Other" here,
+                         # not a more specific guess -- these aren't well-documented enough
+                         # to confidently name what feature actually uses them (possibly
+                         # PolyBase/external data source connectivity, not confirmed).
     ("HT", "Hash Join"),
     ("BMP", "Bitmap"),
     ("REPL_", "Replication/HA"),
