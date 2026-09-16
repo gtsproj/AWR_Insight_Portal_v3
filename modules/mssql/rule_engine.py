@@ -619,17 +619,26 @@ def fetch_deadlock_metrics(pg_conn, instance_id: int, database_name: str = None,
 
 
 def fetch_runtime_stats_metrics(pg_conn, instance_id: int, database_name: str = None,
-                                  lookback_intervals: int = 5, min_avg_memory_kb: float = 1024) -> list:
+                                  lookback_hours: float = 24, min_avg_memory_kb: float = 1024) -> list:
     """
     Checks recent Query Store runtime stats for queries that are both
     frequently executed AND consistently pulling a large memory grant
     -- a materially worse combination than either alone, since the
     memory cost compounds across every concurrent execution rather
-    than being a one-off. Looks across the most recent
-    lookback_intervals (not just the single most recent one, unlike
-    the wait_category fetcher) since count_executions resets per
-    interval -- a query that's consistently frequent over time could
-    be under-detected looking at just one interval in isolation.
+    than being a one-off.
+
+    Time-based lookback (lookback_hours, default 24), not a fixed
+    interval COUNT -- a real gap found from real data: Ganesh's
+    instance had 512 total intervals accumulated, and a 5-interval
+    default meant the lookback window covered only a few minutes of
+    real time on an instance with short (likely ~1-minute, this
+    project's own test configuration) intervals. A query genuinely
+    executed persistently over hours (confirmed directly -- one real
+    plan_id had run across 10 different intervals, spread wide) would
+    be entirely invisible to a window that narrow, regardless of what
+    fixed count it was set to -- a time-based window stays meaningful
+    regardless of how long intervals happen to be, the same reasoning
+    already used for fetch_deadlock_metrics' own lookback_hours.
 
     min_avg_memory_kb pre-filters at the SQL level (1MB default) purely
     to keep the row count reasonable before resolving object_name/
@@ -638,20 +647,15 @@ def fetch_runtime_stats_metrics(pg_conn, instance_id: int, database_name: str = 
     not here.
 
     Returns a list of dicts, one per qs_plan_id (aggregated across the
-    lookback window, NOT one row per (plan, interval) combination --
-    a real gap found from real data: Ganesh's actual output showed the
-    same plan_id appearing 3 separate times with identical per-interval
-    values, and the original per-row design meant a query consistently
-    called, say, 20 times every interval across 5 intervals (100 total)
-    would NEVER fire the rule, since each individual interval's count
-    stayed below the 50 threshold -- count_executions is summed across
-    the window, and avg_query_max_used_memory_kb is combined as a
-    proper execution-count-weighted average, not a naive average of
-    averages, which would be statistically wrong when different
-    intervals had different execution counts):
-    qs_plan_id, database_name, count_executions, avg_query_max_used_memory_kb,
-    object_name, query_sql_text, is_select_into_temp -- a regex-detected
-    flag for the specific SELECT...INTO #temptable pattern, and
+    lookback window, not one row per (plan, interval) combination --
+    count_executions is summed across the window, and
+    avg_query_max_used_memory_kb is combined as a proper
+    execution-count-weighted average, not a naive average of averages,
+    which would be statistically wrong when different intervals had
+    different execution counts): qs_plan_id, database_name,
+    count_executions, avg_query_max_used_memory_kb, object_name,
+    query_sql_text, is_select_into_temp -- a regex-detected flag for
+    the specific SELECT...INTO #temptable pattern, and
     is_auto_stats_update -- a regex-detected flag for SQL Server's own
     internal StatMan statistics-update mechanism -- both of which the
     evaluator uses to sharpen the finding's detail when they match.
@@ -662,16 +666,17 @@ def fetch_runtime_stats_metrics(pg_conn, instance_id: int, database_name: str = 
         if database_name:
             db_filter = "AND database_name = %s"
             params.append(database_name)
-        params.append(lookback_intervals)
+        params.append(lookback_hours)
         params2 = [instance_id]
+        db_filter2 = ""
         if database_name:
+            db_filter2 = "AND rs.database_name = %s"
             params2.append(database_name)
         params_all = params + params2 + [min_avg_memory_kb]
         cur.execute(f"""
             WITH recent_intervals AS (
-                SELECT DISTINCT qs_interval_id FROM mssql_qs_runtime_stats
-                WHERE instance_id = %s {db_filter}
-                ORDER BY qs_interval_id DESC LIMIT %s
+                SELECT qs_interval_id FROM mssql_qs_interval
+                WHERE instance_id = %s {db_filter} AND start_time > now() - (%s || ' hours')::interval
             ),
             aggregated AS (
                 SELECT rs.qs_plan_id, rs.database_name,
@@ -680,7 +685,7 @@ def fetch_runtime_stats_metrics(pg_conn, instance_id: int, database_name: str = 
                            / NULLIF(SUM(rs.count_executions), 0) AS weighted_avg_memory_kb
                 FROM mssql_qs_runtime_stats rs
                 JOIN recent_intervals ri ON rs.qs_interval_id = ri.qs_interval_id
-                WHERE rs.instance_id = %s {db_filter.replace('database_name', 'rs.database_name')}
+                WHERE rs.instance_id = %s {db_filter2}
                 GROUP BY rs.qs_plan_id, rs.database_name
             )
             SELECT qs_plan_id, database_name, total_executions, weighted_avg_memory_kb
