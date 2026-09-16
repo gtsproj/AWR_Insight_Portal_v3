@@ -637,27 +637,56 @@ def fetch_runtime_stats_metrics(pg_conn, instance_id: int, database_name: str = 
     MSSQL_RUNTIME_001) is applied later by the rule condition itself,
     not here.
 
-    Returns a list of dicts, one per (qs_plan_id, interval) combination
-    above the pre-filter: qs_plan_id, database_name, count_executions,
-    avg_query_max_used_memory_kb, object_name, query_sql_text, and
-    is_select_into_temp -- a regex-detected flag for the specific
-    SELECT...INTO #temptable pattern, which the evaluator uses to
-    sharpen the finding's detail when it matches.
+    Returns a list of dicts, one per qs_plan_id (aggregated across the
+    lookback window, NOT one row per (plan, interval) combination --
+    a real gap found from real data: Ganesh's actual output showed the
+    same plan_id appearing 3 separate times with identical per-interval
+    values, and the original per-row design meant a query consistently
+    called, say, 20 times every interval across 5 intervals (100 total)
+    would NEVER fire the rule, since each individual interval's count
+    stayed below the 50 threshold -- count_executions is summed across
+    the window, and avg_query_max_used_memory_kb is combined as a
+    proper execution-count-weighted average, not a naive average of
+    averages, which would be statistically wrong when different
+    intervals had different execution counts):
+    qs_plan_id, database_name, count_executions, avg_query_max_used_memory_kb,
+    object_name, query_sql_text, is_select_into_temp -- a regex-detected
+    flag for the specific SELECT...INTO #temptable pattern, and
+    is_auto_stats_update -- a regex-detected flag for SQL Server's own
+    internal StatMan statistics-update mechanism -- both of which the
+    evaluator uses to sharpen the finding's detail when they match.
     """
     with pg_conn.cursor() as cur:
         params = [instance_id]
         db_filter = ""
         if database_name:
-            db_filter = "AND rs.database_name = %s"
+            db_filter = "AND database_name = %s"
             params.append(database_name)
-        params.extend([min_avg_memory_kb, lookback_intervals])
+        params.append(lookback_intervals)
+        params2 = [instance_id]
+        if database_name:
+            params2.append(database_name)
+        params_all = params + params2 + [min_avg_memory_kb]
         cur.execute(f"""
-            SELECT rs.qs_plan_id, rs.database_name, rs.count_executions, rs.avg_query_max_used_memory_kb
-            FROM mssql_qs_runtime_stats rs
-            WHERE rs.instance_id = %s {db_filter} AND rs.avg_query_max_used_memory_kb > %s
-            ORDER BY rs.qs_interval_id DESC
-            LIMIT %s
-        """, params)
+            WITH recent_intervals AS (
+                SELECT DISTINCT qs_interval_id FROM mssql_qs_runtime_stats
+                WHERE instance_id = %s {db_filter}
+                ORDER BY qs_interval_id DESC LIMIT %s
+            ),
+            aggregated AS (
+                SELECT rs.qs_plan_id, rs.database_name,
+                       SUM(rs.count_executions) AS total_executions,
+                       SUM(rs.count_executions * rs.avg_query_max_used_memory_kb)
+                           / NULLIF(SUM(rs.count_executions), 0) AS weighted_avg_memory_kb
+                FROM mssql_qs_runtime_stats rs
+                JOIN recent_intervals ri ON rs.qs_interval_id = ri.qs_interval_id
+                WHERE rs.instance_id = %s {db_filter.replace('database_name', 'rs.database_name')}
+                GROUP BY rs.qs_plan_id, rs.database_name
+            )
+            SELECT qs_plan_id, database_name, total_executions, weighted_avg_memory_kb
+            FROM aggregated
+            WHERE weighted_avg_memory_kb > %s
+        """, params_all)
         rows = cur.fetchall()
 
     results = []
