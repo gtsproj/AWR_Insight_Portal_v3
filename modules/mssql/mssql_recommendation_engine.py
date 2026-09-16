@@ -152,12 +152,40 @@ def _correlate_findings(findings: list) -> list:
         if i in visited:
             continue
         component = []
+        # Tracks the first non-None (specific) key seen in this growing
+        # component -- once set, any node with a DIFFERENT non-None key
+        # is skipped rather than merged in, even if reachable through a
+        # None-key (instance-wide) node already in the component.
+        #
+        # Real bug found from real data: the earlier key-compatibility
+        # check (above, at edge-building time) only checks each PAIR in
+        # isolation -- it correctly stops two directly-incompatible
+        # findings from linking, but doesn't stop TRANSITIVE merging
+        # when a None-key finding (like MSSQL_WAIT_002, genuinely
+        # instance-wide) is separately related_rules-linked to several
+        # DIFFERENT specific-key clusters (a deadlock cluster keyed by
+        # table, a blocking cluster keyed by session chain, a
+        # wait_category finding keyed by plan_id). Each pairwise edge
+        # through that shared hub looked individually valid, but the
+        # graph-component BFS then walked straight through the hub and
+        # merged all three unrelated clusters into one recommendation --
+        # a real production run merged 14 findings, including 7
+        # deadlock events spanning 6 days, into one unreadable result.
+        # This check happens DURING traversal, not just at edge-building
+        # time, because that's the only point where "this component
+        # already belongs to a different specific object" is knowable.
+        component_key = None
         queue = [i]
         while queue:
             current = queue.pop()
             if current in visited:
                 continue
+            current_key = _correlation_key(findings[current])
+            if component_key is not None and current_key is not None and current_key != component_key:
+                continue  # belongs to a different specific object -- leave for its own group
             visited.add(current)
+            if current_key is not None and component_key is None:
+                component_key = current_key  # lock in this component's anchor object
             component.append(findings[current])
             for neighbor in adjacency[current]:
                 if neighbor not in visited:
