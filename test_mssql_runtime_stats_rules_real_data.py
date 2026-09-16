@@ -61,7 +61,7 @@ def main():
         print(f"\n--- Queries above the memory pre-filter ({len(metrics)}) ---")
         for m in metrics:
             mem_mb = (m['avg_query_max_used_memory_kb'] or 0) / 1024
-            tag = "[SELECT INTO #temp]" if m['is_select_into_temp'] else ""
+            tag = "[StatMan/auto-stats]" if m.get('is_auto_stats_update') else ("[SELECT INTO #temp]" if m['is_select_into_temp'] else "")
             # Falls back to the query text when object_name is legitimately
             # None (ad-hoc queries, including SQL Server's own internal
             # StatMan statistics-update mechanism, genuinely have no object

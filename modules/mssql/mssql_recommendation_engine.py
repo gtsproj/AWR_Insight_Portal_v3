@@ -314,7 +314,21 @@ def _finding_detail_str(f: dict) -> str:
     if f.get("category") == "mssql_runtime":
         mem_mb = (f.get("avg_query_max_used_memory_kb") or 0) / 1024
         detail = f"{f.get('count_executions')} executions, avg {mem_mb:.1f}MB memory grant each"
-        if f.get("is_select_into_temp"):
+        if f.get("is_auto_stats_update"):
+            # Deliberately different guidance than the generic "unoptimized
+            # code" framing -- there's no query here to rewrite (this IS
+            # SQL Server's own internal statistics-update mechanism), but
+            # frequent/heavy occurrence is still a genuine, actionable
+            # signal, just of a different kind: investigate whether
+            # AUTO_UPDATE_STATISTICS_ASYNC is enabled, or whether the
+            # underlying table's write volatility is triggering stats
+            # updates unusually often.
+            detail += (" | Pattern: SQL Server's own internal automatic statistics update (StatMan) -- "
+                       "not user code to rewrite. Frequent/heavy occurrence still means something real: "
+                       "check whether AUTO_UPDATE_STATISTICS_ASYNC is enabled (synchronous updates block "
+                       "the triggering query), or whether the underlying table's write volatility is "
+                       "causing statistics to go stale and re-trigger unusually often")
+        elif f.get("is_select_into_temp"):
             detail += (" | Pattern: SELECT...INTO #temptable detected -- the temp table's row estimate "
                        "comes from the JOIN's cardinality estimate, not the temp table's own statistics; "
                        "check base-table statistics accuracy first")

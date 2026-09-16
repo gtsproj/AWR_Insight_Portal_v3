@@ -662,9 +662,19 @@ def fetch_runtime_stats_metrics(pg_conn, instance_id: int, database_name: str = 
 
     results = []
     select_into_pattern = re.compile(r'\bSELECT\b.*?\bINTO\s+#\w+', re.IGNORECASE | re.DOTALL)
+    # SQL Server's own internal automatic-statistics-update mechanism --
+    # a distinctive, reliable signature (SELECT StatMan(...)). Detected
+    # specifically because it needs fundamentally different guidance
+    # than ordinary user code: there's no query to rewrite here, but
+    # frequent/heavy StatMan activity is still a genuine, actionable
+    # signal -- usually pointing at AUTO_UPDATE_STATISTICS_ASYNC not
+    # being enabled, or a volatile table triggering stats updates too
+    # often -- not noise to silently discard.
+    statman_pattern = re.compile(r'\bSELECT\s+StatMan\s*\(', re.IGNORECASE)
     for qs_plan_id, db_name, count_executions, avg_memory_kb in rows:
         obj_name, query_sql_text = _resolve_query_context(pg_conn, instance_id, db_name, qs_plan_id)
         is_select_into_temp = bool(query_sql_text and select_into_pattern.search(query_sql_text))
+        is_auto_stats_update = bool(query_sql_text and statman_pattern.search(query_sql_text))
         results.append({
             "qs_plan_id": qs_plan_id,
             "database_name": db_name,
@@ -673,6 +683,7 @@ def fetch_runtime_stats_metrics(pg_conn, instance_id: int, database_name: str = 
             "object_name": obj_name,
             "query_sql_text": query_sql_text,
             "is_select_into_temp": is_select_into_temp,
+            "is_auto_stats_update": is_auto_stats_update,
         })
     return results
 
@@ -921,6 +932,7 @@ class MssqlRuleEngine:
                         "object_name": metric.get("object_name"),
                         "query_sql_text": metric.get("query_sql_text"),
                         "is_select_into_temp": metric.get("is_select_into_temp"),
+                        "is_auto_stats_update": metric.get("is_auto_stats_update"),
                         "root_cause": rule.get("root_cause", ""),
                         "resolution": rule.get("resolution_steps", []),
                         "related_rules": rule.get("related_rules", []),
