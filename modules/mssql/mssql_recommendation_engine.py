@@ -331,9 +331,24 @@ def _synthesize_recommendation(group: list) -> dict:
         if detail:
             summary += f" (observed: {detail}.)"
     else:
-        affected_object = " / ".join(sorted(set(
-            _affected_object(f) for f in group
-        ) - {""}))
+        # Exclude instance-wide (correlation_key=None) members' own
+        # affected_object contribution when at least one member has a
+        # specific object identity -- a real bug found from real data:
+        # a deadlock cluster (7 events, stable identity) correlating
+        # with an instance-wide MSSQL_WAIT_002 finding produced a
+        # DIFFERENT affected_object string (and thus a different dedup
+        # hash) on every run where the dominant lock wait_type happened
+        # to differ (LCK_M_X vs LCK_M_IX) -- the same 7, already-known
+        # deadlock events got re-surfaced as "new" recommendations
+        # repeatedly, sometimes just minutes apart, purely because the
+        # volatile instance-wide component changed, not because
+        # anything about the actual deadlocks did. The specific
+        # objects involved are what should identify a correlated
+        # group; an instance-wide finding is supporting evidence, not
+        # part of the group's identity.
+        specific_objects = [_affected_object(f) for f in group if _correlation_key(f) is not None]
+        object_source = specific_objects if specific_objects else [_affected_object(f) for f in group]
+        affected_object = " / ".join(sorted(set(object_source) - {""}))
         title = "Correlated finding: " + " + ".join(titles)
         summary_parts = []
         for f in group:
