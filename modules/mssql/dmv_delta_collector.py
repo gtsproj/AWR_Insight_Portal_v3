@@ -66,7 +66,7 @@ from connection import mssql_connect, resolve_instance_id, to_naive_utc
 logger = get_logger('mssql_dmv_delta_collector')
 
 
-def run_dmv_collection(mssql_cfg: dict, database_names: list = None) -> dict:
+def run_dmv_collection(mssql_cfg: dict, database_names: list = None, min_interval_minutes: int = None) -> dict:
     """
     Main entry point. Polls every Tier 1 + Tier 2 cumulative DMV once
     against the given instance, storing raw values against one new
@@ -75,17 +75,35 @@ def run_dmv_collection(mssql_cfg: dict, database_names: list = None) -> dict:
     (wait stats, memory, scheduler, sessions, file I/O) only need one
     connection regardless of database count.
 
+    min_interval_minutes, when given, enforces that a new snapshot is
+    only taken if at least that much time has elapsed since this
+    instance's last one -- a real gap found while reviewing this
+    collector for the SQLWR report-generation work: _create_snapshot
+    previously inserted a new row unconditionally on every single
+    invocation, with no check against the last one. Manual or
+    out-of-band re-runs (this collector has been run dozens of times
+    by hand throughout this project's testing) silently created extra,
+    irregularly-spaced snapshots -- which breaks the "two consecutive
+    snapshots = one SQLWR report" assumption the report generator
+    depends on, since "consecutive" needs to reliably mean one interval
+    apart, not five minutes in one case and three hours in another.
+    Checked BEFORE connecting to SQL Server at all (not after), so a
+    skipped cycle costs nothing against the production instance.
+
     Returns a summary dict: {"snapshot_id": N, "tables_collected": {...},
-    "databases_processed": [...], "databases_skipped": [...], "errors": [...]}
+    "databases_processed": [...], "databases_skipped": [...], "errors": [...],
+    "skipped": bool}. skipped=True means min_interval_minutes hadn't
+    elapsed yet -- not a failure, snapshot_id is the existing most
+    recent one, unchanged.
     """
     from license_engine import is_db_type_licensed
     if not is_db_type_licensed("mssql"):
         logger.info("MS SQL Server not licensed -- skipping DMV collection")
         return {"snapshot_id": None, "tables_collected": {}, "databases_processed": [],
-                "databases_skipped": [], "errors": ["mssql not licensed"]}
+                "databases_skipped": [], "errors": ["mssql not licensed"], "skipped": False}
 
     summary = {"snapshot_id": None, "tables_collected": {}, "databases_processed": [],
-               "databases_skipped": [], "errors": []}
+               "databases_skipped": [], "errors": [], "skipped": False}
 
     host_name = mssql_cfg["host"]
     instance_name = mssql_cfg.get("instance_name", "MSSQLSERVER")
@@ -97,15 +115,33 @@ def run_dmv_collection(mssql_cfg: dict, database_names: list = None) -> dict:
         summary["errors"].append(str(e))
         return summary
 
+    from db import get_db_connection
+    pg_conn = get_db_connection()
+
+    if min_interval_minutes:
+        with pg_conn.cursor() as cur:
+            cur.execute("""
+                SELECT snapshot_id, snapshot_time FROM mssql_dmv_snapshot
+                WHERE instance_id = %s ORDER BY snapshot_time DESC LIMIT 1
+            """, (instance_id,))
+            last = cur.fetchone()
+        if last:
+            last_id, last_time = last
+            import datetime
+            elapsed_minutes = (datetime.datetime.now() - last_time).total_seconds() / 60
+            if elapsed_minutes < min_interval_minutes:
+                logger.info(f"Skipping DMV collection -- only {elapsed_minutes:.1f} min since "
+                            f"last snapshot (id={last_id}), interval is {min_interval_minutes} min")
+                summary["snapshot_id"] = last_id
+                summary["skipped"] = True
+                return summary
+
     try:
         conn = mssql_connect({**mssql_cfg, "database": mssql_cfg.get("database", "master")})
     except Exception as e:
         logger.error(f"Could not connect to instance: {e}")
         summary["errors"].append(f"connect failed: {e}")
         return summary
-
-    from db import get_db_connection
-    pg_conn = get_db_connection()
 
     try:
         snapshot_id = _create_snapshot(pg_conn, instance_id)
@@ -658,6 +694,11 @@ def _main():
     parser.add_argument("--database", action="append", dest="databases",
                          help="Database name to collect (repeatable). If omitted, "
                               "every online database on the instance is used.")
+    parser.add_argument("--min-interval-minutes", type=int, default=None,
+                         help="Skip collection if a snapshot was already taken within this "
+                              "many minutes -- keeps manual/out-of-band runs from creating "
+                              "extra, irregularly-spaced snapshots between scheduled ones. "
+                              "Omit to always take a new snapshot (the old, unguarded behavior).")
     args = parser.parse_args()
 
     if not args.trusted_connection and not args.username:
@@ -682,7 +723,7 @@ def _main():
     print(f"Databases: {', '.join(args.databases) if args.databases else '(auto-discover)'}")
     print(f"{'='*60}\n")
 
-    result = run_dmv_collection(cfg, database_names=args.databases)
+    result = run_dmv_collection(cfg, database_names=args.databases, min_interval_minutes=args.min_interval_minutes)
 
     print(f"\n{'='*60}")
     print(f"RESULT")

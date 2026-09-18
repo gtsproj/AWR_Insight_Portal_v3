@@ -129,7 +129,12 @@ def main():
 
         logger.info(f"=== Collection cycle: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
         run_collector(os.path.join("query_store_collector.py"), conn_args)
-        run_collector(os.path.join("dmv_delta_collector.py"), conn_args)
+        # min-interval-minutes as a second, independent safeguard beyond the
+        # scheduler's own clock-aligned loop -- protects against an
+        # out-of-band manual run landing between two scheduled cycles and
+        # creating an extra, irregularly-spaced snapshot.
+        run_collector(os.path.join("dmv_delta_collector.py"),
+                      conn_args + ["--min-interval-minutes", str(args.interval_minutes)])
 
 
 if __name__ == "__main__":
