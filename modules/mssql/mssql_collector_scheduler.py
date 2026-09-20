@@ -100,9 +100,12 @@ def main():
     parser.add_argument("--host", required=True)
     parser.add_argument("--instance-name", default="MSSQLSERVER")
     parser.add_argument("--database", required=True)
-    parser.add_argument("--interval-minutes", type=int, default=60, choices=[30, 60],
+    parser.add_argument("--interval-minutes", type=int, default=60, choices=[1, 5, 10, 15, 30, 60, 1440],
                          help="Collection cadence, and the value QUERY_STORE's own "
-                              "INTERVAL_LENGTH_MINUTES gets set to match")
+                              "INTERVAL_LENGTH_MINUTES gets set to match -- restricted to "
+                              "SQL Server's own documented set of valid INTERVAL_LENGTH_MINUTES "
+                              "values (arbitrary values are rejected by SQL Server itself: "
+                              "1, 5, 10, 15, 30, 60, or 1440 minutes only)")
     parser.add_argument("--trusted-connection", action="store_true")
     parser.add_argument("--sql-user", default=None)
     parser.add_argument("--sql-password", default=None)
