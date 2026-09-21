@@ -59,6 +59,16 @@ def set_query_store_interval(host, instance_name, database, interval_minutes, tr
     to match the collector's own cadence -- idempotent (ALTER DATABASE
     SET QUERY_STORE is safe to re-run with the same value), run once
     at scheduler startup, not per collection cycle.
+
+    ALTER DATABASE permission is NOT required for the collectors
+    themselves to work -- they only need SELECT on the DMVs -- so a
+    least-privilege service account (the norm, and the right setup)
+    genuinely may not have it. That's expected, not a misconfiguration,
+    so a permission failure here is caught and logged clearly rather
+    than raised: the scheduler continues either way, just without
+    being able to auto-align Query Store's own interval. Returns True/
+    False rather than raising, so callers don't need their own
+    try/except for this specific, anticipated failure mode.
     """
     import pyodbc
     conn_parts = [f"DRIVER={{ODBC Driver 17 for SQL Server}}", f"SERVER={host}"]
@@ -68,11 +78,45 @@ def set_query_store_interval(host, instance_name, database, interval_minutes, tr
         conn_parts.append(f"UID={sql_user}")
         conn_parts.append(f"PWD={sql_password}")
     conn_str = ";".join(conn_parts)
-    conn = pyodbc.connect(conn_str, autocommit=True, timeout=30)
-    cur = conn.cursor()
-    cur.execute(f"ALTER DATABASE [{database}] SET QUERY_STORE (INTERVAL_LENGTH_MINUTES = {interval_minutes})")
-    conn.close()
-    logger.info(f"QUERY_STORE INTERVAL_LENGTH_MINUTES set to {interval_minutes} for [{database}]")
+    try:
+        conn = pyodbc.connect(conn_str, autocommit=True, timeout=30)
+        cur = conn.cursor()
+        cur.execute(f"ALTER DATABASE [{database}] SET QUERY_STORE (INTERVAL_LENGTH_MINUTES = {interval_minutes})")
+        conn.close()
+        logger.info(f"QUERY_STORE INTERVAL_LENGTH_MINUTES set to {interval_minutes} for [{database}]")
+        return True
+    except Exception as e:
+        err_text = str(e)
+        if "permission" in err_text.lower() or "denied" in err_text.lower():
+            logger.warning(
+                f"Could not set QUERY_STORE INTERVAL_LENGTH_MINUTES for [{database}] -- "
+                f"the collector account lacks ALTER DATABASE permission. This is expected "
+                f"for a least-privilege service account and does NOT stop collection (only "
+                f"SELECT on the DMVs is actually needed for that). Query Store's interval "
+                f"will keep whatever it's currently set to. Have a DBA run this once, "
+                f"manually, if you want it aligned to the collector's cadence: "
+                f"ALTER DATABASE [{database}] SET QUERY_STORE (INTERVAL_LENGTH_MINUTES = {interval_minutes})"
+            )
+        else:
+            logger.warning(f"Could not set QUERY_STORE INTERVAL_LENGTH_MINUTES for [{database}]: {e}")
+        return False
+
+
+def _redact_secrets(args: list) -> list:
+    """
+    Returns a copy of args with the value following any sensitive flag
+    (--password, --sql-password) replaced with a placeholder, for
+    logging only -- the real args (unredacted) are what actually get
+    passed to subprocess.run. A real security gap otherwise: the
+    command line, password included, would land in both the console
+    and the log file in plain text on every single collection cycle.
+    """
+    SENSITIVE_FLAGS = ("--password", "--sql-password")
+    redacted = list(args)
+    for i, arg in enumerate(redacted):
+        if arg in SENSITIVE_FLAGS and i + 1 < len(redacted):
+            redacted[i + 1] = "***REDACTED***"
+    return redacted
 
 
 def run_collector(script_relpath, args):
@@ -81,7 +125,7 @@ def run_collector(script_relpath, args):
     loop; the next cycle gets its own fresh attempt."""
     script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), script_relpath)
     cmd = [sys.executable, script_path] + args
-    logger.info(f"Running: {' '.join(cmd)}")
+    logger.info(f"Running: {' '.join([sys.executable, script_path] + _redact_secrets(args))}")
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
         if result.returncode == 0:
@@ -212,7 +256,7 @@ def run_from_config(sqlwr_output_dir: str = "sqlwr_reports"):
             if c["auth_type"] == "trusted":
                 conn_args.append("--trusted-connection")
             else:
-                conn_args.extend(["--sql-user", c["username"], "--sql-password", c["password"]])
+                conn_args.extend(["--username", c["username"], "--password", c["password"]])
             if c["databases"]:
                 for db_name in c["databases"]:
                     conn_args.extend(["--database", db_name])
@@ -261,7 +305,7 @@ def main():
     if args.trusted_connection:
         conn_args.append("--trusted-connection")
     else:
-        conn_args.extend(["--sql-user", args.sql_user, "--sql-password", args.sql_password])
+        conn_args.extend(["--username", args.sql_user, "--password", args.sql_password])
 
     set_query_store_interval(args.host, args.instance_name, args.database, args.interval_minutes,
                               args.trusted_connection, args.sql_user, args.sql_password)
