@@ -141,6 +141,73 @@ def upsert_connection(pg_conn, host_name: str, instance_name: str, auth_type: st
     return conn_id
 
 
+def save_connection(data: dict, added_by: str = "admin") -> dict:
+    """
+    Validates a dict payload (the shape the portal UI actually posts)
+    and delegates to upsert_connection(). Returns {ok, id, error} --
+    same shape as oracle_awr_fetcher.save_connection(), so the app.py
+    endpoint calling this can mirror the Oracle one almost exactly.
+    """
+    host_name = (data.get("host_name") or "").strip()
+    instance_name = (data.get("instance_name") or "MSSQLSERVER").strip()
+    display_name = (data.get("display_name") or "").strip() or None
+    auth_type = (data.get("auth_type") or "trusted").strip()
+    username = (data.get("username") or "").strip() or None
+    password = (data.get("password") or "").strip() or None
+    port = int(data["port"]) if data.get("port") else None
+    databases = data.get("databases") or None
+    if databases and isinstance(databases, str):
+        databases = [d.strip() for d in databases.split(",") if d.strip()]
+    snap_interval_minutes = int(data.get("snap_interval_minutes") or 60)
+    enabled = bool(data.get("enabled", True))
+
+    if not host_name:
+        return {"ok": False, "error": "host_name is required"}
+    if auth_type not in ("trusted", "sql"):
+        return {"ok": False, "error": "auth_type must be 'trusted' or 'sql'"}
+    if auth_type == "sql" and not username:
+        return {"ok": False, "error": "username is required for SQL authentication"}
+    if snap_interval_minutes not in (1, 5, 10, 15, 30, 60, 1440):
+        return {"ok": False, "error": "snap_interval_minutes must be one of "
+                                        "SQL Server's own valid QUERY_STORE values: "
+                                        "1, 5, 10, 15, 30, or 60 minutes, or 1440 (daily)"}
+
+    # For a genuinely new sql-auth connection, a password must be
+    # supplied -- there's nothing existing to "keep" the way an update
+    # can. upsert_connection can't tell new-vs-existing from the
+    # outside, so that check belongs here.
+    if auth_type == "sql" and not password:
+        # Only an error if this is a NEW connection -- an update
+        # legitimately omits the password to keep the existing one.
+        try:
+            from db import get_db_connection
+            pg_conn = get_db_connection()
+            with pg_conn.cursor() as cur:
+                cur.execute(
+                    "SELECT 1 FROM mssql_connections WHERE host_name = %s AND instance_name = %s",
+                    (host_name, instance_name)
+                )
+                exists = cur.fetchone() is not None
+            pg_conn.close()
+        except Exception:
+            exists = False
+        if not exists:
+            return {"ok": False, "error": "password is required for a new SQL authentication connection"}
+
+    try:
+        from db import get_db_connection
+        pg_conn = get_db_connection()
+        conn_id = upsert_connection(
+            pg_conn, host_name, instance_name, auth_type, snap_interval_minutes,
+            display_name=display_name, port=port, username=username, password=password,
+            databases=databases, enabled=enabled, added_by=added_by
+        )
+        pg_conn.close()
+        return {"ok": True, "id": conn_id}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
 def record_run_result(pg_conn, connection_id: int, status: str, snapshot_id: int = None,
                         error: str = None):
     """Updates last_run_at/last_run_status/last_dmv_snapshot_id/last_run_error
@@ -155,3 +222,105 @@ def record_run_result(pg_conn, connection_id: int, status: str, snapshot_id: int
             WHERE id = %s
         """, (status, snapshot_id, error, connection_id))
     pg_conn.commit()
+
+
+def get_all_connections(pg_conn) -> list:
+    """
+    Every row (enabled or not), password never included -- the portal
+    settings UI's connection table, mirroring
+    oracle_awr_fetcher.get_all_connections()'s shape and its
+    "never return the password" rule exactly.
+    """
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT id, host_name, instance_name, display_name, port, auth_type,
+                   username, databases, snap_interval_minutes, enabled,
+                   last_run_at, last_dmv_snapshot_id, last_run_status, last_run_error,
+                   added_at, added_by
+            FROM mssql_connections
+            ORDER BY host_name, instance_name
+        """)
+        cols = [d[0] for d in cur.description]
+        rows = []
+        for row in cur.fetchall():
+            d = dict(zip(cols, row))
+            for k, v in d.items():
+                if hasattr(v, 'strftime'):
+                    d[k] = v.strftime('%Y-%m-%d %H:%M:%S')
+                elif hasattr(v, 'quantize'):
+                    d[k] = float(v)
+            rows.append(d)
+        return rows
+
+
+def get_connection_by_id(pg_conn, connection_id: int) -> dict:
+    """Returns one connection WITH its password decoded -- for internal
+    use only (e.g. test_connection), never returned directly to the
+    portal UI the way get_all_connections() is."""
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT id, host_name, instance_name, display_name, port, auth_type,
+                   username, password_enc, databases, snap_interval_minutes, enabled
+            FROM mssql_connections
+            WHERE id = %s
+        """, (connection_id,))
+        row = cur.fetchone()
+    if not row:
+        return None
+    cols = ["id", "host_name", "instance_name", "display_name", "port", "auth_type",
+            "username", "password_enc", "databases", "snap_interval_minutes", "enabled"]
+    d = dict(zip(cols, row))
+    d["password"] = decode_password(d.pop("password_enc")) if d.get("password_enc") else ""
+    return d
+
+
+def delete_connection(pg_conn, connection_id: int) -> dict:
+    try:
+        with pg_conn.cursor() as cur:
+            cur.execute("DELETE FROM mssql_connections WHERE id = %s", (connection_id,))
+        pg_conn.commit()
+        return {"ok": True}
+    except Exception as e:
+        pg_conn.rollback()
+        return {"ok": False, "error": str(e)}
+
+
+def test_connection(cfg: dict) -> dict:
+    """
+    Verifies actual SQL Server connectivity with the given credentials
+    -- a real pyodbc connection attempt, not just a config validity
+    check. Returns {ok, message, sql_version, databases_visible}.
+    Mirrors oracle_awr_fetcher.test_connection()'s role and return
+    shape for the portal UI's "test" button.
+    """
+    try:
+        import pyodbc
+    except ImportError:
+        return {"ok": False, "message": "pyodbc not installed. Run: pip install pyodbc"}
+
+    conn_parts = [f"DRIVER={{ODBC Driver 17 for SQL Server}}", f"SERVER={cfg['host_name']}"]
+    if cfg.get("port"):
+        conn_parts[-1] += f",{cfg['port']}"
+    if cfg.get("auth_type") == "trusted":
+        conn_parts.append("Trusted_Connection=yes")
+    else:
+        conn_parts.append(f"UID={cfg.get('username', '')}")
+        conn_parts.append(f"PWD={cfg.get('password', '')}")
+
+    try:
+        conn = pyodbc.connect(";".join(conn_parts), timeout=10)
+        cur = conn.cursor()
+        cur.execute("SELECT @@VERSION")
+        version = cur.fetchone()[0]
+        cur.execute("SELECT name FROM sys.databases WHERE state = 0 ORDER BY name")
+        db_names = [r[0] for r in cur.fetchall()]
+        conn.close()
+        return {
+            "ok": True,
+            "message": f"Connected successfully -- {len(db_names)} online database(s) visible",
+            "sql_version": version.split("\n")[0] if version else None,
+            "databases_visible": db_names,
+        }
+    except Exception as e:
+        return {"ok": False, "message": f"Connection failed: {e}"}
+

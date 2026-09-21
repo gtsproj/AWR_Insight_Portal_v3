@@ -127,7 +127,7 @@
     <a href="#" class="active" onclick="showSection('ai',this)">🤖 AI / Recommendations</a>
     <a href="#" onclick="showSection('anomaly',this)">📊 Anomaly Detection</a>
     <div class="nav-sep"></div>
-    <a href="#" onclick="showSection('awr_source',this)">🗄 AWR Source</a>
+    <a href="#" onclick="showSection('db_connection',this)">🔌 DB Connection</a>
     <a href="#" onclick="showSection('sar_source',this)">🖥 SAR Source</a>
     <a href="#" onclick="showSection('nmon_source',this)">📟 NMON Source</a>
     <div class="nav-sep"></div>
@@ -348,7 +348,22 @@
     </div>
 
     <!-- ── AWR Source ─────────────────────────────────────────────── -->
-    <div id="s-awr_source" class="s-panel">
+    <div id="s-db_connection" class="s-panel">
+      <div class="s-title">🔌 DB Connection</div>
+      <div class="s-desc">Configure connections for each supported data source. AWR Source (Oracle) drives the existing HTML-report watcher/parser pipeline; the other tabs configure credentials for their own native collectors.</div>
+
+      <!-- ── DB Connection sub-tab bar ──────────────────────────────── -->
+      <div class="dbconn-subnav" style="display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--border);padding-bottom:0">
+        <a href="#" class="dbconn-subtab active" onclick="showDbConnSubtab('awr_source',this)" style="padding:8px 14px;font-size:13px;cursor:pointer;border-bottom:2px solid var(--accent);color:var(--accent)">🗄 AWR Source</a>
+        <a href="#" class="dbconn-subtab" onclick="showDbConnSubtab('mssql',this)" style="padding:8px 14px;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;color:var(--text2)">🧊 MS SQL</a>
+        <a href="#" class="dbconn-subtab" onclick="showDbConnSubtab('postgresql',this)" style="padding:8px 14px;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;color:var(--text2)">🐘 PostgreSQL</a>
+        <a href="#" class="dbconn-subtab" onclick="showDbConnSubtab('mysql',this)" style="padding:8px 14px;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;color:var(--text2)">🐬 MySQL</a>
+        <a href="#" class="dbconn-subtab" onclick="showDbConnSubtab('mariadb',this)" style="padding:8px 14px;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;color:var(--text2)">🦭 MariaDB</a>
+        <a href="#" class="dbconn-subtab" onclick="showDbConnSubtab('cassandra',this)" style="padding:8px 14px;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;color:var(--text2)">🔷 Cassandra</a>
+      </div>
+
+      <!-- ── AWR Source (Oracle) sub-panel ──────────────────────────── -->
+      <div id="dbconn-awr_source" class="dbconn-subpanel active">
       <div class="s-title">🗄 AWR Source Configuration</div>
       <div class="s-desc">Configure where AWR HTML reports are picked up from. The watcher monitors this location and queues files for parsing.</div>
       <div class="s-card">
@@ -739,6 +754,125 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
       <button class="s-btn s-btn-primary" onclick="saveSection('awr_source')" {% if not is_admin %}disabled{% endif %}>
         💾 Save AWR Source
       </button>
+      </div>
+      <!-- ── end AWR Source sub-panel ───────────────────────────────── -->
+
+      <!-- ── MS SQL sub-panel ───────────────────────────────────────── -->
+      <div id="dbconn-mssql" class="dbconn-subpanel" style="display:none">
+        <div class="s-title">🧊 MS SQL Server Connections</div>
+        <p style="font-size:12px;color:var(--text2);margin:4px 0 12px">
+          Configure one connection per SQL Server <strong>instance</strong> (not per
+          database — SQL Server authentication is instance-level, so the same login
+          covers every database on it). Leave Databases blank to collect every online
+          database automatically; list specific ones (comma-separated) to limit
+          collection. Snap Interval also sets that instance's own
+          <code>QUERY_STORE (INTERVAL_LENGTH_MINUTES)</code> to match, so Query Store
+          and the DMV collector stay comparable, aligned time windows.
+        </p>
+
+        <div style="margin-bottom:16px">
+          <table style="width:100%;border-collapse:collapse;font-size:12px">
+            <thead>
+              <tr style="background:var(--card2)">
+                <th style="padding:6px 8px;text-align:left">Host \ Instance</th>
+                <th style="padding:6px 8px;text-align:left">Auth</th>
+                <th style="padding:6px 8px;text-align:left">Databases</th>
+                <th style="padding:6px 8px;text-align:left">Interval</th>
+                <th style="padding:6px 8px;text-align:left">Enabled</th>
+                <th style="padding:6px 8px;text-align:left">Last Run</th>
+                <th style="padding:6px 8px;text-align:left">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="mssql-conn-tbody">
+              <tr><td colspan="7" style="padding:12px;color:var(--text2);text-align:center">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="mssql-conn-form" style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:12px" id="mssql-form-title">➕ Add MS SQL Connection</div>
+          <input type="hidden" id="mc_edit_id" value="">
+          <div class="s-row">
+            <div class="s-field">
+              <label class="s-label">Host Name <span style="color:#ef4444">*</span></label>
+              <input class="s-input" id="mc_host_name" placeholder="SQLPROD01">
+            </div>
+            <div class="s-field">
+              <label class="s-label">Instance Name</label>
+              <input class="s-input" id="mc_instance_name" placeholder="MSSQLSERVER" value="MSSQLSERVER">
+            </div>
+          </div>
+          <div class="s-row">
+            <div class="s-field">
+              <label class="s-label">Display Name</label>
+              <input class="s-input" id="mc_display_name" placeholder="Production Primary">
+            </div>
+            <div class="s-field">
+              <label class="s-label">Port</label>
+              <input class="s-input" id="mc_port" placeholder="1433 (default)" type="number">
+            </div>
+          </div>
+          <div class="s-row">
+            <div class="s-field">
+              <label class="s-label">Authentication</label>
+              <select class="s-select" id="mc_auth_type" onchange="toggleMssqlAuth(this.value)">
+                <option value="trusted">Windows / Trusted Connection</option>
+                <option value="sql">SQL Server Authentication</option>
+              </select>
+            </div>
+            <div class="s-field">
+              <label class="s-label">Snap Interval</label>
+              <select class="s-select" id="mc_snap_interval_minutes">
+                <option value="10">Every 10 minutes</option>
+                <option value="15">Every 15 minutes</option>
+                <option value="30">Every 30 minutes</option>
+                <option value="60" selected>Every 60 minutes</option>
+                <option value="1440">Daily</option>
+              </select>
+            </div>
+          </div>
+          <div class="s-row" id="mc-sql-auth-fields" style="display:none">
+            <div class="s-field">
+              <label class="s-label">Username</label>
+              <input class="s-input" id="mc_username" placeholder="collector_svc">
+            </div>
+            <div class="s-field">
+              <label class="s-label">Password</label>
+              <input class="s-input" id="mc_password" type="password" placeholder="(enter to set or change)">
+            </div>
+          </div>
+          <div class="s-row">
+            <div class="s-field" style="flex:1">
+              <label class="s-label">Databases (comma-separated, blank = all)</label>
+              <input class="s-input" id="mc_databases" placeholder="DB1, DB2, DB3">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+              <input type="checkbox" id="mc_enabled" checked> Enabled
+            </label>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="s-btn s-btn-primary" onclick="saveMssqlConn()" style="min-width:100px">💾 Save</button>
+            <button class="s-btn" onclick="clearMssqlConnForm()" style="min-width:80px">✖ Cancel</button>
+            <span id="mssql-conn-save-msg" style="font-size:12px;align-self:center"></span>
+          </div>
+        </div>
+      </div>
+      <!-- ── end MS SQL sub-panel ───────────────────────────────────── -->
+
+      <!-- ── Coming-soon placeholder sub-panels ─────────────────────── -->
+      {% for key, label, icon in [('postgresql','PostgreSQL','🐘'), ('mysql','MySQL','🐬'), ('mariadb','MariaDB','🦭'), ('cassandra','Cassandra','🔷')] %}
+      <div id="dbconn-{{ key }}" class="dbconn-subpanel" style="display:none">
+        <div class="s-title">{{ icon }} {{ label }} Connections</div>
+        <div class="s-alert s-alert-info">
+          ℹ️ {{ label }} collector support is not yet built. This tab is a placeholder
+          for the upcoming {{ label }} connection configuration, matching the same
+          pattern as AWR Source and MS SQL above once available.
+        </div>
+      </div>
+      {% endfor %}
+
     </div>
 
     <!-- ── SAR Source ─────────────────────────────────────────────── -->
@@ -2668,6 +2802,192 @@ async function generateAWRReports() {
     msg.style.color = '#ef4444';
   }
 }
+
+// ── DB Connection sub-tab switching ─────────────────────────────────────────
+function showDbConnSubtab(name, el) {
+  document.querySelectorAll('.dbconn-subpanel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.dbconn-subtab').forEach(a => {
+    a.classList.remove('active');
+    a.style.borderBottomColor = 'transparent';
+    a.style.color = 'var(--text2)';
+  });
+  document.getElementById('dbconn-' + name).style.display = '';
+  if (el) {
+    el.classList.add('active');
+    el.style.borderBottomColor = 'var(--accent)';
+    el.style.color = 'var(--accent)';
+  }
+  if (name === 'mssql') loadMssqlConnections();
+}
+
+// ── MS SQL Connection Manager (mirrors Oracle Connection Manager) ────────────
+let _mssqlConns = [];
+
+function toggleMssqlAuth(val) {
+  document.getElementById('mc-sql-auth-fields').style.display = val === 'sql' ? '' : 'none';
+}
+
+async function loadMssqlConnections() {
+  try {
+    const res = await fetch('/api/mssql-connections');
+    if (!res.ok) {
+      const txt = await res.text();
+      document.getElementById('mssql-conn-tbody').innerHTML =
+        `<tr><td colspan="7" style="padding:12px;color:#ef4444;text-align:center">
+          API error ${res.status}: ${txt.slice(0,200)}</td></tr>`;
+      return;
+    }
+    const data = await res.json();
+    if (!data.ok) {
+      document.getElementById('mssql-conn-tbody').innerHTML =
+        `<tr><td colspan="7" style="padding:12px;color:#ef4444;text-align:center">
+          Error: ${data.error}</td></tr>`;
+      return;
+    }
+    _mssqlConns = data.connections || [];
+    renderMssqlConnTable();
+  } catch(e) {
+    document.getElementById('mssql-conn-tbody').innerHTML =
+      `<tr><td colspan="7" style="padding:12px;color:#ef4444;text-align:center">
+        Failed to load: ${e.message}</td></tr>`;
+    console.error('loadMssqlConnections:', e);
+  }
+}
+
+function renderMssqlConnTable() {
+  const tbody = document.getElementById('mssql-conn-tbody');
+  if (!_mssqlConns.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="padding:12px;color:var(--text2);text-align:center">No connections configured yet. Add one below.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = _mssqlConns.map(c => {
+    const lastRun = c.last_run_at ? new Date(c.last_run_at).toLocaleString() : '—';
+    const interval = c.snap_interval_minutes == 1440 ? 'Daily' : `Every ${c.snap_interval_minutes} min`;
+    const enabled = c.enabled
+      ? '<span style="color:#10b981;font-size:11px">✅ Yes</span>'
+      : '<span style="color:#6b7280;font-size:11px">⬜ No</span>';
+    const dbs = c.databases && c.databases.length ? c.databases.join(', ') : '(all)';
+    const auth = c.auth_type === 'trusted' ? 'Trusted' : `SQL (${c.username || ''})`;
+    return `<tr style="border-top:1px solid var(--border)">
+      <td style="padding:6px 8px;font-weight:600">${c.host_name}\\${c.instance_name}</td>
+      <td style="padding:6px 8px;font-size:11px">${auth}</td>
+      <td style="padding:6px 8px;font-size:11px">${dbs}</td>
+      <td style="padding:6px 8px;font-size:11px">${interval}</td>
+      <td style="padding:6px 8px">${enabled}</td>
+      <td style="padding:6px 8px;font-size:11px">${lastRun}</td>
+      <td style="padding:6px 8px">
+        <button class="s-btn" style="padding:2px 8px;font-size:11px" onclick="editMssqlConn(${c.id})">✏️</button>
+        <button class="s-btn" style="padding:2px 8px;font-size:11px;margin-left:4px" onclick="testMssqlConn(${c.id},this)">🔌</button>
+        <button class="s-btn" style="padding:2px 8px;font-size:11px;margin-left:4px;color:#ef4444" onclick="deleteMssqlConn(${c.id},'${c.host_name}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function clearMssqlConnForm() {
+  document.getElementById('mc_edit_id').value = '';
+  ['mc_host_name','mc_display_name','mc_port','mc_username','mc_password','mc_databases'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('mc_instance_name').value = 'MSSQLSERVER';
+  document.getElementById('mc_auth_type').value = 'trusted';
+  toggleMssqlAuth('trusted');
+  document.getElementById('mc_snap_interval_minutes').value = '60';
+  document.getElementById('mc_enabled').checked = true;
+  document.getElementById('mssql-form-title').textContent = '➕ Add MS SQL Connection';
+  document.getElementById('mssql-conn-save-msg').textContent = '';
+}
+
+function editMssqlConn(id) {
+  const c = _mssqlConns.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('mc_edit_id').value = id;
+  document.getElementById('mc_host_name').value = c.host_name;
+  document.getElementById('mc_instance_name').value = c.instance_name;
+  document.getElementById('mc_display_name').value = c.display_name || '';
+  document.getElementById('mc_port').value = c.port || '';
+  document.getElementById('mc_auth_type').value = c.auth_type;
+  toggleMssqlAuth(c.auth_type);
+  document.getElementById('mc_username').value = c.username || '';
+  document.getElementById('mc_password').value = '';  // never pre-fill password
+  document.getElementById('mc_databases').value = (c.databases || []).join(', ');
+  document.getElementById('mc_snap_interval_minutes').value = String(c.snap_interval_minutes || 60);
+  document.getElementById('mc_enabled').checked = !!c.enabled;
+  document.getElementById('mssql-form-title').textContent = `✏️ Edit: ${c.host_name}\\${c.instance_name}`;
+  document.getElementById('mc_host_name').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+async function saveMssqlConn() {
+  const msg = document.getElementById('mssql-conn-save-msg');
+  msg.textContent = 'Saving…';
+  const body = {
+    host_name:              document.getElementById('mc_host_name').value.trim(),
+    instance_name:          document.getElementById('mc_instance_name').value.trim() || 'MSSQLSERVER',
+    display_name:           document.getElementById('mc_display_name').value.trim(),
+    port:                   document.getElementById('mc_port').value ? parseInt(document.getElementById('mc_port').value) : null,
+    auth_type:              document.getElementById('mc_auth_type').value,
+    username:               document.getElementById('mc_username').value.trim(),
+    password:               document.getElementById('mc_password').value,
+    databases:              document.getElementById('mc_databases').value.trim(),
+    snap_interval_minutes:  parseInt(document.getElementById('mc_snap_interval_minutes').value) || 60,
+    enabled:                document.getElementById('mc_enabled').checked,
+  };
+  if (!body.host_name) {
+    msg.textContent = '❌ Host Name is required';
+    msg.style.color = '#ef4444';
+    return;
+  }
+  if (body.auth_type === 'sql' && !body.username) {
+    msg.textContent = '❌ Username is required for SQL authentication';
+    msg.style.color = '#ef4444';
+    return;
+  }
+  try {
+    const res  = await fetch('/api/mssql-connections', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.ok) {
+      msg.textContent = '✅ Saved';
+      msg.style.color = '#10b981';
+      clearMssqlConnForm();
+      await loadMssqlConnections();
+    } else {
+      msg.textContent = '❌ ' + (data.error || 'Save failed');
+      msg.style.color = '#ef4444';
+    }
+  } catch(e) {
+    msg.textContent = '❌ ' + e.message;
+    msg.style.color = '#ef4444';
+  }
+}
+
+async function deleteMssqlConn(id, hostName) {
+  if (!confirm(`Remove MS SQL connection for ${hostName}?`)) return;
+  await fetch(`/api/mssql-connections/${id}`, {method:'DELETE'});
+  await loadMssqlConnections();
+}
+
+async function testMssqlConn(id, btn) {
+  const orig = btn.textContent;
+  btn.textContent = '…';
+  btn.disabled = true;
+  try {
+    const res  = await fetch(`/api/mssql-connections/${id}/test`, {method:'POST'});
+    const data = await res.json();
+    alert(data.ok
+      ? `✅ ${data.message}`
+      : `❌ ${data.message}`);
+  } catch(e) {
+    alert('❌ Test failed: ' + e.message);
+  } finally {
+    btn.textContent = orig;
+    btn.disabled = false;
+  }
+}
+
 function toggleSarSource(val) {
   document.getElementById('sar-local-cfg').style.display = val === 'local' ? '' : 'none';
   document.getElementById('sar-ssh-cfg').style.display   = val === 'ssh'   ? '' : 'none';

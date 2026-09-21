@@ -4558,6 +4558,81 @@ async def api_generate_awrs(request: Request):
 
 
 # ══════════════════════════════════════════════════════════════════════
+# MS SQL SERVER CONNECTION API
+# ══════════════════════════════════════════════════════════════════════
+# Mirrors the Oracle connection API immediately above -- same shape,
+# same admin check, same "never return the password" rule -- adapted
+# for mssql_connection_config.py's module-level functions (which take
+# an explicit pg_conn, unlike the Oracle module's own internal _pg()
+# connections).
+
+@app.get("/api/mssql-connections")
+async def api_get_mssql_connections(request: Request):
+    """List all configured MS SQL Server connections."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.mssql import mssql_connection_config as mcc
+        from db import get_db_connection
+        pg_conn = get_db_connection()
+        conns = mcc.get_all_connections(pg_conn)
+        pg_conn.close()
+        return JSONResponse({"ok": True, "connections": conns})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/mssql-connections")
+async def api_save_mssql_connection(request: Request):
+    """Add or update an MS SQL Server connection."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        body = await request.json()
+        session = _get_session(request)
+        from modules.mssql import mssql_connection_config as mcc
+        result = mcc.save_connection(body, added_by=session.get("username", "admin"))
+        return JSONResponse(result, status_code=200 if result["ok"] else 400)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.delete("/api/mssql-connections/{conn_id}")
+async def api_delete_mssql_connection(conn_id: int, request: Request):
+    """Delete an MS SQL Server connection."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.mssql import mssql_connection_config as mcc
+        from db import get_db_connection
+        pg_conn = get_db_connection()
+        result = mcc.delete_connection(pg_conn, conn_id)
+        pg_conn.close()
+        return JSONResponse(result)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/mssql-connections/{conn_id}/test")
+async def api_test_mssql_connection(conn_id: int, request: Request):
+    """Test connectivity for an MS SQL Server connection."""
+    if not _is_admin(request):
+        raise HTTPException(403, "Admin access required")
+    try:
+        from modules.mssql import mssql_connection_config as mcc
+        from db import get_db_connection
+        pg_conn = get_db_connection()
+        cfg = mcc.get_connection_by_id(pg_conn, conn_id)
+        pg_conn.close()
+        if not cfg:
+            return JSONResponse({"ok": False, "message": "Connection not found"}, status_code=404)
+        result = mcc.test_connection(cfg)
+        return JSONResponse(result)
+    except Exception as e:
+        return JSONResponse({"ok": False, "message": str(e)}, status_code=500)
+
+
+# ══════════════════════════════════════════════════════════════════════
 # PLSQL PERFORMANCE ANALYSIS API
 # ══════════════════════════════════════════════════════════════════════
 
