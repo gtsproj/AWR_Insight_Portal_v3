@@ -3371,7 +3371,8 @@ async def api_db_master_list():
                        host_name, db_type, description, active,
                        added_at, added_by,
                        COALESCE(os_type,    'Linux') AS os_type,
-                       COALESCE(os_utility, 'SAR')   AS os_utility
+                       COALESCE(os_utility, 'SAR')   AS os_utility,
+                       COALESCE(db_engine,  'ORACLE') AS db_engine
                 FROM awr_db_master
                 ORDER BY added_at
             """)
@@ -3393,6 +3394,7 @@ async def api_db_master_list():
                 "added_by":      r[9] or "",
                 "os_type":       r[10],
                 "os_utility":    r[11],
+                "db_engine":     r[12],
             })
 
         active_count     = sum(1 for d in dbs if d["active"])
@@ -3424,6 +3426,7 @@ async def api_db_master_add(request: Request):
     inst_no       = int(body.get("inst_no") or 1)
     host_name     = (body.get("host_name")     or "").strip()
     db_type       = (body.get("db_type")       or "STANDALONE").strip().upper()
+    db_engine     = (body.get("db_engine")      or "ORACLE").strip().upper()
     description   = (body.get("description")   or "").strip()
     os_type       = (body.get("os_type")       or "Linux").strip()
     os_utility    = (body.get("os_utility")    or "SAR").strip().upper()
@@ -3432,6 +3435,10 @@ async def api_db_master_add(request: Request):
 
     if not db_name:
         raise HTTPException(400, "db_name is required")
+
+    valid_engines = ("ORACLE", "MSSQL", "POSTGRESQL", "MYSQL", "MARIADB", "CASSANDRA")
+    if db_engine not in valid_engines:
+        raise HTTPException(400, f"db_engine must be one of {', '.join(valid_engines)}")
 
     # Auto-derive utility from OS type if not explicitly set
     if os_type == "IBM AIX" and os_utility not in ("NMON", "None"):
@@ -3481,13 +3488,14 @@ async def api_db_master_add(request: Request):
             cur.execute("""
                 INSERT INTO awr_db_master
                     (db_name, instance_name, inst_no, host_name,
-                     db_type, description, os_type, os_utility, active, added_by)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, TRUE, %s)
+                     db_type, db_engine, description, os_type, os_utility, active, added_by)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, TRUE, %s)
                 ON CONFLICT (db_name, inst_no)
                 DO UPDATE SET
                     instance_name = EXCLUDED.instance_name,
                     host_name     = EXCLUDED.host_name,
                     db_type       = EXCLUDED.db_type,
+                    db_engine     = EXCLUDED.db_engine,
                     description   = EXCLUDED.description,
                     os_type       = EXCLUDED.os_type,
                     os_utility    = EXCLUDED.os_utility,
@@ -3495,7 +3503,7 @@ async def api_db_master_add(request: Request):
                     added_by      = EXCLUDED.added_by
                 RETURNING id
             """, (db_name, instance_name, inst_no, host_name,
-                  db_type, description, os_type, os_utility, added_by))
+                  db_type, db_engine, description, os_type, os_utility, added_by))
             new_id = cur.fetchone()[0]
         conn.commit()
         conn.close()

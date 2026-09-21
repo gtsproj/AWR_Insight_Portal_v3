@@ -1402,6 +1402,7 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
               <th style="padding:6px 10px;text-align:left;color:var(--text2)">App Usage</th>
               <th style="padding:6px 10px;text-align:left;color:var(--text2)">App Category</th>
               <th style="padding:6px 10px;text-align:left;color:var(--text2)">DB Name</th>
+              <th style="padding:6px 10px;text-align:left;color:var(--text2)">Engine</th>
               <th style="padding:6px 10px;text-align:left;color:var(--text2)">Instance Name</th>
               <th style="padding:6px 10px;text-align:center;color:var(--text2)">Inst#</th>
               <th style="padding:6px 10px;text-align:left;color:var(--text2)">Host</th>
@@ -1414,7 +1415,7 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
             </tr>
           </thead>
           <tbody id="db-master-tbody">
-            <tr><td colspan="14" style="padding:12px;text-align:center;color:var(--text2)">
+            <tr><td colspan="15" style="padding:12px;text-align:center;color:var(--text2)">
               Loading…
             </td></tr>
           </tbody>
@@ -1427,7 +1428,7 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
           <div style="font-size:.82rem;font-weight:600;margin-bottom:10px;color:var(--accent)">
             ➕ Add Database
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 80px 1fr 140px;gap:8px;margin-bottom:8px">
+          <div style="display:grid;grid-template-columns:1fr 1fr 80px 1fr 140px 140px;gap:8px;margin-bottom:8px">
             <div>
               <label class="s-label">DB Name *</label>
               <input class="s-input" id="nm-db_name" placeholder="e.g. COLDBPRD"
@@ -1446,6 +1447,17 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
               <input class="s-input" id="nm-host_name" placeholder="e.g. dbserver01">
             </div>
             <div>
+              <label class="s-label">DB Engine</label>
+              <select class="s-select" id="nm-db_engine" onchange="onDbEngineChange(this.value)">
+                <option value="ORACLE">Oracle</option>
+                <option value="MSSQL">MS SQL Server</option>
+                <option value="POSTGRESQL">PostgreSQL</option>
+                <option value="MYSQL">MySQL</option>
+                <option value="MARIADB">MariaDB</option>
+                <option value="CASSANDRA">Cassandra</option>
+              </select>
+            </div>
+            <div id="nm-db_type-wrap">
               <label class="s-label">DB Type</label>
               <select class="s-select" id="nm-db_type">
                 <option value="STANDALONE">Standalone</option>
@@ -2009,7 +2021,7 @@ async function loadDbMaster() {
     }
 
     if (!d.dbs || d.dbs.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="10" style="padding:14px;text-align:center;color:var(--text2)">
+      tbody.innerHTML = `<tr><td colspan="15" style="padding:14px;text-align:center;color:var(--text2)">
         No databases registered. Add databases below to enable AWR parsing.</td></tr>`;
       return;
     }
@@ -2020,6 +2032,10 @@ async function loadDbMaster() {
                             ANALYTICS:'#4a2f1f',ECOMMERCE:'#0f3d3d',INTERNAL:'#3d3d0f',OTHER:'#333' };
     const CAT_BADGE     = { PLATINUM:'#4a4a6a',GOLD:'#6b4c1e',SILVER:'#3a3a3a',
                             BRONZE:'#5c3a1e',OTHER:'#333' };
+    const ENGINE_BADGE  = { ORACLE:'#7c2d12', MSSQL:'#1e3a5f', POSTGRESQL:'#1f3d5e',
+                            MYSQL:'#3d2f1f', MARIADB:'#1f3d2f', CASSANDRA:'#3b1f5e' };
+    const ENGINE_LABEL  = { ORACLE:'Oracle', MSSQL:'MS SQL', POSTGRESQL:'PostgreSQL',
+                            MYSQL:'MySQL', MARIADB:'MariaDB', CASSANDRA:'Cassandra' };
     tbody.innerHTML = d.dbs.map(db => `
       <tr style="border-top:1px solid var(--border);opacity:${db.active?1:0.5}">
         <td style="padding:7px 10px;font-size:.78rem;font-weight:600;color:var(--text2)">${db.app_code||'—'}</td>
@@ -2031,6 +2047,9 @@ async function loadDbMaster() {
           <span style="font-size:.7rem;padding:2px 6px;border-radius:20px;
             background:${CAT_BADGE[db.app_category]||'#333'};color:#fff">${db.app_category||'OTHER'}</span></td>
         <td style="padding:7px 10px;font-weight:600">${db.db_name}</td>
+        <td style="padding:7px 10px">
+          <span style="font-size:.72rem;padding:2px 7px;border-radius:20px;
+            background:${ENGINE_BADGE[db.db_engine]||'#333'};color:#fff">${ENGINE_LABEL[db.db_engine]||db.db_engine||'Oracle'}</span></td>
         <td style="padding:7px 10px;color:var(--text2)">${db.instance_name||'—'}</td>
         <td style="padding:7px 10px;text-align:center;color:var(--text2)">${db.inst_no}</td>
         <td style="padding:7px 10px;color:var(--text2)">${db.host_name||'—'}</td>
@@ -2063,6 +2082,14 @@ function onOsTypeChange(osType) {
   else                           utilSel.value = 'NONE';  // Windows / Other
 }
 
+function onDbEngineChange(engine) {
+  // Standalone/RAC/CDB/PDB are Oracle-specific architecture terms --
+  // hide the DB Type field for every other engine, since it doesn't
+  // apply and showing it would be misleading.
+  const wrap = document.getElementById('nm-db_type-wrap');
+  if (wrap) wrap.style.display = engine === 'ORACLE' ? '' : 'none';
+}
+
 async function addDbMaster() {
   const db_name = (document.getElementById('nm-db_name').value||'').trim().toUpperCase();
   if (!db_name) { alert('DB Name is required'); return; }
@@ -2072,6 +2099,7 @@ async function addDbMaster() {
     inst_no:  parseInt(document.getElementById('nm-inst_no').value)||1,
     host_name:(document.getElementById('nm-host_name').value||'').trim(),
     db_type:   document.getElementById('nm-db_type').value,
+    db_engine: document.getElementById('nm-db_engine').value,
     os_type:   document.getElementById('nm-os_type').value,
     os_utility:document.getElementById('nm-os_utility').value,
     description:(document.getElementById('nm-description').value||'').trim(),
