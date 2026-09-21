@@ -3505,6 +3505,23 @@ async def api_db_master_add(request: Request):
             """, (db_name, instance_name, inst_no, host_name,
                   db_type, db_engine, description, os_type, os_utility, added_by))
             new_id = cur.fetchone()[0]
+
+            # Real gap found from a real failure: mssql_connections
+            # (credentials) and awr_db_master (licensing) were both
+            # registered by Ganesh, but the MS SQL collector's own
+            # gate (mssql_instance_master, resolve_instance_id())
+            # is a THIRD, separate table that neither of those ever
+            # touched -- collection correctly, loudly refused to run
+            # for an instance that was, from the user's own
+            # perspective, already fully registered twice over. Keep
+            # this in sync automatically for every future MSSQL
+            # registration, not just the one-time catch-up migration.
+            if db_engine == "MSSQL" and host_name:
+                cur.execute("""
+                    INSERT INTO mssql_instance_master (host_name, instance_name, active, added_by)
+                    VALUES (%s, %s, TRUE, %s)
+                    ON CONFLICT (host_name, instance_name) DO UPDATE SET active = TRUE
+                """, (host_name, instance_name or "MSSQLSERVER", added_by))
         conn.commit()
         conn.close()
         return JSONResponse({"ok": True, "id": new_id})
