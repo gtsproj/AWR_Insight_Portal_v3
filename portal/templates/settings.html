@@ -800,6 +800,13 @@ GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO awrportal;</code>
             <div class="s-field">
               <label class="s-label">Instance Name</label>
               <input class="s-input" id="mc_instance_name" placeholder="MSSQLSERVER" value="MSSQLSERVER">
+              <div style="font-size:11px;color:var(--text2);margin-top:4px">
+                Leave as <code>MSSQLSERVER</code> for the default instance (the common case for a
+                single-instance install). This is NOT the Windows service display name shown in
+                Services.msc (often "SQL Server (MSSQLSERVER)") -- if unsure, run
+                <code>SELECT SERVERPROPERTY('InstanceName')</code> in SSMS: a NULL result means
+                use <code>MSSQLSERVER</code> here; any other value is the real name to use instead.
+              </div>
             </div>
           </div>
           <div class="s-row">
