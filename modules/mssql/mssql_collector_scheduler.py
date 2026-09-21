@@ -94,12 +94,107 @@ def run_collector(script_relpath, args):
         logger.error(f"{script_relpath} failed to run: {e}")
 
 
+def is_due(interval_minutes: int, now: datetime.datetime = None) -> bool:
+    """
+    True if `now` (checked to the minute) lands exactly on a
+    midnight-based clock boundary for interval_minutes -- the same
+    alignment principle as next_aligned_time, restated as a per-tick
+    check rather than a single next-wakeup time, since the multi-
+    instance scheduler (run_from_config) needs to evaluate several
+    DIFFERENT connections' intervals against the same "now" on every
+    tick, not sleep until one single next time.
+    """
+    if now is None:
+        now = datetime.datetime.now()
+    minutes_since_midnight = now.hour * 60 + now.minute
+    return minutes_since_midnight % interval_minutes == 0
+
+
+def run_from_config():
+    """
+    Multi-instance mode: reads every enabled row from mssql_connections
+    and runs collection for whichever ones are due on this tick.
+
+    Ticks every minute (the finest-grained valid QUERY_STORE interval)
+    rather than sleeping until one single next-aligned-time the way the
+    single-instance CLI mode does -- different instances can have
+    different snap_interval_minutes running simultaneously, so there
+    is no single "next wakeup" to sleep until; each connection's own
+    due-ness has to be re-checked every minute instead.
+
+    QUERY_STORE's own INTERVAL_LENGTH_MINUTES is set once per
+    (connection, database) at scheduler startup, not re-set every
+    tick -- same idempotent-but-startup-only reasoning as the
+    single-instance mode's set_query_store_interval call, just looped
+    across every enabled connection and every database on it.
+    """
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'common'))
+    from db import get_db_connection
+    import mssql_connection_config as cc
+
+    pg_conn = get_db_connection()
+    connections = cc.fetch_enabled_connections(pg_conn)
+    if not connections:
+        logger.error("No enabled connections in mssql_connections -- nothing to schedule. "
+                      "Add one via mssql_connection_config.upsert_connection() first.")
+        return
+
+    logger.info(f"Multi-instance scheduler starting -- {len(connections)} enabled connection(s)")
+
+    for c in connections:
+        if not c["databases"]:
+            logger.info(f"{c['host_name']}\\{c['instance_name']}: databases=all -- skipping automatic "
+                        f"QUERY_STORE interval alignment (the specific database list isn't known until "
+                        f"collection runs). List explicit databases for this connection if automatic "
+                        f"QUERY_STORE alignment is wanted, or set INTERVAL_LENGTH_MINUTES manually.")
+            continue
+        for db_name in c["databases"]:
+            try:
+                set_query_store_interval(c["host_name"], c["instance_name"], db_name,
+                                          c["snap_interval_minutes"],
+                                          c["auth_type"] == "trusted", c["username"], c["password"])
+            except Exception as e:
+                logger.error(f"Could not set QUERY_STORE interval for "
+                            f"{c['host_name']}\\{c['instance_name']}/{db_name}: {e}")
+
+    while True:
+        now = datetime.datetime.now()
+        next_minute = (now.replace(second=0, microsecond=0) + datetime.timedelta(minutes=1))
+        time.sleep(max(0, (next_minute - datetime.datetime.now()).total_seconds()))
+
+        now = datetime.datetime.now()
+        for c in connections:
+            if not is_due(c["snap_interval_minutes"], now):
+                continue
+
+            logger.info(f"=== Collection cycle: {c['host_name']}\\{c['instance_name']} "
+                        f"at {now.strftime('%Y-%m-%d %H:%M:%S')} ===")
+            conn_args = ["--host", c["host_name"], "--instance-name", c["instance_name"]]
+            if c["auth_type"] == "trusted":
+                conn_args.append("--trusted-connection")
+            else:
+                conn_args.extend(["--sql-user", c["username"], "--sql-password", c["password"]])
+            if c["databases"]:
+                for db_name in c["databases"]:
+                    conn_args.extend(["--database", db_name])
+
+            run_collector("query_store_collector.py", conn_args)
+            run_collector("dmv_delta_collector.py",
+                          conn_args + ["--min-interval-minutes", str(c["snap_interval_minutes"])])
+
+            cc.record_run_result(pg_conn, c["id"], "success")
+
+
 def main():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--host", required=True)
+    parser.add_argument("--from-config", action="store_true",
+                         help="Multi-instance mode: read every enabled connection from "
+                              "mssql_connections instead of the single-instance CLI args below. "
+                              "Each connection runs on its own snap_interval_minutes.")
+    parser.add_argument("--host")
     parser.add_argument("--instance-name", default="MSSQLSERVER")
-    parser.add_argument("--database", required=True)
+    parser.add_argument("--database")
     parser.add_argument("--interval-minutes", type=int, default=60, choices=[1, 5, 10, 15, 30, 60, 1440],
                          help="Collection cadence, and the value QUERY_STORE's own "
                               "INTERVAL_LENGTH_MINUTES gets set to match -- restricted to "
@@ -110,6 +205,14 @@ def main():
     parser.add_argument("--sql-user", default=None)
     parser.add_argument("--sql-password", default=None)
     args = parser.parse_args()
+
+    if args.from_config:
+        run_from_config()
+        return
+
+    if not args.host or not args.database:
+        print("--host and --database are required unless --from-config is given")
+        return
 
     conn_args = ["--host", args.host, "--instance-name", args.instance_name, "--database", args.database]
     if args.trusted_connection:
