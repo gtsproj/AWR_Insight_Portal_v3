@@ -763,6 +763,19 @@ def _main():
             print(f"  - {e}")
     print(f"{'='*60}\n")
 
+    # Real bug found from real data: this used to fall through to an
+    # implicit exit 0 regardless of what result actually contained --
+    # a caller (like mssql_collector_scheduler.py) checking only
+    # subprocess returncode==0 would see "completed successfully" even
+    # when the collector never got past instance resolution, since a
+    # caught, logged error here was never distinct from genuine
+    # success at the process-exit level. result["skipped"]==True is
+    # NOT a failure -- min_interval_minutes deliberately declining to
+    # take a new snapshot yet is expected, correct behavior, so it's
+    # excluded from this check on purpose.
+    if result["errors"] or (result["snapshot_id"] is None and not result.get("skipped")):
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     _main()

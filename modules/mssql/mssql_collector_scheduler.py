@@ -131,7 +131,17 @@ def run_collector(script_relpath, args):
         if result.returncode == 0:
             logger.info(f"{script_relpath} completed successfully")
         else:
-            logger.error(f"{script_relpath} exited with code {result.returncode}: {result.stderr[-2000:]}")
+            logger.error(f"{script_relpath} exited with code {result.returncode}")
+            # Real gap found from real data: the collector's own detailed
+            # RESULT summary (snapshot_id, tables collected, its own
+            # errors list) is printed to STDOUT, not stderr -- logging
+            # only stderr on failure silently dropped exactly the detail
+            # needed to diagnose what actually went wrong, leaving only
+            # a bare "exited with code N" with no context at all.
+            if result.stdout:
+                logger.error(f"{script_relpath} stdout:\n{result.stdout[-3000:]}")
+            if result.stderr:
+                logger.error(f"{script_relpath} stderr:\n{result.stderr[-2000:]}")
     except subprocess.TimeoutExpired:
         logger.error(f"{script_relpath} timed out after 600s")
     except Exception as e:

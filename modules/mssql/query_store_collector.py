@@ -557,6 +557,16 @@ def _main():
             print(f"  - {e}")
     print(f"{'='*60}\n")
 
+    # Real bug found from real data: this used to fall through to an
+    # implicit exit 0 regardless of what result actually contained --
+    # a caller (like mssql_collector_scheduler.py) checking only
+    # subprocess returncode==0 would see "completed successfully" even
+    # when every single database failed and zero intervals were
+    # collected, since a caught, logged error here was never distinct
+    # from genuine success at the process-exit level.
+    if result["errors"]:
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     _main()
