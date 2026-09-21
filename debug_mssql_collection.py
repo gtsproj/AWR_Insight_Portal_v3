@@ -68,10 +68,38 @@ def main():
     section("STEP 1: Postgres connectivity")
     try:
         from db import get_db_connection
+        from config_loader import load_config
         pg_conn = get_db_connection()
         with pg_conn.cursor() as cur:
-            cur.execute("SELECT 1")
+            cur.execute("SELECT current_database(), current_user, current_schema(), inet_server_addr(), inet_server_port()")
+            db_name, db_user, db_schema, db_host, db_port = cur.fetchone()
         print("OK -- connected to Postgres successfully.")
+        print(f"  Actually connected to: host={db_host or 'localhost/socket'} port={db_port} "
+              f"database={db_name!r} schema={db_schema!r} as user={db_user!r}")
+        conf = load_config().get("database", {})
+        print(f"  config/settings.yaml says: host={conf.get('host')!r} port={conf.get('port')!r} "
+              f"dbname={conf.get('dbname')!r} user={conf.get('user')!r}")
+        print("  If a schema migration was run against a DIFFERENT host/port/database than the")
+        print("  one shown above, it changed a different database than this script (and the")
+        print("  actual scheduler/collectors) are connected to -- that alone fully explains")
+        print("  'the column exists' from one place while this script still can't see it.")
+
+        # Directly confirm, right now, on THIS exact connection -- not
+        # assumed from the migration having been run at some point --
+        # whether sqlserver_start_time genuinely exists on this table.
+        with pg_conn.cursor() as cur:
+            cur.execute("""
+                SELECT column_name FROM information_schema.columns
+                WHERE table_name = 'mssql_dmv_snapshot' ORDER BY ordinal_position
+            """)
+            cols = [r[0] for r in cur.fetchall()]
+        print(f"\n  mssql_dmv_snapshot columns as seen by THIS connection: {cols}")
+        if "sqlserver_start_time" in cols:
+            print("  sqlserver_start_time IS present here -- STEP 3 below should now work.")
+        else:
+            print("  sqlserver_start_time is NOT present on THIS specific database/connection --")
+            print("  the migration needs to be run against THIS exact host/port/database shown")
+            print("  above, not wherever it may have already been run against.")
     except Exception as e:
         print(f"FAILED -- could not connect to Postgres at all: {e}")
         print("This alone would explain zero rows anywhere -- nothing downstream can work")
@@ -100,22 +128,34 @@ def main():
     #    min_interval_minutes-skip hypothesis ──────────────────────
     section("STEP 3: mssql_dmv_snapshot -- most recent row for this instance (BEFORE)")
     if instance_id:
-        with pg_conn.cursor() as cur:
-            cur.execute(
-                "SELECT snapshot_id, snapshot_time, sqlserver_start_time FROM mssql_dmv_snapshot "
-                "WHERE instance_id = %s ORDER BY snapshot_time DESC LIMIT 1",
-                (instance_id,)
-            )
-            last = cur.fetchone()
-        if last:
-            print(f"Most recent snapshot: id={last[0]}, taken at {last[1]}, "
-                  f"sqlserver_start_time={last[2]}")
-            print("If this timestamp is very recent (within --min-interval-minutes of now), "
-                  "that alone would correctly cause the NEXT run to skip -- not a bug, "
-                  "expected behavior of the interval-enforcement safeguard.")
-        else:
-            print("No snapshots yet for this instance -- min_interval_minutes cannot be "
-                  "the cause of anything missing; there's nothing to compare against yet.")
+        try:
+            with pg_conn.cursor() as cur:
+                cur.execute(
+                    "SELECT snapshot_id, snapshot_time, sqlserver_start_time FROM mssql_dmv_snapshot "
+                    "WHERE instance_id = %s ORDER BY snapshot_time DESC LIMIT 1",
+                    (instance_id,)
+                )
+                last = cur.fetchone()
+            if last:
+                print(f"Most recent snapshot: id={last[0]}, taken at {last[1]}, "
+                      f"sqlserver_start_time={last[2]}")
+                print("If this timestamp is very recent (within --min-interval-minutes of now), "
+                      "that alone would correctly cause the NEXT run to skip -- not a bug, "
+                      "expected behavior of the interval-enforcement safeguard.")
+            else:
+                print("No snapshots yet for this instance -- min_interval_minutes cannot be "
+                      "the cause of anything missing; there's nothing to compare against yet.")
+        except Exception as e:
+            # A failed query leaves this connection's transaction
+            # ABORTED -- every later step reuses pg_conn, so without
+            # an explicit rollback here, steps 4-6 below would all
+            # fail too with a confusing, unrelated-looking
+            # "current transaction is aborted" error, hiding whatever
+            # they'd have actually shown.
+            pg_conn.rollback()
+            print(f"Could not query mssql_dmv_snapshot (see STEP 1 above for exactly which "
+                  f"database this connection is actually pointed at): {e}")
+            print("Continuing to the remaining steps anyway -- this alone doesn't block them.")
     else:
         print("(Instance not registered yet -- no snapshots possible)")
 
