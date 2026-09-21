@@ -94,6 +94,45 @@ def run_collector(script_relpath, args):
         logger.error(f"{script_relpath} failed to run: {e}")
 
 
+def run_sqlwr_auto_generation(pg_conn, host_name: str, instance_name: str, output_dir: str):
+    """
+    Called after each collection cycle. Resolves the instance and
+    generates any SQLWR reports now possible -- every new DMV snapshot
+    against its immediate predecessor, skipping (and recording as
+    skipped_restart) any pair spanning a detected SQL Server restart.
+    A single failed generation attempt is logged and does not stop the
+    scheduler loop, matching run_collector's own resilience.
+    """
+    try:
+        from sqlwr_report_generator import auto_generate_sqlwr_reports
+        with pg_conn.cursor() as cur:
+            cur.execute(
+                "SELECT id FROM mssql_instance_master WHERE host_name = %s AND instance_name = %s",
+                (host_name, instance_name)
+            )
+            row = cur.fetchone()
+        if not row:
+            # First-ever collection for this instance -- resolve_instance_id()
+            # inside the collector creates this row, but only once the
+            # collector has actually run; nothing to generate yet regardless.
+            return
+        instance_id = row[0]
+        os.makedirs(output_dir, exist_ok=True)
+        result = auto_generate_sqlwr_reports(pg_conn, instance_id, output_dir)
+        if result["generated"]:
+            logger.info(f"SQLWR: generated {len(result['generated'])} report(s) for "
+                        f"{host_name}\\{instance_name}: {result['generated']}")
+        if result["skipped_restart"]:
+            logger.info(f"SQLWR: skipped {len(result['skipped_restart'])} pair(s) for "
+                        f"{host_name}\\{instance_name} -- SQL Server restart detected: "
+                        f"{result['skipped_restart']}")
+        if result["failed"]:
+            logger.error(f"SQLWR: {len(result['failed'])} report(s) FAILED for "
+                        f"{host_name}\\{instance_name}: {result['failed']}")
+    except Exception as e:
+        logger.error(f"SQLWR auto-generation failed for {host_name}\\{instance_name}: {e}")
+
+
 def is_due(interval_minutes: int, now: datetime.datetime = None) -> bool:
     """
     True if `now` (checked to the minute) lands exactly on a
@@ -110,7 +149,7 @@ def is_due(interval_minutes: int, now: datetime.datetime = None) -> bool:
     return minutes_since_midnight % interval_minutes == 0
 
 
-def run_from_config():
+def run_from_config(sqlwr_output_dir: str = "sqlwr_reports"):
     """
     Multi-instance mode: reads every enabled row from mssql_connections
     and runs collection for whichever ones are due on this tick.
@@ -182,6 +221,8 @@ def run_from_config():
             run_collector("dmv_delta_collector.py",
                           conn_args + ["--min-interval-minutes", str(c["snap_interval_minutes"])])
 
+            run_sqlwr_auto_generation(pg_conn, c["host_name"], c["instance_name"], sqlwr_output_dir)
+
             cc.record_run_result(pg_conn, c["id"], "success")
 
 
@@ -204,10 +245,12 @@ def main():
     parser.add_argument("--trusted-connection", action="store_true")
     parser.add_argument("--sql-user", default=None)
     parser.add_argument("--sql-password", default=None)
+    parser.add_argument("--sqlwr-output-dir", default="sqlwr_reports",
+                         help="Directory SQLWR HTML reports are written to (created if missing)")
     args = parser.parse_args()
 
     if args.from_config:
-        run_from_config()
+        run_from_config(sqlwr_output_dir=args.sqlwr_output_dir)
         return
 
     if not args.host or not args.database:
@@ -222,6 +265,10 @@ def main():
 
     set_query_store_interval(args.host, args.instance_name, args.database, args.interval_minutes,
                               args.trusted_connection, args.sql_user, args.sql_password)
+
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'common'))
+    from db import get_db_connection
+    pg_conn = get_db_connection()
 
     logger.info(f"Scheduler starting -- {args.interval_minutes}-minute cadence, aligned to clock boundaries")
 
@@ -241,6 +288,8 @@ def main():
         # creating an extra, irregularly-spaced snapshot.
         run_collector(os.path.join("dmv_delta_collector.py"),
                       conn_args + ["--min-interval-minutes", str(args.interval_minutes)])
+
+        run_sqlwr_auto_generation(pg_conn, args.host, args.instance_name, args.sqlwr_output_dir)
 
 
 if __name__ == "__main__":

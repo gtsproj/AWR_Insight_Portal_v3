@@ -253,6 +253,110 @@ def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
     return output_path
 
 
+def auto_generate_sqlwr_reports(pg_conn, instance_id: int, output_dir: str) -> dict:
+    """
+    Called after each collection cycle (from mssql_collector_scheduler.py).
+    Finds every mssql_dmv_snapshot for this instance that doesn't yet
+    have a mssql_sqlwr_report row where it's the END of the pair, and
+    for each one, generates a report against the immediately preceding
+    snapshot -- UNLESS a SQL Server restart is detected between them
+    (or restart status can't be confirmed), in which case that pair is
+    recorded as skipped_restart rather than generating a meaningless
+    report, and the current snapshot effectively becomes the new
+    starting point for the next pair.
+
+    The very first snapshot ever taken for an instance has no
+    predecessor at all -- correctly produces zero reports until a
+    second snapshot exists, matching "reports start from the 2nd
+    snapshot onwards."
+
+    Restart handling deliberately conservative: sqlserver_start_time
+    being NULL on either snapshot (collection failure, or a snapshot
+    taken before this column existed) is treated the same as a
+    CONFIRMED restart -- skip rather than risk a nonsense negative-
+    delta report. A skipped pair can always be revisited manually
+    later; a silently wrong report showing negative wait times cannot
+    un-mislead whoever already read it.
+
+    Returns {"generated": [...], "skipped_restart": [...], "failed": [...]}
+    -- lists of (begin_snapshot_id, end_snapshot_id) tuples.
+    """
+    result = {"generated": [], "skipped_restart": [], "failed": []}
+
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT snapshot_id, sqlserver_start_time FROM mssql_dmv_snapshot
+            WHERE instance_id = %s
+              AND snapshot_id NOT IN (
+                  SELECT end_snapshot_id FROM mssql_sqlwr_report WHERE instance_id = %s
+              )
+            ORDER BY snapshot_id ASC
+        """, (instance_id, instance_id))
+        pending_snapshots = cur.fetchall()
+
+    for end_snapshot_id, end_start_time in pending_snapshots:
+        with pg_conn.cursor() as cur:
+            cur.execute("""
+                SELECT snapshot_id, sqlserver_start_time FROM mssql_dmv_snapshot
+                WHERE instance_id = %s AND snapshot_id < %s
+                ORDER BY snapshot_id DESC LIMIT 1
+            """, (instance_id, end_snapshot_id))
+            prev = cur.fetchone()
+
+        if not prev:
+            # First snapshot ever for this instance -- no predecessor,
+            # nothing to report yet. Not an error, not recorded at all
+            # (so it's picked up correctly once a real successor exists).
+            continue
+
+        begin_snapshot_id, begin_start_time = prev
+
+        restart_detected = (
+            begin_start_time is None or end_start_time is None
+            or begin_start_time != end_start_time
+        )
+
+        if restart_detected:
+            with pg_conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO mssql_sqlwr_report
+                        (instance_id, begin_snapshot_id, end_snapshot_id, status, error_message, generated_at)
+                    VALUES (%s, %s, %s, 'skipped_restart', %s, now())
+                    ON CONFLICT (instance_id, begin_snapshot_id, end_snapshot_id) DO NOTHING
+                """, (instance_id, begin_snapshot_id, end_snapshot_id,
+                      "SQL Server restart detected (or start_time unknown) between these snapshots"))
+            pg_conn.commit()
+            result["skipped_restart"].append((begin_snapshot_id, end_snapshot_id))
+            continue
+
+        report_path = os.path.join(
+            output_dir, f"sqlwr_{instance_id}_{begin_snapshot_id}_{end_snapshot_id}.html"
+        )
+        try:
+            generate_sqlwr_report(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, report_path)
+            with pg_conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO mssql_sqlwr_report
+                        (instance_id, begin_snapshot_id, end_snapshot_id, report_path, status, generated_at)
+                    VALUES (%s, %s, %s, %s, 'completed', now())
+                    ON CONFLICT (instance_id, begin_snapshot_id, end_snapshot_id) DO NOTHING
+                """, (instance_id, begin_snapshot_id, end_snapshot_id, report_path))
+            pg_conn.commit()
+            result["generated"].append((begin_snapshot_id, end_snapshot_id))
+        except Exception as e:
+            with pg_conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO mssql_sqlwr_report
+                        (instance_id, begin_snapshot_id, end_snapshot_id, status, error_message, generated_at)
+                    VALUES (%s, %s, %s, 'failed', %s, now())
+                    ON CONFLICT (instance_id, begin_snapshot_id, end_snapshot_id) DO NOTHING
+                """, (instance_id, begin_snapshot_id, end_snapshot_id, str(e)))
+            pg_conn.commit()
+            result["failed"].append((begin_snapshot_id, end_snapshot_id))
+
+    return result
+
+
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Generate a SQLWR report for two consecutive DMV snapshots")

@@ -144,7 +144,7 @@ def run_dmv_collection(mssql_cfg: dict, database_names: list = None, min_interva
         return summary
 
     try:
-        snapshot_id = _create_snapshot(pg_conn, instance_id)
+        snapshot_id = _create_snapshot(pg_conn, instance_id, mssql_conn=conn)
         summary["snapshot_id"] = snapshot_id
 
         # ── Server-scoped (instance-wide, no per-database loop needed) ──
@@ -219,12 +219,35 @@ def run_dmv_collection(mssql_cfg: dict, database_names: list = None, min_interva
     return summary
 
 
-def _create_snapshot(pg_conn, instance_id: int) -> int:
+def _create_snapshot(pg_conn, instance_id: int, mssql_conn=None) -> int:
+    """
+    Creates the new mssql_dmv_snapshot row, capturing SQL Server's own
+    sqlserver_start_time from sys.dm_os_sys_info when a live connection
+    is given -- needed to detect a restart between two consecutive
+    snapshots later (every DMV counter resets to zero on restart, so a
+    delta computed across a restart would be meaningless). mssql_conn
+    is optional so this function still works for any caller that
+    doesn't have a live connection handy; sqlserver_start_time is
+    simply left NULL in that case, and restart-detection downstream
+    treats a NULL start_time as "unknown, don't assume no restart
+    happened" rather than silently skipping the check.
+    """
+    start_time = None
+    if mssql_conn is not None:
+        try:
+            cur = mssql_conn.cursor()
+            cur.execute("SELECT sqlserver_start_time FROM sys.dm_os_sys_info")
+            row = cur.fetchone()
+            if row:
+                start_time = row[0]
+        except Exception as e:
+            logger.warning(f"Could not read sqlserver_start_time: {e}")
+
     with pg_conn.cursor() as cur:
         cur.execute(
-            "INSERT INTO mssql_dmv_snapshot (instance_id, collector_version) "
-            "VALUES (%s, %s) RETURNING snapshot_id",
-            (instance_id, "1.0")
+            "INSERT INTO mssql_dmv_snapshot (instance_id, collector_version, sqlserver_start_time) "
+            "VALUES (%s, %s, %s) RETURNING snapshot_id",
+            (instance_id, "1.0", start_time)
         )
         return cur.fetchone()[0]
 
