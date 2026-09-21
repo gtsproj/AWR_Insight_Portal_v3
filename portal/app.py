@@ -3516,12 +3516,34 @@ async def api_db_master_add(request: Request):
             # perspective, already fully registered twice over. Keep
             # this in sync automatically for every future MSSQL
             # registration, not just the one-time catch-up migration.
+            # Real bug found from real data: this used awr_db_master's
+            # OWN instance_name field, which is an optional field on
+            # the Licensed Databases form and easily left blank --
+            # defaulting to 'MSSQLSERVER' when it was empty, even
+            # though Ganesh had already entered the REAL instance name
+            # ("SQL SERVER") when setting up credentials in DB
+            # Connection > MS SQL. mssql_connections.instance_name is
+            # the actual source of truth here -- it's the exact value
+            # the scheduler passes as --instance-name to the collector,
+            # so it's what resolve_instance_id() will actually be asked
+            # to match against. Check there FIRST; only fall back to
+            # awr_db_master's own value (or the bare default) when no
+            # matching connection exists yet for this host.
             if db_engine == "MSSQL" and host_name:
+                cur.execute(
+                    "SELECT instance_name FROM mssql_connections WHERE host_name = %s LIMIT 1",
+                    (host_name,)
+                )
+                conn_row = cur.fetchone()
+                resolved_instance_name = (
+                    conn_row[0] if conn_row and conn_row[0]
+                    else (instance_name or "MSSQLSERVER")
+                )
                 cur.execute("""
                     INSERT INTO mssql_instance_master (host_name, instance_name, active, added_by)
                     VALUES (%s, %s, TRUE, %s)
                     ON CONFLICT (host_name, instance_name) DO UPDATE SET active = TRUE
-                """, (host_name, instance_name or "MSSQLSERVER", added_by))
+                """, (host_name, resolved_instance_name, added_by))
         conn.commit()
         conn.close()
         return JSONResponse({"ok": True, "id": new_id})

@@ -138,6 +138,23 @@ def upsert_connection(pg_conn, host_name: str, instance_name: str, auth_type: st
             conn_id = cur.fetchone()[0]
 
     pg_conn.commit()
+
+    # Keeps mssql_instance_master (the collector's own licensing gate,
+    # resolve_instance_id()) in sync with whatever host_name/
+    # instance_name was JUST saved here -- this is the actual source
+    # of truth for what gets passed to the collector as --instance-name,
+    # so it's the most reliable place to do this sync, more direct than
+    # relying on the Licensed Databases tab to also be touched (and to
+    # have the right value entered there, which is an optional field
+    # and easy to leave blank or out of sync with what's saved here).
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            INSERT INTO mssql_instance_master (host_name, instance_name, active, added_by)
+            VALUES (%s, %s, TRUE, %s)
+            ON CONFLICT (host_name, instance_name) DO UPDATE SET active = TRUE
+        """, (host_name, instance_name, added_by))
+    pg_conn.commit()
+
     return conn_id
 
 
