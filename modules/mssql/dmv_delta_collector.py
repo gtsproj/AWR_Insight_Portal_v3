@@ -500,20 +500,28 @@ def _collect_file_io(conn, pg_conn, snapshot_id) -> int:
             """, (snapshot_id, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
         n += 1
     if n == 0:
-        # Confirmed against Microsoft's own current documentation, not
-        # guessed: sys.dm_io_virtual_file_stats requires VIEW SERVER
-        # STATE on SQL Server 2019 and earlier, but SQL Server 2022+
-        # requires the newer, more granular VIEW SERVER PERFORMANCE
-        # STATE instead -- a login with only the older, broader
-        # permission silently gets ZERO rows back, not an access-denied
-        # error, which is exactly what made this hard to diagnose from
-        # the collector's own output alone. Logged here so it's
-        # immediately visible in this collector's own log going
-        # forward, not something that needs re-discovering each time.
-        logger.info("mssql_file_io_delta: 0 rows from sys.dm_io_virtual_file_stats -- on "
-                    "SQL Server 2022+, this DMV needs VIEW SERVER PERFORMANCE STATE "
-                    "specifically (VIEW SERVER STATE alone is no longer sufficient there). "
-                    "A DBA can grant it: GRANT VIEW SERVER PERFORMANCE STATE TO <login>;")
+        # Two SEPARATE permissions needed here, confirmed through a
+        # real, multi-step diagnosis against a live instance -- not
+        # guessed. VIEW SERVER PERFORMANCE STATE (SQL Server 2022+'s
+        # replacement for VIEW SERVER STATE on this specific DMV) only
+        # covers sys.dm_io_virtual_file_stats itself; granting it alone
+        # was confirmed to leave this at 0 rows, since the JOIN against
+        # sys.master_files needs a DIFFERENT permission entirely --
+        # Microsoft's own docs for sys.master_files: "the minimum
+        # permissions required to see the corresponding row are CREATE
+        # DATABASE, ALTER ANY DATABASE, or VIEW ANY DEFINITION." A
+        # login with only VIEW SERVER PERFORMANCE STATE can query the
+        # base DMV successfully (confirmed directly: EXECUTE AS that
+        # login returned real rows) while still seeing ZERO rows from
+        # sys.master_files, so the join produces nothing even though
+        # both underlying pieces are individually queryable. Logged
+        # here, both permissions together, so this doesn't need
+        # re-diagnosing from scratch again.
+        logger.info("mssql_file_io_delta: 0 rows from the join with sys.master_files -- this "
+                    "needs BOTH of these on SQL Server 2022+ (granting only the first still "
+                    "leaves this empty, since sys.master_files needs the second, separately): "
+                    "GRANT VIEW SERVER PERFORMANCE STATE TO <login>; "
+                    "GRANT VIEW ANY DEFINITION TO <login>;")
     return n
 
 
@@ -537,13 +545,18 @@ def _collect_volume_stats(conn, pg_conn, snapshot_id) -> int:
         n += 1
     if n == 0:
         # Same root cause and same fix as _collect_file_io's identical
-        # check above -- sys.dm_os_volume_stats has the exact same
-        # SQL Server 2022+ permission change, confirmed against
-        # Microsoft's own current documentation.
-        logger.info("mssql_volume_stats: 0 rows from sys.dm_os_volume_stats -- on "
-                    "SQL Server 2022+, this DMV needs VIEW SERVER PERFORMANCE STATE "
-                    "specifically (VIEW SERVER STATE alone is no longer sufficient there). "
-                    "A DBA can grant it: GRANT VIEW SERVER PERFORMANCE STATE TO <login>;")
+        # check above -- this query is driven directly off
+        # sys.master_files (as the FROM table, not just joined in),
+        # so it needs the exact same two, separate permissions:
+        # VIEW SERVER PERFORMANCE STATE for sys.dm_os_volume_stats
+        # itself, AND VIEW ANY DEFINITION for sys.master_files
+        # visibility -- confirmed through a real, multi-step diagnosis
+        # against a live instance, not assumed from the DMV alone.
+        logger.info("mssql_volume_stats: 0 rows from the sys.master_files-driven query -- this "
+                    "needs BOTH of these on SQL Server 2022+ (granting only the first still "
+                    "leaves this empty, since sys.master_files needs the second, separately): "
+                    "GRANT VIEW SERVER PERFORMANCE STATE TO <login>; "
+                    "GRANT VIEW ANY DEFINITION TO <login>;")
     return n
 
 
