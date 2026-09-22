@@ -146,6 +146,7 @@ def run_dmv_collection(mssql_cfg: dict, database_names: list = None, min_interva
     try:
         snapshot_id = _create_snapshot(pg_conn, instance_id, mssql_conn=conn)
         summary["snapshot_id"] = snapshot_id
+        _update_instance_metadata(conn, pg_conn, instance_id)
 
         # ── Server-scoped (instance-wide, no per-database loop needed) ──
         server_scoped = [
@@ -217,6 +218,40 @@ def run_dmv_collection(mssql_cfg: dict, database_names: list = None, min_interva
             pass
 
     return summary
+
+
+def _update_instance_metadata(mssql_conn, pg_conn, instance_id: int) -> None:
+    """
+    Updates mssql_instance_master.sql_version/sql_edition from the live
+    connection -- a real gap found from a real report: the columns
+    exist in the schema and sqlwr_report_generator.py already reads
+    them (Database Summary's Version/Edition columns), but nothing
+    ever wrote to them, so every report showed "(not collected)"
+    regardless of anything else being correct.
+
+    SERVERPROPERTY('ProductVersion')/('Edition') give clean, short
+    strings (e.g. "16.0.1000.6", "Developer Edition") -- much cleaner
+    than parsing @@VERSION's full multi-line text blob for the same
+    information. Run once per collection cycle (a cheap, idempotent
+    UPDATE), not just once ever, so a real version upgrade or edition
+    change is naturally picked up on the next run without needing a
+    separate "first collection only" code path.
+    """
+    try:
+        cur = mssql_conn.cursor()
+        cur.execute(
+            "SELECT CAST(SERVERPROPERTY('ProductVersion') AS NVARCHAR(128)), "
+            "CAST(SERVERPROPERTY('Edition') AS NVARCHAR(128))"
+        )
+        row = cur.fetchone()
+        if row:
+            with pg_conn.cursor() as pg_cur:
+                pg_cur.execute(
+                    "UPDATE mssql_instance_master SET sql_version = %s, sql_edition = %s WHERE id = %s",
+                    (row[0], row[1], instance_id)
+                )
+    except Exception as e:
+        logger.warning(f"Could not update instance version/edition metadata: {e}")
 
 
 def _create_snapshot(pg_conn, instance_id: int, mssql_conn=None) -> int:
