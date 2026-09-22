@@ -136,6 +136,206 @@ def _build_load_profile(pg_conn, instance_id: int, begin_snap: int, end_snap: in
             + _table(["Stat Name", "Per Second"], rows))
 
 
+def _build_instance_efficiency(pg_conn, begin_snap: int, end_snap: int) -> str:
+    """
+    MSSQL's analog to Oracle's "Instance Efficiency Percentages
+    (Target 100%)". Buffer Cache Hit Ratio is stored as SQL Server's
+    own raw ratio-counter pair (a numerator and a "Base" denominator,
+    Windows Perfmon's standard pattern for ratio counters) -- computed
+    here by dividing them, the same as every other consumer of this
+    counter (Perfmon, SSMS, Grafana) does. Page Life Expectancy is
+    already a point-in-time value in seconds, not a ratio, and doesn't
+    have a fixed "target 100%" the way the others do -- shown as its
+    own row with its actual guidance (Microsoft's own long-standing
+    rule of thumb) rather than forced into a percentage it isn't.
+    Uses the END snapshot's values (a point-in-time read of server
+    state), not a delta -- these are current server condition, not an
+    activity rate the way Load Profile's counters are.
+    """
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT counter_name, cntr_value FROM mssql_perf_counters
+            WHERE snapshot_id = %s AND counter_name IN (
+                'Buffer cache hit ratio', 'Buffer cache hit ratio base',
+                'Page life expectancy', 'Memory Grants Pending'
+            )
+        """, (end_snap,))
+        vals = {name: value for name, value in cur.fetchall()}
+
+    rows = []
+    numerator = vals.get("Buffer cache hit ratio")
+    denominator = vals.get("Buffer cache hit ratio base")
+    if numerator is not None and denominator:
+        rows.append(("Buffer Cache Hit Ratio", f"{100 * numerator / denominator:.2f}"))
+    ple = vals.get("Page life expectancy")
+    if ple is not None:
+        rows.append(("Page Life Expectancy (s) [target: 300+ per Microsoft guidance]", f"{ple}"))
+    grants_pending = vals.get("Memory Grants Pending")
+    if grants_pending is not None:
+        rows.append(("Memory Grants Pending [target: 0]", f"{grants_pending}"))
+    if not rows:
+        rows = [("(no efficiency counters available for this snapshot)", "")]
+    return ('<h3>Instance Efficiency Percentages (Target 100%)</h3>\n'
+            + _table(["Metric", "Value"], rows))
+
+
+def _build_wait_classes(pg_conn, instance_id: int, begin_snap: int, end_snap: int,
+                          elapsed_seconds: float, top_n: int = 15) -> str:
+    """
+    Groups the same per-wait-type deltas _build_top_wait_types computes
+    into wait_class buckets, via mssql_wait_event_master.wait_class --
+    already populated from an earlier session (I/O, Lock, CPU, Memory,
+    Parallelism, Transaction Log, Network, Preemptive, Internal, etc.),
+    not invented here. A wait_type with no master-table match (not yet
+    catalogued) is grouped under "Other/Uncategorized" rather than
+    silently dropped -- honest about what isn't classified yet instead
+    of hiding it from the total.
+    """
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT COALESCE(m.wait_class, 'Other/Uncategorized') AS wait_class,
+                   SUM(e.wait_time_ms - COALESCE(b.wait_time_ms, 0)) AS delta_ms
+            FROM mssql_wait_stats_delta e
+            JOIN mssql_dmv_snapshot s ON e.snapshot_id = s.snapshot_id
+            LEFT JOIN mssql_wait_stats_delta b
+                   ON b.snapshot_id = %s AND b.wait_type = e.wait_type
+            LEFT JOIN mssql_wait_event_master m
+                   ON m.tier = 'wait_type' AND m.event_name = e.wait_type
+            WHERE e.snapshot_id = %s AND s.instance_id = %s
+              AND e.wait_type != ALL(%s)
+            GROUP BY COALESCE(m.wait_class, 'Other/Uncategorized')
+            HAVING SUM(e.wait_time_ms - COALESCE(b.wait_time_ms, 0)) > 0
+            ORDER BY delta_ms DESC
+            LIMIT %s
+        """, (begin_snap, end_snap, instance_id, list(BENIGN_WAIT_TYPES), top_n))
+        rows_raw = cur.fetchall()
+
+    rows_raw = [(wait_class, float(ms)) for wait_class, ms in rows_raw]
+    total_ms = sum(ms for _, ms in rows_raw) or 1
+    rows = [
+        (wait_class, f"{ms / 1000.0:.1f}", f"{100 * ms / total_ms:.1f}")
+        for wait_class, ms in rows_raw
+    ]
+    if not rows:
+        rows = [("(no wait class data for this snapshot pair)", "", "")]
+    return ('<h3>Wait Classes by Total Wait Time</h3>\n'
+            + _table(["Wait Class", "Time(s)", "% of Total"], rows,
+                     "This table displays wait time grouped by wait class"))
+
+
+def _build_memory_statistics(pg_conn, end_snap: int) -> str:
+    """
+    Host memory and SQL Server's own allocation/usage from
+    mssql_config_snapshot (physical_memory_kb, max_server_memory_mb --
+    static-ish server config, one row per database per snapshot so
+    DISTINCT-first-row is fine) and mssql_memory_clerks (actual
+    allocated pages, summed across every clerk -- the real "how much
+    is SQL Server actually using right now" figure, MEMORYCLERK_SQLBUFFERPOOL
+    plus every other clerk together). "Free within allocated" is
+    max_server_memory - actual usage; can be negative if usage has
+    exceeded the configured cap in practice (SQL Server enforces this
+    loosely, not a hard wall) -- shown as-is rather than floored at
+    zero, since a negative value is itself diagnostically meaningful.
+    """
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT max_server_memory_mb, physical_memory_kb FROM mssql_config_snapshot
+            WHERE snapshot_id = %s LIMIT 1
+        """, (end_snap,))
+        cfg_row = cur.fetchone()
+        cur.execute("""
+            SELECT SUM(pages_kb) FROM mssql_memory_clerks WHERE snapshot_id = %s
+        """, (end_snap,))
+        used_kb_row = cur.fetchone()
+
+    if not cfg_row:
+        return ('<h3>Memory Statistics</h3>\n'
+                + _table(["Metric", "Value (MB)"],
+                         [("(no config snapshot available)", "")]))
+
+    max_server_memory_mb, physical_memory_kb = cfg_row
+    used_kb = float(used_kb_row[0]) if used_kb_row and used_kb_row[0] else 0.0
+    host_memory_mb = float(physical_memory_kb or 0) / 1024.0
+    allocated_mb = float(max_server_memory_mb) if max_server_memory_mb is not None else host_memory_mb
+    used_mb = used_kb / 1024.0
+    free_mb = allocated_mb - used_mb
+
+    rows = [
+        ("Host Physical Memory", f"{host_memory_mb:.0f}"),
+        ("Memory Allocated to SQL Server (max_server_memory)", f"{allocated_mb:.0f}"),
+        ("Actual Used by SQL Server (sum of memory clerks)", f"{used_mb:.0f}"),
+        ("Free within Allocated", f"{free_mb:.0f}"),
+    ]
+    return ('<h3>Memory Statistics</h3>\n'
+            + _table(["Metric", "Value (MB)"], rows,
+                     "This table displays host and SQL Server memory allocation/usage"))
+
+
+def _build_io_profile(pg_conn, begin_snap: int, end_snap: int, elapsed_seconds: float,
+                        top_n: int = 15) -> str:
+    """
+    File-level I/O from mssql_file_io_delta -- sys.dm_io_virtual_file_stats,
+    the direct analog to Oracle's IOStat/tablespace-I/O sections.
+    Ranked by total I/O stall time (reads + writes), the delta-per-
+    second the same way every other rate section in this report works.
+    """
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT e.database_name, e.logical_file_name,
+                   (e.num_of_reads - COALESCE(b.num_of_reads, 0)) AS reads,
+                   (e.num_of_writes - COALESCE(b.num_of_writes, 0)) AS writes,
+                   (e.num_of_bytes_read - COALESCE(b.num_of_bytes_read, 0)) AS bytes_read,
+                   (e.num_of_bytes_written - COALESCE(b.num_of_bytes_written, 0)) AS bytes_written,
+                   (e.io_stall_read_ms - COALESCE(b.io_stall_read_ms, 0)) AS read_stall_ms,
+                   (e.io_stall_write_ms - COALESCE(b.io_stall_write_ms, 0)) AS write_stall_ms
+            FROM mssql_file_io_delta e
+            LEFT JOIN mssql_file_io_delta b
+                   ON b.snapshot_id = %s AND b.database_name = e.database_name
+                  AND b.file_id = e.file_id
+            WHERE e.snapshot_id = %s
+        """, (begin_snap, end_snap))
+        rows_raw = cur.fetchall()
+
+    ranked = sorted(rows_raw, key=lambda r: (r[6] or 0) + (r[7] or 0), reverse=True)[:top_n]
+    rows = []
+    for db, f, reads, writes, bread, bwrite, rstall, wstall in ranked:
+        reads_s = (reads or 0) / elapsed_seconds if elapsed_seconds > 0 else 0
+        writes_s = (writes or 0) / elapsed_seconds if elapsed_seconds > 0 else 0
+        avg_read_ms = (rstall / reads) if reads else 0
+        avg_write_ms = (wstall / writes) if writes else 0
+        rows.append((
+            db, f, f"{reads_s:.1f}", f"{writes_s:.1f}",
+            f"{(bread or 0) / 1024 / 1024:.1f}", f"{(bwrite or 0) / 1024 / 1024:.1f}",
+            f"{avg_read_ms:.2f}", f"{avg_write_ms:.2f}",
+        ))
+    if not rows:
+        rows = [("(no I/O delta data for this snapshot pair)", "", "", "", "", "", "", "")]
+    return ('<h3>IO Profile</h3>\n'
+            + _table(["Database", "File", "Reads/s", "Writes/s", "MB Read", "MB Written",
+                      "Avg Read Latency (ms)", "Avg Write Latency (ms)"],
+                     rows, "This table displays file-level I/O activity"))
+
+
+def _build_complete_sql_text(top_sql: list) -> str:
+    """
+    Full, untruncated SQL text for every query referenced (by SQL Id)
+    in the SQL ordered by ... sections above -- matches Oracle AWR's
+    own "Complete List of SQL Text" section, which exists specifically
+    because those sections all truncate SQL Text to keep the tables
+    readable.
+    """
+    seen = {}
+    for r in top_sql:
+        if r["sql_id"] not in seen:
+            seen[r["sql_id"]] = r["sql_text"]
+    rows = [(sql_id, text) for sql_id, text in seen.items()]
+    if not rows:
+        rows = [("(no SQL captured for this snapshot pair)", "")]
+    return ('<h3>Complete List of SQL Text</h3>\n'
+            + _table(["SQL Id", "SQL Text"], rows,
+                     "This table displays the full text for each SQL Id referenced above"))
+
+
 def _build_top_wait_types(pg_conn, instance_id: int, begin_snap: int, end_snap: int,
                             elapsed_seconds: float, top_n: int = 15) -> str:
     """
@@ -403,12 +603,17 @@ def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
         _build_database_summary(begin_info, db_name_for_summary),
         _build_snapshot_summary(begin_info, end_info),
         _build_load_profile(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
+        _build_instance_efficiency(pg_conn, begin_snapshot_id, end_snapshot_id),
+        _build_wait_classes(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
         _build_top_wait_types(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
+        _build_memory_statistics(pg_conn, end_snapshot_id),
+        _build_io_profile(pg_conn, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
         _build_sql_ordered_by_elapsed_time(top_sql),
         _build_sql_ordered_by_cpu_time(top_sql),
         _build_sql_ordered_by_gets(top_sql),
         _build_sql_ordered_by_executions(top_sql),
         _build_blocking_summary(pg_conn, instance_id, end_snapshot_id),
+        _build_complete_sql_text(top_sql),
     ]
 
     html_doc = (
