@@ -367,14 +367,23 @@ def _build_top_wait_types(pg_conn, instance_id: int, begin_snap: int, end_snap: 
     deltas.sort(key=lambda x: x[1], reverse=True)
     total_ms = sum(d[1] for d in deltas) or 1
 
+    top_deltas = deltas[:top_n]
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT event_name, wait_class FROM mssql_wait_event_master
+            WHERE tier = 'wait_type' AND event_name = ANY(%s)
+        """, ([w for w, _ in top_deltas],))
+        wait_classes = dict(cur.fetchall())
+
     rows = []
-    for wait_type, delta_ms in deltas[:top_n]:
+    for wait_type, delta_ms in top_deltas:
         pct = (delta_ms / total_ms) * 100
-        rows.append((wait_type, f"{delta_ms/1000:.1f}", f"{pct:.1f}%"))
+        wait_class = wait_classes.get(wait_type) or "Other/Uncategorized"
+        rows.append((wait_type, wait_class, f"{delta_ms/1000:.1f}", f"{pct:.1f}%"))
     if not rows:
-        rows = [("(no significant non-benign wait activity in this window)", "", "")]
+        rows = [("(no significant non-benign wait activity in this window)", "", "", "")]
     return (f'<h3>Top {top_n} Wait Types by Total Wait Time</h3>\n'
-            + _table(["Wait Type", "Time(s)", "% of Total"], rows))
+            + _table(["Wait Type", "Wait Class", "Time(s)", "% of Total"], rows))
 
 
 def _build_blocking_summary(pg_conn, instance_id: int, end_snap: int) -> str:
@@ -408,10 +417,17 @@ def _fetch_top_sql(pg_conn, instance_id: int, begin_time, end_time, limit: int =
     each one just sorts and formats this same dataset differently,
     rather than four near-identical joins. Aggregates across every
     PLAN for the same query (a query can have more than one plan) and
-    every Query Store INTERVAL whose start_time falls inside the
-    snapshot window -- qs_interval_id and snapshot_id are independent
-    sequences (see this module's own docstring), so intervals are
-    matched by time overlap, not by id.
+    every Query Store INTERVAL that OVERLAPS the snapshot window at
+    all (iv.start_time < end_time AND iv.end_time > begin_time) --
+    NOT "start_time falls strictly inside the window". Query Store's
+    own intervals run on an independent clock (set by
+    INTERVAL_LENGTH_MINUTES, not synchronized to DMV snapshot times),
+    so an interval that legitimately overlaps the window can easily
+    have started before it -- a strict "start_time >= begin_time"
+    filter (an earlier, real bug in this function, found from a real
+    report where every SQL section came back completely empty despite
+    genuine query activity and heavy wait time in the same window)
+    silently excluded exactly that overlap case.
 
     Elapsed/CPU/logical-reads are TOTALS across executions in the
     window (matching Oracle's own Elapsed Time (s) column semantics --
@@ -435,6 +451,7 @@ def _fetch_top_sql(pg_conn, instance_id: int, begin_time, end_time, limit: int =
                 q.qs_query_id,
                 rs.database_name,
                 qt.query_sql_text,
+                MAX(q.object_name) AS object_name,
                 SUM(rs.count_executions) AS total_executions,
                 SUM(rs.avg_duration_us * rs.count_executions) AS total_elapsed_us,
                 SUM(rs.avg_cpu_time_us * rs.count_executions) AS total_cpu_us,
@@ -455,14 +472,15 @@ def _fetch_top_sql(pg_conn, instance_id: int, begin_time, end_time, limit: int =
               ON rs.instance_id = iv.instance_id AND rs.database_name = iv.database_name
              AND rs.qs_interval_id = iv.qs_interval_id
             WHERE rs.instance_id = %s
-              AND iv.start_time >= %s AND iv.start_time < %s
+              AND iv.start_time < %s
+              AND (iv.end_time IS NULL OR iv.end_time > %s)
               AND q.is_internal_query IS NOT TRUE
             GROUP BY q.qs_query_id, rs.database_name, qt.query_sql_text
-        """, (instance_id, begin_time, end_time))
+        """, (instance_id, end_time, begin_time))
         rows = cur.fetchall()
 
     results = []
-    for (qs_query_id, db_name, sql_text, executions, elapsed_us,
+    for (qs_query_id, db_name, sql_text, object_name, executions, elapsed_us,
          cpu_us, logical_reads, physical_reads, total_rows) in rows:
         executions = int(executions or 0)
         elapsed_us = float(elapsed_us or 0)
@@ -475,6 +493,9 @@ def _fetch_top_sql(pg_conn, instance_id: int, begin_time, end_time, limit: int =
                                           # necessarily numeric-looking
             "database_name": db_name,
             "sql_text": (sql_text or "").strip(),
+            "object_name": (object_name or "").strip(),  # stored procedure / object this
+                                                           # query belongs to, resolved by
+                                                           # the collector from object_id
             "executions": executions,
             "elapsed_time_s": elapsed_us / 1_000_000.0,
             "elapsed_time_per_exec_s": (elapsed_us / executions / 1_000_000.0) if executions else 0.0,
@@ -506,11 +527,12 @@ def _build_sql_ordered_by_elapsed_time(top_sql: list) -> str:
         "0.00",  # %IO -- MSSQL's wait-category granularity (mssql_qs_wait_stats) doesn't
                  # cleanly isolate I/O wait per query the way Oracle's ash/io breakdown does;
                  # left as an honest 0.00 rather than a fudged estimate
-        r["sql_id"], r["database_name"], _sql_text_preview(r["sql_text"]),
+        r["sql_id"], r["database_name"], r["object_name"] or "(ad hoc / no object)",
+        _sql_text_preview(r["sql_text"]),
     ) for r in ranked]
     return ('<h3>SQL ordered by Elapsed Time</h3>\n'
             + _table(["Elapsed Time (s)", "Executions", "Elapsed Time per Exec (s)",
-                      "%Total", "%CPU", "%IO", "SQL Id", "SQL Module", "SQL Text"],
+                      "%Total", "%CPU", "%IO", "SQL Id", "SQL Module", "Stored Procedure", "SQL Text"],
                      rows, "This table displays top SQL by elapsed time"))
 
 
@@ -524,11 +546,13 @@ def _build_sql_ordered_by_cpu_time(top_sql: list) -> str:
         f'{100 * r["cpu_time_s"] / r["elapsed_time_s"]:.2f}' if r["elapsed_time_s"] else "0.00",
         "0.00",  # %IO -- same honest limitation noted in the Elapsed Time section above
         f'{r["elapsed_time_s"]:.2f}',
-        r["sql_id"], r["database_name"], _sql_text_preview(r["sql_text"]),
+        r["sql_id"], r["database_name"], r["object_name"] or "(ad hoc / no object)",
+        _sql_text_preview(r["sql_text"]),
     ) for r in ranked]
     return ('<h3>SQL ordered by CPU Time</h3>\n'
             + _table(["CPU Time (s)", "Executions", "CPU per Exec (s)",
-                      "%Total", "%CPU", "%IO", "Elapsed Time (s)", "SQL Id", "SQL Module", "SQL Text"],
+                      "%Total", "%CPU", "%IO", "Elapsed Time (s)", "SQL Id", "SQL Module",
+                      "Stored Procedure", "SQL Text"],
                      rows, "This table displays top SQL by CPU time"))
 
 
@@ -539,11 +563,13 @@ def _build_sql_ordered_by_executions(top_sql: list) -> str:
         f'{100 * r["cpu_time_s"] / r["elapsed_time_s"]:.2f}' if r["elapsed_time_s"] else "0.00",
         "0.00",  # %IO -- same honest limitation noted in the Elapsed Time section above
         f'{r["rows_processed"]:.0f}', f'{r["rows_per_exec"]:.1f}',
-        r["sql_id"], r["database_name"], _sql_text_preview(r["sql_text"]),
+        r["sql_id"], r["database_name"], r["object_name"] or "(ad hoc / no object)",
+        _sql_text_preview(r["sql_text"]),
     ) for r in ranked]
     return ('<h3>SQL ordered by Executions</h3>\n'
             + _table(["Executions", "Elapsed Time (s)", "%CPU", "%IO",
-                      "Rows Processed", "Rows per Exec", "SQL Id", "SQL Module", "SQL Text"],
+                      "Rows Processed", "Rows per Exec", "SQL Id", "SQL Module",
+                      "Stored Procedure", "SQL Text"],
                      rows, "This table displays top SQL by number of executions"))
 
 
@@ -559,11 +585,13 @@ def _build_sql_ordered_by_gets(top_sql: list) -> str:
         f'{100 * r["elapsed_time_s"] / total_elapsed:.2f}',
         f'{100 * r["cpu_time_s"] / r["elapsed_time_s"]:.2f}' if r["elapsed_time_s"] else "0.00",
         "0.00",
-        r["sql_id"], r["database_name"], _sql_text_preview(r["sql_text"]),
+        r["sql_id"], r["database_name"], r["object_name"] or "(ad hoc / no object)",
+        _sql_text_preview(r["sql_text"]),
     ) for r in ranked]
     return ('<h3>SQL ordered by Gets</h3>\n'
             + _table(["Buffer Gets", "Executions", "Gets per Exec", "%Total",
-                      "Elapsed Time (s)", "%CPU", "%IO", "SQL Id", "SQL Module", "SQL Text"],
+                      "Elapsed Time (s)", "%CPU", "%IO", "SQL Id", "SQL Module",
+                      "Stored Procedure", "SQL Text"],
                      rows, "This table displays top SQL by logical reads (buffer gets)"))
 
 
