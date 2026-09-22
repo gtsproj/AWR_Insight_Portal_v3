@@ -129,7 +129,27 @@ def run_collector(script_relpath, args):
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
         if result.returncode == 0:
-            logger.info(f"{script_relpath} completed successfully")
+            # Real gap found from real data: "completed successfully"
+            # alone answers "did the process exit cleanly", not "did
+            # anything actually get collected" -- a run with zero
+            # errors and zero rows collected (e.g. Query Store simply
+            # having no newly-closed interval yet) looks identical to
+            # a fully successful one at this level. Pull the key
+            # metric lines the collector already prints to stdout
+            # (Snapshot ID / Intervals collected / Databases processed
+            # or skipped) into the scheduler's own log line, instead
+            # of the full stdout dump reserved for failures -- enough
+            # to answer that question directly from this log alone,
+            # every cycle, without a separate manual debug run.
+            summary_lines = [
+                line.strip() for line in result.stdout.splitlines()
+                if line.strip().startswith((
+                    "Snapshot ID:", "Intervals collected:",
+                    "Databases processed:", "Databases skipped:"
+                ))
+            ]
+            summary = " | ".join(summary_lines) if summary_lines else "(no summary line found)"
+            logger.info(f"{script_relpath} completed successfully -- {summary}")
         else:
             logger.error(f"{script_relpath} exited with code {result.returncode}")
             # Real gap found from real data: the collector's own detailed
