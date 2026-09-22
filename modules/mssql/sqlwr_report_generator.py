@@ -82,12 +82,12 @@ def _get_snapshot_info(pg_conn, snapshot_id: int) -> dict:
     }
 
 
-def _build_database_summary(begin_info: dict) -> str:
-    rows = [(begin_info["host_name"], begin_info["instance_name"],
+def _build_database_summary(begin_info: dict, db_name: str = None) -> str:
+    rows = [(db_name or "(not collected)", begin_info["host_name"], begin_info["instance_name"],
               begin_info.get("sql_version") or "(not collected)",
               begin_info.get("sql_edition") or "(not collected)")]
     return ('<h3>Database Summary</h3>\n'
-            + _table(["Host Name", "Instance", "Version", "Edition"], rows,
+            + _table(["DB Name", "Host Name", "Instance", "Version", "Edition"], rows,
                      "This table displays database instance information"))
 
 
@@ -202,6 +202,171 @@ def _build_blocking_summary(pg_conn, instance_id: int, end_snap: int) -> str:
                       "Resource Type", "Object", "Database"], rows))
 
 
+def _fetch_top_sql(pg_conn, instance_id: int, begin_time, end_time, limit: int = 15) -> list:
+    """
+    One shared query backing all four "SQL ordered by..." sections --
+    each one just sorts and formats this same dataset differently,
+    rather than four near-identical joins. Aggregates across every
+    PLAN for the same query (a query can have more than one plan) and
+    every Query Store INTERVAL whose start_time falls inside the
+    snapshot window -- qs_interval_id and snapshot_id are independent
+    sequences (see this module's own docstring), so intervals are
+    matched by time overlap, not by id.
+
+    Elapsed/CPU/logical-reads are TOTALS across executions in the
+    window (matching Oracle's own Elapsed Time (s) column semantics --
+    the total contribution of that SQL during the snapshot interval,
+    not a per-execution average), computed as avg_duration_us *
+    count_executions summed across plans/intervals, then converted to
+    the unit each section displays in.
+
+    If more than one database is present for this instance in the
+    window, results are combined across all of them (each row still
+    carries its own database_name for the caller to note) rather than
+    split into a separate report per database -- Oracle AWR is
+    inherently single-database per report, but this project's own
+    instances can span several; ranking "top queries on this instance"
+    together is a reasonable, honest simplification of that difference,
+    not a silent one (each row keeps database_name so nothing is hidden).
+    """
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT
+                q.qs_query_id,
+                rs.database_name,
+                qt.query_sql_text,
+                SUM(rs.count_executions) AS total_executions,
+                SUM(rs.avg_duration_us * rs.count_executions) AS total_elapsed_us,
+                SUM(rs.avg_cpu_time_us * rs.count_executions) AS total_cpu_us,
+                SUM(rs.avg_logical_io_reads * rs.count_executions) AS total_logical_reads,
+                SUM(rs.avg_physical_io_reads * rs.count_executions) AS total_physical_reads,
+                SUM(rs.avg_rowcount * rs.count_executions) AS total_rows
+            FROM mssql_qs_runtime_stats rs
+            JOIN mssql_qs_plan p
+              ON rs.instance_id = p.instance_id AND rs.database_name = p.database_name
+             AND rs.qs_plan_id = p.qs_plan_id
+            JOIN mssql_qs_query q
+              ON p.instance_id = q.instance_id AND p.database_name = q.database_name
+             AND p.qs_query_id = q.qs_query_id
+            JOIN mssql_qs_query_text qt
+              ON q.instance_id = qt.instance_id AND q.database_name = qt.database_name
+             AND q.qs_query_text_id = qt.qs_query_text_id
+            JOIN mssql_qs_interval iv
+              ON rs.instance_id = iv.instance_id AND rs.database_name = iv.database_name
+             AND rs.qs_interval_id = iv.qs_interval_id
+            WHERE rs.instance_id = %s
+              AND iv.start_time >= %s AND iv.start_time < %s
+              AND q.is_internal_query IS NOT TRUE
+            GROUP BY q.qs_query_id, rs.database_name, qt.query_sql_text
+        """, (instance_id, begin_time, end_time))
+        rows = cur.fetchall()
+
+    results = []
+    for (qs_query_id, db_name, sql_text, executions, elapsed_us,
+         cpu_us, logical_reads, physical_reads, total_rows) in rows:
+        executions = int(executions or 0)
+        elapsed_us = float(elapsed_us or 0)
+        cpu_us = float(cpu_us or 0)
+        total_rows = float(total_rows or 0)
+        results.append({
+            "sql_id": f"q{qs_query_id}",  # Query Store's own id, prefixed since
+                                          # it's purely numeric and Oracle's sql_id
+                                          # column/parsers expect a short token, not
+                                          # necessarily numeric-looking
+            "database_name": db_name,
+            "sql_text": (sql_text or "").strip(),
+            "executions": executions,
+            "elapsed_time_s": elapsed_us / 1_000_000.0,
+            "elapsed_time_per_exec_s": (elapsed_us / executions / 1_000_000.0) if executions else 0.0,
+            "cpu_time_s": cpu_us / 1_000_000.0,
+            "logical_reads": float(logical_reads or 0),
+            "reads_per_exec": (float(logical_reads or 0) / executions) if executions else 0.0,
+            "physical_reads": float(physical_reads or 0),
+            "rows_processed": total_rows,
+            "rows_per_exec": (total_rows / executions) if executions else 0.0,
+        })
+    return results
+
+
+def _sql_text_preview(sql_text: str, max_len: int = 30) -> str:
+    """Matches the sample AWR reports' own truncate-with-ellipsis style
+    for the SQL Text column (e.g. "SELECT output FROM TABLE( DBMS...")."""
+    one_line = " ".join(sql_text.split())
+    return one_line[:max_len] + "..." if len(one_line) > max_len else one_line
+
+
+def _build_sql_ordered_by_elapsed_time(top_sql: list) -> str:
+    total_elapsed = sum(r["elapsed_time_s"] for r in top_sql) or 1.0
+    total_cpu = sum(r["cpu_time_s"] for r in top_sql) or 1.0
+    ranked = sorted(top_sql, key=lambda r: r["elapsed_time_s"], reverse=True)[:15]
+    rows = [(
+        f'{r["elapsed_time_s"]:.2f}', r["executions"], f'{r["elapsed_time_per_exec_s"]:.2f}',
+        f'{100 * r["elapsed_time_s"] / total_elapsed:.2f}',
+        f'{100 * r["cpu_time_s"] / r["elapsed_time_s"]:.2f}' if r["elapsed_time_s"] else "0.00",
+        "0.00",  # %IO -- MSSQL's wait-category granularity (mssql_qs_wait_stats) doesn't
+                 # cleanly isolate I/O wait per query the way Oracle's ash/io breakdown does;
+                 # left as an honest 0.00 rather than a fudged estimate
+        r["sql_id"], r["database_name"], _sql_text_preview(r["sql_text"]),
+    ) for r in ranked]
+    return ('<h3>SQL ordered by Elapsed Time</h3>\n'
+            + _table(["Elapsed Time (s)", "Executions", "Elapsed Time per Exec (s)",
+                      "%Total", "%CPU", "%IO", "SQL Id", "SQL Module", "SQL Text"],
+                     rows, "This table displays top SQL by elapsed time"))
+
+
+def _build_sql_ordered_by_cpu_time(top_sql: list) -> str:
+    total_cpu = sum(r["cpu_time_s"] for r in top_sql) or 1.0
+    ranked = sorted(top_sql, key=lambda r: r["cpu_time_s"], reverse=True)[:15]
+    rows = [(
+        f'{r["cpu_time_s"]:.2f}', r["executions"],
+        f'{(r["cpu_time_s"] / r["executions"]):.2f}' if r["executions"] else "0.00",
+        f'{100 * r["cpu_time_s"] / total_cpu:.2f}',
+        f'{100 * r["cpu_time_s"] / r["elapsed_time_s"]:.2f}' if r["elapsed_time_s"] else "0.00",
+        "0.00",  # %IO -- same honest limitation noted in the Elapsed Time section above
+        f'{r["elapsed_time_s"]:.2f}',
+        r["sql_id"], r["database_name"], _sql_text_preview(r["sql_text"]),
+    ) for r in ranked]
+    return ('<h3>SQL ordered by CPU Time</h3>\n'
+            + _table(["CPU Time (s)", "Executions", "CPU per Exec (s)",
+                      "%Total", "%CPU", "%IO", "Elapsed Time (s)", "SQL Id", "SQL Module", "SQL Text"],
+                     rows, "This table displays top SQL by CPU time"))
+
+
+def _build_sql_ordered_by_executions(top_sql: list) -> str:
+    ranked = sorted(top_sql, key=lambda r: r["executions"], reverse=True)[:15]
+    rows = [(
+        r["executions"], f'{r["elapsed_time_s"]:.2f}',
+        f'{100 * r["cpu_time_s"] / r["elapsed_time_s"]:.2f}' if r["elapsed_time_s"] else "0.00",
+        "0.00",  # %IO -- same honest limitation noted in the Elapsed Time section above
+        f'{r["rows_processed"]:.0f}', f'{r["rows_per_exec"]:.1f}',
+        r["sql_id"], r["database_name"], _sql_text_preview(r["sql_text"]),
+    ) for r in ranked]
+    return ('<h3>SQL ordered by Executions</h3>\n'
+            + _table(["Executions", "Elapsed Time (s)", "%CPU", "%IO",
+                      "Rows Processed", "Rows per Exec", "SQL Id", "SQL Module", "SQL Text"],
+                     rows, "This table displays top SQL by number of executions"))
+
+
+def _build_sql_ordered_by_gets(top_sql: list) -> str:
+    """MSSQL's avg_logical_io_reads (logical page reads) is the direct
+    analog to Oracle's "Gets" (logical reads / buffer gets) here."""
+    total_reads = sum(r["logical_reads"] for r in top_sql) or 1.0
+    total_elapsed = sum(r["elapsed_time_s"] for r in top_sql) or 1.0
+    ranked = sorted(top_sql, key=lambda r: r["logical_reads"], reverse=True)[:15]
+    rows = [(
+        f'{r["logical_reads"]:.0f}', r["executions"], f'{r["reads_per_exec"]:.1f}',
+        f'{100 * r["logical_reads"] / total_reads:.2f}',
+        f'{100 * r["elapsed_time_s"] / total_elapsed:.2f}',
+        f'{100 * r["cpu_time_s"] / r["elapsed_time_s"]:.2f}' if r["elapsed_time_s"] else "0.00",
+        "0.00",
+        r["sql_id"], r["database_name"], _sql_text_preview(r["sql_text"]),
+    ) for r in ranked]
+    return ('<h3>SQL ordered by Gets</h3>\n'
+            + _table(["Buffer Gets", "Executions", "Gets per Exec", "%Total",
+                      "Elapsed Time (s)", "%CPU", "%IO", "SQL Id", "SQL Module", "SQL Text"],
+                     rows, "This table displays top SQL by logical reads (buffer gets)"))
+
+
 def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
                             end_snapshot_id: int, output_path: str) -> str:
     """
@@ -228,11 +393,21 @@ def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
     title = (f"SQLWR Report \u2014 {begin_info['host_name']}\\{begin_info['instance_name']} "
              f"Snap {begin_snapshot_id}-{end_snapshot_id}")
 
+    top_sql = _fetch_top_sql(pg_conn, instance_id, begin_info["snapshot_time"], end_info["snapshot_time"])
+    db_names = sorted(set(r["database_name"] for r in top_sql))
+    db_name_for_summary = db_names[0] if len(db_names) == 1 else (
+        ", ".join(db_names) if db_names else None
+    )
+
     sections = [
-        _build_database_summary(begin_info),
+        _build_database_summary(begin_info, db_name_for_summary),
         _build_snapshot_summary(begin_info, end_info),
         _build_load_profile(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
         _build_top_wait_types(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
+        _build_sql_ordered_by_elapsed_time(top_sql),
+        _build_sql_ordered_by_cpu_time(top_sql),
+        _build_sql_ordered_by_gets(top_sql),
+        _build_sql_ordered_by_executions(top_sql),
         _build_blocking_summary(pg_conn, instance_id, end_snapshot_id),
     ]
 
