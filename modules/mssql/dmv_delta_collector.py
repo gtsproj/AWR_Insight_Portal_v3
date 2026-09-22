@@ -499,6 +499,21 @@ def _collect_file_io(conn, pg_conn, snapshot_id) -> int:
                 ON CONFLICT (snapshot_id, database_name, file_id) DO NOTHING
             """, (snapshot_id, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
         n += 1
+    if n == 0:
+        # Confirmed against Microsoft's own current documentation, not
+        # guessed: sys.dm_io_virtual_file_stats requires VIEW SERVER
+        # STATE on SQL Server 2019 and earlier, but SQL Server 2022+
+        # requires the newer, more granular VIEW SERVER PERFORMANCE
+        # STATE instead -- a login with only the older, broader
+        # permission silently gets ZERO rows back, not an access-denied
+        # error, which is exactly what made this hard to diagnose from
+        # the collector's own output alone. Logged here so it's
+        # immediately visible in this collector's own log going
+        # forward, not something that needs re-discovering each time.
+        logger.info("mssql_file_io_delta: 0 rows from sys.dm_io_virtual_file_stats -- on "
+                    "SQL Server 2022+, this DMV needs VIEW SERVER PERFORMANCE STATE "
+                    "specifically (VIEW SERVER STATE alone is no longer sufficient there). "
+                    "A DBA can grant it: GRANT VIEW SERVER PERFORMANCE STATE TO <login>;")
     return n
 
 
@@ -520,6 +535,15 @@ def _collect_volume_stats(conn, pg_conn, snapshot_id) -> int:
                 ON CONFLICT (snapshot_id, volume_mount_point) DO NOTHING
             """, (snapshot_id, r[0], r[1], r[2]))
         n += 1
+    if n == 0:
+        # Same root cause and same fix as _collect_file_io's identical
+        # check above -- sys.dm_os_volume_stats has the exact same
+        # SQL Server 2022+ permission change, confirmed against
+        # Microsoft's own current documentation.
+        logger.info("mssql_volume_stats: 0 rows from sys.dm_os_volume_stats -- on "
+                    "SQL Server 2022+, this DMV needs VIEW SERVER PERFORMANCE STATE "
+                    "specifically (VIEW SERVER STATE alone is no longer sufficient there). "
+                    "A DBA can grant it: GRANT VIEW SERVER PERFORMANCE STATE TO <login>;")
     return n
 
 
