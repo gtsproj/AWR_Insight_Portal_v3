@@ -159,6 +159,74 @@ def main():
     else:
         print("(Instance not registered yet -- no snapshots possible)")
 
+    # ── Step 3.5: Query Store's RAW state, directly on SQL Server --
+    #    settles whether this is "nothing closed yet" (Query Store's
+    #    own, expected behavior for still-running queries) vs. a
+    #    genuine collector/report bug, before guessing further ──────
+    section("STEP 3.5: Query Store raw state on SQL Server (bypassing the collector entirely)")
+    if not args.databases:
+        print("No --database given -- skipping this check (need a specific database to query "
+              "Query Store options against).")
+    else:
+        for db_name in args.databases:
+            print(f"\n--- {db_name} ---")
+            try:
+                import pyodbc
+                conn_parts = [f"DRIVER={{ODBC Driver 17 for SQL Server}}", f"SERVER={args.host}"]
+                if args.instance_name and args.instance_name != "MSSQLSERVER":
+                    conn_parts[-1] += f"\\{args.instance_name}"
+                if args.port:
+                    conn_parts[-1] += f",{args.port}"
+                conn_parts.append("Trusted_Connection=yes" if args.trusted_connection
+                                   else f"UID={args.username};PWD={cfg.get('password','')}")
+                conn_parts.append(f"DATABASE={db_name}")
+                mssql_conn = pyodbc.connect(";".join(conn_parts), timeout=15)
+                cur = mssql_conn.cursor()
+
+                cur.execute("SELECT actual_state_desc, desired_state_desc, interval_length_minutes "
+                            "FROM sys.database_query_store_options")
+                qs_row = cur.fetchone()
+                if not qs_row:
+                    print("  Query Store options row not found (unexpected).")
+                else:
+                    print(f"  Query Store: actual_state={qs_row[0]}, desired_state={qs_row[1]}, "
+                          f"interval_length_minutes={qs_row[2]}")
+                    if qs_row[0] not in ("READ_WRITE", "READ_ONLY"):
+                        print("  Query Store is NOT capturing data on this database at all "
+                              "(actual_state is neither READ_WRITE nor READ_ONLY) -- this alone "
+                              "would fully explain empty SQL sections, independent of anything else.")
+
+                cur.execute("SELECT TOP 5 runtime_stats_interval_id, start_time, end_time "
+                            "FROM sys.query_store_runtime_stats_interval ORDER BY runtime_stats_interval_id DESC")
+                intervals = cur.fetchall()
+                print(f"  Most recent intervals (up to 5, newest first):")
+                for iv_id, start, end in intervals:
+                    status = "OPEN (still accumulating)" if end is None else "closed"
+                    print(f"    id={iv_id} start={start} end={end} [{status}]")
+                if intervals and intervals[0][2] is None:
+                    print("  The MOST RECENT interval is still OPEN -- any query that started in it")
+                    print("  (including one still executing right now, matching what the Activity")
+                    print("  Monitor screenshot showed) has NO runtime_stats row yet. This is Query")
+                    print("  Store's own behavior, not something the collector or report can work")
+                    print("  around -- it will appear once that interval closes and/or the query completes.")
+
+                if intervals:
+                    latest_closed = next((iv for iv in intervals if iv[2] is not None), None)
+                    if latest_closed:
+                        cur.execute(
+                            "SELECT COUNT(*) FROM sys.query_store_runtime_stats WHERE runtime_stats_interval_id = ?",
+                            latest_closed[0]
+                        )
+                        count = cur.fetchone()[0]
+                        print(f"  Most recent CLOSED interval (id={latest_closed[0]}) has "
+                              f"{count} runtime_stats row(s) on SQL Server right now.")
+                        if count == 0:
+                            print("  Zero rows even for a closed interval -- genuinely no completed")
+                            print("  query executions fell inside it (or Query Store only just enabled).")
+                mssql_conn.close()
+            except Exception as e:
+                print(f"  Could not check Query Store state directly: {e}")
+
     # ── Step 4: run the DMV collector DIRECTLY, print the FULL result ──
     section("STEP 4: Calling run_dmv_collection() directly (bypassing subprocess/CLI entirely)")
     try:
