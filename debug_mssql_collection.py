@@ -171,16 +171,10 @@ def main():
         for db_name in args.databases:
             print(f"\n--- {db_name} ---")
             try:
-                import pyodbc
-                conn_parts = [f"DRIVER={{ODBC Driver 17 for SQL Server}}", f"SERVER={args.host}"]
-                if args.instance_name and args.instance_name != "MSSQLSERVER":
-                    conn_parts[-1] += f"\\{args.instance_name}"
-                if args.port:
-                    conn_parts[-1] += f",{args.port}"
-                conn_parts.append("Trusted_Connection=yes" if args.trusted_connection
-                                   else f"UID={args.username};PWD={cfg.get('password','')}")
-                conn_parts.append(f"DATABASE={db_name}")
-                mssql_conn = pyodbc.connect(";".join(conn_parts), timeout=15)
+                from connection import mssql_connect
+                db_cfg = dict(cfg)
+                db_cfg["database"] = db_name
+                mssql_conn = mssql_connect(db_cfg)
                 cur = mssql_conn.cursor()
 
                 cur.execute("SELECT actual_state_desc, desired_state_desc, interval_length_minutes "
