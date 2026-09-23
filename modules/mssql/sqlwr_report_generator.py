@@ -197,6 +197,51 @@ def _build_load_profile(pg_conn, instance_id: int, begin_snap: int, end_snap: in
             + _table(["Stat Name", "Per Second"], rows))
 
 
+def _build_cpu_utilization(pg_conn, instance_id: int, begin_time, end_time) -> str:
+    """
+    SQL Server CPU utilization -- min/max/avg over the snapshot
+    window, from mssql_cpu_utilization_history (sys.dm_os_ring_buffers'
+    RING_BUFFER_SCHEDULER_MONITOR, sampled independently of this
+    project's own snapshot schedule at roughly 1-minute intervals).
+
+    "Used" = SQL Server's own share (sql_process_pct), "Free" = idle
+    (system_idle_pct), plus what other processes on the host are using
+    (other_process_pct) -- the ring buffer's own three-way split.
+    There's no separate "wait I/O" category available from this
+    specific DMV (it splits CPU time only into SQL/idle/other, not a
+    CPU-time-spent-waiting-on-I/O breakdown the way some OS-level
+    tools report it) -- left out entirely rather than approximated
+    under a misleading label.
+    """
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT MIN(sql_process_pct), MAX(sql_process_pct), AVG(sql_process_pct),
+                   MIN(system_idle_pct), MAX(system_idle_pct), AVG(system_idle_pct),
+                   MIN(other_process_pct), MAX(other_process_pct), AVG(other_process_pct),
+                   COUNT(*)
+            FROM mssql_cpu_utilization_history
+            WHERE instance_id = %s AND event_time >= %s AND event_time < %s
+        """, (instance_id, begin_time, end_time))
+        row = cur.fetchone()
+
+    if not row or not row[9]:
+        return ('<h3>CPU Utilization</h3>\n'
+                + _table(["Metric", "Min %", "Max %", "Avg %"],
+                         [("(no CPU utilization samples fell within this snapshot window)",
+                           "", "", "")]))
+
+    (used_min, used_max, used_avg, idle_min, idle_max, idle_avg,
+     other_min, other_max, other_avg, sample_count) = row
+    rows = [
+        ("SQL Server (Used)", f"{used_min}", f"{used_max}", f"{float(used_avg):.1f}"),
+        ("Free (Idle)", f"{idle_min}", f"{idle_max}", f"{float(idle_avg):.1f}"),
+        ("Other Processes", f"{other_min}", f"{other_max}", f"{float(other_avg):.1f}"),
+    ]
+    return (f'<h3>CPU Utilization</h3>\n<p>{sample_count} sample(s) in this window '
+            f'(sys.dm_os_ring_buffers, ~1-minute intervals)</p>\n'
+            + _table(["Metric", "Min %", "Max %", "Avg %"], rows))
+
+
 def _build_instance_efficiency(pg_conn, begin_snap: int, end_snap: int) -> str:
     """
     MSSQL's analog to Oracle's "Instance Efficiency Percentages
@@ -735,6 +780,7 @@ def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
         _build_database_summary(begin_info, db_name_for_summary),
         _build_snapshot_summary(begin_info, end_info),
         _build_load_profile(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds, top_sql),
+        _build_cpu_utilization(pg_conn, instance_id, begin_info["snapshot_time"], end_info["snapshot_time"]),
         _build_instance_efficiency(pg_conn, begin_snapshot_id, end_snapshot_id),
         _build_wait_classes(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
         _build_top_wait_types(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds),

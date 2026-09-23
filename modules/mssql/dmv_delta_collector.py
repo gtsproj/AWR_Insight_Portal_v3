@@ -159,6 +159,7 @@ def run_dmv_collection(mssql_cfg: dict, database_names: list = None, min_interva
             ("mssql_plan_cache_stats", _collect_plan_cache),
             ("mssql_scheduler_stats", _collect_scheduler_stats),
             ("mssql_session_stats", _collect_session_stats),
+            ("mssql_cpu_utilization_history", _collect_cpu_utilization),
         ]
         for table_name, fn in server_scoped:
             try:
@@ -643,6 +644,69 @@ def _collect_session_stats(conn, pg_conn, snapshot_id) -> int:
                 ON CONFLICT (snapshot_id, session_id) DO NOTHING
             """, (snapshot_id, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9],
                   r[10], to_naive_utc(r[11])))
+        n += 1
+    return n
+
+
+def _collect_cpu_utilization(conn, pg_conn, snapshot_id) -> int:
+    """
+    SQL Server CPU utilization history from sys.dm_os_ring_buffers'
+    RING_BUFFER_SCHEDULER_MONITOR -- the standard, well-documented
+    query pattern for this (Glenn Berry's/Brent Ozar's diagnostic
+    queries), giving SQLProcessUtilization (used by SQL Server),
+    SystemIdle (free), and the remainder as other-process usage.
+
+    Deliberately uses SYSUTCDATETIME(), not the standard version of
+    this query's usual GETDATE() -- this project already hit a real
+    bug once from mssql_dmv_snapshot.snapshot_time being stored in
+    local server time and compared directly against a UTC-normalized
+    Query Store timestamp; using UTC here from the start avoids
+    reintroducing that same class of mismatch when this table's
+    event_time gets compared against snapshot_time in a report.
+
+    Ring buffer holds ~256 samples at ~1-minute intervals, independent
+    of this project's own ~10-minute collection cadence -- consecutive
+    collection cycles naturally re-see overlapping samples, which
+    ON CONFLICT (instance_id, event_time) DO NOTHING handles
+    correctly (no duplicates, no error).
+    """
+    with conn.cursor() as cur:
+        cur.execute("""
+            DECLARE @ts_now bigint = (SELECT cpu_ticks / (cpu_ticks / ms_ticks) FROM sys.dm_os_sys_info);
+            SELECT TOP(256)
+                DATEADD(ms, -1 * (@ts_now - [timestamp]), SYSUTCDATETIME()) AS EventTimeUtc,
+                SQLProcessUtilization, SystemIdle,
+                100 - SystemIdle - SQLProcessUtilization AS OtherProcessUtilization
+            FROM (
+                SELECT record.value('(./Record/@id)[1]', 'int') AS record_id,
+                    record.value('(./Record/SchedulerMonitorEvent/SystemHealth/SystemIdle)[1]', 'int') AS SystemIdle,
+                    record.value('(./Record/SchedulerMonitorEvent/SystemHealth/ProcessUtilization)[1]', 'int') AS SQLProcessUtilization,
+                    [timestamp]
+                FROM (
+                    SELECT [timestamp], CONVERT(xml, record) AS record
+                    FROM sys.dm_os_ring_buffers
+                    WHERE ring_buffer_type = N'RING_BUFFER_SCHEDULER_MONITOR'
+                      AND record LIKE N'%<SystemHealth>%'
+                ) AS x
+            ) AS y
+            ORDER BY record_id DESC
+        """)
+        rows = cur.fetchall()
+
+    with pg_conn.cursor() as pg_cur:
+        pg_cur.execute("SELECT instance_id FROM mssql_dmv_snapshot WHERE snapshot_id = %s", (snapshot_id,))
+        instance_id = pg_cur.fetchone()[0]
+
+    n = 0
+    for event_time, sql_pct, idle_pct, other_pct in rows:
+        with pg_conn.cursor() as pg_cur:
+            pg_cur.execute("""
+                INSERT INTO mssql_cpu_utilization_history
+                    (instance_id, event_time, sql_process_pct, system_idle_pct,
+                     other_process_pct, collected_at_snapshot_id)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                ON CONFLICT (instance_id, event_time) DO NOTHING
+            """, (instance_id, event_time, sql_pct, idle_pct, other_pct, snapshot_id))
         n += 1
     return n
 
