@@ -1,11 +1,14 @@
 # common/utils.py
 
 import hashlib
+import logging
 
 import hashlib
 import pandas as pd
 import warnings
 import math
+
+logger = logging.getLogger(__name__)
  
 # suppress pandas FutureWarnings globally
 warnings.simplefilter(action="ignore", category=FutureWarning)

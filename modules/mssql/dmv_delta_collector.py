@@ -714,6 +714,24 @@ def _collect_cpu_utilization(conn, pg_conn, snapshot_id) -> int:
 # ══════════════════════ DATABASE-SCOPED COLLECTORS ══════════════════════
 
 def _collect_index_usage(conn, pg_conn, snapshot_id, db_name) -> int:
+    """
+    Segment-statistics source data. Extended based on reference
+    queries Ganesh shared for a richer Segments-by-... breakdown
+    (matching Oracle AWR's own multi-angle segment sections): added
+    is_ms_shipped=0 (excludes internal/system tables that are
+    technically type='U' but not true user tables -- e.g. some
+    replication/CDC internals), range_scan_count/singleton_lookup_count
+    (a more granular read breakdown from the operational-stats DMV),
+    page_lock_wait_count/_ms (row/page LOCK waits -- distinct from
+    page_latch_wait_*, which is in-memory latching with no lock
+    manager involved), leaf_page_merge_count, and current row_count/
+    size_mb from sys.dm_db_partition_stats.
+
+    row_count/size_mb are deliberately NOT delta'd like everything
+    else here -- they're "how big is this object right now" at the
+    END snapshot, not an activity count between two snapshots, so
+    they're stored as their point-in-time value directly.
+    """
     with conn.cursor() as cur:
         cur.execute("""
             SELECT SCHEMA_NAME(o.schema_id), o.name, i.name, i.index_id,
@@ -721,13 +739,25 @@ def _collect_index_usage(conn, pg_conn, snapshot_id, db_name) -> int:
                    ios.leaf_insert_count, ios.leaf_delete_count, ios.leaf_update_count,
                    ios.page_latch_wait_count, ios.page_latch_wait_in_ms,
                    ios.page_io_latch_wait_count, ios.page_io_latch_wait_in_ms,
-                   ios.row_lock_wait_count, ios.row_lock_wait_in_ms
+                   ios.row_lock_wait_count, ios.row_lock_wait_in_ms,
+                   ios.range_scan_count, ios.singleton_lookup_count,
+                   ios.page_lock_wait_count, ios.page_lock_wait_in_ms,
+                   ios.leaf_page_merge_count,
+                   ps.row_count, ps.reserved_page_count * 8.0 / 1024 AS size_mb
             FROM sys.indexes i
             JOIN sys.objects o ON i.object_id = o.object_id
             LEFT JOIN sys.dm_db_index_usage_stats ius
                 ON ius.database_id = DB_ID() AND ius.object_id = i.object_id AND ius.index_id = i.index_id
             OUTER APPLY sys.dm_db_index_operational_stats(DB_ID(), i.object_id, i.index_id, NULL) ios
-            WHERE o.type = 'U'  -- user tables only
+            LEFT JOIN (
+                SELECT object_id, index_id, SUM(row_count) AS row_count,
+                       SUM(reserved_page_count) AS reserved_page_count
+                FROM sys.dm_db_partition_stats
+                GROUP BY object_id, index_id
+            ) ps ON ps.object_id = i.object_id AND ps.index_id = i.index_id
+            WHERE o.type = 'U' AND o.is_ms_shipped = 0  -- true user tables only, excludes
+                                                          -- internal/system tables that are
+                                                          -- technically type='U'
         """)
         rows = cur.fetchall()
     n = 0
@@ -740,11 +770,16 @@ def _collect_index_usage(conn, pg_conn, snapshot_id, db_name) -> int:
                      leaf_insert_count, leaf_delete_count, leaf_update_count,
                      page_latch_wait_count, page_latch_wait_in_ms,
                      page_io_latch_wait_count, page_io_latch_wait_in_ms,
-                     row_lock_wait_count, row_lock_wait_in_ms)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                     row_lock_wait_count, row_lock_wait_in_ms,
+                     range_scan_count, singleton_lookup_count,
+                     page_lock_wait_count, page_lock_wait_in_ms,
+                     leaf_page_merge_count, row_count, size_mb)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT (snapshot_id, database_name, object_name, index_id) DO NOTHING
             """, (snapshot_id, db_name, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7],
-                  r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15], r[16]))
+                  r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15], r[16],
+                  r[17], r[18], r[19], r[20], r[21], r[22], r[23]))
         n += 1
     return n
 

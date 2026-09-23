@@ -488,78 +488,173 @@ def _build_io_stalls_by_file_type(pg_conn, begin_snap: int, end_snap: int) -> st
                      rows, "This table displays I/O stall time grouped by datafile vs logfile"))
 
 
-def _build_segment_statistics(pg_conn, begin_snap: int, end_snap: int, top_n: int = 15) -> str:
+def _fetch_segment_stats(pg_conn, begin_snap: int, end_snap: int) -> list:
     """
-    Oracle AWR's "Segments by Logical Reads"/"Segments by Physical
-    Reads" analog -- top objects (tables/indexes) by activity during
-    the snapshot window, from mssql_index_usage_delta
-    (sys.dm_db_index_usage_stats + sys.dm_db_index_operational_stats,
-    already labeled "Segment-statistics equivalent" in that table's
-    own schema comment from an earlier session -- this section is
-    the first thing to actually surface it in a report).
+    One shared query backing all six "Segments by..." sections below --
+    each just sorts and formats this same dataset differently, the
+    same pattern _fetch_top_sql already uses for the SQL sections.
 
-    Every counter here (user_seeks, leaf_insert_count,
-    page_io_latch_wait_in_ms, etc.) is CUMULATIVE since the index's
+    Every activity counter here is CUMULATIVE since the index's
     metadata entered SQL Server's cache, not a per-snapshot value --
-    delta computation happens here, the same pattern every other
-    section in this module uses, not something already done upstream.
+    delta computation happens here. GREATEST(delta, 0) guards against
+    a metadata-cache eviction/reload between snapshots resetting a
+    counter to a smaller value than the earlier snapshot saw (per
+    sys.dm_db_index_operational_stats' own documented behavior, these
+    are cache-lifetime counters, not monotonic since server start) --
+    a negative delta there is a real reset, not activity, so it's
+    floored at zero rather than summed as a nonsensical negative count.
 
-    Ranked by total read+write operation count (seeks+scans+lookups+
-    inserts+deletes+updates) as the closest available proxy for
-    Oracle's own "Logical Reads" ranking -- MSSQL's index-usage DMVs
-    count discrete operations against an index, not individual page
-    accesses the way Oracle's logical-reads figure does, so this is
-    an analogous ranking, not a like-for-like identical metric.
-    page_io_latch_wait_in_ms (physical I/O wait for this object's
-    pages) is shown as its own column -- the closest available proxy
-    for Oracle's separate "Physical Reads" ranking.
+    row_count/size_mb are the END snapshot's own value directly, NOT
+    delta'd -- they're "how big is this object right now", not an
+    activity count between two snapshots.
+
+    Segment type classification (heap/clustered/nonclustered) mirrors
+    the reference queries Ganesh shared, derived from index_id
+    (0 = heap, 1 = clustered, >1 = nonclustered) exactly the way
+    SQL Server itself defines it.
     """
     with pg_conn.cursor() as cur:
         cur.execute("""
-            SELECT e.database_name, e.schema_name, e.object_name, e.index_name,
+            SELECT e.database_name, e.schema_name, e.object_name, e.index_name, e.index_id,
                    SUM(GREATEST(e.user_seeks - COALESCE(b.user_seeks, 0), 0)) AS seeks,
                    SUM(GREATEST(e.user_scans - COALESCE(b.user_scans, 0), 0)) AS scans,
                    SUM(GREATEST(e.user_lookups - COALESCE(b.user_lookups, 0), 0)) AS lookups,
                    SUM(GREATEST(e.leaf_insert_count - COALESCE(b.leaf_insert_count, 0), 0)) AS inserts,
                    SUM(GREATEST(e.leaf_delete_count - COALESCE(b.leaf_delete_count, 0), 0)) AS deletes,
                    SUM(GREATEST(e.leaf_update_count - COALESCE(b.leaf_update_count, 0), 0)) AS updates,
-                   SUM(GREATEST(e.page_io_latch_wait_in_ms - COALESCE(b.page_io_latch_wait_in_ms, 0), 0)) AS io_wait_ms
+                   SUM(GREATEST(e.page_io_latch_wait_count - COALESCE(b.page_io_latch_wait_count, 0), 0)) AS io_latch_count,
+                   SUM(GREATEST(e.page_io_latch_wait_in_ms - COALESCE(b.page_io_latch_wait_in_ms, 0), 0)) AS io_latch_ms,
+                   SUM(GREATEST(e.page_latch_wait_count - COALESCE(b.page_latch_wait_count, 0), 0)) AS latch_count,
+                   SUM(GREATEST(e.page_latch_wait_in_ms - COALESCE(b.page_latch_wait_in_ms, 0), 0)) AS latch_ms,
+                   SUM(GREATEST(e.row_lock_wait_count - COALESCE(b.row_lock_wait_count, 0), 0)) AS row_lock_count,
+                   SUM(GREATEST(e.row_lock_wait_in_ms - COALESCE(b.row_lock_wait_in_ms, 0), 0)) AS row_lock_ms,
+                   MAX(e.row_count) AS row_count, MAX(e.size_mb) AS size_mb
             FROM mssql_index_usage_delta e
             LEFT JOIN mssql_index_usage_delta b
                    ON b.snapshot_id = %s AND b.database_name = e.database_name
                   AND b.object_name = e.object_name AND b.index_id = e.index_id
             WHERE e.snapshot_id = %s
-            GROUP BY e.database_name, e.schema_name, e.object_name, e.index_name
+            GROUP BY e.database_name, e.schema_name, e.object_name, e.index_name, e.index_id
         """, (begin_snap, end_snap))
         rows_raw = cur.fetchall()
 
-    # GREATEST(..., 0) guards against a metadata-cache eviction/reload between
-    # snapshots resetting a counter to a smaller value than the earlier snapshot
-    # saw (these are cache-lifetime counters, not monotonic since server start,
-    # per sys.dm_db_index_operational_stats' own documented behavior) -- a
-    # negative delta there is a real reset, not activity, so it's floored at
-    # zero rather than shown as (and summed as) a nonsensical negative count.
-    scored = []
-    for db, schema, obj, idx, seeks, scans, lookups, ins, dele, upd, io_ms in rows_raw:
-        seeks, scans, lookups = int(seeks or 0), int(scans or 0), int(lookups or 0)
-        ins, dele, upd = int(ins or 0), int(dele or 0), int(upd or 0)
-        io_ms = int(io_ms or 0)
-        total_ops = seeks + scans + lookups + ins + dele + upd
-        if total_ops == 0 and io_ms == 0:
-            continue
-        scored.append((db, schema or "", obj, idx or "(heap)", seeks + scans + lookups,
-                       ins + dele + upd, io_ms, total_ops))
+    results = []
+    for (db, schema, obj, idx, idx_id, seeks, scans, lookups, ins, dele, upd,
+         io_latch_n, io_latch_ms, latch_n, latch_ms, rowlock_n, rowlock_ms,
+         row_count, size_mb) in rows_raw:
+        seg_type = "Heap" if idx_id == 0 else ("Clustered Index" if idx_id == 1 else "Nonclustered Index")
+        results.append({
+            "database": db, "object": f"{schema}.{obj}" if schema else obj,
+            "index": idx or "(heap)", "segment_type": seg_type,
+            "seeks": int(seeks or 0), "scans": int(scans or 0), "lookups": int(lookups or 0),
+            "inserts": int(ins or 0), "deletes": int(dele or 0), "updates": int(upd or 0),
+            "io_latch_count": int(io_latch_n or 0), "io_latch_ms": int(io_latch_ms or 0),
+            "latch_count": int(latch_n or 0), "latch_ms": int(latch_ms or 0),
+            "row_lock_count": int(rowlock_n or 0), "row_lock_ms": int(rowlock_ms or 0),
+            "row_count": int(row_count) if row_count is not None else None,
+            "size_mb": float(size_mb) if size_mb is not None else None,
+        })
+    return [r for r in results if any((
+        r["seeks"], r["scans"], r["lookups"], r["inserts"], r["deletes"], r["updates"],
+        r["io_latch_count"], r["latch_count"], r["row_lock_count"]
+    ))]
 
-    ranked = sorted(scored, key=lambda r: r[7], reverse=True)[:top_n]
-    rows = [(db, f"{schema}.{obj}" if schema else obj, idx, f"{reads}", f"{writes}", f"{io_ms}")
-            for db, schema, obj, idx, reads, writes, io_ms, _ in ranked]
+
+def _build_segments_by_logical_reads(seg_stats: list, top_n: int = 15) -> str:
+    ranked = sorted(seg_stats, key=lambda r: r["seeks"] + r["scans"] + r["lookups"], reverse=True)[:top_n]
+    rows = [(r["database"], r["object"], r["index"], r["segment_type"],
+             r["seeks"] + r["scans"] + r["lookups"], r["seeks"], r["scans"], r["lookups"],
+             r["row_count"] if r["row_count"] is not None else "", 
+             f'{r["size_mb"]:.1f}' if r["size_mb"] is not None else "")
+            for r in ranked]
     if not rows:
-        rows = [("(no index activity recorded for this snapshot pair)", "", "", "", "", "")]
-    return ('<h3>Segment Statistics</h3>\n'
-            + _table(["Database", "Object", "Index", "Reads (seeks+scans+lookups)",
-                      "Writes (ins+del+upd)", "IO Wait (ms)"],
-                     rows, "This table displays top objects by index read/write activity "
-                           "and physical I/O wait -- the segments-by-logical/physical-reads analog"))
+        rows = [("(no index read activity for this snapshot pair)", "", "", "", "", "", "", "", "", "")]
+    return ('<h3>Segments by Logical Reads</h3>\n'
+            + _table(["Database", "Object", "Index", "Segment Type", "Read Operations",
+                      "Seeks", "Scans", "Lookups", "Row Count", "Size (MB)"],
+                     rows,
+                     "SQL Server's closest available equivalent to logical reads: "
+                     "seeks + scans + lookups against this index"))
+
+
+def _build_segments_by_physical_reads(seg_stats: list, top_n: int = 15) -> str:
+    """
+    Deliberately different from Ganesh's reference query #3, which
+    used the same seeks+scans+lookups formula as #2 (Logical Reads) --
+    that leaves "Physical Reads" indistinguishable from "Logical
+    Reads" in the resulting report, which isn't useful. Ranked by
+    page_io_latch_wait_count/_ms instead -- actual physical disk I/O
+    against this object's pages, not logical index operations,
+    matching what Oracle's own "Physical Reads" ranking is actually
+    about.
+    """
+    ranked = sorted(seg_stats, key=lambda r: r["io_latch_ms"], reverse=True)[:top_n]
+    rows = [(r["database"], r["object"], r["index"], r["segment_type"],
+             r["io_latch_count"], r["io_latch_ms"])
+            for r in ranked if r["io_latch_count"] or r["io_latch_ms"]]
+    if not rows:
+        rows = [("(no physical I/O against any index for this snapshot pair)", "", "", "", "", "")]
+    return ('<h3>Segments by Physical Reads</h3>\n'
+            + _table(["Database", "Object", "Index", "Segment Type",
+                      "Physical Read Requests", "IO Wait (ms)"],
+                     rows,
+                     "Ranked by page_io_latch_wait -- actual physical disk I/O for this "
+                     "object's pages, distinct from logical seeks/scans/lookups above"))
+
+
+def _build_segments_by_physical_writes(seg_stats: list, top_n: int = 15) -> str:
+    ranked = sorted(seg_stats, key=lambda r: r["inserts"] + r["deletes"] + r["updates"], reverse=True)[:top_n]
+    rows = [(r["database"], r["object"], r["index"], r["segment_type"],
+             r["inserts"] + r["deletes"] + r["updates"], r["inserts"], r["deletes"], r["updates"])
+            for r in ranked]
+    if not rows:
+        rows = [("(no write activity for this snapshot pair)", "", "", "", "", "", "", "")]
+    return ('<h3>Segments by Physical Writes</h3>\n'
+            + _table(["Database", "Object", "Index", "Segment Type", "Total Changes",
+                      "Inserts", "Deletes", "Updates"],
+                     rows, "Leaf-level insert/delete/update counts against this index"))
+
+
+def _build_segments_by_table_scans(seg_stats: list, top_n: int = 15) -> str:
+    ranked = sorted(seg_stats, key=lambda r: r["scans"], reverse=True)[:top_n]
+    rows = [(r["database"], r["object"], r["index"], r["segment_type"], r["scans"])
+            for r in ranked if r["scans"]]
+    if not rows:
+        rows = [("(no table scans recorded for this snapshot pair)", "", "", "", "")]
+    return ('<h3>Segments by Table Scans</h3>\n'
+            + _table(["Database", "Object", "Index", "Segment Type", "Table Scans"],
+                     rows,
+                     "Full scans against this index -- a high count on a large table "
+                     "often points at a missing or unused index"))
+
+
+def _build_segments_by_row_lock_waits(seg_stats: list, top_n: int = 15) -> str:
+    ranked = sorted(seg_stats, key=lambda r: r["row_lock_ms"], reverse=True)[:top_n]
+    rows = [(r["database"], r["object"], r["index"], r["segment_type"],
+             r["row_lock_count"], r["row_lock_ms"])
+            for r in ranked if r["row_lock_count"] or r["row_lock_ms"]]
+    if not rows:
+        rows = [("(no row lock waits recorded for this snapshot pair)", "", "", "", "", "")]
+    return ('<h3>Segments by Row Lock Waits</h3>\n'
+            + _table(["Database", "Object", "Index", "Segment Type",
+                      "Row Lock Waits", "Row Lock Wait (ms)"], rows))
+
+
+def _build_segments_by_buffer_busy_waits(seg_stats: list, top_n: int = 15) -> str:
+    ranked = sorted(seg_stats, key=lambda r: r["latch_ms"] + r["io_latch_ms"], reverse=True)[:top_n]
+    rows = [(r["database"], r["object"], r["index"], r["segment_type"],
+             r["latch_count"], r["latch_ms"], r["io_latch_count"], r["io_latch_ms"])
+            for r in ranked if r["latch_count"] or r["io_latch_count"]]
+    if not rows:
+        rows = [("(no buffer latch contention recorded for this snapshot pair)",
+                 "", "", "", "", "", "", "")]
+    return ('<h3>Segments by Buffer Busy Waits</h3>\n'
+            + _table(["Database", "Object", "Index", "Segment Type",
+                      "Page Latch Waits", "Page Latch Wait (ms)",
+                      "Page IO Latch Waits", "Page IO Latch Wait (ms)"],
+                     rows,
+                     "In-memory page latch waits (no disk I/O) alongside physical page "
+                     "IO latch waits -- the MSSQL analog to Oracle's buffer busy waits"))
 
 
 def _build_complete_sql_text(top_sql: list) -> str:
@@ -869,6 +964,7 @@ def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
              f"Snap {begin_snapshot_id}-{end_snapshot_id}")
 
     top_sql = _fetch_top_sql(pg_conn, instance_id, begin_info["snapshot_time"], end_info["snapshot_time"])
+    seg_stats = _fetch_segment_stats(pg_conn, begin_snapshot_id, end_snapshot_id)
     db_names = sorted(set(r["database_name"] for r in top_sql))
     db_name_for_summary = db_names[0] if len(db_names) == 1 else (
         ", ".join(db_names) if db_names else None
@@ -885,7 +981,12 @@ def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
         _build_memory_statistics(pg_conn, end_snapshot_id),
         _build_io_profile(pg_conn, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
         _build_io_stalls_by_file_type(pg_conn, begin_snapshot_id, end_snapshot_id),
-        _build_segment_statistics(pg_conn, begin_snapshot_id, end_snapshot_id),
+        _build_segments_by_logical_reads(seg_stats),
+        _build_segments_by_physical_reads(seg_stats),
+        _build_segments_by_physical_writes(seg_stats),
+        _build_segments_by_table_scans(seg_stats),
+        _build_segments_by_row_lock_waits(seg_stats),
+        _build_segments_by_buffer_busy_waits(seg_stats),
         _build_sql_ordered_by_elapsed_time(top_sql),
         _build_sql_ordered_by_cpu_time(top_sql),
         _build_sql_ordered_by_gets(top_sql),
