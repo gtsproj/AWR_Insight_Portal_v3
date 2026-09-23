@@ -178,6 +178,29 @@ def _build_load_profile(pg_conn, instance_id: int, begin_snap: int, end_snap: in
     total_executions = sum(r["executions"] for r in top_sql)
     rows.append(("Number of Executions (total, this window):", f"{total_executions}"))
 
+    # Datafile/logfile I/O WAIT (session wait time, from sys.dm_os_wait_stats via
+    # mssql_wait_event_master's wait_class) -- a different lens than IO Stalls by
+    # File Type's physical disk stall time (sys.dm_io_virtual_file_stats): this is
+    # how long SESSIONS spent waiting, not how long the DISK took to respond.
+    # "Buffer IO" (mostly PAGEIOLATCH_*) is the datafile-wait analog; "Transaction
+    # Log" (mostly WRITELOG) is the logfile-wait analog -- the same classification
+    # the Wait Classes section already uses, not a new taxonomy invented here.
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT COALESCE(m.wait_class, 'Other/Uncategorized') AS wait_class,
+                   SUM(e.wait_time_ms - COALESCE(b.wait_time_ms, 0)) AS delta_ms
+            FROM mssql_wait_stats_delta e
+            LEFT JOIN mssql_wait_stats_delta b ON b.snapshot_id = %s AND b.wait_type = e.wait_type
+            LEFT JOIN mssql_wait_event_master m ON m.tier = 'wait_type' AND m.event_name = e.wait_type
+            WHERE e.snapshot_id = %s AND e.wait_type != ALL(%s)
+            GROUP BY COALESCE(m.wait_class, 'Other/Uncategorized')
+        """, (begin_snap, end_snap, list(BENIGN_WAIT_TYPES)))
+        wait_by_class_ms = {wc: float(ms or 0) for wc, ms in cur.fetchall()}
+    rows.append(("Datafile IO Wait (s) [Buffer IO wait class]:",
+                 f"{wait_by_class_ms.get('Buffer IO', 0.0) / 1000.0:.1f}"))
+    rows.append(("Logfile IO Wait (s) [Transaction Log wait class]:",
+                 f"{wait_by_class_ms.get('Transaction Log', 0.0) / 1000.0:.1f}"))
+
     with pg_conn.cursor() as cur:
         cur.execute("""
             SELECT SUM(e.wait_time_ms - COALESCE(b.wait_time_ms, 0))
