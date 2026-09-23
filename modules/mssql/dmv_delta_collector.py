@@ -478,7 +478,7 @@ def _collect_memory_clerks(conn, pg_conn, snapshot_id) -> int:
 def _collect_file_io(conn, pg_conn, snapshot_id) -> int:
     with conn.cursor() as cur:
         cur.execute("""
-            SELECT DB_NAME(vfs.database_id), vfs.file_id, mf.name,
+            SELECT DB_NAME(vfs.database_id), vfs.file_id, mf.name, mf.type_desc,
                    vfs.num_of_reads, vfs.num_of_bytes_read, vfs.io_stall_read_ms,
                    vfs.num_of_writes, vfs.num_of_bytes_written, vfs.io_stall_write_ms,
                    vfs.size_on_disk_bytes
@@ -492,12 +492,12 @@ def _collect_file_io(conn, pg_conn, snapshot_id) -> int:
         with pg_conn.cursor() as pg_cur:
             pg_cur.execute("""
                 INSERT INTO mssql_file_io_delta
-                    (snapshot_id, database_name, file_id, logical_file_name,
+                    (snapshot_id, database_name, file_id, logical_file_name, file_type_desc,
                      num_of_reads, num_of_bytes_read, io_stall_read_ms,
                      num_of_writes, num_of_bytes_written, io_stall_write_ms, size_on_disk_bytes)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT (snapshot_id, database_name, file_id) DO NOTHING
-            """, (snapshot_id, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]))
+            """, (snapshot_id, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10]))
         n += 1
     if n == 0:
         # Two SEPARATE permissions needed here, confirmed through a

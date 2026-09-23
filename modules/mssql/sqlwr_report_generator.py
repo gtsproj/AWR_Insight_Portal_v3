@@ -102,12 +102,28 @@ def _build_snapshot_summary(begin_info: dict, end_info: dict) -> str:
 
 
 def _build_load_profile(pg_conn, instance_id: int, begin_snap: int, end_snap: int,
-                          elapsed_seconds: float) -> str:
+                          elapsed_seconds: float, top_sql: list) -> str:
     """
     Batch Requests/sec, SQL Compilations/sec, and similar rate counters
     from mssql_perf_counters -- delta between the two snapshots divided
     by elapsed_seconds, matching Oracle Load Profile's own "Per Second"
     framing exactly (Redo size/sec, Logical reads/sec, etc.).
+
+    Log-specific IOPS/throughput rows come from mssql_file_io_delta,
+    filtered to file_type_desc='LOG' -- the same file-type
+    classification IO Profile itself relies on. Number of Executions
+    and Total DB Time are TOTALS across the window (not per-second
+    rates, matching how they're usually asked for), not deltas of a
+    perf counter.
+
+    Total DB Time is an explicit APPROXIMATION, labeled as such --
+    MSSQL has no single native counter equivalent to Oracle's DB Time
+    (total session-active time, CPU + non-idle waits, summed across
+    concurrent sessions). Approximated here as non-benign wait time
+    (the same total the Wait Classes section already computes) plus
+    total SQL CPU time from Query Store's top_sql -- a reasonable,
+    honestly-labeled stand-in for "total time spent doing work",
+    not a claim of exact equivalence to Oracle's own metric.
     """
     wanted = [
         ("SQLServer:SQL Statistics", "Batch Requests/sec", "Batch Requests"),
@@ -121,15 +137,60 @@ def _build_load_profile(pg_conn, instance_id: int, begin_snap: int, end_snap: in
     with pg_conn.cursor() as cur:
         for obj_suffix, counter, label in wanted:
             cur.execute("""
-                SELECT snapshot_id, cntr_value FROM mssql_perf_counters
+                SELECT snapshot_id, SUM(cntr_value) FROM mssql_perf_counters
                 WHERE snapshot_id IN (%s, %s) AND object_name LIKE %s AND counter_name = %s
-                ORDER BY snapshot_id
+                GROUP BY snapshot_id
             """, (begin_snap, end_snap, f"%{obj_suffix.split(':')[1]}", counter))
             vals = {r[0]: r[1] for r in cur.fetchall()}
             if begin_snap in vals and end_snap in vals and elapsed_seconds > 0:
                 delta = vals[end_snap] - vals[begin_snap]
                 per_sec = delta / elapsed_seconds
                 rows.append((f"{label}:", f"{per_sec:.1f}"))
+
+    # Log-specific IOPS/throughput, from mssql_file_io_delta deltas
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT e.file_type_desc,
+                   SUM(e.num_of_reads - COALESCE(b.num_of_reads, 0)) AS reads,
+                   SUM(e.num_of_bytes_read - COALESCE(b.num_of_bytes_read, 0)) AS bytes_read,
+                   SUM(e.num_of_writes - COALESCE(b.num_of_writes, 0)) AS writes,
+                   SUM(e.num_of_bytes_written - COALESCE(b.num_of_bytes_written, 0)) AS bytes_written
+            FROM mssql_file_io_delta e
+            LEFT JOIN mssql_file_io_delta b
+                   ON b.snapshot_id = %s AND b.database_name = e.database_name AND b.file_id = e.file_id
+            WHERE e.snapshot_id = %s
+            GROUP BY e.file_type_desc
+        """, (begin_snap, end_snap))
+        io_by_type = {t: (float(r or 0), float(br or 0), float(w or 0), float(bw or 0))
+                      for t, r, br, w, bw in cur.fetchall()}
+
+    if elapsed_seconds > 0:
+        log_reads, log_bytes_read, log_writes, log_bytes_written = io_by_type.get(
+            "LOG", (0.0, 0.0, 0.0, 0.0))
+        rows.append(("Log Read IOPS:", f"{log_reads / elapsed_seconds:.1f}"))
+        rows.append(("Log Read KB/sec:", f"{log_bytes_read / 1024 / elapsed_seconds:.1f}"))
+        rows.append(("Log Write IOPS:", f"{log_writes / elapsed_seconds:.1f}"))
+        rows.append(("Log Writes KB/sec:", f"{log_bytes_written / 1024 / elapsed_seconds:.1f}"))
+
+        total_bytes = sum(br + bw for _, br, _, bw in io_by_type.values())
+        rows.append(("Throughput (MB/sec, all files):", f"{total_bytes / 1024 / 1024 / elapsed_seconds:.2f}"))
+
+    total_executions = sum(r["executions"] for r in top_sql)
+    rows.append(("Number of Executions (total, this window):", f"{total_executions}"))
+
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT SUM(e.wait_time_ms - COALESCE(b.wait_time_ms, 0))
+            FROM mssql_wait_stats_delta e
+            LEFT JOIN mssql_wait_stats_delta b ON b.snapshot_id = %s AND b.wait_type = e.wait_type
+            WHERE e.snapshot_id = %s AND e.wait_type != ALL(%s)
+        """, (begin_snap, end_snap, list(BENIGN_WAIT_TYPES)))
+        non_benign_wait_ms = float(cur.fetchone()[0] or 0)
+    total_cpu_s = sum(r["cpu_time_s"] for r in top_sql)
+    db_time_s = (non_benign_wait_ms / 1000.0) + total_cpu_s
+    rows.append(("Total DB Time (s) [approximated: non-benign wait + SQL CPU time]:",
+                 f"{db_time_s:.1f}"))
+
     if not rows:
         rows = [("(no perf counter deltas available for this snapshot pair)", "")]
     return ('<h3>Load Profile</h3>\n'
@@ -314,6 +375,49 @@ def _build_io_profile(pg_conn, begin_snap: int, end_snap: int, elapsed_seconds: 
             + _table(["Database", "File", "Reads/s", "Writes/s", "MB Read", "MB Written",
                       "Avg Read Latency (ms)", "Avg Write Latency (ms)"],
                      rows, "This table displays file-level I/O activity"))
+
+
+def _build_io_stalls_by_file_type(pg_conn, begin_snap: int, end_snap: int) -> str:
+    """
+    Datafile vs logfile I/O stalls -- the same mssql_file_io_delta
+    deltas IO Profile computes per-file, aggregated by
+    file_type_desc instead ('ROWS'/data files vs 'LOG'). Datafile
+    stalls generally reflect buffer/read pressure (mirrored in the
+    Wait Classes section's "Buffer IO" bucket); logfile stalls
+    generally reflect write/commit pressure (mirrored in "Transaction
+    Log"/WRITELOG there) -- this section is the file-level detail
+    behind those two wait-class totals, not a replacement for them.
+    """
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT e.file_type_desc,
+                   SUM(e.io_stall_read_ms - COALESCE(b.io_stall_read_ms, 0)) AS read_stall_ms,
+                   SUM(e.io_stall_write_ms - COALESCE(b.io_stall_write_ms, 0)) AS write_stall_ms,
+                   SUM(e.num_of_reads - COALESCE(b.num_of_reads, 0)) AS reads,
+                   SUM(e.num_of_writes - COALESCE(b.num_of_writes, 0)) AS writes
+            FROM mssql_file_io_delta e
+            LEFT JOIN mssql_file_io_delta b
+                   ON b.snapshot_id = %s AND b.database_name = e.database_name
+                  AND b.file_id = e.file_id
+            WHERE e.snapshot_id = %s
+            GROUP BY e.file_type_desc
+        """, (begin_snap, end_snap))
+        rows_raw = cur.fetchall()
+
+    rows = []
+    for file_type, rstall, wstall, reads, writes in rows_raw:
+        rstall, wstall = float(rstall or 0), float(wstall or 0)
+        reads, writes = int(reads or 0), int(writes or 0)
+        label = {"ROWS": "Datafile", "LOG": "Logfile"}.get(file_type, file_type or "Other")
+        avg_read = rstall / reads if reads else 0
+        avg_write = wstall / writes if writes else 0
+        rows.append((label, f"{rstall:.0f}", f"{wstall:.0f}", f"{avg_read:.2f}", f"{avg_write:.2f}"))
+    if not rows:
+        rows = [("(no I/O delta data for this snapshot pair)", "", "", "", "")]
+    return ('<h3>IO Stalls by File Type</h3>\n'
+            + _table(["File Type", "Read Stall (ms)", "Write Stall (ms)",
+                      "Avg Read Stall (ms)", "Avg Write Stall (ms)"],
+                     rows, "This table displays I/O stall time grouped by datafile vs logfile"))
 
 
 def _build_complete_sql_text(top_sql: list) -> str:
@@ -630,12 +734,13 @@ def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
     sections = [
         _build_database_summary(begin_info, db_name_for_summary),
         _build_snapshot_summary(begin_info, end_info),
-        _build_load_profile(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
+        _build_load_profile(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds, top_sql),
         _build_instance_efficiency(pg_conn, begin_snapshot_id, end_snapshot_id),
         _build_wait_classes(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
         _build_top_wait_types(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
         _build_memory_statistics(pg_conn, end_snapshot_id),
         _build_io_profile(pg_conn, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
+        _build_io_stalls_by_file_type(pg_conn, begin_snapshot_id, end_snapshot_id),
         _build_sql_ordered_by_elapsed_time(top_sql),
         _build_sql_ordered_by_cpu_time(top_sql),
         _build_sql_ordered_by_gets(top_sql),
