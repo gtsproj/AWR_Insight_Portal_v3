@@ -490,7 +490,7 @@ def _build_io_stalls_by_file_type(pg_conn, begin_snap: int, end_snap: int) -> st
 
 def _fetch_segment_stats(pg_conn, begin_snap: int, end_snap: int) -> list:
     """
-    One shared query backing all six "Segments by..." sections below --
+    One shared query backing all six "Top Objects by..." sections below --
     each just sorts and formats this same dataset differently, the
     same pattern _fetch_top_sql already uses for the SQL sections.
 
@@ -569,7 +569,7 @@ def _build_segments_by_logical_reads(seg_stats: list, top_n: int = 15) -> str:
             for r in ranked]
     if not rows:
         rows = [("(no index read activity for this snapshot pair)", "", "", "", "", "", "", "", "", "")]
-    return ('<h3>Segments by Logical Reads</h3>\n'
+    return ('<h3>Top Objects by Logical Reads</h3>\n'
             + _table(["Database", "Object", "Index", "Segment Type", "Read Operations",
                       "Seeks", "Scans", "Lookups", "Row Count", "Size (MB)"],
                      rows,
@@ -594,7 +594,7 @@ def _build_segments_by_physical_reads(seg_stats: list, top_n: int = 15) -> str:
             for r in ranked if r["io_latch_count"] or r["io_latch_ms"]]
     if not rows:
         rows = [("(no physical I/O against any index for this snapshot pair)", "", "", "", "", "")]
-    return ('<h3>Segments by Physical Reads</h3>\n'
+    return ('<h3>Top Objects by Physical Reads</h3>\n'
             + _table(["Database", "Object", "Index", "Segment Type",
                       "Physical Read Requests", "IO Wait (ms)"],
                      rows,
@@ -609,7 +609,7 @@ def _build_segments_by_physical_writes(seg_stats: list, top_n: int = 15) -> str:
             for r in ranked]
     if not rows:
         rows = [("(no write activity for this snapshot pair)", "", "", "", "", "", "", "")]
-    return ('<h3>Segments by Physical Writes</h3>\n'
+    return ('<h3>Top Objects by Write Activity</h3>\n'
             + _table(["Database", "Object", "Index", "Segment Type", "Total Changes",
                       "Inserts", "Deletes", "Updates"],
                      rows, "Leaf-level insert/delete/update counts against this index"))
@@ -621,7 +621,7 @@ def _build_segments_by_table_scans(seg_stats: list, top_n: int = 15) -> str:
             for r in ranked if r["scans"]]
     if not rows:
         rows = [("(no table scans recorded for this snapshot pair)", "", "", "", "")]
-    return ('<h3>Segments by Table Scans</h3>\n'
+    return ('<h3>Top Objects by Table Scans</h3>\n'
             + _table(["Database", "Object", "Index", "Segment Type", "Table Scans"],
                      rows,
                      "Full scans against this index -- a high count on a large table "
@@ -635,7 +635,7 @@ def _build_segments_by_row_lock_waits(seg_stats: list, top_n: int = 15) -> str:
             for r in ranked if r["row_lock_count"] or r["row_lock_ms"]]
     if not rows:
         rows = [("(no row lock waits recorded for this snapshot pair)", "", "", "", "", "")]
-    return ('<h3>Segments by Row Lock Waits</h3>\n'
+    return ('<h3>Top Objects by Row Lock Waits</h3>\n'
             + _table(["Database", "Object", "Index", "Segment Type",
                       "Row Lock Waits", "Row Lock Wait (ms)"], rows))
 
@@ -648,7 +648,7 @@ def _build_segments_by_buffer_busy_waits(seg_stats: list, top_n: int = 15) -> st
     if not rows:
         rows = [("(no buffer latch contention recorded for this snapshot pair)",
                  "", "", "", "", "", "", "")]
-    return ('<h3>Segments by Buffer Busy Waits</h3>\n'
+    return ('<h3>Top Objects by Page Latch Waits</h3>\n'
             + _table(["Database", "Object", "Index", "Segment Type",
                       "Page Latch Waits", "Page Latch Wait (ms)",
                       "Page IO Latch Waits", "Page IO Latch Wait (ms)"],
