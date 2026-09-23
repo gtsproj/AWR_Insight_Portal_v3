@@ -659,10 +659,11 @@ def _fetch_top_sql(pg_conn, instance_id: int, begin_time, end_time, limit: int =
         cpu_us = float(cpu_us or 0)
         total_rows = float(total_rows or 0)
         results.append({
-            "sql_id": f"q{qs_query_id}",  # Query Store's own id, prefixed since
-                                          # it's purely numeric and Oracle's sql_id
-                                          # column/parsers expect a short token, not
-                                          # necessarily numeric-looking
+            "sql_id": str(qs_query_id),  # Query Store's own query_id
+                                         # (sys.query_store_query.query_id), stored
+                                         # exactly as-is with no transformation --
+                                         # matches what querying Query Store directly
+                                         # in SSMS would show
             "database_name": db_name,
             "sql_text": (sql_text or "").strip(),
             "object_name": (object_name or "").strip(),  # stored procedure / object this
