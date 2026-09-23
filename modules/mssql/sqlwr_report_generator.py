@@ -141,7 +141,7 @@ def _build_load_profile(pg_conn, instance_id: int, begin_snap: int, end_snap: in
                 WHERE snapshot_id IN (%s, %s) AND object_name LIKE %s AND counter_name = %s
                 GROUP BY snapshot_id
             """, (begin_snap, end_snap, f"%{obj_suffix.split(':')[1]}", counter))
-            vals = {r[0]: r[1] for r in cur.fetchall()}
+            vals = {r[0]: float(r[1]) for r in cur.fetchall()}
             if begin_snap in vals and end_snap in vals and elapsed_seconds > 0:
                 delta = vals[end_snap] - vals[begin_snap]
                 per_sec = delta / elapsed_seconds
