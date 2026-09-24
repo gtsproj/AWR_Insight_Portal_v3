@@ -752,6 +752,55 @@ def _build_blocking_summary(pg_conn, instance_id: int, end_snap: int) -> str:
                       "Resource Type", "Object", "Database"], rows))
 
 
+def _build_deadlock_summary(pg_conn, instance_id: int, begin_time, end_time, top_n: int = 15) -> str:
+    """
+    Deadlocks within the snapshot window, from mssql_deadlock_events/
+    mssql_deadlock_processes -- extracted separately by
+    deadlock_extractor.py (from the system_health Extended Events
+    session, not a DMV this collector reads directly) and already
+    feeding the existing rules/recommendation engine -- this is the
+    first thing to surface that data in the SQLWR report itself.
+
+    Shows the VICTIM process' context (client app, login, executing
+    procedure) for each deadlock, alongside the already-classified
+    deadlock_cause (computed at extraction time from the database's
+    actual RCSI setting, not guessed here) and the contested table/
+    index -- enough to see, at a glance, whether a specific procedure
+    or table is a repeat offender across multiple deadlocks in the
+    window, without needing to open each one's full XML graph.
+    """
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT e.deadlock_time, e.database_name, e.contested_table, e.contested_index,
+                   e.deadlock_cause, e.process_count,
+                   p.client_app, p.login_name, p.executing_proc, p.input_buffer
+            FROM mssql_deadlock_events e
+            LEFT JOIN mssql_deadlock_processes p
+                   ON p.deadlock_event_id = e.id AND p.role = 'VICTIM'
+            WHERE e.instance_id = %s AND e.deadlock_time >= %s AND e.deadlock_time < %s
+            ORDER BY e.deadlock_time DESC
+            LIMIT %s
+        """, (instance_id, begin_time, end_time, top_n))
+        rows_raw = cur.fetchall()
+
+    rows = []
+    for dl_time, db, table, index, cause, proc_count, app, login, exec_proc, input_buf in rows_raw:
+        victim_context = exec_proc or (input_buf or "")[:60] or "(not captured)"
+        rows.append((
+            dl_time.strftime("%Y-%m-%d %H:%M:%S") if dl_time else "",
+            db or "", table or "", index or "", cause or "(not classified)",
+            proc_count or "", app or "", login or "", victim_context,
+        ))
+    if not rows:
+        rows = [("(no deadlocks recorded for this snapshot pair)", "", "", "", "", "", "", "", "")]
+    return ('<h3>Deadlock Summary</h3>\n'
+            + _table(["Time", "Database", "Contested Table", "Contested Index",
+                      "Cause", "Process Count", "Victim App", "Victim Login",
+                      "Victim Proc/Statement"],
+                     rows, "This table displays deadlocks recorded during this snapshot window, "
+                           "with the victim process' context"))
+
+
 def _fetch_top_sql(pg_conn, instance_id: int, begin_time, end_time, limit: int = 15) -> list:
     """
     One shared query backing all four "SQL ordered by..." sections --
@@ -992,6 +1041,7 @@ def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
         _build_sql_ordered_by_gets(top_sql),
         _build_sql_ordered_by_executions(top_sql),
         _build_blocking_summary(pg_conn, instance_id, end_snapshot_id),
+        _build_deadlock_summary(pg_conn, instance_id, begin_info["snapshot_time"], end_info["snapshot_time"]),
         _build_complete_sql_text(top_sql),
     ]
 
