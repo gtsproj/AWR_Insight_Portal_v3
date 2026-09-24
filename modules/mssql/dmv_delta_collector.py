@@ -595,6 +595,31 @@ def _collect_plan_cache(conn, pg_conn, snapshot_id) -> int:
             """, (snapshot_id, query_hash_hex, plan_hash_hex, r[2], r[3], r[4],
                   r[5], r[6], r[7], r[8], r[9]))
         n += 1
+
+    # Accurate full-cache summary -- see mssql_plan_cache_summary's own
+    # schema comment for why this is separate from the top-200 detail
+    # above rather than derived from it.
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT COUNT(*), SUM(size_in_bytes) / 1024.0 / 1024.0,
+                   SUM(CASE WHEN usecounts = 1 THEN 1 ELSE 0 END),
+                   SUM(CASE WHEN usecounts = 1 THEN size_in_bytes ELSE 0 END) / 1024.0 / 1024.0,
+                   SUM(CASE WHEN objtype = 'Adhoc' THEN 1 ELSE 0 END),
+                   SUM(CASE WHEN objtype = 'Adhoc' THEN size_in_bytes ELSE 0 END) / 1024.0 / 1024.0
+            FROM sys.dm_exec_cached_plans
+        """)
+        summary_row = cur.fetchone()
+    if summary_row and summary_row[0]:
+        with pg_conn.cursor() as pg_cur:
+            pg_cur.execute("""
+                INSERT INTO mssql_plan_cache_summary
+                    (snapshot_id, total_plan_count, total_plan_size_mb,
+                     single_use_plan_count, single_use_plan_size_mb,
+                     adhoc_plan_count, adhoc_plan_size_mb)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (snapshot_id) DO NOTHING
+            """, (snapshot_id, summary_row[0], summary_row[1], summary_row[2],
+                  summary_row[3], summary_row[4], summary_row[5]))
     return n
 
 

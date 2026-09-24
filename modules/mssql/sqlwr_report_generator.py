@@ -801,6 +801,80 @@ def _build_deadlock_summary(pg_conn, instance_id: int, begin_time, end_time, top
                            "with the victim process' context"))
 
 
+def _build_plan_cache_health(pg_conn, end_snap: int, top_n: int = 15) -> str:
+    """
+    Plan cache health, at the END snapshot -- point-in-time server
+    state (the plan cache isn't something that accumulates "between"
+    two snapshots the way a delta metric does; it reflects what's
+    cached RIGHT NOW), the same point-in-time approach Blocking
+    Summary already uses.
+
+    Two parts: an accurate summary (total/single-use/ad-hoc plan
+    counts and memory, from mssql_plan_cache_summary -- a full-cache
+    aggregate, not limited like the detail below) and a detail table
+    (top plans by reuse, from mssql_plan_cache_stats -- deliberately
+    bounded to the top 200 by usecounts at collection time, so this
+    detail view is reliable for "most reused" but NOT a reliable
+    source for single-use-plan counting, which is exactly why the
+    summary above uses a separate, full-cache query instead).
+
+    High single-use-plan counts/memory relative to the total is the
+    classic signature of ad-hoc query volume or missing
+    parameterization -- one of the more common, directly actionable
+    root causes of sudden plan-cache-driven performance degradation
+    and compile-time overhead.
+    """
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT total_plan_count, total_plan_size_mb, single_use_plan_count,
+                   single_use_plan_size_mb, adhoc_plan_count, adhoc_plan_size_mb
+            FROM mssql_plan_cache_summary WHERE snapshot_id = %s
+        """, (end_snap,))
+        summary_row = cur.fetchone()
+
+    summary_rows = []
+    if summary_row:
+        total_n, total_mb, single_n, single_mb, adhoc_n, adhoc_mb = summary_row
+        total_n = int(total_n or 0)
+        single_n, adhoc_n = int(single_n or 0), int(adhoc_n or 0)
+        single_pct = (100 * single_n / total_n) if total_n else 0
+        summary_rows = [
+            ("Total Cached Plans", f"{total_n}", f"{float(total_mb or 0):.1f} MB"),
+            ("Single-Use Plans (never reused)", f"{single_n} ({single_pct:.1f}%)",
+             f"{float(single_mb or 0):.1f} MB"),
+            ("Ad Hoc Plans", f"{adhoc_n}", f"{float(adhoc_mb or 0):.1f} MB"),
+        ]
+    else:
+        summary_rows = [("(no plan cache summary available for this snapshot)", "", "")]
+
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT query_hash, objtype, usecounts, size_in_bytes, execution_count,
+                   total_worker_time_us, total_logical_reads
+            FROM mssql_plan_cache_stats WHERE snapshot_id = %s
+            ORDER BY usecounts DESC LIMIT %s
+        """, (end_snap, top_n))
+        detail_raw = cur.fetchall()
+
+    detail_rows = [
+        (qh[:16] if qh else "", objtype or "", uc, f"{(sz or 0)/1024:.1f}", ec,
+         f"{(cpu or 0)/1_000_000:.2f}", lr)
+        for qh, objtype, uc, sz, ec, cpu, lr in detail_raw
+    ]
+    if not detail_rows:
+        detail_rows = [("(no cached plan detail available for this snapshot)", "", "", "", "", "", "")]
+
+    return ('<h3>Plan Cache Health</h3>\n'
+            + _table(["Metric", "Count", "Memory"], summary_rows,
+                     "Full plan cache summary -- not limited to the detail table below")
+            + '<p>Top cached plans by reuse count:</p>\n'
+            + _table(["Query Hash", "Plan Type", "Use Count", "Size (KB)",
+                      "Executions", "CPU Time (s)", "Logical Reads"],
+                     detail_rows, "Top 200 by usecounts at collection time -- reliable for "
+                                  "identifying heavily-reused plans, not for single-use plan "
+                                  "totals (see the summary above for that)"))
+
+
 def _fetch_top_sql(pg_conn, instance_id: int, begin_time, end_time, limit: int = 15) -> list:
     """
     One shared query backing all four "SQL ordered by..." sections --
@@ -1042,6 +1116,7 @@ def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
         _build_sql_ordered_by_executions(top_sql),
         _build_blocking_summary(pg_conn, instance_id, end_snapshot_id),
         _build_deadlock_summary(pg_conn, instance_id, begin_info["snapshot_time"], end_info["snapshot_time"]),
+        _build_plan_cache_health(pg_conn, end_snapshot_id),
         _build_complete_sql_text(top_sql),
     ]
 
