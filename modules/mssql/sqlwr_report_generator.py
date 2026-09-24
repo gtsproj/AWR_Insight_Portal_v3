@@ -946,6 +946,116 @@ def _build_tempdb_usage(pg_conn, end_snap: int, top_n: int = 15) -> str:
                      task_rows, "Point-in-time -- what's actively using TempDB at the end snapshot"))
 
 
+def _build_wait_events_by_procedure(pg_conn, instance_id: int, begin_time, end_time,
+                                      top_n: int = 15) -> str:
+    """
+    Per-procedure wait time breakdown, adapted from a reference script
+    Ganesh shared -- from sys.query_store_wait_stats (via
+    mssql_qs_wait_stats), Query Store's own per-query wait-category
+    attribution. Category-granularity, not individual wait-type
+    granularity (e.g. "Buffer IO" as a whole, not PAGEIOLATCH_SH vs
+    PAGEIOLATCH_EX separately) -- that's what this specific DMV
+    provides, distinct from the instance-wide, wait-type-granular data
+    the existing Wait Classes/Top Wait Types sections already show.
+    The genuinely new thing here is the PER-PROCEDURE attribution,
+    which sys.dm_os_wait_stats can't provide at all (it's instance-
+    wide, with no way to tell which query caused which wait).
+
+    Same time-window overlap join _fetch_top_sql already uses
+    (interval start_time < end_time AND end_time > begin_time, not a
+    strict "started inside the window" filter -- that exact mismatch
+    was a real, earlier bug in this project when applied to a sibling
+    Query Store table).
+
+    Excludes ad-hoc queries (object_name IS NULL) -- matching Ganesh's
+    own reference script's object_id != 0 filter -- since this
+    section is specifically about attributing wait time to a named
+    procedure, not every ad-hoc statement.
+
+    Columns are dynamic, not a fixed list of every possible
+    wait_category_desc value (SQL Server defines ~24) -- only
+    categories that actually appear with nonzero wait time somewhere
+    in this result set become columns, so the table stays readable
+    instead of mostly-empty and 24 columns wide in a typical window
+    where only a handful of categories are actually relevant.
+    """
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT q.object_name, ws.wait_category_desc,
+                   SUM(ws.total_query_wait_time_ms) AS total_wait_ms
+            FROM mssql_qs_wait_stats ws
+            JOIN mssql_qs_plan p
+              ON ws.instance_id = p.instance_id AND ws.database_name = p.database_name
+             AND ws.qs_plan_id = p.qs_plan_id
+            JOIN mssql_qs_query q
+              ON p.instance_id = q.instance_id AND p.database_name = q.database_name
+             AND p.qs_query_id = q.qs_query_id
+            JOIN mssql_qs_interval iv
+              ON ws.instance_id = iv.instance_id AND ws.database_name = iv.database_name
+             AND ws.qs_interval_id = iv.qs_interval_id
+            WHERE ws.instance_id = %s AND q.object_name IS NOT NULL
+              AND iv.start_time < %s AND iv.end_time > %s
+            GROUP BY q.object_name, ws.wait_category_desc
+        """, (instance_id, end_time, begin_time))
+        rows_raw = cur.fetchall()
+
+    # Executions fetched independently, grouped only by object_name -- NOT joined
+    # into the wait_category-grouped query above. A procedure with N distinct wait
+    # categories in the same interval would otherwise match its own runtime_stats
+    # row N times (once per category group), silently multiplying the execution
+    # count by N -- a real bug caught in testing (a procedure with count_executions=10
+    # and two wait categories showed 20 before this was split out).
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT q.object_name, SUM(rs.count_executions) AS total_executions
+            FROM mssql_qs_runtime_stats rs
+            JOIN mssql_qs_plan p
+              ON rs.instance_id = p.instance_id AND rs.database_name = p.database_name
+             AND rs.qs_plan_id = p.qs_plan_id
+            JOIN mssql_qs_query q
+              ON p.instance_id = q.instance_id AND p.database_name = q.database_name
+             AND p.qs_query_id = q.qs_query_id
+            JOIN mssql_qs_interval iv
+              ON rs.instance_id = iv.instance_id AND rs.database_name = iv.database_name
+             AND rs.qs_interval_id = iv.qs_interval_id
+            WHERE rs.instance_id = %s AND q.object_name IS NOT NULL
+              AND iv.start_time < %s AND iv.end_time > %s
+            GROUP BY q.object_name
+        """, (instance_id, end_time, begin_time))
+        executions_by_proc = {obj: int(execs or 0) for obj, execs in cur.fetchall()}
+
+    by_proc = {}
+    categories_seen = []
+    for obj, category, wait_ms in rows_raw:
+        wait_ms = float(wait_ms or 0)
+        if wait_ms <= 0:
+            continue
+        if category not in categories_seen:
+            categories_seen.append(category)
+        entry = by_proc.setdefault(obj, {"executions": executions_by_proc.get(obj, 0), "waits": {}})
+        entry["waits"][category] = entry["waits"].get(category, 0.0) + wait_ms
+
+    categories_seen.sort(key=lambda c: -sum(e["waits"].get(c, 0.0) for e in by_proc.values()))
+    ranked = sorted(by_proc.items(),
+                     key=lambda kv: sum(kv[1]["waits"].values()), reverse=True)[:top_n]
+
+    rows = []
+    for obj, entry in ranked:
+        total_ms = sum(entry["waits"].values())
+        row = [obj, entry["executions"], f"{total_ms/1000:.1f}"]
+        row += [f"{entry['waits'].get(c, 0.0)/1000:.1f}" for c in categories_seen]
+        rows.append(tuple(row))
+
+    headers = ["Stored Procedure", "Executions", "Total Wait (s)"] + categories_seen
+    if not rows:
+        rows = [("(no per-procedure wait data for this snapshot pair)",) + ("",) * (len(headers) - 1)]
+    return ('<h3>Wait Events by Stored Procedure</h3>\n'
+            + _table(headers, rows,
+                     "From Query Store's own wait-category attribution -- excludes ad-hoc "
+                     "queries; columns shown are only the categories with nonzero wait time "
+                     "in this window, not the full fixed set SQL Server defines"))
+
+
 def _fetch_top_sql(pg_conn, instance_id: int, begin_time, end_time, limit: int = 15) -> list:
     """
     One shared query backing all four "SQL ordered by..." sections --
@@ -1172,6 +1282,7 @@ def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
         _build_instance_efficiency(pg_conn, begin_snapshot_id, end_snapshot_id),
         _build_wait_classes(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
         _build_top_wait_types(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
+        _build_wait_events_by_procedure(pg_conn, instance_id, begin_info["snapshot_time"], end_info["snapshot_time"]),
         _build_memory_statistics(pg_conn, end_snapshot_id),
         _build_io_profile(pg_conn, begin_snapshot_id, end_snapshot_id, elapsed_seconds),
         _build_io_stalls_by_file_type(pg_conn, begin_snapshot_id, end_snapshot_id),
