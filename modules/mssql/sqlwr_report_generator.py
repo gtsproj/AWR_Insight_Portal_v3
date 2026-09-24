@@ -875,6 +875,77 @@ def _build_plan_cache_health(pg_conn, end_snap: int, top_n: int = 15) -> str:
                                   "totals (see the summary above for that)"))
 
 
+def _build_tempdb_usage(pg_conn, end_snap: int, top_n: int = 15) -> str:
+    """
+    TempDB usage, point-in-time at the END snapshot -- deliberately
+    NOT delta'd like most other sections here. session_id is reused
+    across completely different connections over time (a session that
+    disconnects frees its id for reuse), so a "delta" between two
+    snapshots for the same session_id could silently mix two unrelated
+    connections' activity together rather than showing one session's
+    real usage change. Point-in-time avoids that entirely -- the same
+    approach Blocking Summary and Plan Cache Health already use for
+    their own similarly session/state-scoped data.
+
+    Two views: sessions (sys.dm_db_session_space_usage, cumulative
+    across each session's own lifetime -- user objects are explicit
+    temp tables/variables the session created; internal objects are
+    what the engine itself spilled to TempDB, e.g. sort/hash spills,
+    worktables) and currently-executing tasks
+    (sys.dm_db_task_space_usage, active allocation right now -- the
+    more immediate "what's actively pressuring TempDB at this exact
+    moment" view).
+    """
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT session_id, login_name, user_objects_alloc_page_count,
+                   internal_objects_alloc_page_count
+            FROM mssql_tempdb_session_usage
+            WHERE snapshot_id = %s
+              AND (COALESCE(user_objects_alloc_page_count, 0) > 0
+                   OR COALESCE(internal_objects_alloc_page_count, 0) > 0)
+            ORDER BY (COALESCE(user_objects_alloc_page_count, 0)
+                      + COALESCE(internal_objects_alloc_page_count, 0)) DESC
+            LIMIT %s
+        """, (end_snap, top_n))
+        session_rows_raw = cur.fetchall()
+
+    session_rows = [
+        (sid, login or "", f"{(uobj or 0) * 8 / 1024:.2f}", f"{(iobj or 0) * 8 / 1024:.2f}")
+        for sid, login, uobj, iobj in session_rows_raw
+    ]
+    if not session_rows:
+        session_rows = [("(no active TempDB session usage recorded for this snapshot)", "", "", "")]
+
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT session_id, request_id, internal_objects_alloc_page_count,
+                   internal_objects_dealloc_page_count
+            FROM mssql_tempdb_task_usage
+            WHERE snapshot_id = %s AND COALESCE(internal_objects_alloc_page_count, 0) > 0
+            ORDER BY internal_objects_alloc_page_count DESC
+            LIMIT %s
+        """, (end_snap, top_n))
+        task_rows_raw = cur.fetchall()
+
+    task_rows = [
+        (sid, rid, f"{(alloc or 0) * 8 / 1024:.2f}", f"{(dealloc or 0) * 8 / 1024:.2f}")
+        for sid, rid, alloc, dealloc in task_rows_raw
+    ]
+    if not task_rows:
+        task_rows = [("(no currently-executing tasks allocating TempDB space at this snapshot)",
+                       "", "", "")]
+
+    return ('<h3>TempDB Usage</h3>\n'
+            + '<p>Top sessions by TempDB space (cumulative across each session\'s lifetime):</p>\n'
+            + _table(["Session ID", "Login", "User Objects (MB)", "Internal Objects (MB)"],
+                     session_rows, "User objects = explicit temp tables/variables; "
+                                    "internal objects = engine spills (sorts, hashes, worktables)")
+            + '<p>Currently-executing tasks allocating TempDB space right now:</p>\n'
+            + _table(["Session ID", "Request ID", "Allocated (MB)", "Deallocated (MB)"],
+                     task_rows, "Point-in-time -- what's actively using TempDB at the end snapshot"))
+
+
 def _fetch_top_sql(pg_conn, instance_id: int, begin_time, end_time, limit: int = 15) -> list:
     """
     One shared query backing all four "SQL ordered by..." sections --
@@ -1117,6 +1188,7 @@ def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
         _build_blocking_summary(pg_conn, instance_id, end_snapshot_id),
         _build_deadlock_summary(pg_conn, instance_id, begin_info["snapshot_time"], end_info["snapshot_time"]),
         _build_plan_cache_health(pg_conn, end_snapshot_id),
+        _build_tempdb_usage(pg_conn, end_snapshot_id),
         _build_complete_sql_text(top_sql),
     ]
 
