@@ -207,6 +207,52 @@ def run_sqlwr_auto_generation(pg_conn, host_name: str, instance_name: str, outpu
         logger.error(f"SQLWR auto-generation failed for {host_name}\\{instance_name}: {e}")
 
 
+# The three materialized views this project maintains for MS SQL
+# Server -- MSSQL analogs to the Oracle side's own routinely-refreshed
+# set (master_parser.py's _MV_NAMES), refreshed here instead of after
+# a parse step, since MSSQL's collectors write structured data
+# directly and there's no separate parse-the-report step in this
+# pipeline yet.
+_MSSQL_MV_NAMES = [
+    "public.mssql_wait_summary_mv",
+    "public.mssql_sql_summary_mv",
+    "public.mssql_segment_summary_mv",
+]
+
+
+def refresh_mssql_materialized_views(pg_conn):
+    """
+    Called once per scheduler tick, after every due instance's
+    collection cycle for that tick has finished -- not per-instance,
+    since refreshing the same shared MVs redundantly for each of
+    several instances due in the same tick would be wasteful.
+
+    Same CONCURRENTLY-with-fallback pattern as the Oracle side's own
+    _refresh_materialized_views() (master_parser.py): tries CONCURRENTLY
+    first (needs the unique mv_id index every one of these MVs already
+    has), falls back to a blocking refresh only if that fails, and one
+    MV's failure doesn't stop the others from refreshing.
+    """
+    logger.info("Refreshing MS SQL materialized views...")
+    try:
+        pg_conn.autocommit = True
+        with pg_conn.cursor() as cur:
+            for mv in _MSSQL_MV_NAMES:
+                try:
+                    cur.execute(f"REFRESH MATERIALIZED VIEW CONCURRENTLY {mv};")
+                    logger.info(f"  {mv} (concurrent)")
+                except Exception as e1:
+                    logger.warning(f"  {mv} concurrent refresh failed ({e1}) -- retrying non-concurrent")
+                    try:
+                        cur.execute(f"REFRESH MATERIALIZED VIEW {mv};")
+                        logger.info(f"  {mv} (non-concurrent)")
+                    except Exception as e2:
+                        logger.error(f"  Failed to refresh {mv}: {e2}")
+        pg_conn.autocommit = False
+    except Exception as e:
+        logger.error(f"MS SQL materialized view refresh failed: {e}")
+
+
 def is_due(interval_minutes: int, now: datetime.datetime = None) -> bool:
     """
     True if `now` (checked to the minute) lands exactly on a
@@ -276,9 +322,11 @@ def run_from_config(sqlwr_output_dir: str = "sqlwr_reports"):
         time.sleep(max(0, (next_minute - datetime.datetime.now()).total_seconds()))
 
         now = datetime.datetime.now()
+        any_due = False
         for c in connections:
             if not is_due(c["snap_interval_minutes"], now):
                 continue
+            any_due = True
 
             logger.info(f"=== Collection cycle: {c['host_name']}\\{c['instance_name']} "
                         f"at {now.strftime('%Y-%m-%d %H:%M:%S')} ===")
@@ -298,6 +346,9 @@ def run_from_config(sqlwr_output_dir: str = "sqlwr_reports"):
             run_sqlwr_auto_generation(pg_conn, c["host_name"], c["instance_name"], sqlwr_output_dir)
 
             cc.record_run_result(pg_conn, c["id"], "success")
+
+        if any_due:
+            refresh_mssql_materialized_views(pg_conn)
 
 
 def main():
