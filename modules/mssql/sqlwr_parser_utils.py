@@ -33,6 +33,7 @@ empty section aborting all the others.
 
 import os
 import sys
+import warnings
 from io import StringIO
 
 import pandas as pd
@@ -52,7 +53,20 @@ def extract_sqlwr_metadata(soup) -> dict:
     plus host_name and end_snap/end_snap_time (extracted here,
     specific to this report's own HTML shape).
     """
-    metadata = extract_workload_repo_metadata(soup)
+    # The shared function parses snap_time with dayfirst=True (right for Oracle
+    # AWR's dd/mm dates). On this report's ISO timestamps that produces a pandas
+    # UserWarning when the day is > 12 (dayfirst is ignored, value is correct) and
+    # SILENTLY swaps day/month when the day is <= 12. The warning is therefore
+    # noise, and the silent case is the real hazard -- which is why snap_time is
+    # re-parsed correctly below and overwritten. Suppress only that one message
+    # (not a blanket filter) so any other, genuine warning still surfaces.
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message=r"Parsing dates in .* when dayfirst=True was specified",
+            category=UserWarning,
+        )
+        metadata = extract_workload_repo_metadata(soup)
     metadata["host_name"] = None
     metadata["end_snap"] = None
     metadata["end_snap_time"] = None
@@ -181,7 +195,12 @@ def insert_records(records: list, table_name: str, columns: list, conflict_colum
     named placeholders, not positional).
     """
     if not records:
-        logger.warning(f"No records to insert into {table_name}")
+        # Every caller reaches here only after already logging the actual reason at
+        # the right level (INFO for a section that legitimately has no data rows,
+        # WARNING if the section is missing from the report, ERROR if the instance
+        # can't be resolved) -- a second WARNING here just duplicated that and made
+        # a perfectly normal empty section look like a problem.
+        logger.debug(f"No records to insert into {table_name}")
         return 0
 
     records = [sanitize_record(dict(rec)) for rec in records]
