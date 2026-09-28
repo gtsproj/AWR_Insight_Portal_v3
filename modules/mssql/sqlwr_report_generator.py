@@ -1223,12 +1223,14 @@ def _build_sql_ordered_by_gets(top_sql: list) -> str:
     """MSSQL's avg_logical_io_reads (logical page reads) is the direct
     analog to Oracle's "Gets" (logical reads / buffer gets) here."""
     total_reads = sum(r["logical_reads"] for r in top_sql) or 1.0
-    total_elapsed = sum(r["elapsed_time_s"] for r in top_sql) or 1.0
     ranked = sorted(top_sql, key=lambda r: r["logical_reads"], reverse=True)[:15]
     rows = [(
         f'{r["logical_reads"]:.0f}', r["executions"], f'{r["reads_per_exec"]:.1f}',
         f'{100 * r["logical_reads"] / total_reads:.2f}',
-        f'{100 * r["elapsed_time_s"] / total_elapsed:.2f}',
+        # This column is headed "Elapsed Time (s)" -- it must hold SECONDS, like the
+        # same-named column in the CPU Time and Executions sections. It previously held
+        # 100 * elapsed / total_elapsed (a percentage), which under that header was simply wrong.
+        f'{r["elapsed_time_s"]:.2f}',
         f'{100 * r["cpu_time_s"] / r["elapsed_time_s"]:.2f}' if r["elapsed_time_s"] else "0.00",
         "0.00",
         r["sql_id"], r["database_name"], r["object_name"] or "(ad hoc / no object)",
