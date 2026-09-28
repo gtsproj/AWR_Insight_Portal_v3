@@ -82,6 +82,18 @@ def extract_sqlwr_metadata(soup) -> dict:
                 if not vals:
                     continue
                 label = str(vals[0]).strip().lower()
+                if "begin snap" in label and len(vals) > 2:
+                    # The shared extract_workload_repo_metadata() parses snap_time with
+                    # dayfirst=True (correct for Oracle AWR's dd/mm-style dates), which
+                    # SWAPS day and month on this report's ISO timestamps whenever the
+                    # day is <= 12 (confirmed directly: '2026-09-03' -> 2026-03-09).
+                    # Re-parse the begin snapshot time here without dayfirst so
+                    # metadata["snap_time"] is right for every day of the month.
+                    ts = str(vals[2]).strip()
+                    if ts and ts.lower() not in ("nan", "none"):
+                        parsed = pd.to_datetime(ts, errors="coerce")
+                        if not pd.isna(parsed):
+                            metadata["snap_time"] = parsed
                 if "end snap" in label:
                     try:
                         metadata["end_snap"] = int(float(str(vals[1])))
