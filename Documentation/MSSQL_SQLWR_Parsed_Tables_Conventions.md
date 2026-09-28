@@ -69,7 +69,14 @@ Not every empty section is a problem. There are two shapes:
   `SQL ordered by ...` sections render when there is no Query Store data (some older reports rendered
   those sections this way too).
 
-Both are normal: the parser logs INFO and inserts nothing. A section that is missing from the report
+Both are normal: the parser logs INFO and inserts nothing.
+
+**Two sections contain two tables**, each with its own placeholder, and each has its own parser and
+table: *Plan Cache Health* (summary -> `mssql_sqlwr_plan_cache_summary`, top cached plans ->
+`mssql_sqlwr_plan_cache_detail`) and *TempDB Usage* (sessions -> `mssql_sqlwr_tempdb_sessions`,
+tasks -> `mssql_sqlwr_tempdb_tasks`). They are classified independently: report `1_70_71` has an empty
+plan cache summary next to a full detail table. The TempDB tasks table is empty in every report seen
+so far, because it only lists tasks that happen to be allocating TempDB at the end-snapshot instant. A section that is missing from the report
 altogether (an older report that predates it) logs a WARNING and inserts nothing.
 
 ## 4. Getting from a parsed row back to the raw data
@@ -131,3 +138,18 @@ Idempotency is keyed on a hash of the parsed values. Re-running the same report 
 inserts nothing. If a parser is changed so that a value it produces changes, re-running an already
 loaded report **adds a second set of rows**; delete that report's rows (by `begin_snapshot_id`)
 first.
+
+## 8. Things that look like ids but are not, and a known upstream limit
+
+* **`query_hash` (plan cache detail) is not `sql_id`.** `mssql_sqlwr_plan_cache_detail.query_hash` is the
+  plan cache's hash of the statement text (16 hex characters, stored as text — it can be all digits or start
+  with zeros). `sql_id` in the `SQL ordered by ...` tables is Query Store's `query_id`. They are different
+  identifiers and do not join. Several cached plans can share one `query_hash`.
+* **TempDB sessions are cumulative; `session_id` is only unique within a report.** The figures are the
+  session's allocations over its whole lifetime, and SQL Server reuses a session id after a disconnect.
+* **Parallel requests are understated in `mssql_sqlwr_tempdb_tasks`.** `sys.dm_db_task_space_usage` returns one
+  row per *task* (per `exec_context_id`); a parallel query runs several tasks under the same session and request.
+  The collector keeps one row per (snapshot, session, request) — the first task it sees — and discards the
+  rest, so a parallel request's Allocated/Deallocated shows one worker's share, not the request's total (shown
+  on the database: three 8 MB workers in, one 8 MB row stored, true total 24 MB). Treat those numbers as a
+  lower bound for parallel requests until the collector sums per (session, request).
