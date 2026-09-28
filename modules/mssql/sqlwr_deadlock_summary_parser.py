@@ -46,7 +46,7 @@ from bs4 import BeautifulSoup
 
 from sqlwr_parser_utils import (
     extract_sqlwr_metadata, resolve_instance_id, get_section_table,
-    is_section_missing_or_empty, insert_records, row_hash, clean_number,
+    is_section_missing_or_empty, insert_records, assign_row_hashes, clean_number,
     text_or_none,
 )
 from logger_utils import get_logger
@@ -109,7 +109,6 @@ def parse_deadlock_summary(filepath: str, pg_conn=None) -> list:
 
     table = soup.find("h3", string=SECTION_HEADING).find_next("table")
     records = []
-    seen = {}                                   # identical-row counter (see module docstring)
     for cells in _read_rows(table):
         time_text = cells["Time"].get_text(strip=True) if "Time" in cells else ""
         try:
@@ -135,10 +134,8 @@ def parse_deadlock_summary(filepath: str, pg_conn=None) -> list:
             "victim_proc_or_statement": cell("Victim Proc/Statement"),
             "begin_snapshot_id": metadata["begin_snap"],
         }
-        n = seen.get(row_hash(rec), 0)          # how many identical rows came before this one
-        seen[row_hash(rec)] = n + 1
-        rec["row_hash"] = row_hash(rec) if n == 0 else row_hash({**rec, "_dup_seq": n})
         records.append(rec)
+    assign_row_hashes(records)      # numbers repeated rows so none is dropped (see module docstring)
 
     logger.info(f"Parsed {len(records)} {SECTION_HEADING} record(s) from {filepath}")
     return records

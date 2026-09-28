@@ -183,6 +183,75 @@ def normalize_sql_id(value):
     return s
 
 
+def get_section_tables(soup, heading_text: str) -> list:
+    """
+    ALL <table> tags belonging to a section: every table after its <h3> heading up to the next
+    <h3>. Most sections have exactly one; Plan Cache Health and TempDB Usage each render two
+    (separated by a <p> caption) -- get_section_table() only ever returns the first.
+    """
+    heading = soup.find("h3", string=heading_text)
+    if heading is None:
+        return []
+    tables = []
+    for el in heading.find_all_next():
+        if el.name == "h3":
+            break
+        if el.name == "table":
+            tables.append(el)
+    return tables
+
+
+def read_raw_rows(table) -> list:
+    """
+    A <table> tag -> list of {header text: cell TEXT} dicts, straight from the HTML with no type
+    inference. Unlike pandas.read_html this keeps a value such as the query hash "0123456789012345"
+    a string (pandas turns an all-numeric column into integers and drops the leading zero), leaves
+    names like "NA"/"null" as text, and keeps line breaks. Values are unstripped -- callers pass
+    them through text_or_none() / clean_number().
+    """
+    header = [th.get_text(strip=True) for th in table.find("tr").find_all("th")]
+    rows = []
+    for tr in table.find_all("tr")[1:]:
+        cells = tr.find_all("td")
+        if cells:
+            rows.append({h: c.get_text() for h, c in zip(header, cells)})
+    return rows
+
+
+def subtable_is_empty(table, label: str, table_name: str) -> bool:
+    """
+    Classify ONE table of a multi-table section (header-only / "(no ...)" placeholder) with the same
+    rules and log messages as is_section_missing_or_empty(); `label` names the sub-table in the log.
+    The tables of a section are independent -- one can be a placeholder while its neighbour has data.
+    """
+    try:
+        df = pd.read_html(StringIO(str(table)))[0]
+    except ValueError:
+        df = None
+    return is_section_missing_or_empty(df, label, table_name)
+
+
+def assign_row_hashes(records: list) -> list:
+    """
+    Sets rec["row_hash"] on every record (records must not have one yet).
+
+    The insert rule is "unique on (database_name, instance_id, begin_snapshot_id, row_hash)" with
+    ON CONFLICT DO NOTHING, so two rows of one report that are identical in every value would silently
+    collapse into one. That undercounts real events -- e.g. parallel workers of one query with the
+    same TempDB allocation, or two deadlocks in the same second. So repeated rows within a report are
+    numbered: the 2nd, 3rd... copy has its occurrence number mixed into its hash; the FIRST copy hashes
+    exactly as the plain values would. Re-parsing the same report reproduces the same numbering, so it
+    stays idempotent.
+    """
+    seen = {}
+    for rec in records:
+        base = row_hash(rec)
+        n = seen.get(base, 0)
+        seen[base] = n + 1
+        rec["row_hash"] = base if n == 0 else row_hash({**rec, "_dup_seq": n})
+    return records
+
+
 def get_section_table(soup, heading_text: str):
     """
     Find a report section's table by its exact <h3> heading text and
