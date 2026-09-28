@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS mssql_sqlwr_instance_efficiency (
     CONSTRAINT uq_sqlwr_inst_eff UNIQUE (database_name, instance_id, begin_snapshot_id, row_hash)
         USING INDEX TABLESPACE mssqlparser_idx
 ) TABLESPACE mssqlparser;
-COMMENT ON TABLE mssql_sqlwr_instance_efficiency IS 'Parsed data for the SQLWR report Instance Efficiency Percentages section -- Buffer Cache Hit Ratio, Page Life Expectancy, Memory Grants Pending, one row per metric per report.';
+COMMENT ON TABLE mssql_sqlwr_instance_efficiency IS 'Parsed data for the SQLWR report Instance Efficiency Percentages section -- Buffer Cache Hit Ratio, Page Life Expectancy, Memory Grants Pending, one row per metric per report. POINT-IN-TIME: this section is read at the END snapshot only (not a delta or a window). begin_snapshot_id keys the report; snapshot_time is the instant actually observed (the time of the end snapshot). Join to mssql_dmv_snapshot on (instance_id, snapshot_time) to reach the raw sample.';
 
 
 -- ── Wait Classes by Total Wait Time ──────────────────────────
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS mssql_sqlwr_memory_stats (
     CONSTRAINT uq_sqlwr_memory_stats UNIQUE (database_name, instance_id, begin_snapshot_id, row_hash)
         USING INDEX TABLESPACE mssqlparser_idx
 ) TABLESPACE mssqlparser;
-COMMENT ON TABLE mssql_sqlwr_memory_stats IS 'Parsed data for the SQLWR report Memory Statistics section -- host physical memory, memory allocated/used by SQL Server, one row per metric per report.';
+COMMENT ON TABLE mssql_sqlwr_memory_stats IS 'Parsed data for the SQLWR report Memory Statistics section -- host physical memory, memory allocated/used by SQL Server, one row per metric per report. POINT-IN-TIME: this section is read at the END snapshot only (not a delta or a window). begin_snapshot_id keys the report; snapshot_time is the instant actually observed (the time of the end snapshot). Join to mssql_dmv_snapshot on (instance_id, snapshot_time) to reach the raw sample.';
 
 
 -- ── IO Profile ────────────────────────────────────────────────
@@ -523,7 +523,7 @@ CREATE TABLE IF NOT EXISTS mssql_sqlwr_blocking_summary (
     CONSTRAINT uq_sqlwr_blocking UNIQUE (database_name, instance_id, begin_snapshot_id, row_hash)
         USING INDEX TABLESPACE mssqlparser_idx
 ) TABLESPACE mssqlparser;
-COMMENT ON TABLE mssql_sqlwr_blocking_summary IS 'Parsed data for the SQLWR report Blocking Summary section -- blocking sessions observed at the end snapshot, one row per blocked session per report. MSSQL-specific; no Oracle AWR equivalent.';
+COMMENT ON TABLE mssql_sqlwr_blocking_summary IS 'Parsed data for the SQLWR report Blocking Summary section -- blocking sessions observed at the end snapshot, one row per blocked session per report. MSSQL-specific; no Oracle AWR equivalent. POINT-IN-TIME: this section is read at the END snapshot only (not a delta or a window). begin_snapshot_id keys the report; snapshot_time is the instant actually observed (the time of the end snapshot). Join to mssql_dmv_snapshot on (instance_id, snapshot_time) to reach the raw sample.';
 
 
 -- ── Deadlock Summary (MSSQL-specific; no Oracle equivalent) ──
@@ -569,7 +569,7 @@ CREATE TABLE IF NOT EXISTS mssql_sqlwr_plan_cache_summary (
     CONSTRAINT uq_sqlwr_pc_summary UNIQUE (database_name, instance_id, begin_snapshot_id, row_hash)
         USING INDEX TABLESPACE mssqlparser_idx
 ) TABLESPACE mssqlparser;
-COMMENT ON TABLE mssql_sqlwr_plan_cache_summary IS 'Parsed data for the SQLWR report Plan Cache Health section (summary part) -- total/single-use/ad hoc plan counts and memory, one row per metric per report. MSSQL-specific; no Oracle AWR equivalent.';
+COMMENT ON TABLE mssql_sqlwr_plan_cache_summary IS 'Parsed data for the SQLWR report Plan Cache Health section (summary part) -- total/single-use/ad hoc plan counts and memory, one row per metric per report. MSSQL-specific; no Oracle AWR equivalent. POINT-IN-TIME: this section is read at the END snapshot only (not a delta or a window). begin_snapshot_id keys the report; snapshot_time is the instant actually observed (the time of the end snapshot). Join to mssql_dmv_snapshot on (instance_id, snapshot_time) to reach the raw sample.';
 
 
 CREATE TABLE IF NOT EXISTS mssql_sqlwr_plan_cache_detail (
@@ -592,7 +592,7 @@ CREATE TABLE IF NOT EXISTS mssql_sqlwr_plan_cache_detail (
     CONSTRAINT uq_sqlwr_pc_detail UNIQUE (database_name, instance_id, begin_snapshot_id, row_hash)
         USING INDEX TABLESPACE mssqlparser_idx
 ) TABLESPACE mssqlparser;
-COMMENT ON TABLE mssql_sqlwr_plan_cache_detail IS 'Parsed data for the SQLWR report Plan Cache Health section (detail part) -- top cached plans by reuse count, one row per plan per report. MSSQL-specific; no Oracle AWR equivalent.';
+COMMENT ON TABLE mssql_sqlwr_plan_cache_detail IS 'Parsed data for the SQLWR report Plan Cache Health section (detail part) -- top cached plans by reuse count, one row per plan per report. MSSQL-specific; no Oracle AWR equivalent. POINT-IN-TIME: this section is read at the END snapshot only (not a delta or a window). begin_snapshot_id keys the report; snapshot_time is the instant actually observed (the time of the end snapshot). Join to mssql_dmv_snapshot on (instance_id, snapshot_time) to reach the raw sample.';
 
 
 -- ── TempDB Usage (MSSQL-specific; no Oracle equivalent) ──────
@@ -613,7 +613,7 @@ CREATE TABLE IF NOT EXISTS mssql_sqlwr_tempdb_sessions (
     CONSTRAINT uq_sqlwr_tempdb_sess UNIQUE (database_name, instance_id, begin_snapshot_id, row_hash)
         USING INDEX TABLESPACE mssqlparser_idx
 ) TABLESPACE mssqlparser;
-COMMENT ON TABLE mssql_sqlwr_tempdb_sessions IS 'Parsed data for the SQLWR report TempDB Usage section (sessions part) -- top sessions by cumulative TempDB space, one row per session per report. MSSQL-specific; no Oracle AWR equivalent.';
+COMMENT ON TABLE mssql_sqlwr_tempdb_sessions IS 'Parsed data for the SQLWR report TempDB Usage section (sessions part) -- top sessions by cumulative TempDB space, one row per session per report. MSSQL-specific; no Oracle AWR equivalent. POINT-IN-TIME: this section is read at the END snapshot only (not a delta or a window). begin_snapshot_id keys the report; snapshot_time is the instant actually observed (the time of the end snapshot). Join to mssql_dmv_snapshot on (instance_id, snapshot_time) to reach the raw sample.';
 
 
 CREATE TABLE IF NOT EXISTS mssql_sqlwr_tempdb_tasks (
@@ -633,7 +633,7 @@ CREATE TABLE IF NOT EXISTS mssql_sqlwr_tempdb_tasks (
     CONSTRAINT uq_sqlwr_tempdb_task UNIQUE (database_name, instance_id, begin_snapshot_id, row_hash)
         USING INDEX TABLESPACE mssqlparser_idx
 ) TABLESPACE mssqlparser;
-COMMENT ON TABLE mssql_sqlwr_tempdb_tasks IS 'Parsed data for the SQLWR report TempDB Usage section (tasks part) -- currently-executing tasks allocating TempDB space, one row per task per report. MSSQL-specific; no Oracle AWR equivalent.';
+COMMENT ON TABLE mssql_sqlwr_tempdb_tasks IS 'Parsed data for the SQLWR report TempDB Usage section (tasks part) -- currently-executing tasks allocating TempDB space, one row per task per report. MSSQL-specific; no Oracle AWR equivalent. POINT-IN-TIME: this section is read at the END snapshot only (not a delta or a window). begin_snapshot_id keys the report; snapshot_time is the instant actually observed (the time of the end snapshot). Join to mssql_dmv_snapshot on (instance_id, snapshot_time) to reach the raw sample.';
 
 
 \echo ''

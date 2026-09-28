@@ -11,6 +11,12 @@ that sentinel-sized number rather than a real allocation -- that is a property
 of the report's content, not something this parser should silently rewrite, so
 anything reading this table (dashboards, materialized views) needs to treat
 values at/near 2147483647 as "unlimited", not as megabytes.
+
+POINT-IN-TIME section: read at the END snapshot only -- not a delta and not a window. The
+values describe the server at the instant of the end snapshot, so snapshot_time is that instant.
+begin_snapshot_id still keys the report (begin -> end); the raw sample sits under the END
+snapshot_id. To reach it, join mssql_dmv_snapshot on (instance_id, snapshot_time). See
+Documentation/MSSQL_SQLWR_Parsed_Tables_Conventions.md.
 """
 
 import sys

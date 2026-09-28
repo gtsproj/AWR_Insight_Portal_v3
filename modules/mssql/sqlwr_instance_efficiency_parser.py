@@ -5,6 +5,12 @@ Parses the SQLWR report's Instance Efficiency Percentages section (a
 2-column "Metric" / "Value" table) into mssql_sqlwr_instance_efficiency.
 Structurally identical to the Load Profile parser -- same pattern,
 different section.
+
+POINT-IN-TIME section: read at the END snapshot only -- not a delta and not a window. The
+values describe the server at the instant of the end snapshot, so snapshot_time is that instant.
+begin_snapshot_id still keys the report (begin -> end); the raw sample sits under the END
+snapshot_id. To reach it, join mssql_dmv_snapshot on (instance_id, snapshot_time). See
+Documentation/MSSQL_SQLWR_Parsed_Tables_Conventions.md.
 """
 
 import sys
