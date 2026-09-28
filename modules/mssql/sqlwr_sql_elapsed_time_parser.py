@@ -29,7 +29,6 @@ Things specific to this family of sections:
   missing column is stored as NULL; a header-only table inserts nothing).
 """
 
-import re
 import sys
 import warnings
 
@@ -38,6 +37,7 @@ from bs4 import BeautifulSoup
 from sqlwr_parser_utils import (
     extract_sqlwr_metadata, resolve_instance_id, get_section_table,
     is_section_missing_or_empty, insert_records, row_hash, clean_number,
+    text_or_none as _text, parse_pct as _pct, normalize_sql_id,
 )
 from logger_utils import get_logger
 
@@ -46,36 +46,6 @@ logger = get_logger("sqlwr_sql_elapsed_time_parser")
 
 SECTION_HEADING = "SQL ordered by Elapsed Time"
 TABLE_NAME = "mssql_sqlwr_sql_elapsed_time"
-
-_Q_PREFIXED_ID = re.compile(r"^q(\d+)$", re.IGNORECASE)
-_FLOATED_INT = re.compile(r"^(\d+)\.0+$")
-
-
-def _text(value):
-    if value is None:
-        return None
-    s = str(value).strip()
-    return None if s == "" or s.lower() == "nan" else s
-
-
-def normalize_sql_id(value):
-    """'q39' -> '39', '47.0' -> '47', '47' -> '47', empty/NaN -> None."""
-    s = _text(value)
-    if s is None:
-        return None
-    m = _Q_PREFIXED_ID.match(s)
-    if m:
-        return m.group(1)
-    m = _FLOATED_INT.match(s)
-    if m:
-        return m.group(1)
-    return s
-
-
-def _pct(value):
-    """Percent cell -> float. Tolerates a trailing '%' (some sections render one)."""
-    return clean_number(str(value).strip().rstrip("%"))
-
 
 def parse_sql_elapsed_time(filepath: str, pg_conn=None) -> list:
     with open(filepath, "r", encoding="utf-8") as f:

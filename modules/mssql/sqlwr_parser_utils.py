@@ -32,6 +32,7 @@ empty section aborting all the others.
 """
 
 import os
+import re
 import sys
 import warnings
 from io import StringIO
@@ -138,6 +139,50 @@ def resolve_instance_id(pg_conn, host_name, instance_name):
     return row[0] if row else None
 
 
+def text_or_none(value):
+    """Cell text stripped, or None for None / empty / NaN (pandas' marker for a missing cell)."""
+    if value is None:
+        return None
+    s = str(value).strip()
+    return None if s == "" or s.lower() == "nan" else s
+
+
+def parse_pct(value):
+    """Percent cell -> float. Tolerates a trailing '%' (some sections render one, some don't)."""
+    return clean_number(str(value).strip().rstrip("%"))
+
+
+_Q_PREFIXED_ID = re.compile(r"^q(\d+)$", re.IGNORECASE)
+_FLOATED_INT = re.compile(r"^(\d+)\.0+$")
+
+
+def normalize_sql_id(value):
+    """
+    Query Store query_id as text, one canonical form across report ages.
+
+    Reports generated before the cosmetic "q" prefix was dropped carry ids like
+    "q39"; current reports carry "39" -- the prefix carried no information (see
+    sqlwr_report_generator.py), so it is stripped, otherwise the same query would
+    be stored under two ids depending on report age. Also strips the ".0" pandas
+    produces when a whole-number column has a missing cell. Deliberately strict:
+    only a leading q followed ENTIRELY by digits, or digits followed by .0+ --
+    anything else is returned untouched.
+
+        'q39' -> '39'   39 -> '39'   47.0 -> '47'   None/NaN/'' -> None
+        'q39a', 'qq39', '47.5', '0x1F' -> unchanged
+    """
+    s = text_or_none(value)
+    if s is None:
+        return None
+    m = _Q_PREFIXED_ID.match(s)
+    if m:
+        return m.group(1)
+    m = _FLOATED_INT.match(s)
+    if m:
+        return m.group(1)
+    return s
+
+
 def get_section_table(soup, heading_text: str):
     """
     Find a report section's table by its exact <h3> heading text and
@@ -165,8 +210,15 @@ def is_section_missing_or_empty(df, section_name: str, table_name: str) -> bool:
     pair)", counts as empty here too, so those placeholder rows never
     get parsed as real data).
     """
-    if df is None or df.empty:
+    if df is None:
         logger.warning(f"{section_name} section not found or has no table.")
+        return True
+    if df.empty:
+        # Table present with a header row but no data rows: how the report renders
+        # an empty SQL-ordered-by section (and how some older reports rendered
+        # others). A legitimate empty state, not a problem -- INFO, not WARNING.
+        logger.info(f"{section_name}: table has a header but no data rows -- "
+                    f"nothing to insert into {table_name}.")
         return True
     if df.dropna(how="all").empty:
         logger.warning(f"{section_name} section has no data rows.")
