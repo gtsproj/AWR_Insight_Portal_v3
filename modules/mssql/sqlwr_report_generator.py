@@ -67,7 +67,8 @@ def _get_snapshot_info(pg_conn, snapshot_id: int) -> dict:
     with pg_conn.cursor() as cur:
         cur.execute("""
             SELECT s.snapshot_id, s.snapshot_time, s.instance_id,
-                   m.host_name, m.instance_name, m.sql_version, m.sql_edition
+                   m.host_name, m.instance_name, m.sql_version, m.sql_edition,
+                   s.sqlserver_start_time
             FROM mssql_dmv_snapshot s
             JOIN mssql_instance_master m ON s.instance_id = m.id
             WHERE s.snapshot_id = %s
@@ -79,26 +80,179 @@ def _get_snapshot_info(pg_conn, snapshot_id: int) -> dict:
         "snapshot_id": row[0], "snapshot_time": row[1], "instance_id": row[2],
         "host_name": row[3], "instance_name": row[4],
         "sql_version": row[5], "sql_edition": row[6],
+        "sqlserver_start_time": row[7],
     }
 
 
-def _build_database_summary(begin_info: dict, db_name: str = None) -> str:
-    rows = [(db_name or "(not collected)", begin_info["host_name"], begin_info["instance_name"],
-              begin_info.get("sql_version") or "(not collected)",
-              begin_info.get("sql_edition") or "(not collected)")]
+def _get_config_info(pg_conn, snapshot_id: int, db_name: str = None) -> dict:
+    """
+    database_id, socket_count, cores_per_socket, host_platform, host_distribution,
+    cpu_count, physical_memory_kb from mssql_config_snapshot for one snapshot.
+    Host-level fields (everything except database_id) are the same on every row for
+    a given snapshot_id, so when db_name doesn't match a single row exactly (no
+    database given, or a report that spans more than one database) any row for that
+    snapshot still gives correct host-level values -- only database_id would then
+    be an arbitrary one of the databases collected, which is why database_id is
+    NULLed out in that case rather than shown as if it were the report's database.
+    """
+    empty = {"database_id": None, "socket_count": None, "cores_per_socket": None,
+             "host_platform": None, "host_distribution": None,
+             "cpu_count": None, "physical_memory_kb": None}
+    with pg_conn.cursor() as cur:
+        if db_name:
+            cur.execute("""
+                SELECT database_id, socket_count, cores_per_socket, host_platform,
+                       host_distribution, cpu_count, physical_memory_kb
+                FROM mssql_config_snapshot WHERE snapshot_id = %s AND database_name = %s
+            """, (snapshot_id, db_name))
+            row = cur.fetchone()
+            if row:
+                return dict(zip(empty.keys(), row))
+        cur.execute("""
+            SELECT socket_count, cores_per_socket, host_platform, host_distribution,
+                   cpu_count, physical_memory_kb
+            FROM mssql_config_snapshot WHERE snapshot_id = %s LIMIT 1
+        """, (snapshot_id,))
+        row = cur.fetchone()
+    if not row:
+        return empty
+    out = dict(empty)
+    out.update(zip(["socket_count", "cores_per_socket", "host_platform", "host_distribution",
+                     "cpu_count", "physical_memory_kb"], row))
+    return out
+
+
+def _get_ag_info(pg_conn, instance_id: int) -> dict:
+    """
+    Always On Availability Group name/replica role for this instance, from
+    mssql_instance_master. These columns exist for future use but nothing currently
+    populates them (AG collection is out of scope for now -- see project notes), so
+    today this always returns {"ag_name": None, "ag_replica_role": None} and the
+    report shows "N/A (standalone)" -- reading the columns here rather than
+    hardcoding that means AG support can be turned on later with no report/parser
+    change needed.
+    """
+    with pg_conn.cursor() as cur:
+        cur.execute("SELECT ag_name, ag_replica_role FROM mssql_instance_master WHERE id = %s", (instance_id,))
+        row = cur.fetchone()
+    return {"ag_name": row[0] if row else None, "ag_replica_role": row[1] if row else None}
+
+
+def _count_sessions(pg_conn, snapshot_id: int) -> int:
+    """User session count at one snapshot (is_user_process = 1 -- excludes SQL
+    Server's own internal system sessions), the SQL Server analog of Oracle AWR's
+    Sessions figure."""
+    with pg_conn.cursor() as cur:
+        cur.execute("SELECT count(*) FROM mssql_session_stats WHERE snapshot_id = %s", (snapshot_id,))
+        return int(cur.fetchone()[0] or 0)
+
+
+def _compute_db_time_seconds(pg_conn, begin_snap: int, end_snap: int, top_sql: list) -> float:
+    """
+    Shared with _build_load_profile (single source of truth -- both the Load
+    Profile and Database Summary sections show a DB Time figure and must agree).
+
+    An explicit APPROXIMATION: MSSQL has no single native counter equivalent to
+    Oracle's DB Time (total session-active time, CPU + non-idle waits, summed
+    across concurrent sessions). Approximated as non-benign wait time (the same
+    total the Wait Classes section computes) plus total SQL CPU time from Query
+    Store's top_sql -- a reasonable, honestly-labeled stand-in for "total time
+    spent doing work", not a claim of exact equivalence to Oracle's own metric.
+    """
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT SUM(e.wait_time_ms - COALESCE(b.wait_time_ms, 0))
+            FROM mssql_wait_stats_delta e
+            LEFT JOIN mssql_wait_stats_delta b ON b.snapshot_id = %s AND b.wait_type = e.wait_type
+            WHERE e.snapshot_id = %s AND e.wait_type != ALL(%s)
+        """, (begin_snap, end_snap, list(BENIGN_WAIT_TYPES)))
+        non_benign_wait_ms = float(cur.fetchone()[0] or 0)
+    total_cpu_s = sum(r["cpu_time_s"] for r in top_sql)
+    return (non_benign_wait_ms / 1000.0) + total_cpu_s
+
+
+def _build_database_summary(pg_conn, begin_info: dict, end_info: dict, db_name: str,
+                              top_sql: list) -> str:
+    """
+    Extended to carry the same information an Oracle AWR report's own Database
+    Summary screen shows (DB Id, Unique Name, Role, RAC, CDB, Inst Num, Startup
+    Time, Platform, CPUs, Cores, Sockets, Memory), each field mapped to its SQL
+    Server source where one exists, and explicitly marked 'N/A' where Oracle's
+    concept has no SQL Server equivalent (RAC, CDB) rather than guessed at. See
+    mssql_sqlwr_database_summary's COMMENT ON TABLE for the field-by-field
+    reasoning; sqlwr_database_summary_parser.py stores exactly what this renders.
+
+    Uses a single wide table (same summary= attribute as before) rather than
+    Oracle's 3-table split, because extract_sqlwr_metadata()/
+    extract_workload_repo_metadata() read "DB Name"/"Host Name"/"Instance" from
+    this one table by column NAME (order-independent) -- keeping everything in
+    one table, with those three header labels unchanged, keeps every existing
+    parser's metadata extraction working exactly as before.
+    """
+    cfg = _get_config_info(pg_conn, end_info["snapshot_id"], db_name)
+    ag = _get_ag_info(pg_conn, begin_info["instance_id"])
+
+    memory_gb = (cfg["physical_memory_kb"] / 1024 / 1024) if cfg["physical_memory_kb"] else None
+    cores = (cfg["socket_count"] * cfg["cores_per_socket"]) if cfg["socket_count"] and cfg["cores_per_socket"] else None
+    platform = cfg["host_platform"] or "(not collected)"
+    if cfg["host_platform"] and cfg["host_distribution"]:
+        platform = f'{cfg["host_platform"]} ({cfg["host_distribution"]})'
+
+    rows = [(
+        db_name or "(not collected)",
+        cfg["database_id"] if cfg["database_id"] is not None else "(not collected)",
+        ag["ag_name"] or "",                                      # Unique Name -- blank when standalone
+        ag["ag_replica_role"] or "N/A (standalone)",               # Role
+        begin_info.get("sql_edition") or "(not collected)",
+        begin_info.get("sql_version") or "(not collected)",        # Release
+        "N/A",                                                      # RAC -- no SQL Server equivalent
+        "N/A",                                                      # CDB -- no SQL Server equivalent
+        begin_info["instance_name"],
+        "",                                                         # Inst Num -- no reliable non-AG equivalent
+        begin_info.get("sqlserver_start_time") or "(not collected)",
+        begin_info["host_name"],
+        platform,
+        cfg["cpu_count"] if cfg["cpu_count"] is not None else "(not collected)",
+        cores if cores is not None else "(not collected)",
+        cfg["socket_count"] if cfg["socket_count"] is not None else "(not collected)",
+        f"{memory_gb:.2f}" if memory_gb is not None else "(not collected)",
+    )]
     return ('<h3>Database Summary</h3>\n'
-            + _table(["DB Name", "Host Name", "Instance", "Version", "Edition"], rows,
-                     "This table displays database instance information"))
+            + _table(["DB Name", "DB Id", "Unique Name", "Role", "Edition", "Release",
+                      "RAC", "CDB", "Instance", "Inst Num", "Startup Time", "Host Name",
+                      "Platform", "CPUs", "Cores", "Sockets", "Memory (GB)"],
+                     rows, "This table displays database instance information"))
 
 
-def _build_snapshot_summary(begin_info: dict, end_info: dict) -> str:
+def _build_snapshot_summary(pg_conn, begin_info: dict, end_info: dict, top_sql: list) -> str:
+    """
+    Extended with Sessions (per Oracle AWR: user-session count at each snapshot)
+    plus totals-over-the-window Elapsed and DB Time rows, matching the layout of
+    an Oracle AWR report's own Snap Id/Snap Time/Sessions/Cursors-per-Session
+    block. Cursors/Session is left blank -- SQL Server exposes no per-session
+    open-cursor count via these DMVs, so it is not approximated.
+
+    The Elapsed/DB Time rows are appended AFTER the Begin/End Snap rows, which
+    matters for backward compatibility: extract_sqlwr_metadata() stops reading
+    this table right after it finds the "End Snap" row (the second row), so
+    these two extra rows are never even reached by any of the 26 existing
+    parsers' metadata extraction.
+    """
+    begin_sessions = _count_sessions(pg_conn, begin_info["snapshot_id"])
+    end_sessions = _count_sessions(pg_conn, end_info["snapshot_id"])
+    elapsed_minutes = (end_info["snapshot_time"] - begin_info["snapshot_time"]).total_seconds() / 60.0
+    db_time_minutes = _compute_db_time_seconds(
+        pg_conn, begin_info["snapshot_id"], end_info["snapshot_id"], top_sql) / 60.0
+
     rows = [
-        ("Begin Snap", begin_info["snapshot_id"], begin_info["snapshot_time"]),
-        ("End Snap", end_info["snapshot_id"], end_info["snapshot_time"]),
+        ("Begin Snap", begin_info["snapshot_id"], begin_info["snapshot_time"], begin_sessions, ""),
+        ("End Snap", end_info["snapshot_id"], end_info["snapshot_time"], end_sessions, ""),
+        ("Elapsed:", "", f"{elapsed_minutes:.2f} (mins)", "", ""),
+        ("DB Time:", "", f"{db_time_minutes:.2f} (mins) [approximated -- see Load Profile]", "", ""),
     ]
     return ('<h3>Snapshot Summary</h3>\n'
-            + _table(["Snap", "Snapshot ID", "Snapshot Time"], rows,
-                     "This table displays snapshot information"))
+            + _table(["Snap", "Snapshot ID", "Snapshot Time", "Sessions", "Cursors/Session"],
+                     rows, "This table displays snapshot information"))
 
 
 def _build_load_profile(pg_conn, instance_id: int, begin_snap: int, end_snap: int,
@@ -201,16 +355,7 @@ def _build_load_profile(pg_conn, instance_id: int, begin_snap: int, end_snap: in
     rows.append(("Logfile IO Wait (s) [Transaction Log wait class]:",
                  f"{wait_by_class_ms.get('Transaction Log', 0.0) / 1000.0:.1f}"))
 
-    with pg_conn.cursor() as cur:
-        cur.execute("""
-            SELECT SUM(e.wait_time_ms - COALESCE(b.wait_time_ms, 0))
-            FROM mssql_wait_stats_delta e
-            LEFT JOIN mssql_wait_stats_delta b ON b.snapshot_id = %s AND b.wait_type = e.wait_type
-            WHERE e.snapshot_id = %s AND e.wait_type != ALL(%s)
-        """, (begin_snap, end_snap, list(BENIGN_WAIT_TYPES)))
-        non_benign_wait_ms = float(cur.fetchone()[0] or 0)
-    total_cpu_s = sum(r["cpu_time_s"] for r in top_sql)
-    db_time_s = (non_benign_wait_ms / 1000.0) + total_cpu_s
+    db_time_s = _compute_db_time_seconds(pg_conn, begin_snap, end_snap, top_sql)
     rows.append(("Total DB Time (s) [approximated: non-benign wait + SQL CPU time]:",
                  f"{db_time_s:.1f}"))
 
@@ -1277,8 +1422,8 @@ def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
     )
 
     sections = [
-        _build_database_summary(begin_info, db_name_for_summary),
-        _build_snapshot_summary(begin_info, end_info),
+        _build_database_summary(pg_conn, begin_info, end_info, db_name_for_summary, top_sql),
+        _build_snapshot_summary(pg_conn, begin_info, end_info, top_sql),
         _build_load_profile(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, elapsed_seconds, top_sql),
         _build_cpu_utilization(pg_conn, instance_id, begin_info["snapshot_time"], end_info["snapshot_time"]),
         _build_instance_efficiency(pg_conn, begin_snapshot_id, end_snapshot_id),
