@@ -171,11 +171,16 @@ CREATE TABLE IF NOT EXISTS mssql_config_snapshot (
     database_name                  TEXT,
     recovery_model_desc            TEXT,
     compatibility_level             INTEGER,
+    database_id                    INTEGER,
+    socket_count                   INTEGER,
+    cores_per_socket               INTEGER,
+    host_platform                  TEXT,
+    host_distribution              TEXT,
     CONSTRAINT mssql_config_snapshot_pkey PRIMARY KEY (id) USING INDEX TABLESPACE mssqlparser_idx,
     CONSTRAINT fk_mssql_cfg_snapshot FOREIGN KEY (snapshot_id) REFERENCES mssql_dmv_snapshot(snapshot_id),
     CONSTRAINT uq_mssql_config_snapshot UNIQUE (snapshot_id, database_name) USING INDEX TABLESPACE mssqlparser_idx
 ) TABLESPACE mssqlparser;
-COMMENT ON TABLE mssql_config_snapshot IS 'sys.configurations + sys.dm_os_sys_info + sys.databases, consolidated. Mostly-static context, one row per database per snapshot (server-level columns repeat per row, database-level columns vary).';
+COMMENT ON TABLE mssql_config_snapshot IS 'sys.configurations + sys.dm_os_sys_info + sys.databases, consolidated. Mostly-static context, one row per database per snapshot (server-level columns repeat per row, database-level columns vary). database_id is per-database; socket_count/cores_per_socket/host_platform/host_distribution are host-wide and repeat on every database row.';
 
 -- ══════════════════ TIER 2 ══════════════════
 
