@@ -636,10 +636,50 @@ CREATE TABLE IF NOT EXISTS mssql_sqlwr_tempdb_tasks (
 COMMENT ON TABLE mssql_sqlwr_tempdb_tasks IS 'Parsed data for the SQLWR report TempDB Usage section (tasks part) -- currently-executing tasks allocating TempDB space, one row per task per report. MSSQL-specific; no Oracle AWR equivalent. POINT-IN-TIME: this section is read at the END snapshot only (not a delta or a window). begin_snapshot_id keys the report; snapshot_time is the instant actually observed (the time of the end snapshot). Join to mssql_dmv_snapshot on (instance_id, snapshot_time) to reach the raw sample.';
 
 
+CREATE TABLE IF NOT EXISTS mssql_sqlwr_database_summary (
+    id                  SERIAL,
+    database_name       TEXT NOT NULL,
+    instance_id         INTEGER NOT NULL,
+    snapshot_time       TIMESTAMP WITHOUT TIME ZONE,
+    database_id             INTEGER,
+    unique_name                TEXT,
+    role                          TEXT,
+    edition                         TEXT,
+    release                            TEXT,
+    rac                                    TEXT,
+    cdb                                       TEXT,
+    host_name                                   TEXT,
+    platform                                       TEXT,
+    cpu_count                                         INTEGER,
+    cores                                                INTEGER,
+    sockets                                                INTEGER,
+    memory_gb                                                 NUMERIC,
+    inst_num                                                     INTEGER,
+    startup_time                                                    TIMESTAMP WITHOUT TIME ZONE,
+    begin_snap_id                                                      INTEGER,
+    begin_snap_time                                                       TIMESTAMP WITHOUT TIME ZONE,
+    end_snap_id                                                              INTEGER,
+    end_snap_time                                                               TIMESTAMP WITHOUT TIME ZONE,
+    begin_sessions                                                                 INTEGER,
+    end_sessions                                                                      INTEGER,
+    cursors_per_session                                                                  NUMERIC,
+    elapsed_minutes                                                                         NUMERIC,
+    db_time_minutes                                                                            NUMERIC,
+    begin_snapshot_id                                                                             INTEGER NOT NULL,
+    row_hash                                                                                      CHAR(32) NOT NULL,
+    created_at                                                                                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT mssql_sqlwr_db_summary_pkey PRIMARY KEY (id) USING INDEX TABLESPACE mssqlparser_idx,
+    CONSTRAINT fk_sqlwr_db_summary_inst FOREIGN KEY (instance_id) REFERENCES mssql_instance_master(id),
+    CONSTRAINT uq_sqlwr_db_summary UNIQUE (database_name, instance_id, begin_snapshot_id, row_hash)
+        USING INDEX TABLESPACE mssqlparser_idx
+) TABLESPACE mssqlparser;
+COMMENT ON TABLE mssql_sqlwr_database_summary IS 'Parsed data for the SQLWR report Database Summary section (extended to include the fields shown in the equivalent Oracle AWR report screen), one row per report. Modeled on awr_db_info, extended with SQL-Server-specific and report-level fields. Not one of the point-in-time/window/delta categories: it is a WHOLE-REPORT SUMMARY -- host/db identity read at the END snapshot (database_id, edition, release, host_name, platform, cpu_count, cores, sockets, memory_gb, startup_time), plus session counts read at BOTH the begin and end snapshot, plus elapsed_minutes and db_time_minutes totals over the window. role/unique_name come from mssql_instance_master.ag_replica_role/ag_name (NULL -- "N/A (standalone)" in the report -- unless/until Availability Group collection is implemented; scoped out for now, see project notes). rac and cdb are Oracle-only concepts with no SQL Server equivalent and are always the literal ''N/A''. cursors_per_session is always NULL: SQL Server exposes no per-session open-cursor count via these DMVs, so it is not filled rather than approximated. inst_num is always NULL: no reliable non-AG equivalent to Oracle''s RAC instance number. See Documentation/MSSQL_SQLWR_Parsed_Tables_Conventions.md.';
+
+
 \echo ''
 \echo '============================================================'
-\echo 'SQLWR report section tables created -- 26 tables covering all'
-\echo '26 SQLWR report sections (Database/Snapshot Summary use'
-\echo 'existing mssql_dmv_snapshot/mssql_sqlwr_report metadata rather'
-\echo 'than a dedicated parsed table each).'
+\echo 'SQLWR report section tables created -- 27 tables covering all'
+\echo '26 original SQLWR report sections plus the extended Database'
+\echo 'Summary section (Snapshot Summary still uses existing'
+\echo 'mssql_dmv_snapshot/mssql_sqlwr_report metadata directly).'
 \echo '============================================================'
