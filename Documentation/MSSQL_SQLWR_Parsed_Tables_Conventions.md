@@ -153,3 +153,58 @@ first.
   rest, so a parallel request's Allocated/Deallocated shows one worker's share, not the request's total (shown
   on the database: three 8 MB workers in, one 8 MB row stored, true total 24 MB). Treat those numbers as a
   lower bound for parallel requests until the collector sums per (session, request).
+
+## 9. Database Summary (whole-report summary, added after the 26 section parsers)
+
+`mssql_sqlwr_database_summary` (one row per report, parsed first by the master parser --
+see section 10) extends the report's Database Summary section to carry the same
+information an Oracle AWR report's own Database Summary screen shows: DB Name, DB Id,
+Unique Name, Role, Edition, Release, RAC, CDB, Instance, Inst Num, Startup Time, Host
+Name, Platform, CPUs, Cores, Sockets, Memory (GB) -- plus Sessions/Elapsed/DB Time from
+the Snapshot Summary table. Field-by-field reasoning, including which fields are always
+'N/A' (RAC, CDB -- Oracle-only concepts) or always NULL (Inst Num, cursors_per_session --
+no SQL Server equivalent), is in that table's own `COMMENT ON TABLE`
+(schema/mssql_sqlwr_section_tables.sql) and the parser's module docstring
+(sqlwr_database_summary_parser.py). `elapsed_minutes` is computed directly from
+begin/end snap time (always available) rather than parsed from the report's own
+"Elapsed:" text, so it is populated even for reports generated before that row existed;
+`db_time_minutes` has no such fallback and is NULL for those older reports, since DB Time
+is an approximation the report computes, not something the parser can honestly re-derive
+without duplicating that logic.
+
+Five of its fields (`database_id`, `socket_count`/`sockets`, `cores_per_socket`/`cores`,
+`host_platform`, `host_distribution`/part of `platform`) depend on 5 new columns added to
+`mssql_config_snapshot` (schema/mssql_config_snapshot_host_extend.sql) and 5 new T-SQL
+SELECT expressions added to the collector's `_collect_config()`. Unlike everything else in
+this document, that specific collector addition has only been schema/parser-tested against
+constructed data, not run against a live SQL Server -- see the NOTE in
+`_collect_config()`'s own docstring.
+
+KNOWN PRE-EXISTING ISSUE (not introduced by the database-summary work, found while testing
+it more thoroughly than prior sections were): on `sqlwr_1_7_8.html` -- the one uploaded
+report whose Database Summary table has no "DB Name" column at all (an older report
+format) -- `extract_workload_repo_metadata()`'s positional fallback (common/utils.py) reads
+column 0 of that table ("Host Name") as if it were the database name, so `database_name`
+comes back as the HOST name for every parsed table on that one report, not just
+`mssql_sqlwr_database_summary`. Confirmed this is pre-existing and not specific to today's
+work: `mssql_sqlwr_load_profile` and `mssql_sqlwr_wait_classes` (already-shipped parsers)
+show the identical wrong value for the same report. Left unfixed -- it is shared code also
+used by the Oracle side, out of scope to change as a side effect of the MSSQL database
+summary task; flagged for a decision on whether/how to fix it.
+
+## 10. Master parser
+
+`modules/mssql/mssql_master_parser.py` runs all 27 parsers (the 26 section parsers plus
+Database Summary) against one report, Database Summary first, then the rest in the
+report's own top-to-bottom order. One parser failing does not stop the others -- every
+call is individually try/excepted and logged; the run's overall exit code reflects
+whether any parser failed. A single shared connection is opened once and passed to every
+parser's `parse_X()` call (each accepts `pg_conn=None` for exactly this reason); the
+insert side still opens its own short-lived connection per table via the shared
+`insert_records()`, unchanged. It does not refresh the wait/SQL/segment summary
+materialized views -- they still source from raw collector tables, not from these parsed
+tables (a separate, later roadmap step), and the collector scheduler already refreshes
+them once per cycle.
+
+    py modules\\mssql\\mssql_master_parser.py "C:\\...\\sqlwr_1_75_76.html"
+    py modules\\mssql\\mssql_master_parser.py --dir "C:\\...\\sqlwr_reports"
