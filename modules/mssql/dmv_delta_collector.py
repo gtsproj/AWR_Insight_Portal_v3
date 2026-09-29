@@ -861,6 +861,20 @@ def _collect_tempdb_task(conn, pg_conn, snapshot_id, db_name) -> int:
 
 
 def _collect_config(conn, pg_conn, snapshot_id, db_name) -> int:
+    """
+    NOTE ON THE 5 NEWEST COLUMNS (database_id, socket_count, cores_per_socket,
+    host_platform, host_distribution): unlike the rest of this file, this
+    specific addition has NOT been run against a live SQL Server -- it was
+    written and schema/parser-tested against constructed data only, because
+    that's all that's available outside your environment. The four DMV
+    columns it reads (sys.dm_os_sys_info.socket_count/cores_per_socket,
+    sys.dm_os_host_info.host_platform/host_distribution) have been stable
+    since SQL Server 2016/2017 respectively, so risk should be low on 2022,
+    but please run one collection cycle and check mssql_config_snapshot
+    before relying on it, the same way earlier permission-related DMV
+    issues (VIEW SERVER PERFORMANCE STATE, VIEW ANY DEFINITION) were only
+    found by running against the real instance.
+    """
     with conn.cursor() as cur:
         cur.execute("""
             SELECT
@@ -871,7 +885,12 @@ def _collect_config(conn, pg_conn, snapshot_id, db_name) -> int:
                 (SELECT cpu_count FROM sys.dm_os_sys_info),
                 (SELECT physical_memory_kb FROM sys.dm_os_sys_info),
                 (SELECT recovery_model_desc FROM sys.databases WHERE name = DB_NAME()),
-                (SELECT compatibility_level FROM sys.databases WHERE name = DB_NAME())
+                (SELECT compatibility_level FROM sys.databases WHERE name = DB_NAME()),
+                (SELECT database_id FROM sys.databases WHERE name = DB_NAME()),
+                (SELECT socket_count FROM sys.dm_os_sys_info),
+                (SELECT cores_per_socket FROM sys.dm_os_sys_info),
+                (SELECT host_platform FROM sys.dm_os_host_info),
+                (SELECT host_distribution FROM sys.dm_os_host_info)
         """)
         row = cur.fetchone()
     if not row:
@@ -881,10 +900,12 @@ def _collect_config(conn, pg_conn, snapshot_id, db_name) -> int:
             INSERT INTO mssql_config_snapshot
                 (snapshot_id, max_server_memory_mb, min_server_memory_mb, max_dop,
                  cost_threshold_for_parallelism, cpu_count, physical_memory_kb,
-                 database_name, recovery_model_desc, compatibility_level)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                 database_name, recovery_model_desc, compatibility_level,
+                 database_id, socket_count, cores_per_socket, host_platform, host_distribution)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (snapshot_id, database_name) DO NOTHING
-        """, (snapshot_id, row[0], row[1], row[2], row[3], row[4], row[5], db_name, row[6], row[7]))
+        """, (snapshot_id, row[0], row[1], row[2], row[3], row[4], row[5], db_name, row[6], row[7],
+              row[8], row[9], row[10], row[11], row[12]))
     return 1
 
 
