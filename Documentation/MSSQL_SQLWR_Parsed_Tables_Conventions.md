@@ -206,5 +206,51 @@ materialized views -- they still source from raw collector tables, not from thes
 tables (a separate, later roadmap step), and the collector scheduler already refreshes
 them once per cycle.
 
-    py modules\\mssql\\mssql_master_parser.py "C:\\...\\sqlwr_1_75_76.html"
-    py modules\\mssql\\mssql_master_parser.py --dir "C:\\...\\sqlwr_reports"
+    py modules\\mssql\\mssql_master_parser.py "C:\\...\\sqlwr_reports\\MYDB\\sqlwr_1_75_76.html" --archive
+    py modules\\mssql\\mssql_master_parser.py --dir "C:\\...\\sqlwr_reports" --archive
+    py modules\\mssql\\mssql_master_parser.py --cleanup-archive
+
+## 11. Report file layout, archiving, retention
+
+`sqlwr_report_generator.py`'s `auto_generate_sqlwr_reports()` (called after each collection
+cycle by `mssql_collector_scheduler.py`) writes each report into a subfolder named after
+the report's OWN database, resolved the same way the Database Summary section itself is
+(`_resolve_report_db_name()`, factored out so both call the same logic without a second
+DB round-trip inside `generate_sqlwr_report()` itself):
+
+    sqlwr_reports/<DB_NAME>/sqlwr_<instance_id>_<begin_snap>_<end_snap>.html
+
+A window with no Query Store activity at all goes in `sqlwr_reports/UNKNOWN_DB/`; a
+report whose window spans more than one database (the `db_name_for_summary` comma-joined
+fallback) goes in `sqlwr_reports/_multiple_databases/` rather than a folder named after
+that joined string. `_safe_folder_name()` also strips characters Windows forbids in a
+folder name and prefixes a name that collides with a Windows reserved device name (CON,
+PRN, AUX, NUL, COM1-9, LPT1-9) with an underscore.
+
+`mssql_master_parser.py --archive` moves a report to `sqlwr_archive/<DB_NAME>/` once every
+parser has run against it (regardless of whether any of them failed), where `<DB_NAME>` is
+read from the report's OWN metadata (`extract_sqlwr_metadata`) -- NOT from whichever
+folder the file happened to be sitting in when the master parser was pointed at it, so
+this is correct even for a report moved, renamed, or handed to the master parser directly
+by path. A filename collision in the destination folder (re-archiving a same-named file)
+gets a timestamp suffix rather than overwriting or erroring, e.g.
+`sqlwr_1_75_76_20260930_093000.html`.
+
+Retention: `mssql_master_parser.cleanup_sqlwr_archive()` deletes archived `.html` files
+older than `portal.sqlwr_archive_retain_days` days (settings.yaml; default 7, same
+convention as `awr_archive_retain_days`/`sar_archive_retain_days`/
+`nmon_archive_retain_days`), checked recursively across every per-database subfolder in
+one call. `mssql_collector_scheduler.py` calls it once per day from both of its
+long-running loops (multi-instance `run_from_config()` and the single-instance CLI mode),
+mirroring the `last_cleanup_date`-tracked daily-cleanup pattern the Oracle side's
+`portal/app.py` already uses for its own AWR/SAR/NMON archives -- a separate, reusable
+implementation (not imported from `portal/app.py`, which is a FastAPI app entrypoint, not
+a library). It can also be run directly: `mssql_master_parser.py --cleanup-archive`.
+
+Both new settings.yaml keys:
+
+    paths:
+      sqlwr_reports_directory:  "sqlwr_reports"   # <this>/<DB_NAME>/sqlwr_....html
+      sqlwr_archive_directory:  "sqlwr_archive"    # <this>/<DB_NAME>/sqlwr_....html
+    portal:
+      sqlwr_archive_retain_days: 7
