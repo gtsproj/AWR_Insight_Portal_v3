@@ -64,6 +64,8 @@ paths:
   nmon_queues_directory:  "nmon_queues"
   nmon_archive_directory: "nmon_archive"
   nmon_cache_directory:   "nmon_cache"   # SSH-pulled NMON files — NOT watched by NMONWatcher
+  sqlwr_reports_directory:  "sqlwr_reports"   # MSSQL SQLWR reports, written to <this>/<DB_NAME>/
+  sqlwr_archive_directory:  "sqlwr_archive"   # post-parse archive, one subfolder per DB_NAME
 
 # ── Database type detection ───────────────────────────────────────────
 db_detection:
@@ -117,6 +119,7 @@ portal:
   awr_archive_retain_days:  7   # set to 7 for minimal, 90 for longer history
   sar_archive_retain_days:  7
   nmon_archive_retain_days: 7
+  sqlwr_archive_retain_days: 7   # MS SQL SQLWR archive, same convention as the three above
 
 # ── Live Oracle query engine (PL/SQL Performance Analysis, System Study,
 #    and any future live-Oracle feature that goes through
