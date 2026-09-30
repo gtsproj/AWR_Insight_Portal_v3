@@ -31,6 +31,7 @@ Usage:
 
 import sys
 import os
+import re
 import html
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -1388,6 +1389,63 @@ def _build_sql_ordered_by_gets(top_sql: list) -> str:
                      rows, "This table displays top SQL by logical reads (buffer gets)"))
 
 
+def _resolve_report_db_name(pg_conn, instance_id: int, begin_snapshot_id: int, end_snapshot_id: int):
+    """
+    The database name a report will show/be filed under -- the same
+    derivation generate_sqlwr_report() uses internally for its Database
+    Summary section, factored out so auto_generate_sqlwr_reports() can
+    call it BEFORE generating the file (needed to build the per-database
+    output subfolder), without duplicating this logic or generating the
+    report twice. Returns None if the window has no Query Store activity
+    at all (matches generate_sqlwr_report()'s own "(not collected)"
+    fallback for that case).
+    """
+    begin_info = _get_snapshot_info(pg_conn, begin_snapshot_id)
+    end_info = _get_snapshot_info(pg_conn, end_snapshot_id)
+    top_sql = _fetch_top_sql(pg_conn, instance_id, begin_info["snapshot_time"], end_info["snapshot_time"])
+    db_names = sorted(set(r["database_name"] for r in top_sql))
+    return db_names[0] if len(db_names) == 1 else (", ".join(db_names) if db_names else None)
+
+
+_INVALID_FOLDER_CHARS = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
+# Windows reserved device names -- forbidden as a folder name regardless of
+# extension/case (CON, PRN, AUX, NUL, COM1-9, LPT1-9). SQL Server technically
+# allows a database literally named one of these (with delimited identifiers,
+# e.g. CREATE DATABASE [CON]), however unlikely that is in practice.
+_WINDOWS_RESERVED_NAMES = {
+    "CON", "PRN", "AUX", "NUL",
+    *(f"COM{i}" for i in range(1, 10)), *(f"LPT{i}" for i in range(1, 10)),
+}
+
+
+def _safe_folder_name(db_name) -> str:
+    """
+    A database name turned into a filesystem-safe folder name (Windows is the
+    deployment target -- see the module docstring -- so this strips exactly
+    the characters Windows itself forbids in a folder name, plus control
+    characters). A None/empty/whitespace-only name, or one that sanitizes
+    down to nothing, becomes "UNKNOWN_DB" rather than an empty or "."-named
+    folder. A report spanning more than one database (db_name_for_summary's
+    own comma-joined fallback, e.g. "DB1, DB2") does not get a folder named
+    after that literal joined string -- it goes in a single fixed
+    "_multiple_databases" folder instead, since there is no one database for
+    such a report to belong under.
+    """
+    if db_name is None:
+        return "UNKNOWN_DB"
+    name = str(db_name).strip()
+    if not name or name == "(not collected)":
+        return "UNKNOWN_DB"
+    if ", " in name:
+        return "_multiple_databases"
+    name = _INVALID_FOLDER_CHARS.sub("_", name).strip(" .")
+    if not name:
+        return "UNKNOWN_DB"
+    if name.upper() in _WINDOWS_RESERVED_NAMES:
+        name = f"_{name}"
+    return name
+
+
 def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
                             end_snapshot_id: int, output_path: str) -> str:
     """
@@ -1420,6 +1478,9 @@ def generate_sqlwr_report(pg_conn, instance_id: int, begin_snapshot_id: int,
     db_name_for_summary = db_names[0] if len(db_names) == 1 else (
         ", ".join(db_names) if db_names else None
     )
+    # (same derivation as _resolve_report_db_name(); kept inline here rather than
+    # calling it, since top_sql is already fetched and needed for the sections
+    # below regardless -- calling out would just re-fetch it a second time)
 
     sections = [
         _build_database_summary(pg_conn, begin_info, end_info, db_name_for_summary, top_sql),
@@ -1543,8 +1604,18 @@ def auto_generate_sqlwr_reports(pg_conn, instance_id: int, output_dir: str) -> d
             result["skipped_restart"].append((begin_snapshot_id, end_snapshot_id))
             continue
 
+        # One subfolder per database under output_dir, resolved BEFORE
+        # generating the file (generate_sqlwr_report() itself still just
+        # writes wherever it's told -- this is the one caller that decides
+        # where that is). A report whose window has no Query Store activity
+        # at all, or spans more than one database, still gets a fixed,
+        # predictable folder (UNKNOWN_DB / _multiple_databases) rather than
+        # landing back in output_dir's root -- see _safe_folder_name().
+        db_name_for_path = _resolve_report_db_name(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id)
+        db_dir = os.path.join(output_dir, _safe_folder_name(db_name_for_path))
+        os.makedirs(db_dir, exist_ok=True)
         report_path = os.path.join(
-            output_dir, f"sqlwr_{instance_id}_{begin_snapshot_id}_{end_snapshot_id}.html"
+            db_dir, f"sqlwr_{instance_id}_{begin_snapshot_id}_{end_snapshot_id}.html"
         )
         try:
             generate_sqlwr_report(pg_conn, instance_id, begin_snapshot_id, end_snapshot_id, report_path)
