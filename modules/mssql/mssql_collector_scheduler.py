@@ -300,6 +300,10 @@ def run_from_config(sqlwr_output_dir: str = "sqlwr_reports"):
 
     logger.info(f"Multi-instance scheduler starting -- {len(connections)} enabled connection(s)")
 
+    last_sqlwr_cleanup_date = None   # once-per-day SQLWR archive retention, mirroring how
+                                      # the Oracle side's portal/app.py tracks its own daily
+                                      # archive cleanups
+
     for c in connections:
         if not c["databases"]:
             logger.info(f"{c['host_name']}\\{c['instance_name']}: databases=all -- skipping automatic "
@@ -350,6 +354,16 @@ def run_from_config(sqlwr_output_dir: str = "sqlwr_reports"):
         if any_due:
             refresh_mssql_materialized_views(pg_conn)
 
+        today = now.date()
+        if last_sqlwr_cleanup_date != today:
+            try:
+                from mssql_master_parser import cleanup_sqlwr_archive
+                cleanup_sqlwr_archive()
+            except Exception as e:
+                logger.error(f"SQLWR archive cleanup failed: {e}")
+            finally:
+                last_sqlwr_cleanup_date = today
+
 
 def main():
     import argparse
@@ -397,6 +411,8 @@ def main():
 
     logger.info(f"Scheduler starting -- {args.interval_minutes}-minute cadence, aligned to clock boundaries")
 
+    last_sqlwr_cleanup_date = None   # once-per-day SQLWR archive retention (see run_from_config)
+
     while True:
         target = next_aligned_time(args.interval_minutes)
         sleep_seconds = (target - datetime.datetime.now()).total_seconds()
@@ -415,6 +431,16 @@ def main():
                       conn_args + ["--min-interval-minutes", str(args.interval_minutes)])
 
         run_sqlwr_auto_generation(pg_conn, args.host, args.instance_name, args.sqlwr_output_dir)
+
+        today = datetime.datetime.now().date()
+        if last_sqlwr_cleanup_date != today:
+            try:
+                from mssql_master_parser import cleanup_sqlwr_archive
+                cleanup_sqlwr_archive()
+            except Exception as e:
+                logger.error(f"SQLWR archive cleanup failed: {e}")
+            finally:
+                last_sqlwr_cleanup_date = today
 
 
 if __name__ == "__main__":
