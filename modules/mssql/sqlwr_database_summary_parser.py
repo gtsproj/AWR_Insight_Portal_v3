@@ -1,31 +1,36 @@
 """
 modules/mssql/sqlwr_database_summary_parser.py
 
-Parses the SQLWR report's (extended) "Database Summary" section into
-mssql_sqlwr_database_summary -- one row per report. This is the first parser
-the MSSQL master parser runs for a report, matching Ganesh's Oracle-side
-convention that the database summary is parsed before everything else.
+RECREATED (per spec) to a slimmer scope: parses only the PER-REPORT fields
+of the SQLWR report's Database/Snapshot Summary sections into
+mssql_sqlwr_database_summary -- one row per report, every time (not a
+once-ever registry; that is mssql_db_info_parser.py's job now).
 
-Modeled on the Oracle side's awr_db_info, extended with the additional fields
-an Oracle AWR report's Database Summary screen shows that SQL Server has a real
-source for (DB Id, Startup Time, Platform, Cores, Sockets), plus two fields that
-are honestly 'N/A' for SQL Server (RAC, CDB -- Oracle-only concepts) rather than
-guessed at, plus Sessions/Elapsed/DB Time figures read from the report's
-Snapshot Summary table. See mssql_sqlwr_database_summary's COMMENT ON TABLE
-(schema/mssql_sqlwr_section_tables.sql) and
-Documentation/MSSQL_SQLWR_Parsed_Tables_Conventions.md for the field-by-field
-reasoning; this parser stores exactly what the report shows, without
-re-deriving any of it.
+What moved to mssql_db_info, and why
+--------------------------------------
+Database/host/instance IDENTITY facts that don't change report to report
+(edition, release, host_name, platform, cpu/cores/sockets, memory,
+database_id, unique_name, role, instance_id, inst_num) are no longer
+parsed or stored here. They are captured ONCE per database by
+mssql_db_info_parser.py instead of being repeated on every single report
+row -- see that module's docstring and mssql_db_info's own
+COMMENT ON TABLE. This parser now reads only: the Database Summary
+section's Startup Time (a per-report observation -- which SQL Server
+instance-start the report's snapshots fall under), plus the Snapshot
+Summary section's Sessions/Elapsed/DB Time figures.
 
-Not point-in-time / window / delta like the other 26 sections -- a whole-report
-summary. snapshot_time is the END snapshot's time, matching every other parsed
-table's convention (see the conventions doc); begin_snap_time/end_snap_time are
-also stored explicitly since this table is the one place both matter equally.
+Two intentional redundancies (kept because the column list was specified
+explicitly, not an oversight): begin_snap_id and begin_snapshot_id hold
+the SAME value (begin_snap_id for symmetry with end_snap_id;
+begin_snapshot_id for consistency with the report-key convention every
+other mssql_sqlwr_* table uses); end_snap_time and snapshot_time
+likewise both hold the end snapshot's time. There is no instance_id
+column on this table -- join back to mssql_dmv_snapshot on
+begin_snap_id/end_snap_id if the instance is ever needed from a row here.
 
-Blank cells (Unique Name when standalone, Inst Num, Cursors/Session) are stored
-as NULL, not as the word the report may show ('N/A (standalone)' for Role is
-the one exception, kept as literal text since it is itself the meaningful
-value, not a placeholder for a missing one).
+Not point-in-time/window/delta like the other 26 sections -- a
+whole-report summary, spanning the begin and end snapshot together. See
+Documentation/MSSQL_SQLWR_Parsed_Tables_Conventions.md.
 """
 
 import sys
@@ -52,7 +57,6 @@ _TIME_FORMATS = ("%Y-%m-%d %H:%M:%S.%f", "%Y-%m-%d %H:%M:%S")
 
 
 def _cell(value):
-    """text_or_none(), but also treats the report's own '(not collected)' literal as NULL."""
     t = text_or_none(value)
     return None if t is None or t == _NOT_COLLECTED else t
 
@@ -84,13 +88,11 @@ def parse_database_summary(filepath: str, pg_conn=None) -> list:
 
     metadata = extract_sqlwr_metadata(soup)
 
-    # Cells read via read_raw_rows(), NOT pandas -- this table's "N/A" (RAC/CDB)
-    # and "(not collected)" values are exactly the strings pandas.read_html's
-    # default NA-marker list turns into NaN (silently losing the real, meaningful
-    # text). Caught by testing: the report renders RAC/CDB as "N/A" but a
-    # pandas-based first draft of this parser stored them as NULL. read_raw_rows()
-    # returns the cell's own text with no such inference, the same fix already
-    # used for plan-cache query hashes and deadlock logins named "NA".
+    # Cells read via read_raw_rows(), NOT pandas: pandas.read_html's default
+    # NA-marker list would turn values like "N/A" into NaN -- see
+    # mssql_db_info_parser.py's docstring and the commit history for where
+    # this was first found (the report's RAC/CDB cells, in the predecessor
+    # of this parser).
     db_heading = soup.find("h3", string=DB_SECTION_HEADING)
     db_table = db_heading.find_next("table") if db_heading else None
     if db_table is None:
@@ -117,17 +119,9 @@ def parse_database_summary(filepath: str, pg_conn=None) -> list:
                      f"instance={metadata['instance']!r} -- skipping {DB_SECTION_HEADING}")
         return []
 
-    # Snapshot Summary table: Sessions / Elapsed / DB Time, read straight from the
-    # HTML rather than relying only on extract_sqlwr_metadata (which stops after
-    # the End Snap row and doesn't read Sessions/Elapsed/DB Time at all).
+    # Snapshot Summary table: Sessions / Elapsed / DB Time.
     begin_sessions = end_sessions = None
     db_time_minutes = None
-    # elapsed_minutes is computed directly below (begin/end snap time is always
-    # available, even from reports generated before the Elapsed: row existed);
-    # this is only a placeholder in case the loop's text-parsed value should
-    # ever need to override it (it currently doesn't -- see the assignment
-    # right after the loop).
-    elapsed_minutes = None
     snap_table = soup.find("h3", string=SNAP_SECTION_HEADING)
     snap_table = snap_table.find_next("table") if snap_table else None
     if snap_table is not None:
@@ -139,60 +133,30 @@ def parse_database_summary(filepath: str, pg_conn=None) -> list:
                 begin_sessions = _int_cell(cells.get("Sessions"))
             elif label == "end snap":
                 end_sessions = _int_cell(cells.get("Sessions"))
-            elif label.startswith("elapsed"):
-                m = clean_number((cells.get("Snapshot Time") or "").replace("(mins)", ""))
-                elapsed_minutes = m
             elif label.startswith("db time"):
                 text = cells.get("Snapshot Time") or ""
-                m = clean_number(text.split("(mins)")[0]) if "(mins)" in text else clean_number(text)
-                db_time_minutes = m
+                db_time_minutes = clean_number(text.split("(mins)")[0]) if "(mins)" in text else clean_number(text)
 
-    # elapsed_minutes: computed directly from begin/end snap time rather than
-    # parsed from the report's "Elapsed:" row text, because that row does not
-    # exist in reports generated before it was added -- confirmed on report
-    # sqlwr_1_7_8 (the oldest uploaded report): its Snapshot Summary table has
-    # no Sessions/Elapsed/DB Time rows at all, yet elapsed time is still a
-    # trivial, always-available subtraction, so there is no reason for the
-    # parser to leave it NULL just because the report predates that display
-    # feature. db_time_minutes has no such fallback and stays NULL for those
-    # reports -- it is an approximation the report itself computes (see
-    # sqlwr_report_generator.py's _compute_db_time_seconds), not a value this
-    # parser can honestly re-derive on its own without duplicating that logic.
+    # elapsed_minutes: computed directly from begin/end snap time (always
+    # available) rather than parsed from the report's "Elapsed:" row text,
+    # which does not exist in reports generated before that row existed.
+    elapsed_minutes = None
     if metadata["snap_time"] and metadata["end_snap_time"]:
         elapsed_minutes = (metadata["end_snap_time"] - metadata["snap_time"]).total_seconds() / 60.0
 
-    def col(name):
-        return db_row.get(name)
-
     rec = {
         "database_name": metadata["dbname"],
-        "instance_id": instance_id,
         "snapshot_time": metadata["end_snap_time"] or metadata["snap_time"],
-        "database_id": _int_cell(col("DB Id")),
-        "unique_name": _cell(col("Unique Name")) or None,
-        "role": _cell(col("Role")),
-        "edition": _cell(col("Edition")),
-        "release": _cell(col("Release")),
-        "rac": _cell(col("RAC")),
-        "cdb": _cell(col("CDB")),
-        "host_name": _cell(col("Host Name")),
-        "platform": _cell(col("Platform")),
-        "cpu_count": _int_cell(col("CPUs")),
-        "cores": _int_cell(col("Cores")),
-        "sockets": _int_cell(col("Sockets")),
-        "memory_gb": clean_number(col("Memory (GB)")) if _cell(col("Memory (GB)")) else None,
-        "inst_num": _int_cell(col("Inst Num")),
-        "startup_time": _time_cell(col("Startup Time")),
+        "startup_time": _time_cell(db_row.get("Startup Time")),
         "begin_snap_id": metadata["begin_snap"],
-        "begin_snap_time": metadata["snap_time"],
+        "begin_snapshot_id": metadata["begin_snap"],
         "end_snap_id": metadata["end_snap"],
         "end_snap_time": metadata["end_snap_time"],
         "begin_sessions": begin_sessions,
         "end_sessions": end_sessions,
-        "cursors_per_session": None,   # no SQL Server equivalent -- see module docstring
+        "cursors_per_sessions": None,   # no SQL Server equivalent -- see module docstring
         "elapsed_minutes": elapsed_minutes,
         "db_time_minutes": db_time_minutes,
-        "begin_snapshot_id": metadata["begin_snap"],
     }
     rec["row_hash"] = row_hash(rec)
 
@@ -203,13 +167,11 @@ def parse_database_summary(filepath: str, pg_conn=None) -> list:
 def insert_database_summary(records: list) -> int:
     return insert_records(
         records, TABLE_NAME,
-        columns=["database_name", "instance_id", "snapshot_time", "database_id", "unique_name",
-                 "role", "edition", "release", "rac", "cdb", "host_name", "platform",
-                 "cpu_count", "cores", "sockets", "memory_gb", "inst_num", "startup_time",
-                 "begin_snap_id", "begin_snap_time", "end_snap_id", "end_snap_time",
-                 "begin_sessions", "end_sessions", "cursors_per_session",
-                 "elapsed_minutes", "db_time_minutes", "begin_snapshot_id", "row_hash"],
-        conflict_columns=["database_name", "instance_id", "begin_snapshot_id", "row_hash"],
+        columns=["database_name", "snapshot_time", "startup_time", "begin_snap_id",
+                 "begin_snapshot_id", "end_snap_id", "end_snap_time", "begin_sessions",
+                 "end_sessions", "cursors_per_sessions", "elapsed_minutes",
+                 "db_time_minutes", "row_hash"],
+        conflict_columns=["database_name", "begin_snapshot_id", "row_hash"],
     )
 
 
