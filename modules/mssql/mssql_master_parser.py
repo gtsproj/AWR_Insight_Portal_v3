@@ -28,7 +28,7 @@ parser accepts pg_conn as an optional argument for exactly this reason
 -- see sqlwr_parser_utils.py); this must not be confused with the
 insert side: insert_records() (in sqlwr_parser_utils.py, shared by every
 parser) opens its OWN connection on every call regardless, so a report
-with 27 sections still makes up to 27 short-lived insert connections.
+with 28 modules still makes up to 28 short-lived insert connections.
 Left as is -- changing that is a shared-helper change touching all 26
 already-verified parsers, out of scope for adding an orchestrator.
 
@@ -188,10 +188,14 @@ def cleanup_sqlwr_archive(retain_days: int = None) -> int:
                     f"{retain_days} day(s) from {SQLWR_ARCHIVE_DIR}")
     return deleted
 
-# Database Summary MUST run first (Ganesh's specification). Everything after
-# it follows the report's own top-to-bottom section order -- not a functional
-# requirement, just easier to read in the log output.
+# mssql_db_info MUST run first -- registering the database's identity logically
+# precedes recording a specific report's summary, and it is cheap (a no-op
+# after the first report for any given database). Database Summary runs next
+# (Ganesh's original specification). Everything after that follows the
+# report's own top-to-bottom section order -- not a functional requirement,
+# just easier to read in the log output.
 MODULE_ORDER = [
+    "mssql_db_info_parser",
     "sqlwr_database_summary_parser",
     "sqlwr_load_profile_parser",
     "sqlwr_cpu_utilization_parser",
@@ -318,7 +322,7 @@ def process_all_in_dir(reports_dir: str, archive: bool = False) -> list:
 
 def main():
     p = argparse.ArgumentParser(
-        description="MSSQL SQLWR master parser -- runs all 27 section parsers "
+        description="MSSQL SQLWR master parser -- runs mssql_db_info plus all 27 section parsers "
                      "against one report, or every sqlwr_*.html report in a directory.")
     p.add_argument("filepath", nargs="?", default=None,
                    help="Path to a single SQLWR HTML report.")
