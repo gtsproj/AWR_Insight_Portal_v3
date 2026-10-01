@@ -210,6 +210,54 @@ COMMENT ON TABLE mssql_instance_master IS 'Licensed MS SQL Server instance regis
 CREATE INDEX IF NOT EXISTS idx_mssql_instance_active ON public.mssql_instance_master USING btree (active) TABLESPACE mssqlparser_idx;
 CREATE INDEX IF NOT EXISTS idx_mssql_instance_app_category ON public.mssql_instance_master USING btree (app_category) TABLESPACE mssqlparser_idx;
 
+
+-- ── mssql_db_info ───────────────────────────────────────────────
+-- Per-database identity registry, modeled on the Oracle side's
+-- awr_db_info (db_info_parser.py): one row per (instance, database),
+-- captured ONCE -- from the FIRST SQLWR report ever parsed for that
+-- database -- and never updated afterward by this parser. Unlike
+-- awr_db_info's own dedup rule (UNIQUE on db_name+instance+row_hash,
+-- which allows a NEW row when the content changes), this table's
+-- uniqueness is on (instance_id, database_name) alone: a database
+-- already present is always skipped, even if its edition, host,
+-- core count etc. would now parse differently. row_hash is still
+-- stored (project-wide convention, and useful for audit) but is
+-- NOT part of what makes a row unique here.
+--
+-- inst_num, unique_name, and role are genuinely Oracle concepts
+-- (RAC instance number; Data Guard-style unique database name;
+-- replica role) with no reliable SQL Server equivalent outside an
+-- Availability Group -- NULL unless/until AG collection exists (see
+-- mssql_instance_master.ag_name/ag_replica_role, currently
+-- unpopulated -- AG support is explicitly out of scope for now).
+CREATE TABLE IF NOT EXISTS mssql_db_info (
+    id                             SERIAL,
+    instance_name                  TEXT,
+    instance_id                    INTEGER,
+    inst_num                       INTEGER,
+    database_name                  TEXT NOT NULL,
+    database_id                    INTEGER,
+    unique_name                    TEXT,
+    role                           TEXT,
+    edition                        TEXT,
+    release                        TEXT,
+    host_name                      TEXT,
+    platform                       TEXT,
+    cpu_count                      INTEGER,
+    cores                          INTEGER,
+    socket                         INTEGER,
+    memory_gb                      NUMERIC,
+    row_hash                       CHAR(32) NOT NULL,
+    source_type                    TEXT DEFAULT 'local_file'::text,
+    repo_path                      TEXT,
+    created_at                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT mssql_db_info_pkey PRIMARY KEY (id) USING INDEX TABLESPACE mssqlparser_idx,
+    CONSTRAINT fk_mssql_db_info_inst FOREIGN KEY (instance_id) REFERENCES mssql_instance_master(id),
+    CONSTRAINT uq_mssql_db_info UNIQUE (instance_id, database_name) USING INDEX TABLESPACE mssqlparser_idx
+) TABLESPACE mssqlparser;
+COMMENT ON TABLE mssql_db_info IS 'Per-database identity registry, one row per (instance, database), inserted once from the first SQLWR report parsed for that database and never updated afterward -- mirrors awr_db_info''s role for Oracle, with a stricter one-row-ever dedup rule (unique on instance_id+database_name, not row_hash) per spec. inst_num/unique_name/role are Oracle-flavoured concepts with no reliable SQL Server equivalent outside an Availability Group and are NULL until AG collection exists.'
+
+
 -- ── mssql_dmv_snapshot ──────────────────────────────────────────
 -- One row per DMV polling event (Analysis Model doc Section 4.2's
 -- "cumulative-counter delta snapshot" model). Every mssql_*_delta
