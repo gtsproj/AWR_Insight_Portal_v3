@@ -254,3 +254,47 @@ Both new settings.yaml keys:
       sqlwr_archive_directory:  "sqlwr_archive"    # <this>/<DB_NAME>/sqlwr_....html
     portal:
       sqlwr_archive_retain_days: 7
+
+## 12. mssql_db_info -- the per-database identity registry (RECREATED split, per spec)
+
+`mssql_sqlwr_database_summary` used to carry BOTH per-report facts (sessions, elapsed,
+DB time) AND per-database identity facts (edition, host, cores, sockets, memory, AG
+role/unique name, database_id) together, repeating the identity facts on every single
+report row. Per spec, this was split into two tables:
+
+* **`mssql_db_info`** (modeled on the Oracle side's `awr_db_info`/`db_info_parser.py`,
+  table defined alongside `mssql_instance_master` in `schema/mssql_core_tables.sql` --
+  standalone migration: `schema/mssql_db_info.sql`): identity facts, **one row per
+  (instance, database), inserted ONCE from the first SQLWR report ever parsed for that
+  database and never updated or duplicated again** -- a stricter rule than
+  `awr_db_info`'s own (which allows a new row when content changes; `row_hash` is
+  tracked but not part of the dedup key here, kept only for the project-wide
+  convention and for audit). Parser: `mssql_db_info_parser.py`
+  (`parse_db_info`/`insert_db_info`), runs FIRST in the master parser's `MODULE_ORDER`.
+  `role` stores the report's literal `"N/A (standalone)"` as NULL (a registry should
+  read "not applicable" as NULL, not carry report display text) -- confirmed on real
+  data: a standalone instance stores `role IS NULL`, an AG-configured one stores the
+  real role (e.g. `PRIMARY`). `source_type` defaults to `'local_file'` (mirroring
+  `awr_db_info`); `repo_path` is this project's own choice (not populated by Oracle's
+  own parser) -- the absolute path of the report that first registered the database.
+
+* **`mssql_sqlwr_database_summary`** (RECREATED, slimmer -- migration:
+  `schema/mssql_sqlwr_database_summary_recreate.sql`, **destructive**: drops and
+  recreates the table, old rows are lost but recoverable by re-running the master
+  parser against the report files still on disk): per-report facts only --
+  `startup_time`, `begin_snap_id`/`begin_snapshot_id` (same value, two names: the
+  first for symmetry with `end_snap_id`, the second for the report-key convention
+  every other `mssql_sqlwr_*` table uses), `end_snap_id`, `end_snap_time` (same value
+  as `snapshot_time`), `begin_sessions`/`end_sessions`, `cursors_per_sessions` (always
+  NULL), `elapsed_minutes`, `db_time_minutes`. No `instance_id` column -- join back to
+  `mssql_dmv_snapshot` on `begin_snap_id`/`end_snap_id` if the instance is ever needed.
+
+Verified end to end on real data: parsing the same report twice registers
+`mssql_db_info` once and skips on the second parse (`mssql_sqlwr_database_summary`
+still inserts a fresh row each time it parses a NEW report, 0 on a repeat of the SAME
+report, same idempotency as every other table); the same database name on two
+DIFFERENT instances gets two separate `mssql_db_info` rows (dedup is scoped to
+`instance_id` + `database_name`, not `database_name` alone); re-parsing a report whose
+underlying config data had since changed still leaves the original `mssql_db_info` row
+untouched (no update, no duplicate) -- the first report to see a database is the one
+whose facts are kept, by design.
