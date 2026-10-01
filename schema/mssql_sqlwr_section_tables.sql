@@ -639,41 +639,24 @@ COMMENT ON TABLE mssql_sqlwr_tempdb_tasks IS 'Parsed data for the SQLWR report T
 CREATE TABLE IF NOT EXISTS mssql_sqlwr_database_summary (
     id                  SERIAL,
     database_name       TEXT NOT NULL,
-    instance_id         INTEGER NOT NULL,
     snapshot_time       TIMESTAMP WITHOUT TIME ZONE,
-    database_id             INTEGER,
-    unique_name                TEXT,
-    role                          TEXT,
-    edition                         TEXT,
-    release                            TEXT,
-    rac                                    TEXT,
-    cdb                                       TEXT,
-    host_name                                   TEXT,
-    platform                                       TEXT,
-    cpu_count                                         INTEGER,
-    cores                                                INTEGER,
-    sockets                                                INTEGER,
-    memory_gb                                                 NUMERIC,
-    inst_num                                                     INTEGER,
-    startup_time                                                    TIMESTAMP WITHOUT TIME ZONE,
-    begin_snap_id                                                      INTEGER,
-    begin_snap_time                                                       TIMESTAMP WITHOUT TIME ZONE,
-    end_snap_id                                                              INTEGER,
-    end_snap_time                                                               TIMESTAMP WITHOUT TIME ZONE,
-    begin_sessions                                                                 INTEGER,
-    end_sessions                                                                      INTEGER,
-    cursors_per_session                                                                  NUMERIC,
-    elapsed_minutes                                                                         NUMERIC,
-    db_time_minutes                                                                            NUMERIC,
-    begin_snapshot_id                                                                             INTEGER NOT NULL,
-    row_hash                                                                                      CHAR(32) NOT NULL,
-    created_at                                                                                     TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    startup_time        TIMESTAMP WITHOUT TIME ZONE,
+    begin_snap_id       INTEGER,
+    begin_snapshot_id   INTEGER NOT NULL,
+    end_snap_id         INTEGER,
+    end_snap_time       TIMESTAMP WITHOUT TIME ZONE,
+    begin_sessions      INTEGER,
+    end_sessions        INTEGER,
+    cursors_per_sessions NUMERIC,
+    elapsed_minutes     NUMERIC,
+    db_time_minutes     NUMERIC,
+    row_hash            CHAR(32) NOT NULL,
+    created_at          TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT mssql_sqlwr_db_summary_pkey PRIMARY KEY (id) USING INDEX TABLESPACE mssqlparser_idx,
-    CONSTRAINT fk_sqlwr_db_summary_inst FOREIGN KEY (instance_id) REFERENCES mssql_instance_master(id),
-    CONSTRAINT uq_sqlwr_db_summary UNIQUE (database_name, instance_id, begin_snapshot_id, row_hash)
+    CONSTRAINT uq_sqlwr_db_summary UNIQUE (database_name, begin_snapshot_id, row_hash)
         USING INDEX TABLESPACE mssqlparser_idx
 ) TABLESPACE mssqlparser;
-COMMENT ON TABLE mssql_sqlwr_database_summary IS 'Parsed data for the SQLWR report Database Summary section (extended to include the fields shown in the equivalent Oracle AWR report screen), one row per report. Modeled on awr_db_info, extended with SQL-Server-specific and report-level fields. Not one of the point-in-time/window/delta categories: it is a WHOLE-REPORT SUMMARY -- host/db identity read at the END snapshot (database_id, edition, release, host_name, platform, cpu_count, cores, sockets, memory_gb, startup_time), plus session counts read at BOTH the begin and end snapshot, plus elapsed_minutes and db_time_minutes totals over the window. role/unique_name come from mssql_instance_master.ag_replica_role/ag_name (NULL -- "N/A (standalone)" in the report -- unless/until Availability Group collection is implemented; scoped out for now, see project notes). rac and cdb are Oracle-only concepts with no SQL Server equivalent and are always the literal ''N/A''. cursors_per_session is always NULL: SQL Server exposes no per-session open-cursor count via these DMVs, so it is not filled rather than approximated. inst_num is always NULL: no reliable non-AG equivalent to Oracle''s RAC instance number. See Documentation/MSSQL_SQLWR_Parsed_Tables_Conventions.md.';
+COMMENT ON TABLE mssql_sqlwr_database_summary IS 'RECREATED (slimmer) per spec: parsed data for the SQLWR report''s per-report summary fields only, one row per report -- database_name is carried for convenience/filtering, not as a join key (there is no instance_id column here; join back to mssql_dmv_snapshot on begin_snap_id/end_snap_id if the instance is ever needed). Database/host/instance IDENTITY facts (edition, release, host_name, platform, cpu/cores/sockets, memory, database_id, unique_name, role, instance_id, inst_num) moved OUT of this table and into mssql_db_info, which captures them once per database rather than repeating them on every report row -- see that table''s own comment. Two intentional redundancies kept because the column list was specified explicitly: begin_snap_id and begin_snapshot_id hold the SAME value (begin_snap_id for symmetry with end_snap_id; begin_snapshot_id for consistency with the report-key convention every other mssql_sqlwr_* table uses); end_snap_time and snapshot_time likewise both hold the end snapshot''s time. cursors_per_sessions is always NULL: SQL Server exposes no per-session open-cursor count via these DMVs, so it is not filled rather than approximated. See Documentation/MSSQL_SQLWR_Parsed_Tables_Conventions.md.';
 
 
 \echo ''
